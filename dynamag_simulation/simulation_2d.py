@@ -164,7 +164,7 @@ def simulate(start, target, dt=0.02, steps=1500, tolerance=0.003):
 
 
 def print_summary(result, trial_name):
-    print(f"\n=== {trial_name} ===")
+    print(f"\n {trial_name}")
     print("Start:", result["start"])
     print("Target:", result["target"])
     print("Final position:", result["final_position"])
