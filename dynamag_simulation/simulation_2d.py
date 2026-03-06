@@ -42,9 +42,6 @@ class ElectromagnetArray:
         self.currents = np.clip(np.array(c, dtype=float), -self.max_current, self.max_current)
 
     def field(self, point):
-        """
-        Net simplified magnetic field at a point
-        """
         point = np.array(point, dtype=float)
         B = np.zeros(2, dtype=float)
 
@@ -70,7 +67,7 @@ class Particle:
         self.pos = np.array(pos, dtype=float)
         self.vel = np.zeros(2, dtype=float)
 
-        # Reduced-order mobility parameter
+        #mobility parameter for moving in liquid
         self.mobility = 0.0008
 
     def update(self, field, dt):
