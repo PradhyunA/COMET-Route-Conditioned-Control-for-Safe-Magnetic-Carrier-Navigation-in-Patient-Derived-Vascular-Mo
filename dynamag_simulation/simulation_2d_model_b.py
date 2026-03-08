@@ -656,22 +656,21 @@ def run_all_trials_model_b():
 
     # Keep benchmark trials for comparability, but expand the random test
     # to near-full workspace coverage.
+    
+    EDGE = TEST_RANGE
+
     trials = {
         "trial_1_bottomleft_to_topright": {
-            "start": (-0.05, -0.05),
-            "target": (0.05, 0.05),
+            "start": (-EDGE, -EDGE),
+            "target": (EDGE, EDGE),
         },
         "trial_2_topleft_to_bottomright": {
-            "start": (-0.05, 0.05),
-            "target": (0.05, -0.05),
+            "start": (-EDGE, EDGE),
+            "target": (EDGE, -EDGE),
         },
         "trial_3_center_to_topright": {
             "start": (0.0, 0.0),
-            "target": (0.05, 0.05),
-        },
-        "trial_4_random_to_random_near_full_workspace": {
-            "start": tuple(rng.uniform(-TEST_RANGE, TEST_RANGE, size=2)),
-            "target": tuple(rng.uniform(-TEST_RANGE, TEST_RANGE, size=2)),
+            "target": (EDGE, EDGE),
         },
     }
 
