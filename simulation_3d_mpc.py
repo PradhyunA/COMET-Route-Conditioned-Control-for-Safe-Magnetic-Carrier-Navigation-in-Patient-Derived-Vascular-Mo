@@ -85,7 +85,8 @@ def simulate_trial_realistic_mpc(
             w_progress=80.0,
             w_align=8.0,
             w_dist=2.0,
-            w_curr=1e-5,
+            w_curr=1e-5,        # Penalty for absolute current usage
+            w_smooth=1e-4,      # Very gentle penalty on changing current rapidly
             w_edge=20.0,
             w_overshoot=2.0,
         )

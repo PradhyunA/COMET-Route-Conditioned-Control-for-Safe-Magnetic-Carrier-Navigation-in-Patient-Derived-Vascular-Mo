@@ -101,6 +101,8 @@ def mpc_cost_3d(
     w_align=8.0,
     w_dist=2.0,
     w_curr=1e-5,
+    w_smooth=0.5,
+    prev_currents=None,
     w_edge=20.0,
     w_overshoot=2.0,
 ):
@@ -139,12 +141,17 @@ def mpc_cost_3d(
     edge_cost = edge_penalty_3d(next_pos, workspace)
     overshoot_cost = overshoot_penalty_3d(raw_step, current_distance)
 
+    smoothness_cost = 0.0
+    if prev_currents is not None:
+        smoothness_cost = np.sum((currents - prev_currents) ** 2)
+
     cost = (
         -w_progress * progress
         -w_align * step_along
         -0.5 * alignment
         + w_dist * (next_distance ** 2)
         + w_curr * np.sum(currents ** 2)
+        + w_smooth * smoothness_cost
         + w_edge * edge_cost
         + w_overshoot * overshoot_cost
     )
@@ -166,6 +173,7 @@ def continuous_mpc_controller_3d(
     w_align=8.0,
     w_dist=2.0,
     w_curr=1e-5,
+    w_smooth=0.5,
     w_edge=20.0,
     w_overshoot=2.0,
 ):
@@ -217,6 +225,8 @@ def continuous_mpc_controller_3d(
                 w_align,
                 w_dist,
                 w_curr,
+                w_smooth,
+                initial_guess,  # passing initial_guess as prev_currents
                 w_edge,
                 w_overshoot,
             ),
@@ -244,6 +254,8 @@ def continuous_mpc_controller_3d(
             w_align=w_align,
             w_dist=w_dist,
             w_curr=w_curr,
+            w_smooth=w_smooth,
+            prev_currents=initial_guess,
             w_edge=w_edge,
             w_overshoot=w_overshoot,
         )
