@@ -1,0 +1,19 @@
+{
+  "total_trials": 100,
+  "reached_target": 100,
+  "reach_rate_pct": 100.0,
+  "low_re_valid_count": 0,
+  "final_error_mm_mean": 2.7187144076902245,
+  "final_error_mm_std": 0.20364073967002164,
+  "final_error_mm_median": 2.7511868627157883,
+  "steps_mean": 148.08,
+  "steps_std": 61.853969961515,
+  "wall_time_s_mean": 91.35542957248282,
+  "wall_time_s_total": 9135.542957248283,
+  "max_reynolds_mean": 18.091849057910594,
+  "max_reynolds_max": 40.98310510493073,
+  "peak_velocity_mm_s_mean": 32.300392500582596,
+  "peak_velocity_mm_s_max": 73.16943539295556,
+  "batch_wall_time_s": 9209.056438922882,
+  "failed_trials": 0
+}

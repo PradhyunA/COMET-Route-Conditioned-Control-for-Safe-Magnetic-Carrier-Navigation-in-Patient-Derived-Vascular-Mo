@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "dynamag-simulation"
+version = "1.0.0"
+description = "Multi-coil electromagnetic particle steering simulation for magnetic drug targeting research."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+dependencies = [
+    "numpy>=1.24,<3.0",
+    "scipy>=1.11,<2.0",
+    "matplotlib>=3.7,<4.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.4"]
+
+[tool.setuptools.packages.find]
+include = ["dynamag_simulation*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
