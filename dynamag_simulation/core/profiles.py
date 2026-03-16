@@ -43,6 +43,17 @@ MICROSPHERE_500UM = PhysicalProfile(
     enable_brownian=True,
 )
 
+MICROSPHERE_50UM = PhysicalProfile(
+    name="microsphere_50um",
+    diameter=50e-6,
+    chi_eff=3.0,
+    M_sat=4.5e5,
+    fluid_viscosity=WATER_VISCOSITY_25C,
+    fluid_density=997.0,
+    temperature=298.0,
+    enable_brownian=True,
+)
+
 NANOPARTICLE_500NM = PhysicalProfile(
     name="nanoparticle_500nm",
     diameter=500e-9,

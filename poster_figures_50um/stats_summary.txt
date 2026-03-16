@@ -1,0 +1,33 @@
+DynaMag 50 µm Particle — 100 Trial Summary
+============================================
+Particle diameter      : 50 µm
+Magnetic susceptibility: χ_eff = 3.0
+Saturation magnetisation: M_sat = 4.5×10⁵ A/m
+Fluid                  : water at 25°C (η = 8.9×10⁻⁴ Pa·s)
+Background flow        : uniform 0.2 mm/s along +x
+Controller             : 1-step MPC (SLSQP, 5 seeds)
+Time step              : dt = 1.0 s
+Tolerance              : 3.0 mm
+
+Results
+-------
+Trials                 : 100
+Success rate           : 97/100 (97%)
+Median convergence time: 71 s  (71 steps)
+Mean convergence time  : 186 s
+Median final error     : 2.60 mm
+Max final error        : 101.24 mm
+
+Physics Regime
+--------------
+Max Reynolds (median)  : 0.0745
+Max Reynolds (worst)   : 0.2244
+Low-Re valid (all)     : False
+Peak |B| median        : 17.10 mT
+Peak |F| median        : 0.57 nN
+Peak |v| median        : 1289.1 µm/s
+
+Batch Info
+----------
+Wall-clock time        : 4.2 h
+Avg control step time  : 0.78 s
