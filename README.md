@@ -9,12 +9,14 @@ DynaMag models a programmable 8-coil electromagnet array steering a
 superparamagnetic microsphere through a 3D workspace. The simulation
 includes:
 
-- **Magnetic dipole field model** (8 corner electromagnets)
+- **Regularized magnetic dipole field model** (8 corner electromagnets, softened at r < R)
 - **Superparamagnetic particle** with susceptibility + saturation crossover
-- **Stokes drag** (overdamped, low-Re regime) with Brownian thermal noise
-- **MPC controller** (1-step SLSQP optimisation)
+- **Schiller-Naumann drag** (nonlinear; reduces to Stokes at Re ≪ 1, valid to Re ≈ 800)
+- **Brownian thermal noise** (Stokes-Einstein diffusion)
+- **Background flow fields** (NoFlow, Uniform, Poiseuille, Pulsatile cardiac)
+- **Flow-aware MPC controller** (1-step SLSQP optimisation with flow compensation)
 - **Reynolds number tracking** and low-Re validity flagging
-- **Adaptive substepping** for integration stability
+- **Adaptive substepping** with per-substep flow evaluation
 
 ## Quick Start
 
@@ -43,10 +45,11 @@ python -m pytest tests/ -v
 │   │   ├── constants.py              # Physical and geometric constants
 │   │   ├── profiles.py               # Named particle/fluid profiles
 │   │   ├── workspace.py              # 2D/3D workspace geometry
-│   │   ├── magnets.py                # Electromagnet array (dipole model)
-│   │   ├── particle.py               # Superparamagnetic particle
-│   │   ├── integrator.py             # Adaptive substepping
-│   │   ├── controllers.py            # MPC controller
+│   │   ├── magnets.py                # Electromagnet array (regularized dipole)
+│   │   ├── particle.py               # Superparamagnetic particle + Schiller-Naumann drag
+│   │   ├── flow.py                   # Background flow models (Uniform, Poiseuille, Pulsatile)
+│   │   ├── integrator.py             # Adaptive substepping with flow evaluation
+│   │   ├── controllers.py            # Flow-aware MPC controller
 │   │   ├── validation.py             # Reynolds number checks
 │   │   ├── reporting.py              # TrialResult, CSV output
 │   │   └── plotting.py               # Consolidated plot generation
@@ -68,10 +71,11 @@ python -m pytest tests/ -v
 
 ## Physical Profiles
 
-| Profile              | Diameter | Use Case                           |
-|----------------------|----------|------------------------------------|
-| `microsphere_500um`  | 500 um   | Default: benchtop phantom system   |
-| `nanoparticle_500nm` | 500 nm   | Theoretical comparison only        |
+| Profile              | Diameter | Use Case                                  |
+|----------------------|----------|-------------------------------------------|
+| `microsphere_500um`  | 500 µm   | Default: benchtop phantom system          |
+| `microsphere_50um`   | 50 µm    | Scaled-down runs with background flow     |
+| `nanoparticle_500nm` | 500 nm   | Theoretical comparison only               |
 
 ## Outputs
 
