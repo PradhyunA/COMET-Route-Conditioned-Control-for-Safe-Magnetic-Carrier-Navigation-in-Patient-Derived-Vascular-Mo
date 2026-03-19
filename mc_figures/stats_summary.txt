@@ -1,0 +1,23 @@
+DynaMag 50 µm Particle — Presentation Statistics
+==================================================
+Trials               : 33
+Success rate          : 32/33 (97%)   95% CI [0.847, 0.995]
+Median conv. time     : 67 s  (67 steps)
+Mean conv. time       : 191 s
+IQR conv. time        : [41, 102] s
+Median final error    : 2.62 mm
+95th pctl final error : 2.99 mm
+Max final error       : 44.59 mm
+
+Physics Regime
+--------------
+Max Reynolds (median) : 0.08326
+Max Reynolds (worst)  : 0.16490
+Low-Re valid (all)    : False
+Peak |B| median       : 16.93 mT
+Peak |F| median       : 0.64 nN
+Peak |v| median       : 1481.8 µm/s
+
+Batch info
+----------
+Wall-clock time       : 1.4 h

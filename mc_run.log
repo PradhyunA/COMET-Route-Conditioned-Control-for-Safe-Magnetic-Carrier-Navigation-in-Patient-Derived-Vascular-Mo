@@ -1,0 +1,2 @@
+/Users/amrit/.cursor/worktrees/fix/tbp/simulation_3d_mpc.py:124: RuntimeWarning: Step 0: no SLSQP start converged; using best-so-far
+  warnings.warn(

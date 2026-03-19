@@ -1,0 +1,21 @@
+{
+  "time_limit_s": 5400,
+  "max_trials": 500,
+  "seed": 12345,
+  "dt": 1.0,
+  "steps_budget": 3000,
+  "tolerance_m": 0.003,
+  "flow_speed_m_s": 0.0002,
+  "max_current_A": 13.0,
+  "particle_profile": "microsphere_50um",
+  "particle_diameter_um": 50.0,
+  "chi_eff": 3.0,
+  "flow_params": {
+    "flow_model": "uniform",
+    "flow_vx": 0.0002,
+    "flow_vy": 0.0,
+    "flow_vz": 0.0,
+    "flow_speed_m_s": 0.0002
+  },
+  "start_time": "2026-03-18 19:54:44"
+}
