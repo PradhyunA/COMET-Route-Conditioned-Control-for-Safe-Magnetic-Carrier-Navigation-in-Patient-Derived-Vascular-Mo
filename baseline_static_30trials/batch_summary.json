@@ -1,0 +1,59 @@
+{
+  "baseline_mode": "static",
+  "n_trials": 30,
+  "particle_profile": "microsphere_50um",
+  "particle_diameter_um": 50.0,
+  "chi_eff": 3.0,
+  "max_current_A": 13.0,
+  "flow_type": "uniform",
+  "flow_params": {
+    "flow_model": "uniform",
+    "flow_vx": 0.0002,
+    "flow_vy": 0.0,
+    "flow_vz": 0.0,
+    "flow_speed_m_s": 0.0002
+  },
+  "dt": 1.0,
+  "steps_budget": 3000,
+  "tolerance_m": 0.003,
+  "seed": 42,
+  "batch_wall_time_s": 555.15,
+  "reached_count": 0,
+  "success_rate": 0.0,
+  "stats": {
+    "steps_to_target": {
+      "median": 3000.0,
+      "mean": 3000.0,
+      "std": 0.0,
+      "min": 3000,
+      "max": 3000,
+      "q25": 3000.0,
+      "q75": 3000.0
+    },
+    "final_error_mm": {
+      "median": 147.0766587145042,
+      "mean": 138.57201223882277,
+      "std": 22.216707461555977,
+      "max": 170.97763941576707
+    },
+    "max_reynolds": {
+      "median": 85.19021654617632,
+      "mean": 111.0272384771282,
+      "max": 449.705442330556
+    },
+    "path_efficiency": {
+      "median": 0.000132163289197686,
+      "mean": 0.0011460353935098656,
+      "std": 0.005321795173687178
+    },
+    "energy_proxy_A2s": {
+      "median": 1747473.8765964776,
+      "mean": 1743255.354253561,
+      "std": 224278.43862554774
+    },
+    "monotonic_convergence": {
+      "median": 0.7417472490830277,
+      "mean": 0.7238190507947094
+    }
+  }
+}
