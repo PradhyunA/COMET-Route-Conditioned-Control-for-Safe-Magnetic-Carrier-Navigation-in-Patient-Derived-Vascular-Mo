@@ -1,0 +1,13 @@
+Improved Poster Metrics (microsphere_50um) [50.0 um]
+====================================================
+Trials: 100
+Success: 97/100 (97.0%)  95% CI [0.915, 0.990]
+Low-Re valid (Re<0.1): 71/100 (71.0%)  95% CI [0.615, 0.790]
+Reached and low-Re valid: 68/100 (68.0%)
+Median convergence time (reached): 68.0 s
+Mean convergence time (reached): 98.9 s
+Median final error (all): 2.601 mm
+95th percentile final error: 2.990 mm
+Worst final error: 101.239 mm
+Median max Re: 0.07452
+Worst max Re: 0.22444
