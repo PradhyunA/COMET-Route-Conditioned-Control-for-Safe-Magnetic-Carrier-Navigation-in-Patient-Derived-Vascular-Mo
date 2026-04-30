@@ -6,7 +6,7 @@ Shared physics engine for all DynaMag simulation variants.
 
 from .constants import MU_0, K_B, PI, INCH_TO_METER, SIDE, HALF, EPS
 from .profiles import PhysicalProfile, MICROSPHERE_500UM, MICROSPHERE_50UM, NANOPARTICLE_500NM
-from .workspace import Workspace2D, Workspace3D
+from .workspace import Workspace2D, Workspace3D, WorkspaceVessel
 from .magnets import ElectromagnetArray3D
 from .particle import MagneticParticle3D
 from .integrator import adaptive_step
