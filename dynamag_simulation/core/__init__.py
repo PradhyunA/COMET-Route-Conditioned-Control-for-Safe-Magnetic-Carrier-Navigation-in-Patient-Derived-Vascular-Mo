@@ -14,6 +14,8 @@ from .controllers import continuous_mpc_controller
 from .validation import compute_reynolds, check_low_re_validity
 from .reporting import TrialResult, save_results_csv, print_summary
 from .flow import NoFlow, UniformFlow, PoiseuilleFlow, PulsatileFlow
+from .vessel_network import VesselNetwork, VesselSegment
+from .workspace import WorkspaceVessel
 
 __all__ = [
     "MU_0", "K_B", "PI", "INCH_TO_METER", "SIDE", "HALF", "EPS",
