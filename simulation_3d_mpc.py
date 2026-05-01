@@ -62,10 +62,13 @@ def simulate_trial_mpc(
     Returns a TrialResult with full trajectory, physics logs,
     timing, and validity metrics.
     """
+    network   = VesselNetwork()
+    workspace = WorkspaceVessel(network)
+    
     if flow is None:
-        flow = NoFlow()
+        '''flow = NoFlow()'''
+        flow = network
 
-    workspace = Workspace3D()
     magnets = ElectromagnetArray3D(
         coil_radius=coil_radius,
         coil_length=coil_length,
@@ -232,18 +235,19 @@ def simulate_trial_mpc(
 def run_all_trials():
     EDGE = TEST_RANGE
 
+    network = VesselNetwork()
     trials = {
-        "trial_1_corner_to_corner": {
-            "start": (-EDGE, -EDGE, -EDGE),
-            "target": (EDGE, EDGE, EDGE),
+        "trial_1_inlet_to_outlet": {
+            "start":  tuple(network.inlet_start() + np.array([0., 0.001, 0.])),
+            "target": tuple(network.outlet_end()  - np.array([0., 0.001, 0.])),
         },
-        "trial_2_opposite_edges": {
-            "start": (-EDGE, EDGE, -EDGE),
-            "target": (EDGE, -EDGE, EDGE),
+        "trial_2_random_to_outlet": {
+            "start":  tuple(network.random_point_in_vessel()),
+            "target": tuple(network.outlet_end() - np.array([0., 0.001, 0.])),
         },
-        "trial_3_center_to_corner": {
-            "start": (0.0, 0.0, 0.0),
-            "target": (EDGE, EDGE, EDGE),
+        "trial_3_random_to_random": {
+            "start":  tuple(network.random_point_in_vessel()),
+            "target": tuple(network.random_point_in_vessel()),
         },
     }
 
