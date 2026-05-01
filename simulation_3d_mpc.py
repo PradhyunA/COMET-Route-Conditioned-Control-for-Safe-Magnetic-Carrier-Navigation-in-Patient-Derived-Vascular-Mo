@@ -24,6 +24,7 @@ from dynamag_simulation.core.validation import compute_reynolds, check_low_re_va
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
 from dynamag_simulation.core.plotting import save_all_plots
 from dynamag_simulation.core.flow import NoFlow
+from dynamag_simulation.core import VesselNetwork, WorkspaceVessel
 
 
 def simulate_trial_mpc(
