@@ -7,7 +7,7 @@ controller, and plotting code need no changes.
 """
 
 import numpy as np
-from constants import HALF
+from .constants import HALF
 
 
 class Workspace2D:

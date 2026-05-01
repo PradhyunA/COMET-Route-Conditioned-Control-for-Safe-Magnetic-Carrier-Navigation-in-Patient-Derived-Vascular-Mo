@@ -42,7 +42,7 @@ import numpy as np
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
-from constants import PI, EPS
+from .constants import PI, EPS
 
 
 # ------------------------------------------------------------------ #
@@ -105,6 +105,18 @@ class VesselSegment:
         """True if pos is inside the cylinder (including end-caps)."""
         _, _, r, _ = self.closest_point_and_radial(pos)
         return r <= self.radius + tol
+
+    def clip_to_interior(self, pos: np.ndarray, inset: float = 0.01) -> np.ndarray:
+        """
+        Project pos onto the segment axis, clamped to the interior.
+        Used to place waypoints safely inside a segment near a junction.
+        inset: fraction of segment length to move away from the end.
+        """
+        pos = np.asarray(pos, dtype=float)
+        d = pos - self.start
+        t = float(np.dot(d, self._axis)) / (self._length + 1e-30)
+        t = float(np.clip(t, inset, 1.0 - inset))
+        return self.start + t * self._length * self._axis
 
     def flow_velocity(self, pos: np.ndarray, time: float = 0.0) -> np.ndarray:
         """
@@ -267,6 +279,71 @@ class VesselNetwork:
         self.segments: List[VesselSegment] = self._afferent + self._efferent
         self.n_segments = len(self.segments)
 
+        # ---- spatial index: maps grid cell -> list of segment ids ----
+        # Speeds up find_segment from O(N_segs) to O(1) average case.
+        self._build_spatial_index()
+
+    # -------------------------------------------------------------- #
+    #  Spatial index                                                   #
+    # -------------------------------------------------------------- #
+
+    def _build_spatial_index(self, grid_res: int = 20):
+        """
+        Divide the bounding box into a grid and record which segments
+        overlap each cell.  Lookup then only checks the few segments
+        in the same cell as the query point.
+        """
+        # Compute bounding box of all segment endpoints
+        coords = np.array([pt for seg in self.segments
+                           for pt in (seg.start, seg.end)])
+        self._bbox_min = coords.min(axis=0) - 0.01
+        self._bbox_max = coords.max(axis=0) + 0.01
+        self._grid_res = grid_res
+
+        span = self._bbox_max - self._bbox_min
+        self._cell_size = span / grid_res
+
+        # For each segment, mark every grid cell its bounding box touches
+        self._grid: dict = {}
+        for seg in self.segments:
+            lo = np.minimum(seg.start, seg.end) - seg.radius
+            hi = np.maximum(seg.start, seg.end) + seg.radius
+            i0, j0, k0 = self._world_to_cell(lo)
+            i1, j1, k1 = self._world_to_cell(hi)
+            for i in range(i0, i1 + 1):
+                for j in range(j0, j1 + 1):
+                    for k in range(k0, k1 + 1):
+                        key = (i, j, k)
+                        if key not in self._grid:
+                            self._grid[key] = []
+                        self._grid[key].append(seg)
+
+    def _world_to_cell(self, pos: np.ndarray):
+        idx = ((np.asarray(pos) - self._bbox_min) /
+               (self._bbox_max - self._bbox_min) * self._grid_res)
+        i, j, k = np.clip(idx.astype(int), 0, self._grid_res - 1)
+        return int(i), int(j), int(k)
+
+    def _candidates(self, pos: np.ndarray) -> list:
+        """Return candidate segments near pos via spatial index."""
+        key = self._world_to_cell(pos)
+        cands = self._grid.get(key, None)
+        if cands:
+            return cands
+        # Fallback: expand search one cell in each direction
+        i, j, k = key
+        result = []
+        seen = set()
+        for di in (-1, 0, 1):
+            for dj in (-1, 0, 1):
+                for dk in (-1, 0, 1):
+                    nkey = (i+di, j+dj, k+dk)
+                    for seg in self._grid.get(nkey, []):
+                        if seg.seg_id not in seen:
+                            seen.add(seg.seg_id)
+                            result.append(seg)
+        return result if result else self.segments  # final fallback
+
     # -------------------------------------------------------------- #
     #  Core spatial query                                              #
     # -------------------------------------------------------------- #
@@ -276,27 +353,31 @@ class VesselNetwork:
     ) -> Tuple[Optional[VesselSegment], float]:
         """
         Return (best_segment, radial_distance) for pos.
-
-        'Best' = the segment whose axis is closest to pos (minimum
-        radial distance to centreline), regardless of whether pos is
-        actually inside the cylinder.  This is used both for flow
-        evaluation and for clipping.
+        Uses spatial index for O(1) average-case performance.
         """
         pos = np.asarray(pos, dtype=float)
         best_seg  = None
         best_dist = np.inf
 
-        for seg in self.segments:
+        for seg in self._candidates(pos):
             _, _, r, _ = seg.closest_point_and_radial(pos)
             if r < best_dist:
                 best_dist = r
                 best_seg  = seg
 
+        # Guarantee we always return something
+        if best_seg is None:
+            for seg in self.segments:
+                _, _, r, _ = seg.closest_point_and_radial(pos)
+                if r < best_dist:
+                    best_dist = r
+                    best_seg  = seg
+
         return best_seg, best_dist
 
     def in_any_vessel(self, pos: np.ndarray) -> bool:
         """True if pos is inside at least one vessel segment."""
-        for seg in self.segments:
+        for seg in self._candidates(pos):
             if seg.contains(pos):
                 return True
         return False
@@ -307,17 +388,13 @@ class VesselNetwork:
 
     def velocity_at(self, pos: np.ndarray, time: float = 0.0) -> np.ndarray:
         """
-        Return blood flow velocity at pos.
-
-        Evaluates all segments that contain pos and returns the
-        velocity from the one with the smallest radial distance
-        (i.e. the segment the particle most 'belongs' to).
+        Return blood flow velocity at pos using spatial index.
         """
         pos = np.asarray(pos, dtype=float)
         best_seg  = None
         best_dist = np.inf
 
-        for seg in self.segments:
+        for seg in self._candidates(pos):
             _, _, r, _ = seg.closest_point_and_radial(pos)
             if r < seg.radius and r < best_dist:
                 best_dist = r
@@ -443,3 +520,153 @@ class VesselNetwork:
                 f"len={seg._length*100:.1f} cm"
             )
         return "\n".join(lines)
+
+    # -------------------------------------------------------------- #
+    #  Graph pathfinding                                               #
+    # -------------------------------------------------------------- #
+
+    def _build_graph(self):
+        """
+        Build an adjacency graph of segments connected at shared
+        endpoints.  Two segments are connected if their endpoints are
+        within a small tolerance of each other.
+
+        Returns dict: seg_id -> list of (neighbour_seg_id, junction_point)
+        """
+        tol = 1e-6
+        graph = {seg.seg_id: [] for seg in self.segments}
+
+        endpoints = []  # (seg_id, which_end, point)
+        for seg in self.segments:
+            endpoints.append((seg.seg_id, 'start', seg.start))
+            endpoints.append((seg.seg_id, 'end',   seg.end))
+
+        # O(N^2) but only runs once at startup — 62 segs = 3844 pairs, fine
+        for i, (id_a, end_a, pt_a) in enumerate(endpoints):
+            for id_b, end_b, pt_b in endpoints[i+1:]:
+                if id_a == id_b:
+                    continue
+                if np.linalg.norm(pt_a - pt_b) < tol:
+                    # shared junction point
+                    junction = (pt_a + pt_b) / 2.0
+                    graph[id_a].append((id_b, junction))
+                    graph[id_b].append((id_a, junction))
+
+        return graph
+
+    def plan_waypoints(
+        self,
+        start_pos:  np.ndarray,
+        target_pos: np.ndarray,
+    ) -> List[np.ndarray]:
+        """
+        Plan a sequence of 3D waypoints through the vessel graph
+        from start_pos to target_pos.
+
+        Uses Dijkstra on the segment graph (edge weight = segment length).
+        Returns a list of positions [wp1, wp2, ..., target_pos] that
+        the MPC should follow in order.
+
+        If start and target are in the same segment, returns [target_pos].
+        """
+        start_pos  = np.asarray(start_pos,  dtype=float)
+        target_pos = np.asarray(target_pos, dtype=float)
+
+        # Find which segments contain start and target
+        start_seg,  _ = self.find_segment(start_pos)
+        target_seg, _ = self.find_segment(target_pos)
+
+        if start_seg is None or target_seg is None:
+            return [target_pos]
+
+        if start_seg.seg_id == target_seg.seg_id:
+            return [target_pos]
+
+        # Build graph (cached after first call)
+        if not hasattr(self, '_graph'):
+            self._graph = self._build_graph()
+
+        graph = self._graph
+
+        # Dijkstra from start_seg to target_seg
+        import heapq
+        dist     = {seg.seg_id: np.inf for seg in self.segments}
+        prev     = {seg.seg_id: None   for seg in self.segments}
+        junction = {seg.seg_id: None   for seg in self.segments}
+
+        dist[start_seg.seg_id] = 0.0
+        heap = [(0.0, start_seg.seg_id)]
+
+        seg_by_id = {seg.seg_id: seg for seg in self.segments}
+
+        while heap:
+            d, uid = heapq.heappop(heap)
+            if d > dist[uid]:
+                continue
+            if uid == target_seg.seg_id:
+                break
+            for (vid, jpt) in graph.get(uid, []):
+                seg_v   = seg_by_id[vid]
+                new_dist = d + seg_v._length
+                if new_dist < dist[vid]:
+                    dist[vid]     = new_dist
+                    prev[vid]     = uid
+                    junction[vid] = jpt
+                    heapq.heappush(heap, (new_dist, vid))
+
+        # Reconstruct path of segment ids
+        if dist[target_seg.seg_id] == np.inf:
+            # No path found — return direct target
+            return [target_pos]
+
+        path_ids = []
+        cur = target_seg.seg_id
+        while cur is not None:
+            path_ids.append(cur)
+            cur = prev[cur]
+        path_ids.reverse()  # start_seg -> ... -> target_seg
+
+        # Convert segment path to 3D waypoints at junctions
+        waypoints = []
+        for i, sid in enumerate(path_ids[1:], start=1):
+            jpt = junction[sid]
+            if jpt is not None:
+                # Place waypoint just inside the junction on the centreline
+                seg = seg_by_id[sid]
+                wp  = seg.clip_to_interior(jpt)
+                waypoints.append(wp)
+
+        waypoints.append(target_pos)
+        return waypoints
+
+    def waypoint_navigator(
+        self,
+        start_pos:  np.ndarray,
+        target_pos: np.ndarray,
+        arrival_tol: float = 0.003,
+    ):
+        """
+        Returns a callable next_waypoint(current_pos) that advances
+        through the planned waypoint list as each one is reached.
+
+        Usage in simulation loop:
+            nav = network.waypoint_navigator(start, target)
+            ...
+            current_target = nav(particle.pos)
+        """
+        waypoints = self.plan_waypoints(start_pos, target_pos)
+        state = {'idx': 0, 'waypoints': waypoints}
+
+        def next_waypoint(current_pos: np.ndarray) -> np.ndarray:
+            wps  = state['waypoints']
+            idx  = state['idx']
+            if idx >= len(wps):
+                return wps[-1]
+            wp = wps[idx]
+            if np.linalg.norm(np.asarray(current_pos) - wp) < arrival_tol:
+                state['idx'] = min(idx + 1, len(wps) - 1)
+            return state['waypoints'][state['idx']]
+
+        next_waypoint.waypoints     = waypoints
+        next_waypoint.total_hops    = len(waypoints)
+        return next_waypoint

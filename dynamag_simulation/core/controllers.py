@@ -10,8 +10,8 @@ Changes from original:
 import numpy as np
 from scipy.optimize import minimize
 
-from constants import EPS
-from flow import NoFlow
+from .constants import EPS
+from .flow import NoFlow
 
 _NO_FLOW = NoFlow()
 
