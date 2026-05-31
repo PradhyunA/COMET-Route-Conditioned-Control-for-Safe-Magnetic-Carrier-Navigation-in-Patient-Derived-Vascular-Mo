@@ -733,7 +733,8 @@ class VesselNetwork:
 
             if np.linalg.norm(np.asarray(current_pos) - wp) < arrival_tol:
                 state["idx"] = min(idx + 1, len(wps) - 1)
-
+                
+            next_waypoint.current_idx = state["idx"]
             return state["waypoints"][state["idx"]]
 
         next_waypoint.waypoints = waypoints

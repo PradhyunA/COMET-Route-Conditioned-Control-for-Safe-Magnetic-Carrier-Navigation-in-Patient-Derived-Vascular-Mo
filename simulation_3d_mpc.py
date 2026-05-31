@@ -163,7 +163,7 @@ def simulate_trial_mpc(
             print(
                 f"  step {step+1:>4d}/{steps}  "
                 f"dist={distance*1000:.1f} mm  "
-                f"wp={navigator.waypoints.index(current_target)+1}/{navigator.total_hops}  "
+                f"wp={getattr(navigator, 'current_idx', 0)+1}/{navigator.total_hops}  "
                 f"|I|max={np.max(best_currents):.3f} A  "
                 f"|B|={np.linalg.norm(B):.3e} T  "
                 f"|F|={np.linalg.norm(best_force):.3e} N  "
