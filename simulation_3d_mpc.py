@@ -65,11 +65,29 @@ def simulate_trial_mpc(
         rng_seed=rng_seed,
     )
 
-    navigator = network.waypoint_navigator(start, target, arrival_tol=tolerance)
+    navigator = network.waypoint_navigator(
+        start,
+        target,
+        arrival_tol=tolerance,
+        waypoint_spacing=0.0015,
+        lookahead=3,
+    )
 
-    print(f"    Waypoints planned: {navigator.total_hops} hops")
-    for i, wp in enumerate(navigator.waypoints):
+    print(
+        f"    Raw waypoints: "
+        f"{getattr(navigator, 'raw_waypoint_count', 'unknown')}, "
+        f"sparse waypoints: {navigator.total_hops}"
+    )
+
+    for i, wp in enumerate(navigator.waypoints[:10]):
         print(f"      wp{i + 1}: {np.round(wp * 1000, 1)} mm")
+
+    if navigator.total_hops > 10:
+        print("      ...")
+        print(
+            f"      wp{navigator.total_hops}: "
+            f"{np.round(navigator.waypoints[-1] * 1000, 1)} mm"
+        )
 
     trajectory = [particle.pos.copy()]
     distance_log = []
@@ -86,6 +104,7 @@ def simulate_trial_mpc(
     wall_start = time.perf_counter()
 
     for step in range(steps):
+
         sim_time = step * dt
         t0 = time.perf_counter()
 
@@ -121,7 +140,9 @@ def simulate_trial_mpc(
             )
 
         prev_currents = best_currents.copy()
+
         magnets.set_currents(best_currents)
+
         B = magnets.field_at(particle.pos)
 
         adaptive_step(
@@ -135,6 +156,7 @@ def simulate_trial_mpc(
         )
 
         mag_vel = np.linalg.norm(particle.vel)
+
         re = compute_reynolds(
             mag_vel,
             profile.diameter,
@@ -143,6 +165,7 @@ def simulate_trial_mpc(
         )
 
         trajectory.append(particle.pos.copy())
+
         distance = np.linalg.norm(particle.pos - target)
 
         distance_log.append(distance)
@@ -159,13 +182,34 @@ def simulate_trial_mpc(
             break
 
         if (step + 1) % 10 == 0:
+
+            flow_v = flow.velocity_at(particle.pos, sim_time)
+            flow_speed = np.linalg.norm(flow_v)
+
+            particle_speed = np.linalg.norm(particle.realized_vel)
+
+            seg, _ = network.find_segment(particle.pos)
+
+            if seg is not None:
+                _, _, radial_dist, _ = seg.closest_point_and_radial(
+                    particle.pos
+                )
+                wall_clearance = seg.radius - radial_dist
+            else:
+                wall_clearance = np.nan
+
             print(
                 f"  step {step + 1:>4d}/{steps}  "
-                f"dist={distance * 1000:.1f} mm  "
-                f"wp={getattr(navigator, 'current_idx', 0) + 1}/{navigator.total_hops}  "
+                f"final_dist={distance * 1000:.1f} mm  "
+                f"wp={getattr(navigator, 'current_idx', 0) + 1}/"
+                f"{navigator.total_hops}  "
+                f"lookahead={getattr(navigator, 'lookahead_idx', 0) + 1}  "
+                f"wp_dist={getattr(navigator, 'current_wp_dist', np.nan) * 1000:.2f} mm  "
                 f"|I|max={np.max(np.abs(best_currents)):.3f} A  "
-                f"|B|={np.linalg.norm(B):.3e} T  "
                 f"|F|={np.linalg.norm(best_force):.3e} N  "
+                f"particle_v={particle_speed * 1000:.2f} mm/s  "
+                f"flow_v={flow_speed * 1000:.2f} mm/s  "
+                f"wall_clear={wall_clearance * 1000:.2f} mm  "
                 f"Re={re:.2e}"
             )
 
@@ -200,13 +244,19 @@ def simulate_trial_mpc(
         reached=reached,
         steps_taken=len(trajectory) - 1,
         final_error=float(np.linalg.norm(trajectory[-1] - target)),
-        max_current_used=float(np.max(np.abs(current_log))) if len(current_log) > 0 else 0.0,
+        max_current_used=float(np.max(np.abs(current_log)))
+        if len(current_log) > 0
+        else 0.0,
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
         wall_time_s=wall_end - wall_start,
-        avg_control_step_time_s=float(np.mean(step_time_log)) if len(step_time_log) > 0 else 0.0,
-        max_control_step_time_s=float(np.max(step_time_log)) if len(step_time_log) > 0 else 0.0,
+        avg_control_step_time_s=float(np.mean(step_time_log))
+        if len(step_time_log) > 0
+        else 0.0,
+        max_control_step_time_s=float(np.max(step_time_log))
+        if len(step_time_log) > 0
+        else 0.0,
         seed=rng_seed,
         profile_name=profile.name,
         dt=dt,
@@ -229,7 +279,9 @@ def simulate_trial_mpc(
 
 
 def run_all_trials():
+
     network = RealVesselNetwork("real_vessel_segments.pkl")
+
     print(network.segment_summary())
 
     rng = np.random.default_rng(42)
@@ -254,7 +306,9 @@ def run_all_trials():
     }
 
     output_dir = "simulation_outputs_3d_mpc"
+
     os.makedirs(output_dir, exist_ok=True)
+
     results = []
 
     magnets_for_plots = ElectromagnetArray3D(
@@ -265,6 +319,7 @@ def run_all_trials():
     )
 
     for trial_name, cfg in trials.items():
+
         print(f"\n>>> Running {trial_name}")
         print(f"    start:  {cfg['start']}")
         print(f"    target: {cfg['target']}")
@@ -279,10 +334,18 @@ def run_all_trials():
         results.append(result)
 
         print_summary(result)
-        save_all_plots(result, output_dir, magnet_array=magnets_for_plots, network=network)
+
+        save_all_plots(
+            result,
+            output_dir,
+            magnet_array=magnets_for_plots,
+            network=network,
+        )
 
     save_results_csv(results, output_dir)
+
     print(f"\nResults saved to: {output_dir}/")
+
     return results
 
 

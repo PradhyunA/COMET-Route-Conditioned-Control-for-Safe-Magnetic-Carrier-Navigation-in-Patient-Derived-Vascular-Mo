@@ -202,8 +202,7 @@ class RealVesselNetwork:
 
         seg = rng.choice(self.segments)
         t = rng.uniform(0.05, 0.95)
-        point = seg.start + t * (seg.end - seg.start)
-        return point
+        return seg.start + t * (seg.end - seg.start)
 
     def params_dict(self):
         return {
@@ -219,10 +218,10 @@ class RealVesselNetwork:
         target_seg, _ = self.find_segment(target_pos)
 
         if start_seg is None or target_seg is None:
-            return [target_pos]
+            return [np.asarray(target_pos, dtype=float)]
 
         if start_seg.seg_id == target_seg.seg_id:
-            return [target_pos]
+            return [np.asarray(target_pos, dtype=float)]
 
         dist = {seg.seg_id: np.inf for seg in self.segments}
         prev = {seg.seg_id: None for seg in self.segments}
@@ -234,27 +233,32 @@ class RealVesselNetwork:
 
         while heap:
             d, uid = heapq.heappop(heap)
+
             if d > dist[uid]:
                 continue
+
             if uid == target_seg.seg_id:
                 break
 
             for vid, _ in self._graph.get(uid, []):
                 seg_v = seg_by_id[vid]
                 nd = d + seg_v._length
+
                 if nd < dist[vid]:
                     dist[vid] = nd
                     prev[vid] = uid
                     heapq.heappush(heap, (nd, vid))
 
         if dist[target_seg.seg_id] == np.inf:
-            return [target_pos]
+            return [np.asarray(target_pos, dtype=float)]
 
         path_ids = []
         cur = target_seg.seg_id
+
         while cur is not None:
             path_ids.append(cur)
             cur = prev[cur]
+
         path_ids.reverse()
 
         waypoints = []
@@ -265,21 +269,117 @@ class RealVesselNetwork:
         waypoints.append(np.asarray(target_pos, dtype=float))
         return waypoints
 
-    def waypoint_navigator(self, start_pos, target_pos, arrival_tol=0.003):
-        waypoints = self.plan_waypoints(start_pos, target_pos)
-        state = {"idx": 0, "waypoints": waypoints}
+    def _sparsify_waypoints(self, points, min_spacing=0.0015):
+        """
+        Reduce raw centerline waypoints to scientifically valid control waypoints.
+
+        This does NOT change vessel anatomy or graph topology.
+        It only changes reference trajectory resolution for MPC tracking.
+
+        min_spacing=0.0015 means approximately 1.5 mm spacing.
+        """
+        if points is None or len(points) == 0:
+            return []
+
+        if len(points) == 1:
+            return [np.asarray(points[0], dtype=float)]
+
+        sparse = [np.asarray(points[0], dtype=float)]
+        last_kept = sparse[0]
+
+        for p in points[1:]:
+            p = np.asarray(p, dtype=float)
+            if np.linalg.norm(p - last_kept) >= min_spacing:
+                sparse.append(p)
+                last_kept = p
+
+        final_point = np.asarray(points[-1], dtype=float)
+        if np.linalg.norm(final_point - sparse[-1]) > EPS:
+            sparse.append(final_point)
+
+        return sparse
+
+    def waypoint_navigator(
+        self,
+        start_pos,
+        target_pos,
+        arrival_tol=0.003,
+        waypoint_spacing=0.0015,
+        lookahead=3,
+    ):
+        """
+        Build a waypoint navigator for MPC.
+
+        raw_waypoints:
+            Dense graph path from centerline segments.
+
+        sparse waypoints:
+            Arc-length-spaced reference points for stable MPC tracking.
+
+        lookahead:
+            Tracks a waypoint several sparse points ahead while still measuring
+            progress against the current waypoint.
+        """
+        start_pos = np.asarray(start_pos, dtype=float)
+        target_pos = np.asarray(target_pos, dtype=float)
+
+        raw_waypoints = self.plan_waypoints(start_pos, target_pos)
+
+        full_path = [start_pos] + [np.asarray(wp, dtype=float) for wp in raw_waypoints]
+
+        sparse_path = self._sparsify_waypoints(
+            full_path,
+            min_spacing=waypoint_spacing,
+        )
+
+        if len(sparse_path) > 1:
+            active_waypoints = sparse_path[1:]
+        else:
+            active_waypoints = [target_pos]
+
+        state = {
+            "idx": 0,
+            "waypoints": active_waypoints,
+            "raw_count": len(raw_waypoints),
+        }
 
         def next_waypoint(current_pos):
+            current_pos = np.asarray(current_pos, dtype=float)
             idx = state["idx"]
-            wp = state["waypoints"][idx]
 
-            if np.linalg.norm(np.asarray(current_pos) - wp) < arrival_tol:
-                state["idx"] = min(idx + 1, len(state["waypoints"]) - 1)
+            while idx < len(state["waypoints"]) - 1:
+                dist_to_current_wp = float(
+                    np.linalg.norm(current_pos - state["waypoints"][idx])
+                )
 
-            next_waypoint.current_idx = state["idx"]
-            return state["waypoints"][state["idx"]]
+                if dist_to_current_wp < arrival_tol:
+                    idx += 1
+                else:
+                    break
 
-        next_waypoint.waypoints = waypoints
-        next_waypoint.total_hops = len(waypoints)
+            state["idx"] = idx
+
+            look_idx = min(idx + lookahead, len(state["waypoints"]) - 1)
+
+            next_waypoint.current_idx = idx
+            next_waypoint.lookahead_idx = look_idx
+            next_waypoint.current_wp = state["waypoints"][idx]
+            next_waypoint.lookahead_wp = state["waypoints"][look_idx]
+            next_waypoint.current_wp_dist = float(
+                np.linalg.norm(current_pos - state["waypoints"][idx])
+            )
+
+            return state["waypoints"][look_idx]
+
+        next_waypoint.waypoints = active_waypoints
+        next_waypoint.raw_waypoint_count = len(raw_waypoints)
+        next_waypoint.total_hops = len(active_waypoints)
         next_waypoint.current_idx = 0
+        next_waypoint.lookahead_idx = min(lookahead, len(active_waypoints) - 1)
+        next_waypoint.current_wp = active_waypoints[0]
+        next_waypoint.lookahead_wp = active_waypoints[next_waypoint.lookahead_idx]
+        next_waypoint.current_wp_dist = float("inf")
+        next_waypoint.waypoint_spacing = waypoint_spacing
+        next_waypoint.lookahead = lookahead
+
         return next_waypoint
