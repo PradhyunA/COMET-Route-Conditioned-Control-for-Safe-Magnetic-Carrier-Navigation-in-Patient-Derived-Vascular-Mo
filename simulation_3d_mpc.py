@@ -279,7 +279,7 @@ def run_all_trials():
         results.append(result)
 
         print_summary(result)
-        save_all_plots(result, output_dir, magnet_array=magnets_for_plots)
+        save_all_plots(result, output_dir, magnet_array=magnets_for_plots, network=network)
 
     save_results_csv(results, output_dir)
     print(f"\nResults saved to: {output_dir}/")
