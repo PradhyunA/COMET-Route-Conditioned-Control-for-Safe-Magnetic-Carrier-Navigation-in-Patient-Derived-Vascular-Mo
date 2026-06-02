@@ -6,6 +6,10 @@ Saves plots and per-trial data (trajectory, logs) for each run.
 """
 
 import os
+import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import json
 import time
 
@@ -58,7 +62,7 @@ def save_trial_data(result: TrialResult, output_dir: str) -> None:
 
 
 def run_100_trials_with_flow(
-    output_dir: str = "flow_100_trials",
+    output_dir: str = "outputs/flow_100_trials",
     flow_type: str = "uniform",
     n_trials: int = 100,
     seed: int = 42,
@@ -162,7 +166,7 @@ def run_100_trials_with_flow(
 
 if __name__ == "__main__":
     run_100_trials_with_flow(
-        output_dir="flow_100_trials",
+        output_dir="outputs/flow_100_trials",
         flow_type="uniform",
         n_trials=100,
         seed=42,

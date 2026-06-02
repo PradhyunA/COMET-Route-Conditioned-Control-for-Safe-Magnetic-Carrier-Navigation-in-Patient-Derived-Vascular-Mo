@@ -21,9 +21,12 @@ Usage:
 """
 
 import os
+import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import json
 import time
-import sys
 
 import numpy as np
 
@@ -478,16 +481,17 @@ def run_baseline(
 
 # ── main ──────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 30
 
     print("\n" + "=" * 65)
     print("  BASELINE 1/2:  Random Control (no steering)")
     print("=" * 65)
-    run_baseline(mode="random", output_dir="baseline_random_30trials", n_trials=n)
+    run_baseline(mode="random", output_dir="outputs/baseline_random_30trials", n_trials=n)
 
     print("\n\n" + "=" * 65)
     print("  BASELINE 2/2:  Static Field (non-adaptive)")
     print("=" * 65)
-    run_baseline(mode="static", output_dir="baseline_static_30trials", n_trials=n)
+    run_baseline(mode="static", output_dir="outputs/baseline_static_30trials", n_trials=n)
 
     print("\n\nBoth baselines complete.")

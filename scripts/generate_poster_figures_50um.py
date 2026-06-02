@@ -15,6 +15,10 @@ Produces 5 main figures plus a stats text file:
 """
 
 import os
+import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import csv
 import json
 import textwrap
@@ -26,8 +30,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 from matplotlib.lines import Line2D
 
-DATA_DIR = "flow_50um_100trials"
-OUT_DIR = "poster_figures_50um"
+DATA_DIR = "outputs/flow_50um_100trials"
+OUT_DIR = "outputs/poster_figures_50um"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 CSV_PATH = os.path.join(DATA_DIR, "trial_summary.csv")

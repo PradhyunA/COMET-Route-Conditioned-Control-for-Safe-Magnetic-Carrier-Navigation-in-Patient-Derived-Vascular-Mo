@@ -74,7 +74,8 @@ def _overshoot_penalty(step_vec, current_distance, fraction=0.65):
 
 def _heuristic_starts(target_pos, particle_pos, magnet_array, max_current):
     """Cheap nonzero initial guesses to seed the optimizer."""
-    desired = np.asarray(target_pos, dtype=float) - np.asarray(particle_pos, dtype=float)
+    particle_pos = np.asarray(particle_pos, dtype=float)
+    desired = np.asarray(target_pos, dtype=float) - particle_pos
     dist    = np.linalg.norm(desired)
     n       = magnet_array.n_magnets
 
@@ -82,7 +83,12 @@ def _heuristic_starts(target_pos, particle_pos, magnet_array, max_current):
         return [np.zeros(n, dtype=float)]
 
     desired_hat = desired / dist
-    proj        = magnet_array.orientations @ desired_hat
+    
+    pull_dirs = magnet_array.positions - particle_pos
+    norms = np.linalg.norm(pull_dirs, axis=1)
+    pull_dirs = pull_dirs / (norms[:, np.newaxis] + EPS)
+    
+    proj        = pull_dirs @ desired_hat
     # Only positive projections matter now (no negative currents)
     proj_pos    = np.clip(proj, 0.0, None)
 
@@ -122,14 +128,19 @@ def _mpc_cost(currents, particle, particle_pos, target_pos,
         flow=flow, sim_time=sim_time,
     )
 
+    unclipped_pos = particle_pos + step_vec
+
     next_distance  = np.linalg.norm(target_pos - next_pos)
     progress       = current_distance - next_distance
+
+    # Total displacement alignment (flow + magnetic combined).
+    # This rewards currents that steer WITH the flow toward the target.
     step_along     = np.dot(step_vec, desired_hat)
 
     force_norm  = np.linalg.norm(force)
     alignment   = np.dot(desired_hat, force / (force_norm + EPS))
 
-    wall_cost      = _wall_penalty(next_pos, workspace)
+    wall_cost      = _wall_penalty(unclipped_pos, workspace)
     overshoot_cost = _overshoot_penalty(step_vec, current_distance)
 
     smoothness_cost = 0.0
@@ -166,6 +177,9 @@ def continuous_mpc_controller(
     w_overshoot:   float  = 2.0,
     flow                  = None,
     sim_time:      float  = 0.0,
+    fast_mode:     bool   = True,
+    ftol:          float  = 1e-5,
+    maxiter:       int    = 50,
 ):
     """
     1-step MPC: find non-negative currents that minimise a weighted cost.
@@ -195,7 +209,23 @@ def continuous_mpc_controller(
     best_cost      = np.inf
     any_converged  = False
 
-    for x0 in starts:
+    # ---- FAST MODE: Evaluate cheap cost of starts and optimize only the best ----
+    if fast_mode:
+        start_costs = []
+        for x0 in starts:
+            c = _mpc_cost(
+                x0, particle, particle_pos, target_pos, magnet_array,
+                workspace, dt, w_progress, w_align, w_dist, w_curr,
+                w_smooth, initial_guess, w_edge, w_overshoot,
+                flow, sim_time
+            )
+            start_costs.append((c, x0))
+        start_costs.sort(key=lambda x: x[0])
+        starts_to_optimize = [start_costs[0][1]]
+    else:
+        starts_to_optimize = starts
+
+    for x0 in starts_to_optimize:
         result = minimize(
             fun    = _mpc_cost,
             x0     = x0,
@@ -205,7 +235,7 @@ def continuous_mpc_controller(
                       flow, sim_time),
             method = "SLSQP",
             bounds = bounds,
-            options= {"maxiter": 80, "ftol": 1e-7, "disp": False},
+            options= {"maxiter": maxiter, "ftol": ftol, "disp": False},
         )
 
         if result.success:

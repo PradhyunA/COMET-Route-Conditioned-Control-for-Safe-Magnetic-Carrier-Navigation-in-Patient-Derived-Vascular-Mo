@@ -9,9 +9,12 @@ Flow = 200 um/s +x  (comparable to capillary flow; magnetic drift ~3x flow at 13
 """
 
 import os
+import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import json
 import time
-import sys
 
 import numpy as np
 
@@ -145,7 +148,7 @@ def save_trial_data_comprehensive(result, analytics, output_dir):
 
 
 def run(
-    output_dir="flow_50um_100trials",
+    output_dir="outputs/flow_50um_100trials",
     n_trials=100,
     seed=42,
     dt=1.0,

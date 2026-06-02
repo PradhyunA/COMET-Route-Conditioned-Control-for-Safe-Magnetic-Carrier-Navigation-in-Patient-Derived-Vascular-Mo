@@ -16,6 +16,9 @@ Usage:
 
 import os
 import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import json
 import time
 import argparse
@@ -202,7 +205,7 @@ def save_trial_data(result, analytics, output_dir):
 
 
 def run_timed(
-    output_dir="mc_data_run",
+    output_dir="outputs/mc_data_run",
     time_limit_s=5400,       # 1.5 hours
     max_trials=500,          # safety cap
     seed=12345,
@@ -446,8 +449,8 @@ if __name__ == "__main__":
                         help="Maximum number of trials (default: 500)")
     parser.add_argument("--seed", type=int, default=12345,
                         help="Master seed (default: 12345, different from prior runs)")
-    parser.add_argument("--output-dir", type=str, default="mc_data_run",
-                        help="Output directory (default: mc_data_run)")
+    parser.add_argument("--output-dir", type=str, default="outputs/mc_data_run",
+                        help="Output directory (default: outputs/mc_data_run)")
     args = parser.parse_args()
 
     run_timed(

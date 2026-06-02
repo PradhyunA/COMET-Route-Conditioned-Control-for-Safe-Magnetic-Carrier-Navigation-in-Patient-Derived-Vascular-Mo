@@ -13,6 +13,9 @@ Usage:
 
 import os
 import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import time
 import argparse
 import json
@@ -196,8 +199,8 @@ def main():
                         help="Start/target range in meters (default: 0.04)")
     parser.add_argument("--base-seed", type=int, default=2024,
                         help="Master seed for reproducibility (default: 2024)")
-    parser.add_argument("--output-dir", type=str, default="batch_results",
-                        help="Output directory (default: batch_results)")
+    parser.add_argument("--output-dir", type=str, default="outputs/batch_results",
+                        help="Output directory (default: outputs/batch_results)")
     parser.add_argument("--no-plots", action="store_true",
                         help="Skip plot generation (faster)")
 

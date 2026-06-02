@@ -11,6 +11,10 @@ Create 5 publication-quality figures summarizing the 100-trial flow dataset.
 """
 
 import os
+import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import csv
 
 import numpy as np
@@ -19,8 +23,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
-DATA_DIR = "flow_100_trials"
-OUT_DIR = "poster_figures"
+DATA_DIR = "outputs/flow_100_trials"
+OUT_DIR = "outputs/poster_figures"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 CSV_PATH = os.path.join(DATA_DIR, "trial_summary.csv")

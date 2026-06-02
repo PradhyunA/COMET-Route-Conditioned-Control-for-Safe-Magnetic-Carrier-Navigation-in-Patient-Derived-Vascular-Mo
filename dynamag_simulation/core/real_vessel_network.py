@@ -58,19 +58,60 @@ class RealVesselSegment:
 class RealVesselNetwork:
     name = "real_vessel_network"
 
-    def __init__(self, pkl_file="real_vessel_segments.pkl", connection_tol=1e-6):
+    def __init__(self, pkl_file="real_vessel_segments.pkl", connection_tol=1e-6,
+                 flow_scale=1.0):
+        """
+        Parameters
+        ----------
+        pkl_file : str
+            Path to pickled vessel segment data.
+        connection_tol : float
+            Tolerance for connecting segment endpoints in the graph.
+        flow_scale : float
+            Global multiplier applied to all segment flow velocities.
+            Use < 1.0 to reduce flow (easier magnetic steering),
+            > 1.0 to increase flow.
+        """
+        import os
+        # Fallback search path logic for repo reorganization compatibility
+        if not os.path.exists(pkl_file):
+            candidates = [
+                os.path.join("data", pkl_file),
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", pkl_file),
+            ]
+            for candidate in candidates:
+                if os.path.exists(candidate):
+                    pkl_file = candidate
+                    break
         with open(pkl_file, "rb") as f:
             raw_segments = pickle.load(f)
 
+        self.flow_scale = float(flow_scale)
+
         self.segments = []
+        radii = []
         for s in raw_segments:
+            radii.append(float(s["radius"]))
+
+        # Murray's law flow scaling: v_mean ∝ radius.
+        # Reference: largest vessel gets the raw v_mean from data;
+        # smaller vessels get proportionally slower flow.
+        r_ref = max(radii) if radii else 1.0
+        v_mean_ref = 0.02  # m/s — reference v_mean from pickle data
+
+        for s in raw_segments:
+            r = float(s["radius"])
+            raw_v = float(s.get("v_mean", v_mean_ref))
+            # Murray's law: v ∝ r (since Q ∝ r³ and v = Q / πr²)
+            scaled_v = raw_v * (r / r_ref) * self.flow_scale
+
             self.segments.append(
                 RealVesselSegment(
                     seg_id=int(s["seg_id"]),
                     start=np.asarray(s["start"], dtype=float),
                     end=np.asarray(s["end"], dtype=float),
-                    radius=float(s["radius"]),
-                    v_mean=float(s.get("v_mean", 0.02)),
+                    radius=r,
+                    v_mean=scaled_v,
                     level=int(s.get("level", 0)),
                 )
             )
@@ -208,10 +249,18 @@ class RealVesselNetwork:
         return {
             "flow_model": self.name,
             "n_segments": self.n_segments,
+            "flow_scale": self.flow_scale,
         }
 
     def segment_summary(self):
-        return f"RealVesselNetwork: {self.n_segments} centerline-derived segments"
+        v_means = [seg.v_mean * 1000 for seg in self.segments]
+        radii = [seg.radius * 1000 for seg in self.segments]
+        return (
+            f"RealVesselNetwork: {self.n_segments} segments, "
+            f"flow_scale={self.flow_scale:.2f}, "
+            f"v_mean={min(v_means):.1f}–{max(v_means):.1f} mm/s, "
+            f"radius={min(radii):.2f}–{max(radii):.2f} mm"
+        )
 
     def plan_waypoints(self, start_pos, target_pos) -> List[np.ndarray]:
         start_seg, _ = self.find_segment(start_pos)

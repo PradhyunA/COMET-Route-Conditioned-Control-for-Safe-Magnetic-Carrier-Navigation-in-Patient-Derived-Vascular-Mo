@@ -38,10 +38,22 @@ class ElectromagnetArray3D:
         coil_length: float = 0.12,
         turns: float = 1500,
         max_current: float = 8.0,
+        placement_radius: float = None,
     ):
+        """
+        Parameters
+        ----------
+        placement_radius : float or None
+            Half-side of the cube on whose corners the 8 coils sit (m).
+            Defaults to HALF (76.2 mm).  Reducing this brings the magnets
+            closer to the vessel network and dramatically increases the
+            field gradient (scales as ~1/r^4 for gradient force).
+        """
+        pr = HALF if placement_radius is None else float(placement_radius)
+        self.placement_radius = pr
         signs = list(itertools.product((-1, 1), repeat=3))
         self.positions = np.array(
-            [[s[0] * HALF, s[1] * HALF, s[2] * HALF] for s in signs],
+            [[s[0] * pr, s[1] * pr, s[2] * pr] for s in signs],
             dtype=float,
         )
         inv_sqrt3 = 1.0 / np.sqrt(3.0)

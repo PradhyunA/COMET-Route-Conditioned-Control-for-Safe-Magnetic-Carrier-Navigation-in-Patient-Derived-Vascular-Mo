@@ -33,6 +33,10 @@ import argparse
 import csv
 import json
 import os
+import sys
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import textwrap
 from dataclasses import dataclass, field
 
@@ -889,9 +893,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate presentation-quality figures for DynaMag."
     )
-    parser.add_argument("--data-dir", default="flow_50um_100trials",
+    parser.add_argument("--data-dir", default="outputs/flow_50um_100trials",
                         help="Directory containing trial NPZ + CSV data")
-    parser.add_argument("--out-dir", default="presentation_figures",
+    parser.add_argument("--out-dir", default="outputs/presentation_figures",
                         help="Output directory for figures")
     parser.add_argument("--min-active", type=int, default=20,
                         help="Min active trials for reliable distance quantiles")

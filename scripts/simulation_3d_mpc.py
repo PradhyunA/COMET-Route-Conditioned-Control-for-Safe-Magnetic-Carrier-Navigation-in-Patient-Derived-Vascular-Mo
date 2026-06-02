@@ -5,8 +5,12 @@ simulation_3d_mpc.py
 """
 
 import os
+import sys
 import time
 import warnings
+
+# Add parent directory to path to allow importing dynamag_simulation when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
 
@@ -34,15 +38,16 @@ def simulate_trial_mpc(
     coil_length: float = 0.12,
     turns: float = 1500,
     max_current: float = 8.0,
+    placement_radius: float = 0.06,
     profile: PhysicalProfile = MICROSPHERE_500UM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
-    w_progress: float = 80.0,
+    w_progress: float = 120.0,
     w_align: float = 8.0,
-    w_dist: float = 2.0,
+    w_dist: float = 1.0,
     w_curr: float = 1e-5,
     w_smooth: float = 1e-4,
-    w_edge: float = 20.0,
+    w_edge: float = 50.0,
     w_overshoot: float = 2.0,
 ) -> TrialResult:
 
@@ -54,6 +59,7 @@ def simulate_trial_mpc(
         coil_length=coil_length,
         turns=turns,
         max_current=max_current,
+        placement_radius=placement_radius,
     )
 
     start = workspace.clip(np.asarray(start, dtype=float))
@@ -68,9 +74,9 @@ def simulate_trial_mpc(
     navigator = network.waypoint_navigator(
         start,
         target,
-        arrival_tol=tolerance,
-        waypoint_spacing=0.0015,
-        lookahead=3,
+        arrival_tol=0.001,
+        waypoint_spacing=0.001,
+        lookahead=1,
     )
 
     print(
@@ -280,7 +286,12 @@ def simulate_trial_mpc(
 
 def run_all_trials():
 
-    network = RealVesselNetwork("real_vessel_segments.pkl")
+    # ---- Tunable physics parameters ----
+    flow_scale       = 1.0    # Global flow speed multiplier (Murray's law base)
+    placement_radius = 0.06   # Magnet half-side (m); closer = stronger force
+
+    network = RealVesselNetwork("real_vessel_segments.pkl",
+                                flow_scale=flow_scale)
 
     print(network.segment_summary())
 
@@ -305,7 +316,7 @@ def run_all_trials():
         },
     }
 
-    output_dir = "simulation_outputs_3d_mpc"
+    output_dir = "outputs/simulation_outputs_3d_mpc"
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -316,6 +327,7 @@ def run_all_trials():
         coil_length=0.12,
         turns=1500,
         max_current=8.0,
+        placement_radius=placement_radius,
     )
 
     for trial_name, cfg in trials.items():
@@ -329,6 +341,7 @@ def run_all_trials():
             target=cfg["target"],
             network=network,
             trial_name=trial_name,
+            placement_radius=placement_radius,
         )
 
         results.append(result)
