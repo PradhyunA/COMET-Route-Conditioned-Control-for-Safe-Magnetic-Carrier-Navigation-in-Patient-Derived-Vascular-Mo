@@ -86,6 +86,7 @@ class RealVesselNetwork:
         with open(pkl_file, "rb") as f:
             raw_segments = pickle.load(f)
 
+        self.source_file = pkl_file
         self.flow_scale = float(flow_scale)
 
         self.segments = []
@@ -129,6 +130,20 @@ class RealVesselNetwork:
             pts.append(s.end)
         arr = np.array(pts)
         return float(np.max(np.abs(arr))) * 1.1
+
+    def bounds(self, include_radius: bool = False):
+        """Return axis-aligned vessel bounds as ``(min_xyz, max_xyz)``."""
+        starts = np.array([s.start for s in self.segments], dtype=float)
+        ends = np.array([s.end for s in self.segments], dtype=float)
+
+        if not include_radius:
+            pts = np.vstack([starts, ends])
+            return pts.min(axis=0), pts.max(axis=0)
+
+        radii = np.array([s.radius for s in self.segments], dtype=float)
+        lo = np.minimum(starts, ends) - radii[:, None]
+        hi = np.maximum(starts, ends) + radii[:, None]
+        return lo.min(axis=0), hi.max(axis=0)
 
     def _build_spatial_index(self, grid_res=40):
         coords = np.array([pt for seg in self.segments for pt in (seg.start, seg.end)])
@@ -248,6 +263,7 @@ class RealVesselNetwork:
     def params_dict(self):
         return {
             "flow_model": self.name,
+            "source_file": self.source_file,
             "n_segments": self.n_segments,
             "flow_scale": self.flow_scale,
         }

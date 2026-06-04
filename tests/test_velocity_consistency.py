@@ -37,7 +37,9 @@ def test_realized_vel_matches_displacement(deterministic_profile):
         profile=deterministic_profile,
     )
 
-    mag.set_currents([8, 0, -4, 0, 4, 0, 0, -8])
+    currents = np.zeros(mag.n_magnets)
+    currents[:8] = [8, 0, -4, 0, 4, 0, 0, -8]
+    mag.set_currents(currents)
     B = mag.field_at(p.pos)
     grad = mag.grad_B_squared(p.pos)
     F = p.magnetic_force(B, grad)
@@ -64,7 +66,9 @@ def test_realized_vel_nonzero_under_force(deterministic_profile):
         profile=deterministic_profile,
     )
 
-    mag.set_currents([8, 0, 0, 0, 0, 0, 0, 0])
+    currents = np.zeros(mag.n_magnets)
+    currents[0] = 8
+    mag.set_currents(currents)
     B = mag.field_at(p.pos)
     grad = mag.grad_B_squared(p.pos)
     F = p.magnetic_force(B, grad)

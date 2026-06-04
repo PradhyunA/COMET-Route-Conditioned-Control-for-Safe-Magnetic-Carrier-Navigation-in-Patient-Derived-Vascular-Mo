@@ -19,7 +19,7 @@ def _run_short_trial(seed, steps=5):
         rng_seed=seed,
     )
     target = np.array([0.05, 0.05, 0.05])
-    prev = np.zeros(8)
+    prev = np.zeros(mag.n_magnets)
     traj = [p.pos.copy()]
 
     for _ in range(steps):

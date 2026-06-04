@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import warnings
+import argparse
 
 # Add parent directory to path to allow importing dynamag_simulation when run directly
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -26,6 +27,47 @@ from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
 from dynamag_simulation.core.workspace import WorkspaceVessel
 
 
+DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
+DEFAULT_MAGNET_CLEARANCE = 0.04
+DEFAULT_COIL_RADIUS_FRACTION = 0.5
+DEFAULT_COIL_LENGTH_FACTOR = 2.0
+
+
+def magnet_setup_for_network(
+    network,
+    clearance: float = DEFAULT_MAGNET_CLEARANCE,
+    placement_radius: float | None = None,
+):
+    """
+    Size and center the triangular-prism magnet array around the vessel tree.
+
+    ``placement_radius`` is the local magnet layout scale ``d``. For this
+    prism, x and z extents are +/- d and y extents are [-d/sqrt(3), 2d/sqrt(3)].
+    """
+    bounds_min, bounds_max = network.bounds(include_radius=True)
+    center = 0.5 * (bounds_min + bounds_max)
+    span = bounds_max - bounds_min
+
+    if placement_radius is None:
+        required = max(
+            0.5 * span[0],
+            0.5 * np.sqrt(3.0) * span[1],
+            0.5 * span[2],
+        )
+        placement_radius = required + clearance
+
+    placement_radius = float(placement_radius)
+
+    return {
+        "center": center,
+        "placement_radius": placement_radius,
+        "coil_radius": DEFAULT_COIL_RADIUS_FRACTION * placement_radius,
+        "coil_length": DEFAULT_COIL_LENGTH_FACTOR * placement_radius,
+        "bounds_min": bounds_min,
+        "bounds_max": bounds_max,
+    }
+
+
 def simulate_trial_mpc(
     start,
     target,
@@ -39,6 +81,7 @@ def simulate_trial_mpc(
     turns: float = 1500,
     max_current: float = 8.0,
     placement_radius: float = 0.06,
+    magnet_center=None,
     profile: PhysicalProfile = MICROSPHERE_500UM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
@@ -60,6 +103,7 @@ def simulate_trial_mpc(
         turns=turns,
         max_current=max_current,
         placement_radius=placement_radius,
+        center=magnet_center,
     )
 
     start = workspace.clip(np.asarray(start, dtype=float))
@@ -277,6 +321,8 @@ def simulate_trial_mpc(
             "coil_length": coil_length,
             "turns": turns,
             "max_current": max_current,
+            "magnet_center": magnets.center.tolist(),
+            "placement_radius": placement_radius,
             "profile": profile.name,
             "max_substep_disp": max_substep_disp,
             "vessel_network": network.params_dict(),
@@ -284,16 +330,37 @@ def simulate_trial_mpc(
     )
 
 
-def run_all_trials():
+def run_all_trials(
+    vessel_file: str = DEFAULT_VESSEL_FILE,
+    magnet_clearance: float = DEFAULT_MAGNET_CLEARANCE,
+    placement_radius: float | None = None,
+):
 
     # ---- Tunable physics parameters ----
     flow_scale       = 1.0    # Global flow speed multiplier (Murray's law base)
-    placement_radius = 0.06   # Magnet half-side (m); closer = stronger force
 
-    network = RealVesselNetwork("real_vessel_segments.pkl",
+    network = RealVesselNetwork(vessel_file,
                                 flow_scale=flow_scale)
 
     print(network.segment_summary())
+
+    magnet_setup = magnet_setup_for_network(
+        network,
+        clearance=magnet_clearance,
+        placement_radius=placement_radius,
+    )
+    placement_radius = magnet_setup["placement_radius"]
+    coil_radius = magnet_setup["coil_radius"]
+    coil_length = magnet_setup["coil_length"]
+    magnet_center = magnet_setup["center"]
+
+    print(
+        "Magnet setup: "
+        f"center={np.round(magnet_center, 4)} m, "
+        f"placement_radius={placement_radius:.3f} m, "
+        f"coil_radius={coil_radius:.3f} m, "
+        f"coil_length={coil_length:.3f} m"
+    )
 
     rng = np.random.default_rng(42)
 
@@ -323,11 +390,12 @@ def run_all_trials():
     results = []
 
     magnets_for_plots = ElectromagnetArray3D(
-        coil_radius=0.03,
-        coil_length=0.12,
+        coil_radius=coil_radius,
+        coil_length=coil_length,
         turns=1500,
         max_current=8.0,
         placement_radius=placement_radius,
+        center=magnet_center,
     )
 
     for trial_name, cfg in trials.items():
@@ -341,7 +409,10 @@ def run_all_trials():
             target=cfg["target"],
             network=network,
             trial_name=trial_name,
+            coil_radius=coil_radius,
+            coil_length=coil_length,
             placement_radius=placement_radius,
+            magnet_center=magnet_center,
         )
 
         results.append(result)
@@ -363,4 +434,30 @@ def run_all_trials():
 
 
 if __name__ == "__main__":
-    run_all_trials()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--vessel-file",
+        default=DEFAULT_VESSEL_FILE,
+        help=(
+            "Vessel segment pickle to load. Defaults to the cm-corrected "
+            "aorta geometry in data/."
+        ),
+    )
+    parser.add_argument(
+        "--magnet-clearance",
+        type=float,
+        default=DEFAULT_MAGNET_CLEARANCE,
+        help="Extra clearance in meters between vessel tube bounds and magnet layout.",
+    )
+    parser.add_argument(
+        "--placement-radius",
+        type=float,
+        default=None,
+        help="Override computed magnet placement radius in meters.",
+    )
+    args = parser.parse_args()
+    run_all_trials(
+        vessel_file=args.vessel_file,
+        magnet_clearance=args.magnet_clearance,
+        placement_radius=args.placement_radius,
+    )

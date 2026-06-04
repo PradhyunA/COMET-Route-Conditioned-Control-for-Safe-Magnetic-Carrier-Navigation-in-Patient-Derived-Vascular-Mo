@@ -1,17 +1,4 @@
 """
-Electromagnet array: 8-corner regularized dipole model.
-
-Each solenoid is modelled as a regularized magnetic dipole. The
-regularization replaces |r|^3 with (|r|^2 + a^2)^(3/2) where a is
-a softening length set to the coil radius. This prevents the
-unphysical field divergence of a point dipole at close range and
-better approximates the finite-extent solenoid field.
-
-Reference: Jackson, Classical Electrodynamics, ch. 5 (dipole
-regularization); Furlani, Permanent Magnet and Electromechanical
-Devices (2001), ch. 4 (finite-coil corrections).
-"""
-"""
 Electromagnet array: 9-magnet triangular-prism regularized dipole model.
 
 Layout:
@@ -30,7 +17,7 @@ Layout:
         H between B-E
         I between C-F
 
-All magnets point toward the origin (sample location).
+All magnets point toward the configured array center.
 
 Each solenoid is modelled as a regularized magnetic dipole.
 
@@ -41,7 +28,7 @@ Furlani, Permanent Magnet and Electromechanical Devices (2001)
 
 import numpy as np
 
-from .constants import MU_0, PI, HALF, EPS
+from .constants import MU_0, PI, EPS
 
 
 class ElectromagnetArray3D:
@@ -69,13 +56,16 @@ class ElectromagnetArray3D:
         turns: float = 3000.0,
         max_current: float = 16.0,
         placement_radius: float = 0.02,
+        center=None,
     ):
         self.placement_radius = float(placement_radius)
+        self.center = (
+            np.zeros(3, dtype=float)
+            if center is None
+            else np.asarray(center, dtype=float)
+        )
 
         d = self.placement_radius
-
-        # Equilateral triangle geometry
-        h = np.sqrt(3.0) * d
 
         front = np.array([
             [0.0,      2.0 * d / np.sqrt(3.0), -d],
@@ -95,14 +85,15 @@ class ElectromagnetArray3D:
             0.5 * (front[2] + back[2]),
         ])
 
-        self.positions = np.vstack((front, back, mid))
+        local_positions = np.vstack((front, back, mid))
+        self.positions = local_positions + self.center
 
         self.n_magnets = len(self.positions)
 
-        # Point all magnets toward origin
-        self.orientations = np.zeros_like(self.positions)
+        # Point all magnets toward the array center.
+        self.orientations = np.zeros_like(local_positions)
 
-        for i, pos in enumerate(self.positions):
+        for i, pos in enumerate(local_positions):
             norm = np.linalg.norm(pos)
 
             if norm < 1e-12:
@@ -136,8 +127,14 @@ class ElectromagnetArray3D:
         self.core_saturation_tesla = 1.8
 
     def set_currents(self, currents):
+        currents = np.asarray(currents, dtype=float)
+        if currents.shape != (self.n_magnets,):
+            raise ValueError(
+                f"expected {self.n_magnets} currents, got shape {currents.shape}"
+            )
+
         self.currents = np.clip(
-            np.asarray(currents, dtype=float),
+            currents,
             -self.max_current,
             self.max_current,
         )

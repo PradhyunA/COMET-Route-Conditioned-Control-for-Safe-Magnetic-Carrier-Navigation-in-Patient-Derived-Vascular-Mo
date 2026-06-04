@@ -371,12 +371,14 @@ def save_wall_clearance_plot(result, output_dir, network):
 
 
 def save_field_map_3d(result, output_dir, magnet_array, grid_points=15):
-    """z=0 midplane magnetic field map using first-step currents."""
+    """Midplane magnetic field map using first-step currents."""
     if len(result.current_log) == 0:
         return
 
     half = result.workspace_half
     magnet_array.set_currents(result.current_log[0])
+    magnet_center = result.params.get("magnet_center") if result.params else None
+    z_slice = float(magnet_center[2]) if magnet_center is not None else 0.0
 
     xs = np.linspace(-half, half, grid_points)
     ys = np.linspace(-half, half, grid_points)
@@ -388,7 +390,7 @@ def save_field_map_3d(result, output_dir, magnet_array, grid_points=15):
 
     for i in range(grid_points):
         for j in range(grid_points):
-            B = magnet_array.field_at(np.array([X[i, j], Y[i, j], 0.0]))
+            B = magnet_array.field_at(np.array([X[i, j], Y[i, j], z_slice]))
             U[i, j] = B[0]
             V[i, j] = B[1]
             M[i, j] = np.linalg.norm(B)
@@ -425,7 +427,7 @@ def save_field_map_3d(result, output_dir, magnet_array, grid_points=15):
     plt.legend()
     plt.xlabel("X (m)")
     plt.ylabel("Y (m)")
-    plt.title(f"{result.trial_name} – Field Map z=0")
+    plt.title(f"{result.trial_name} – Field Map z={z_slice:.3f} m")
 
     fn = os.path.join(output_dir, f"{result.trial_name}_fieldmap_z0.png")
     plt.savefig(fn, dpi=300, bbox_inches="tight")

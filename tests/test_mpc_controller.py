@@ -34,7 +34,7 @@ def test_mpc_returns_bounded_currents(setup):
     )
 
     assert np.all(np.abs(currents) <= max_i + 1e-10)
-    assert currents.shape == (8,)
+    assert currents.shape == (mag.n_magnets,)
 
 
 def test_mpc_makes_progress_toward_target(setup):
