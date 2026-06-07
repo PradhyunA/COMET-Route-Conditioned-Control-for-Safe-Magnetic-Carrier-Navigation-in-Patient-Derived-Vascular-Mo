@@ -1,6 +1,7 @@
 """
 simulation_3d_mpc.py
 ====================
+
 3D ACBC magnetic nanoparticle steering — real vessel network edition.
 
 This runner uses:
@@ -11,6 +12,32 @@ This runner uses:
 
 ACBC is the main algorithmic contribution.
 The MPC allocator is only the low-level coil-current solver.
+
+Main correction in this version:
+    The magnetic device geometry is fixed and the low-level controller is
+    tuned for smoother, more physically defensible motion.
+
+Previous behavior:
+    coil size was derived from the full vessel bounds.
+
+Problem:
+    This created huge coils such as:
+        coil_radius ≈ 12 cm
+        coil_length ≈ 48 cm
+
+New fixed device:
+    placement_radius = 6.0 cm
+    coil_radius      = 1.8 cm
+    coil_diameter    = 3.6 cm
+    coil_length      = 7.0 cm
+    turns            = 3000
+    max_current      = 12 A
+
+Optional:
+    The simulated device can follow the particle using a local moving-frame
+    model. This represents a local steering stage/gantry and prevents the
+    compact fixed device from being unrealistically centered over the entire
+    40 cm vascular path.
 """
 
 import os
@@ -38,9 +65,36 @@ from dynamag_simulation.core.acbc_controller import ACBCController
 
 
 DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
+
+# ----------------------------------------------------------------------
+# Fixed electromagnetic steering device
+# ----------------------------------------------------------------------
+# These values define the simulated steering hardware.
+# They intentionally do NOT scale with vessel-tree size.
+# ----------------------------------------------------------------------
+
+FIXED_PLACEMENT_RADIUS = 0.060   # m, coil centers 6 cm from device center
+FIXED_COIL_RADIUS = 0.018        # m, 3.6 cm coil diameter
+FIXED_COIL_LENGTH = 0.070        # m, 7.0 cm coil/core length
+FIXED_CORE_RADIUS = 0.008        # m, 1.6 cm core diameter
+FIXED_TURNS = 3000.0
+
+# Tuned down from 16 A.
+# 16 A proved the architecture could move, but it produced aggressive motion,
+# frequent saturation, high velocities, and Low-Re validity failures.
+FIXED_MAX_CURRENT = 12.0         # A, simulated pulsed/peak current
+
+# Effective steel-core model.
+FIXED_CORE_MU_R_EFFECTIVE = 60.0
+FIXED_CORE_SATURATION_T = 1.8
+
+# If True, the compact steering array follows the particle.
+# This is the best simulation model for a local steering stage.
+# If False, the compact device stays centered at the route midpoint.
+FOLLOW_PARTICLE_DEVICE = True
+
+# Keep this CLI argument for compatibility, but it no longer controls coil size.
 DEFAULT_MAGNET_CLEARANCE = 0.04
-DEFAULT_COIL_RADIUS_FRACTION = 0.5
-DEFAULT_COIL_LENGTH_FACTOR = 2.0
 
 
 def magnet_setup_for_network(
@@ -49,27 +103,29 @@ def magnet_setup_for_network(
     placement_radius: float | None = None,
 ):
     """
-    Size and center the triangular-prism magnet array around the vessel tree.
+    Build fixed-size magnetic device settings.
+
+    The network is used only to compute a default anatomical center and bounds.
+    Coil radius/length are NOT derived from the network bounds.
     """
     bounds_min, bounds_max = network.bounds(include_radius=True)
     center = 0.5 * (bounds_min + bounds_max)
-    span = bounds_max - bounds_min
 
     if placement_radius is None:
-        required = max(
-            0.5 * span[0],
-            0.5 * np.sqrt(3.0) * span[1],
-            0.5 * span[2],
-        )
-        placement_radius = required + clearance
+        placement_radius = FIXED_PLACEMENT_RADIUS
 
     placement_radius = float(placement_radius)
 
     return {
         "center": center,
         "placement_radius": placement_radius,
-        "coil_radius": DEFAULT_COIL_RADIUS_FRACTION * placement_radius,
-        "coil_length": DEFAULT_COIL_LENGTH_FACTOR * placement_radius,
+        "coil_radius": FIXED_COIL_RADIUS,
+        "coil_length": FIXED_COIL_LENGTH,
+        "core_radius": FIXED_CORE_RADIUS,
+        "turns": FIXED_TURNS,
+        "max_current": FIXED_MAX_CURRENT,
+        "core_relative_permeability": FIXED_CORE_MU_R_EFFECTIVE,
+        "core_saturation_tesla": FIXED_CORE_SATURATION_T,
         "bounds_min": bounds_min,
         "bounds_max": bounds_max,
     }
@@ -78,6 +134,7 @@ def magnet_setup_for_network(
 def _vec_or_nan(v):
     if v is None:
         return [np.nan, np.nan, np.nan]
+
     v = np.asarray(v, dtype=float)
     return [float(v[0]), float(v[1]), float(v[2])]
 
@@ -85,13 +142,6 @@ def _vec_or_nan(v):
 def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
     """
     Save per-step ACBC state-machine diagnostics.
-
-    This is important for the paper:
-        - state transitions
-        - branch commitment events
-        - recovery events
-        - authority margin over time
-        - bifurcation distance over time
     """
     path = os.path.join(output_dir, filename)
 
@@ -128,24 +178,26 @@ def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
             log = getattr(result, "acbc_log", [])
 
             for row in log:
-                writer.writerow([
-                    result.trial_name,
-                    row["step"],
-                    row["time_s"],
-                    row["state"],
-                    row["previous_state"],
-                    row["transition"],
-                    row["near_bifurcation"],
-                    row["bifurcation_distance_m"],
-                    row["selected_branch_seg_id"],
-                    row["selected_authority_margin"],
-                    row["selected_score"],
-                    row["target_branch_capturable"],
-                    row["num_candidates"],
-                    *row["control_target"],
-                    *row["nominal_target"],
-                    *row["recovery_target"],
-                ])
+                writer.writerow(
+                    [
+                        result.trial_name,
+                        row["step"],
+                        row["time_s"],
+                        row["state"],
+                        row["previous_state"],
+                        row["transition"],
+                        row["near_bifurcation"],
+                        row["bifurcation_distance_m"],
+                        row["selected_branch_seg_id"],
+                        row["selected_authority_margin"],
+                        row["selected_score"],
+                        row["target_branch_capturable"],
+                        row["num_candidates"],
+                        *row["control_target"],
+                        *row["nominal_target"],
+                        *row["recovery_target"],
+                    ]
+                )
 
     print(f"ACBC diagnostics saved to: {path}")
 
@@ -156,28 +208,61 @@ def simulate_trial_mpc(
     network,
     trial_name: str = "trial",
     dt: float = 0.02,
-    steps: int = 500,
+    steps: int = 1600,
     tolerance: float = 0.003,
-    coil_radius: float = 0.03,
-    coil_length: float = 0.12,
-    turns: float = 1500,
-    max_current: float = 8.0,
-    placement_radius: float = 0.06,
+    coil_radius: float = FIXED_COIL_RADIUS,
+    coil_length: float = FIXED_COIL_LENGTH,
+    core_radius: float = FIXED_CORE_RADIUS,
+    turns: float = FIXED_TURNS,
+    max_current: float = FIXED_MAX_CURRENT,
+    placement_radius: float = FIXED_PLACEMENT_RADIUS,
     magnet_center=None,
+    core_relative_permeability: float = FIXED_CORE_MU_R_EFFECTIVE,
+    core_saturation_tesla: float = FIXED_CORE_SATURATION_T,
+    follow_particle_device: bool = FOLLOW_PARTICLE_DEVICE,
     profile: PhysicalProfile = SPION_CARRIER_10UM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
-    w_progress: float = 120.0,
-    w_align: float = 8.0,
-    w_dist: float = 1.0,
-    w_curr: float = 1e-5,
-    w_smooth: float = 1e-4,
-    w_edge: float = 50.0,
-    w_overshoot: float = 2.0,
-) -> TrialResult:
 
+    # ------------------------------------------------------------------
+    # Smoother MPC weights
+    # ------------------------------------------------------------------
+    # Previous aggressive values:
+    #     w_progress = 300
+    #     w_align    = 20
+    #     w_dist     = 0.5
+    #     w_curr     = 1e-6
+    #     w_smooth   = 1e-5
+    #     w_edge     = 25
+    #     w_overshoot= 1
+    #
+    # Those proved the system could move, but caused:
+    #     high speeds,
+    #     frequent current saturation,
+    #     Low-Re validity failures,
+    #     many optimizer non-convergence warnings.
+    # ------------------------------------------------------------------
+
+    w_progress: float = 170.0,
+    w_align: float = 10.0,
+    w_dist: float = 1.2,
+    w_curr: float = 8e-5,
+    w_smooth: float = 8e-4,
+    w_edge: float = 120.0,
+    w_overshoot: float = 6.0,
+) -> TrialResult:
     workspace = WorkspaceVessel(network)
     flow = network
+
+    start = workspace.clip(np.asarray(start, dtype=float))
+    target = workspace.clip(np.asarray(target, dtype=float))
+
+    # For a fixed compact device, route midpoint is a better static default
+    # than the full vessel-tree center.
+    route_midpoint = 0.5 * (start + target)
+
+    if magnet_center is None:
+        magnet_center = route_midpoint
 
     magnets = ElectromagnetArray3D(
         coil_radius=coil_radius,
@@ -186,10 +271,10 @@ def simulate_trial_mpc(
         max_current=max_current,
         placement_radius=placement_radius,
         center=magnet_center,
+        core_radius=core_radius,
+        core_relative_permeability=core_relative_permeability,
+        core_saturation_tesla=core_saturation_tesla,
     )
-
-    start = workspace.clip(np.asarray(start, dtype=float))
-    target = workspace.clip(np.asarray(target, dtype=float))
 
     particle = MagneticParticle3D(
         position=start,
@@ -197,12 +282,17 @@ def simulate_trial_mpc(
         rng_seed=rng_seed,
     )
 
+    # If using the local moving-frame device, begin centered around the particle.
+    if follow_particle_device:
+        magnets.recenter(particle.pos)
+
     navigator = network.waypoint_navigator(
         start,
         target,
-        arrival_tol=0.001,
-        waypoint_spacing=0.001,
-        lookahead=1,
+        arrival_tol=0.004,
+        waypoint_spacing=0.0015,
+        lookahead=8,
+        forward_search_points=35,
     )
 
     acbc = ACBCController(
@@ -215,6 +305,7 @@ def simulate_trial_mpc(
         authority_threshold=1.05,
         recovery_threshold=0.85,
         min_wall_safety_fraction=0.05,
+        absolute_wall_clearance_threshold=0.00075,
     )
 
     print(
@@ -257,9 +348,14 @@ def simulate_trial_mpc(
     converged_count = 0
 
     for step in range(steps):
-
         sim_time = step * dt
         t0 = time.perf_counter()
+
+        # Local moving-frame steering stage.
+        # This keeps the compact coil array close enough to generate useful
+        # gradients along a long 40 cm anatomical path.
+        if follow_particle_device:
+            magnets.recenter(particle.pos)
 
         best_currents, best_force, best_cost, converged, acbc_info = acbc.step(
             particle=particle,
@@ -284,7 +380,10 @@ def simulate_trial_mpc(
             converged_count += 1
         else:
             warnings.warn(
-                f"Step {step}: low-level current allocator did not converge; using best-so-far",
+                (
+                    f"Step {step}: low-level current allocator did not converge; "
+                    f"using best-so-far"
+                ),
                 RuntimeWarning,
                 stacklevel=1,
             )
@@ -326,30 +425,31 @@ def simulate_trial_mpc(
         cost_log.append(best_cost)
         step_time_log.append(t1 - t0)
 
-        acbc_log.append({
-            "step": step,
-            "time_s": sim_time,
-            "state": acbc_info.state,
-            "previous_state": acbc_info.previous_state,
-            "transition": acbc_info.transition,
-            "near_bifurcation": acbc_info.near_bifurcation,
-            "bifurcation_distance_m": acbc_info.bifurcation_distance_m,
-            "selected_branch_seg_id": acbc_info.selected_branch_seg_id,
-            "selected_authority_margin": acbc_info.selected_authority_margin,
-            "selected_score": acbc_info.selected_score,
-            "target_branch_capturable": acbc_info.target_branch_capturable,
-            "num_candidates": acbc_info.num_candidates,
-            "control_target": _vec_or_nan(acbc_info.control_target),
-            "nominal_target": _vec_or_nan(acbc_info.nominal_target),
-            "recovery_target": _vec_or_nan(acbc_info.recovery_target),
-        })
+        acbc_log.append(
+            {
+                "step": step,
+                "time_s": sim_time,
+                "state": acbc_info.state,
+                "previous_state": acbc_info.previous_state,
+                "transition": acbc_info.transition,
+                "near_bifurcation": acbc_info.near_bifurcation,
+                "bifurcation_distance_m": acbc_info.bifurcation_distance_m,
+                "selected_branch_seg_id": acbc_info.selected_branch_seg_id,
+                "selected_authority_margin": acbc_info.selected_authority_margin,
+                "selected_score": acbc_info.selected_score,
+                "target_branch_capturable": acbc_info.target_branch_capturable,
+                "num_candidates": acbc_info.num_candidates,
+                "control_target": _vec_or_nan(acbc_info.control_target),
+                "nominal_target": _vec_or_nan(acbc_info.nominal_target),
+                "recovery_target": _vec_or_nan(acbc_info.recovery_target),
+            }
+        )
 
         if distance < tolerance:
             reached = True
             break
 
         if (step + 1) % 10 == 0:
-
             flow_v = flow.velocity_at(particle.pos, sim_time)
             flow_speed = np.linalg.norm(flow_v)
 
@@ -371,11 +471,15 @@ def simulate_trial_mpc(
                 f"final_dist={distance * 1000:.1f} mm  "
                 f"wp={getattr(navigator, 'current_idx', 0) + 1}/"
                 f"{navigator.total_hops}  "
+                f"lookahead={getattr(navigator, 'lookahead_idx', 0) + 1}/"
+                f"{navigator.total_hops}  "
+                f"wp_dist={getattr(navigator, 'current_wp_dist', np.nan) * 1000:.1f} mm  "
                 f"auth={acbc_info.selected_authority_margin:.2f}  "
                 f"capturable={acbc_info.target_branch_capturable}  "
                 f"cands={acbc_info.num_candidates}  "
                 f"|I|max={np.max(np.abs(best_currents)):.3f} A  "
                 f"|F|={np.linalg.norm(best_force):.3e} N  "
+                f"|B|={np.linalg.norm(B):.3e} T  "
                 f"particle_v={particle_speed * 1000:.2f} mm/s  "
                 f"flow_v={flow_speed * 1000:.2f} mm/s  "
                 f"wall_clear={wall_clearance * 1000:.2f} mm  "
@@ -397,9 +501,7 @@ def simulate_trial_mpc(
     re_stats = check_low_re_validity(reynolds_log)
 
     acbc_summary = acbc.summary_dict()
-    low_level_convergence_rate = (
-        converged_count / max(1, len(step_time_log))
-    )
+    low_level_convergence_rate = converged_count / max(1, len(step_time_log))
 
     result = TrialResult(
         trial_name=trial_name,
@@ -444,15 +546,28 @@ def simulate_trial_mpc(
             "steps": steps,
             "tolerance": tolerance,
             "coil_radius": coil_radius,
+            "coil_diameter": 2.0 * coil_radius,
             "coil_length": coil_length,
+            "core_radius": core_radius,
             "turns": turns,
             "max_current": max_current,
             "magnet_center": magnets.center.tolist(),
             "placement_radius": placement_radius,
+            "core_relative_permeability": core_relative_permeability,
+            "core_saturation_tesla": core_saturation_tesla,
+            "follow_particle_device": follow_particle_device,
             "profile": profile.name,
             "max_substep_disp": max_substep_disp,
             "vessel_network": network.params_dict(),
             "low_level_convergence_rate": low_level_convergence_rate,
+            "navigator_arrival_tol": getattr(navigator, "arrival_tol", None),
+            "navigator_waypoint_spacing": getattr(navigator, "waypoint_spacing", None),
+            "navigator_lookahead": getattr(navigator, "lookahead", None),
+            "navigator_forward_search_points": getattr(
+                navigator,
+                "forward_search_points",
+                None,
+            ),
             **acbc_summary,
         },
     )
@@ -474,7 +589,6 @@ def run_all_trials(
     magnet_clearance: float = DEFAULT_MAGNET_CLEARANCE,
     placement_radius: float | None = None,
 ):
-
     flow_scale = 1.0
 
     network = RealVesselNetwork(
@@ -493,14 +607,28 @@ def run_all_trials(
     placement_radius = magnet_setup["placement_radius"]
     coil_radius = magnet_setup["coil_radius"]
     coil_length = magnet_setup["coil_length"]
+    core_radius = magnet_setup["core_radius"]
+    turns = magnet_setup["turns"]
+    max_current = magnet_setup["max_current"]
+    core_relative_permeability = magnet_setup["core_relative_permeability"]
+    core_saturation_tesla = magnet_setup["core_saturation_tesla"]
+
+    # This is only the default static center.
+    # For FOLLOW_PARTICLE_DEVICE=True, each trial recenters the device around
+    # the particle during the control loop.
     magnet_center = magnet_setup["center"]
 
     print(
-        "Magnet setup: "
-        f"center={np.round(magnet_center, 4)} m, "
+        "Fixed magnet setup: "
+        f"default_center={np.round(magnet_center, 4)} m, "
         f"placement_radius={placement_radius:.3f} m, "
         f"coil_radius={coil_radius:.3f} m, "
-        f"coil_length={coil_length:.3f} m"
+        f"coil_diameter={2.0 * coil_radius:.3f} m, "
+        f"coil_length={coil_length:.3f} m, "
+        f"core_radius={core_radius:.3f} m, "
+        f"turns={turns:.0f}, "
+        f"max_current={max_current:.1f} A, "
+        f"follow_particle_device={FOLLOW_PARTICLE_DEVICE}"
     )
 
     rng = np.random.default_rng(42)
@@ -533,14 +661,16 @@ def run_all_trials(
     magnets_for_plots = ElectromagnetArray3D(
         coil_radius=coil_radius,
         coil_length=coil_length,
-        turns=1500,
-        max_current=8.0,
+        turns=turns,
+        max_current=max_current,
         placement_radius=placement_radius,
         center=magnet_center,
+        core_radius=core_radius,
+        core_relative_permeability=core_relative_permeability,
+        core_saturation_tesla=core_saturation_tesla,
     )
 
     for trial_name, cfg in trials.items():
-
         print(f"\n>>> Running {trial_name}")
         print(f"    start:  {cfg['start']}")
         print(f"    target: {cfg['target']}")
@@ -552,14 +682,23 @@ def run_all_trials(
             trial_name=trial_name,
             coil_radius=coil_radius,
             coil_length=coil_length,
+            core_radius=core_radius,
+            turns=turns,
+            max_current=max_current,
             placement_radius=placement_radius,
             magnet_center=magnet_center,
+            core_relative_permeability=core_relative_permeability,
+            core_saturation_tesla=core_saturation_tesla,
+            follow_particle_device=FOLLOW_PARTICLE_DEVICE,
         )
 
         results.append(result)
 
         print_summary(result)
 
+        # Plot using the default static device geometry.
+        # If follow_particle_device=True, the trajectory/control data are still valid;
+        # the plotted magnet geometry is representative rather than time-varying.
         save_all_plots(
             result,
             output_dir,
@@ -591,14 +730,20 @@ if __name__ == "__main__":
         "--magnet-clearance",
         type=float,
         default=DEFAULT_MAGNET_CLEARANCE,
-        help="Extra clearance in meters between vessel tube bounds and magnet layout.",
+        help=(
+            "Kept for compatibility. Fixed-device mode does not use this to "
+            "scale coil dimensions."
+        ),
     )
 
     parser.add_argument(
         "--placement-radius",
         type=float,
         default=None,
-        help="Override computed magnet placement radius in meters.",
+        help=(
+            "Override fixed magnet placement radius in meters. "
+            "Default is 0.060 m."
+        ),
     )
 
     args = parser.parse_args()

@@ -1,6 +1,8 @@
 """
 Electromagnet array: 9-magnet triangular-prism regularized dipole model.
 
+Fixed-device version.
+
 Layout:
     Front triangle (z = -d)
         A
@@ -21,10 +23,23 @@ All magnets point toward the configured array center.
 
 Each solenoid is modelled as a regularized magnetic dipole.
 
+Magnetic moment:
+    m = N I pi R^2
+
+Regularized dipole field:
+    B(r) = (mu_0 / 4pi)
+           [3(m·r_hat)r_hat - m]
+           / (r^2 + a^2)^(3/2)
+
+This file intentionally models a fixed compact steering device, not a
+vessel-bounds-scaled device.
+
 Reference:
 Jackson, Classical Electrodynamics, ch. 5
 Furlani, Permanent Magnet and Electromechanical Devices (2001)
 """
+
+from __future__ import annotations
 
 import numpy as np
 
@@ -35,28 +50,32 @@ class ElectromagnetArray3D:
     """
     9 electromagnets arranged in a triangular prism.
 
-    Magnetic moment:
-        m = N I pi R^2
+    Default fixed device geometry:
+        placement_radius = 0.060 m   # coil centers 6 cm from device center
+        coil_radius      = 0.018 m   # 3.6 cm coil diameter
+        coil_length      = 0.070 m   # 7.0 cm core/coil length
+        core_radius      = 0.008 m   # 1.6 cm core diameter
+        turns            = 3000
+        max_current      = 12 A peak/pulsed
 
-    Regularized dipole field:
-        B(r) = (mu_0 / 4pi)
-               [3(m·r_hat)r_hat - m]
-               / (r^2 + a^2)^(3/2)
-
-    A simple 1018 steel-core approximation is included:
-        B_core = mu_r * B_air
-
-    with saturation capped at ~1.8 T.
+    Notes:
+        - This is a simulation model.
+        - AWG, resistance, heating, voltage, and thermal limits are not solved here.
+        - The steel-core model is an effective gain with soft saturation.
+        - 12 A should be interpreted as a pulsed peak current, not continuous DC.
     """
 
     def __init__(
         self,
-        coil_radius: float = 0.03,
-        coil_length: float = 0.12,
+        coil_radius: float = 0.018,
+        coil_length: float = 0.070,
         turns: float = 3000.0,
-        max_current: float = 16.0,
-        placement_radius: float = 0.02,
+        max_current: float = 12.0,
+        placement_radius: float = 0.060,
         center=None,
+        core_radius: float = 0.008,
+        core_relative_permeability: float = 60.0,
+        core_saturation_tesla: float = 1.8,
     ):
         self.placement_radius = float(placement_radius)
         self.center = (
@@ -65,69 +84,96 @@ class ElectromagnetArray3D:
             else np.asarray(center, dtype=float)
         )
 
-        d = self.placement_radius
-
-        front = np.array([
-            [0.0,      2.0 * d / np.sqrt(3.0), -d],
-            [-d,      -d / np.sqrt(3.0),      -d],
-            [ d,      -d / np.sqrt(3.0),      -d],
-        ])
-
-        back = np.array([
-            [0.0,      2.0 * d / np.sqrt(3.0),  d],
-            [-d,      -d / np.sqrt(3.0),       d],
-            [ d,      -d / np.sqrt(3.0),       d],
-        ])
-
-        mid = np.array([
-            0.5 * (front[0] + back[0]),
-            0.5 * (front[1] + back[1]),
-            0.5 * (front[2] + back[2]),
-        ])
-
-        local_positions = np.vstack((front, back, mid))
-        self.positions = local_positions + self.center
-
-        self.n_magnets = len(self.positions)
-
-        # Point all magnets toward the array center.
-        self.orientations = np.zeros_like(local_positions)
-
-        for i, pos in enumerate(local_positions):
-            norm = np.linalg.norm(pos)
-
-            if norm < 1e-12:
-                self.orientations[i] = np.array([0.0, 0.0, 1.0])
-            else:
-                self.orientations[i] = -pos / norm
-
         self.coil_radius = float(coil_radius)
         self.coil_length = float(coil_length)
         self.turns = float(turns)
         self.max_current = float(max_current)
 
-        self.currents = np.zeros(self.n_magnets, dtype=float)
-
-        self.moment_per_amp = (
-            self.turns *
-            PI *
-            self.coil_radius ** 2
-        )
+        self.core_radius = float(core_radius)
+        self.core_relative_permeability = float(core_relative_permeability)
+        self.core_saturation_tesla = float(core_saturation_tesla)
 
         self._mu_over_4pi = MU_0 / (4.0 * PI)
 
-        # Regularization length
-        self._a_sq = self.coil_radius ** 2
+        # Regularization length.
+        # Use a nonzero effective source size so the dipole field does not blow up
+        # near a coil. This also roughly represents finite coil/core size.
+        reg_len = max(0.5 * self.coil_radius, self.core_radius, 1e-4)
+        self._a_sq = reg_len ** 2
 
-        # --------------------------------------------------
-        # 1018 Steel Core Approximation
-        # --------------------------------------------------
+        self._local_positions = self._build_local_positions()
+        self.positions = self._local_positions + self.center
+        self.n_magnets = len(self.positions)
 
-        self.core_relative_permeability = 200.0
-        self.core_saturation_tesla = 1.8
+        self.orientations = self._build_orientations(self._local_positions)
+
+        self.currents = np.zeros(self.n_magnets, dtype=float)
+
+        # Magnetic moment per ampere.
+        # m = N I A, where A = pi R^2.
+        self.moment_per_amp = self.turns * PI * self.coil_radius ** 2
+
+    def _build_local_positions(self):
+        d = self.placement_radius
+
+        front = np.array(
+            [
+                [0.0, 2.0 * d / np.sqrt(3.0), -d],
+                [-d, -d / np.sqrt(3.0), -d],
+                [d, -d / np.sqrt(3.0), -d],
+            ],
+            dtype=float,
+        )
+
+        back = np.array(
+            [
+                [0.0, 2.0 * d / np.sqrt(3.0), d],
+                [-d, -d / np.sqrt(3.0), d],
+                [d, -d / np.sqrt(3.0), d],
+            ],
+            dtype=float,
+        )
+
+        mid = np.array(
+            [
+                0.5 * (front[0] + back[0]),
+                0.5 * (front[1] + back[1]),
+                0.5 * (front[2] + back[2]),
+            ],
+            dtype=float,
+        )
+
+        return np.vstack((front, back, mid))
+
+    def _build_orientations(self, local_positions):
+        orientations = np.zeros_like(local_positions)
+
+        for i, pos in enumerate(local_positions):
+            norm = np.linalg.norm(pos)
+
+            if norm < 1e-12:
+                orientations[i] = np.array([0.0, 0.0, 1.0])
+            else:
+                # Point all magnets toward array center.
+                orientations[i] = -pos / norm
+
+        return orientations
+
+    def recenter(self, center):
+        """
+        Move the entire magnetic steering frame to a new center.
+
+        This is useful for simulating a local moving steering stage or gantry
+        that remains centered around the particle/region of interest.
+
+        It does not change coil geometry, orientations, turns, or currents.
+        """
+        self.center = np.asarray(center, dtype=float)
+        self.positions = self._local_positions + self.center
 
     def set_currents(self, currents):
         currents = np.asarray(currents, dtype=float)
+
         if currents.shape != (self.n_magnets,):
             raise ValueError(
                 f"expected {self.n_magnets} currents, got shape {currents.shape}"
@@ -141,48 +187,50 @@ class ElectromagnetArray3D:
 
     def _apply_core_model(self, B):
         """
-        Simple 1018 steel core approximation.
+        Effective soft-saturating steel-core approximation.
 
-        Amplify field by mu_r then clamp near saturation.
+        A naive B *= mu_r followed by hard clipping can flatten gradients too
+        aggressively. This uses smooth tanh saturation:
+
+            B_out = B_hat * B_sat * tanh(mu_eff * |B_air| / B_sat)
+
+        This preserves a usable gradient before saturation while preventing
+        unrealistic multi-tesla fields.
         """
-
-        B_mag = np.linalg.norm(B)
+        B = np.asarray(B, dtype=float)
+        B_mag = float(np.linalg.norm(B))
 
         if B_mag < EPS:
             return B
 
-        amplified = B * self.core_relative_permeability
+        direction = B / B_mag
 
-        amp_mag = np.linalg.norm(amplified)
+        effective_mag = self.core_saturation_tesla * np.tanh(
+            self.core_relative_permeability * B_mag
+            / (self.core_saturation_tesla + EPS)
+        )
 
-        if amp_mag > self.core_saturation_tesla:
-            amplified *= (
-                self.core_saturation_tesla /
-                amp_mag
-            )
-
-        return amplified
+        return direction * effective_mag
 
     def field_at(self, point):
         """
-        Net B-field (Tesla) at point.
+        Net B-field in Tesla at point.
         """
-
         point = np.asarray(point, dtype=float)
 
-        B_total = np.zeros(3, dtype=float)
+        B_total_air = np.zeros(3, dtype=float)
 
         for i in range(self.n_magnets):
-
             current = self.currents[i]
 
-            m_mag = self.moment_per_amp * current
+            if abs(current) < EPS:
+                continue
 
+            m_mag = self.moment_per_amp * current
             m_vec = m_mag * self.orientations[i]
 
             r_vec = point - self.positions[i]
-
-            r_sq = np.dot(r_vec, r_vec)
+            r_sq = float(np.dot(r_vec, r_vec))
 
             r = np.sqrt(r_sq)
 
@@ -190,42 +238,60 @@ class ElectromagnetArray3D:
                 continue
 
             r_hat = r_vec / r
-
-            m_dot_rhat = np.dot(m_vec, r_hat)
+            m_dot_rhat = float(np.dot(m_vec, r_hat))
 
             denom = (r_sq + self._a_sq) ** 1.5
 
             B_i = self._mu_over_4pi * (
-                3.0 * m_dot_rhat * r_hat
-                - m_vec
+                3.0 * m_dot_rhat * r_hat - m_vec
             ) / denom
 
-            B_total += B_i
+            B_total_air += B_i
 
-        B_total = self._apply_core_model(B_total)
+        return self._apply_core_model(B_total_air)
 
-        return B_total
-
-    def grad_B_squared(self, point, h: float = 5e-5):
+    def grad_B_squared(self, point, h: float = 1e-4):
         """
         Gradient of |B|^2 using central differences.
-        """
 
+        h = 1e-4 m gives a stable 0.1 mm finite-difference step for vessel-scale
+        steering. Smaller values can become noisy with saturation.
+        """
         point = np.asarray(point, dtype=float)
 
         def B_sq(p):
             B = self.field_at(p)
-            return np.dot(B, B)
+            return float(np.dot(B, B))
 
-        grad = np.zeros(3)
+        grad = np.zeros(3, dtype=float)
 
         for axis in range(3):
-            dp = np.zeros(3)
+            dp = np.zeros(3, dtype=float)
             dp[axis] = h
 
             grad[axis] = (
-                B_sq(point + dp)
-                - B_sq(point - dp)
+                B_sq(point + dp) - B_sq(point - dp)
             ) / (2.0 * h)
 
         return grad
+
+    def params_dict(self):
+        return {
+            "n_magnets": self.n_magnets,
+            "placement_radius_m": self.placement_radius,
+            "coil_radius_m": self.coil_radius,
+            "coil_diameter_m": 2.0 * self.coil_radius,
+            "coil_length_m": self.coil_length,
+            "turns": self.turns,
+            "max_current_A": self.max_current,
+            "current_mode": "peak_pulsed_simulation_limit",
+            "core_radius_m": self.core_radius,
+            "core_diameter_m": 2.0 * self.core_radius,
+            "core_relative_permeability_effective": (
+                self.core_relative_permeability
+            ),
+            "core_saturation_tesla": self.core_saturation_tesla,
+            "moment_per_amp_A_m2": self.moment_per_amp,
+            "thermal_model_included": False,
+            "awg_model_included": False,
+        }

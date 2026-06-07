@@ -1,22 +1,28 @@
 """
 Authority-Conditioned Branch Commitment controller.
 
-ACBC is a hybrid supervisory controller for magnetic nanoparticle navigation
+ACBC is a hybrid supervisory controller for magnetic carrier navigation
 through bifurcating vascular graphs.
 
-Core idea:
-    Do not blindly track waypoints near bifurcations.
-    Instead, detect upcoming branch points, estimate whether the target branch
-    is magnetically capturable under local flow and wall constraints, and
-    explicitly switch between:
+Main correction in this version:
+    ACBC is route-conditioned.
 
-        FREE_NAVIGATION
-        VIABILITY_ASSESSMENT
-        BRANCH_COMMITMENT
-        RECOVERY_MODE
+It does NOT activate near the nearest bifurcation anywhere in the vessel tree.
+It only activates when a bifurcation lies ahead on the planned route.
 
-The low-level current optimizer is still the existing continuous MPC allocator.
-ACBC decides what local target should be given to that allocator.
+Additional correction in this version:
+    Recovery is softened.
+
+Instead of snapping directly to the vessel centerline during RECOVERY_MODE,
+ACBC now targets a partial step toward the centerline. This reduces aggressive
+sideways recovery forces, lowers velocity spikes, and should improve low-Re
+validity while preserving wall-safety behavior.
+
+States:
+    FREE_NAVIGATION
+    VIABILITY_ASSESSMENT
+    BRANCH_COMMITMENT
+    RECOVERY_MODE
 """
 
 from __future__ import annotations
@@ -80,28 +86,13 @@ class ACBCStepInfo:
 
 class ACBCController:
     """
-    Hybrid supervisor for branch-aware magnetic navigation.
+    Authority-Conditioned Branch Commitment.
 
-    Parameters
-    ----------
-    network:
-        RealVesselNetwork-like object.
-    magnet_array:
-        ElectromagnetArray3D instance.
-    workspace:
-        WorkspaceVessel wrapper.
-    max_current:
-        Maximum coil current.
-    branch_detection_radius:
-        Distance upstream of a bifurcation where ACBC becomes active.
-        If None, chosen from vessel span.
-    branch_lookahead:
-        How far into each branch to evaluate candidate commitment.
-        If None, chosen from vessel span.
-    authority_threshold:
-        Minimum magnetic authority margin required for branch commitment.
-    recovery_threshold:
-        Margin below which ACBC enters recovery mode.
+    ACBC is a route-conditioned hybrid supervisor. It uses the existing
+    continuous MPC controller only as a low-level current allocator.
+
+    The novelty is the supervisory decision:
+        free navigation vs. assess viability vs. commit vs. recover.
     """
 
     def __init__(
@@ -112,9 +103,14 @@ class ACBCController:
         max_current: float = 8.0,
         branch_detection_radius: Optional[float] = None,
         branch_lookahead: Optional[float] = None,
+        route_corridor_radius: Optional[float] = None,
         authority_threshold: float = 1.05,
         recovery_threshold: float = 0.85,
         min_wall_safety_fraction: float = 0.05,
+        absolute_wall_clearance_threshold: float = 0.00075,
+        max_commitment_steps: int = 40,
+        recovery_center_fraction: float = 0.45,
+        recovery_route_fraction: float = 0.12,
     ):
         self.network = network
         self.magnet_array = magnet_array
@@ -137,15 +133,52 @@ class ACBCController:
             else 0.05 * max_span
         )
 
+        self.route_corridor_radius = (
+            float(route_corridor_radius)
+            if route_corridor_radius is not None
+            else max(0.005, 0.25 * self.branch_detection_radius)
+        )
+
         self.authority_threshold = float(authority_threshold)
         self.recovery_threshold = float(recovery_threshold)
         self.min_wall_safety_fraction = float(min_wall_safety_fraction)
+
+        # Absolute local wall-clearance trigger.
+        self.absolute_wall_clearance_threshold = float(
+            absolute_wall_clearance_threshold
+        )
+
+        # Recovery softening.
+        # recovery_center_fraction:
+        #     Fraction of the radial distance back to centerline used as the
+        #     recovery target. 1.0 would snap all the way to centerline.
+        #     0.45 is gentler and reduces velocity spikes.
+        #
+        # recovery_route_fraction:
+        #     Small downstream nudge after partial recentering, so recovery
+        #     does not become a purely radial local trap.
+        self.recovery_center_fraction = float(
+            np.clip(recovery_center_fraction, 0.05, 1.0)
+        )
+        self.recovery_route_fraction = float(
+            np.clip(recovery_route_fraction, 0.0, 0.5)
+        )
 
         self.state = ACBC_FREE
         self.prev_state = ACBC_FREE
 
         self.selected_branch: Optional[BranchCandidate] = None
         self.last_bifurcation_point: Optional[np.ndarray] = None
+
+        # Commitment release guard.
+        # This prevents ACBC from staying in BRANCH_COMMITMENT forever
+        # after a branch target becomes stale.
+        self.commit_start_step: Optional[int] = None
+        self.max_commitment_steps = int(max_commitment_steps)
+        self.commit_target_reach_radius = max(
+            0.004,
+            0.35 * self.branch_lookahead,
+        )
 
         self.recovery_count = 0
         self.commitment_count = 0
@@ -155,15 +188,10 @@ class ACBCController:
         self._bifurcation_nodes = self._build_bifurcation_nodes()
 
     # ------------------------------------------------------------------
-    # Graph / bifurcation utilities
+    # Bifurcation / route utilities
     # ------------------------------------------------------------------
 
     def _build_bifurcation_nodes(self) -> List[Tuple[np.ndarray, List[int]]]:
-        """
-        Reconstruct bifurcation nodes from shared segment endpoints.
-
-        A bifurcation node is any endpoint shared by three or more segments.
-        """
         endpoint_map: Dict[Tuple[int, int, int], List[int]] = {}
 
         for seg in self.network.segments:
@@ -174,39 +202,119 @@ class ACBCController:
         seg_by_id = {s.seg_id: s for s in self.network.segments}
 
         nodes = []
+
         for ids in endpoint_map.values():
             unique_ids = sorted(set(ids))
+
             if len(unique_ids) >= 3:
                 pts = []
+
                 for sid in unique_ids:
                     seg = seg_by_id[sid]
                     pts.append(seg.start)
                     pts.append(seg.end)
+
                 node_point = np.mean(np.asarray(pts), axis=0)
                 nodes.append((node_point, unique_ids))
 
         return nodes
 
-    def _nearest_bifurcation(self, pos) -> Tuple[Optional[np.ndarray], List[int], float]:
+    def _nearest_route_index(self, pos, navigator) -> int:
+        waypoints = getattr(navigator, "waypoints", [])
+
+        if waypoints is None or len(waypoints) == 0:
+            return 0
+
+        pts = np.asarray(waypoints, dtype=float)
+        dists = np.linalg.norm(pts - np.asarray(pos, dtype=float), axis=1)
+
+        return int(np.argmin(dists))
+
+    def _point_segment_distance(self, p, a, b):
+        p = np.asarray(p, dtype=float)
+        a = np.asarray(a, dtype=float)
+        b = np.asarray(b, dtype=float)
+
+        ab = b - a
+        denom = np.dot(ab, ab)
+
+        if denom < EPS:
+            return float(np.linalg.norm(p - a)), a, 0.0
+
+        t = float(np.dot(p - a, ab) / denom)
+        t = float(np.clip(t, 0.0, 1.0))
+
+        closest = a + t * ab
+        dist = float(np.linalg.norm(p - closest))
+
+        return dist, closest, t
+
+    def _route_relevant_bifurcation(self, pos, navigator):
+        """
+        Find the next bifurcation that lies on the planned route ahead.
+
+        This prevents ACBC from triggering on irrelevant nearby branch nodes.
+        """
         pos = np.asarray(pos, dtype=float)
 
-        best_point = None
-        best_ids: List[int] = []
-        best_dist = np.inf
+        waypoints = getattr(navigator, "waypoints", [])
+        if waypoints is None or len(waypoints) == 0:
+            return None, [], np.inf
 
-        for point, ids in self._bifurcation_nodes:
-            d = float(np.linalg.norm(pos - point))
-            if d < best_dist:
-                best_dist = d
-                best_point = point
-                best_ids = ids
+        route_pts = [pos]
+        idx0 = self._nearest_route_index(pos, navigator)
 
-        return best_point, best_ids, best_dist
+        max_scan = min(len(waypoints), idx0 + 40)
+
+        for wp in waypoints[idx0:max_scan]:
+            route_pts.append(np.asarray(wp, dtype=float))
+
+        if len(route_pts) < 2:
+            return None, [], np.inf
+
+        best_node = None
+        best_ids = []
+        best_along = np.inf
+
+        cumulative = 0.0
+
+        for i in range(len(route_pts) - 1):
+            a = route_pts[i]
+            b = route_pts[i + 1]
+            seg_len = float(np.linalg.norm(b - a))
+
+            if seg_len < EPS:
+                continue
+
+            for node_point, node_ids in self._bifurcation_nodes:
+                lateral_dist, _, t = self._point_segment_distance(node_point, a, b)
+                along = cumulative + t * seg_len
+
+                if along < -EPS:
+                    continue
+
+                if along > self.branch_detection_radius:
+                    continue
+
+                if lateral_dist > self.route_corridor_radius:
+                    continue
+
+                if along < best_along:
+                    best_along = along
+                    best_node = node_point
+                    best_ids = node_ids
+
+            cumulative += seg_len
+
+            if cumulative > self.branch_detection_radius:
+                break
+
+        if best_node is None:
+            return None, [], np.inf
+
+        return np.asarray(best_node, dtype=float), best_ids, float(best_along)
 
     def _branch_direction_from_bifurcation(self, seg, bif_point) -> np.ndarray:
-        """
-        Direction pointing away from bifurcation into the candidate branch.
-        """
         bif_point = np.asarray(bif_point, dtype=float)
 
         ds = np.linalg.norm(seg.start - bif_point)
@@ -221,29 +329,42 @@ class ACBCController:
 
         return vec / norm
 
-    def _candidate_branches(self, bif_point, seg_ids) -> List[Tuple[object, np.ndarray]]:
+    def _candidate_branches(self, bif_point, seg_ids, particle_pos=None):
         seg_by_id = {s.seg_id: s for s in self.network.segments}
-        out = []
+        candidates = []
+        fallback = []
 
         for sid in seg_ids:
             seg = seg_by_id[sid]
             direction = self._branch_direction_from_bifurcation(seg, bif_point)
-            out.append((seg, direction))
+            fallback.append((seg, direction))
 
-        return out
+            if particle_pos is not None:
+                back_vec = np.asarray(particle_pos, dtype=float) - np.asarray(
+                    bif_point, dtype=float
+                )
+                back_norm = np.linalg.norm(back_vec)
+
+                if back_norm > EPS:
+                    back_hat = back_vec / back_norm
+
+                    # Exclude the branch that points mostly back toward where
+                    # the particle came from.
+                    if float(np.dot(direction, back_hat)) > 0.35:
+                        continue
+
+            candidates.append((seg, direction))
+
+        if len(candidates) == 0:
+            return fallback
+
+        return candidates
 
     # ------------------------------------------------------------------
-    # Viability / authority metrics
+    # ACBC metrics
     # ------------------------------------------------------------------
 
     def _max_magnetic_projection_speed(self, particle, pos, direction) -> float:
-        """
-        Estimate maximum achievable magnetic drift speed along `direction`.
-
-        This is deliberately not full MPC. It is an ACBC-specific authority
-        probe: sample each actuator at max current and ask how much drift it
-        can create along the candidate branch direction.
-        """
         pos = np.asarray(pos, dtype=float)
         direction = np.asarray(direction, dtype=float)
         direction = direction / (np.linalg.norm(direction) + EPS)
@@ -261,8 +382,11 @@ class ACBCController:
         all_on = np.ones(n) * self.max_current
         test_currents.append(all_on)
 
+        previous_currents = self.magnet_array.currents.copy()
+
         for currents in test_currents:
             self.magnet_array.set_currents(currents)
+
             B = self.magnet_array.field_at(pos)
             grad = self.magnet_array.grad_B_squared(pos)
             F = particle.magnetic_force(B, grad)
@@ -278,27 +402,43 @@ class ACBCController:
             if proj > best_proj:
                 best_proj = proj
 
+        self.magnet_array.set_currents(previous_currents)
+
         return max(0.0, best_proj)
 
-    def _wall_safety_for_segment(self, seg, particle) -> Tuple[float, float]:
-        """
-        Wall safety based on vessel radius minus particle radius.
-
-        Returns absolute margin in meters and normalized margin.
-        """
+    def _wall_safety_for_segment(self, seg, particle):
         margin = float(seg.radius - particle.radius)
         fraction = margin / (seg.radius + EPS)
         return margin, fraction
 
-    def _recoverability_score(self, particle_pos, particle) -> float:
+    def _wall_safety_at_position(self, particle_pos, particle):
         """
-        Estimate whether the particle can still recenter away from the wall.
+        Return local wall safety at the particle's current position.
 
-        1. Find current segment.
-        2. Compute direction from particle to local centerline.
-        3. Estimate magnetic drift available in that direction.
-        4. Normalize into [0, ~inf).
+        clearance:
+            center of particle to vessel wall distance before subtracting
+            particle radius.
+
+        margin:
+            remaining clearance between particle surface and vessel wall.
+
+        fraction:
+            margin normalized by vessel radius.
         """
+        seg, _ = self.network.find_segment(particle_pos)
+
+        if seg is None:
+            return -np.inf, -np.inf, -np.inf
+
+        _, _, radial_dist, _ = seg.closest_point_and_radial(particle_pos)
+
+        clearance = seg.radius - radial_dist
+        margin = clearance - particle.radius
+        fraction = margin / (seg.radius + EPS)
+
+        return float(clearance), float(margin), float(fraction)
+
+    def _recoverability_score(self, particle_pos, particle) -> float:
         seg, _ = self.network.find_segment(particle_pos)
 
         if seg is None:
@@ -332,7 +472,6 @@ class ACBCController:
         self,
         particle,
         particle_pos,
-        final_target,
         nominal_target,
         bif_point,
         seg,
@@ -346,10 +485,18 @@ class ACBCController:
         target_point = bif_point + direction * min(self.branch_lookahead, seg._length)
         target_point = self.workspace.clip(target_point)
 
-        eval_point = bif_point + direction * min(0.25 * self.branch_lookahead, seg._length)
+        eval_point = bif_point + direction * min(
+            0.25 * self.branch_lookahead,
+            seg._length,
+        )
         eval_point = self.workspace.clip(eval_point)
 
-        flow_v = flow.velocity_at(eval_point, sim_time) if flow is not None else np.zeros(3)
+        flow_v = (
+            flow.velocity_at(eval_point, sim_time)
+            if flow is not None
+            else np.zeros(3)
+        )
+
         flow_projection = float(np.dot(flow_v, direction))
 
         max_mag_projection = self._max_magnetic_projection_speed(
@@ -358,15 +505,17 @@ class ACBCController:
             direction,
         )
 
-        # If flow helps, it contributes positively. If flow opposes, it is a burden.
         opposing_flow = max(0.0, -flow_projection)
+
         authority_margin = (
             max_mag_projection + max(0.0, flow_projection) + EPS
         ) / (opposing_flow + 1e-6)
 
         wall_margin, wall_fraction = self._wall_safety_for_segment(seg, particle)
 
-        route_vec = np.asarray(nominal_target, dtype=float) - np.asarray(bif_point, dtype=float)
+        route_vec = np.asarray(nominal_target, dtype=float) - np.asarray(
+            bif_point, dtype=float
+        )
         route_norm = np.linalg.norm(route_vec)
 
         if route_norm < EPS:
@@ -380,14 +529,15 @@ class ACBCController:
             authority_margin >= self.authority_threshold
             and wall_fraction >= self.min_wall_safety_fraction
             and recoverability >= self.recovery_threshold
+            and route_alignment > -0.25
         )
 
         score = (
-            2.5 * route_alignment
+            3.0 * route_alignment
             + 2.0 * np.tanh(authority_margin)
             + 1.5 * np.tanh(recoverability)
             + 1.0 * np.clip(wall_fraction, -1.0, 1.0)
-            + 0.5 * flow_projection
+            + 0.25 * flow_projection
         )
 
         if not capturable:
@@ -409,21 +559,60 @@ class ACBCController:
             capturable=bool(capturable),
         )
 
-    def _recovery_target(self, particle_pos):
+    def _recovery_target(self, particle_pos, nominal_target=None):
         """
-        Recovery target: local centerline projection.
+        Recovery target gently recenters the particle.
 
-        This is intentionally a discrete ACBC recovery mode, not just a wall
-        penalty. It asks the low-level controller to recentralize before branch
-        commitment.
+        Previous behavior:
+            If the particle was near the wall, ACBC targeted the exact
+            centerline point. That created large sideways corrections and
+            velocity spikes in RECOVERY_MODE.
+
+        New behavior:
+            Target only a partial step toward the centerline, optionally with
+            a small downstream route nudge once partial recentering is defined.
+
+        This preserves wall-safety recovery while reducing aggressive impulses.
         """
+        particle_pos = np.asarray(particle_pos, dtype=float)
+
         seg, _ = self.network.find_segment(particle_pos)
 
         if seg is None:
-            return np.asarray(particle_pos, dtype=float)
+            return particle_pos.copy()
 
-        closest, _, _, _ = seg.closest_point_and_radial(particle_pos)
-        return closest
+        closest, _, radial_dist, _ = seg.closest_point_and_radial(particle_pos)
+
+        to_center = closest - particle_pos
+        dist_to_center = float(np.linalg.norm(to_center))
+
+        if dist_to_center < EPS:
+            base_target = closest.copy()
+        else:
+            # Partial recentering instead of snapping all the way to centerline.
+            base_target = particle_pos + self.recovery_center_fraction * to_center
+
+        if nominal_target is None:
+            return self.workspace.clip(base_target)
+
+        route_vec = np.asarray(nominal_target, dtype=float) - base_target
+        route_norm = float(np.linalg.norm(route_vec))
+
+        if route_norm < EPS:
+            return self.workspace.clip(base_target)
+
+        route_hat = route_vec / route_norm
+
+        # Small downstream nudge. Keep this conservative so recovery remains
+        # primarily a safety maneuver, not an aggressive route-following command.
+        downstream_step = min(
+            self.recovery_route_fraction * self.branch_lookahead,
+            0.20 * seg._length,
+        )
+
+        target = base_target + downstream_step * route_hat
+
+        return self.workspace.clip(target)
 
     # ------------------------------------------------------------------
     # Hybrid state machine
@@ -431,9 +620,18 @@ class ACBCController:
 
     def _transition(self, new_state: str):
         if new_state != self.state:
+            old_state = self.state
+
             self.prev_state = self.state
             self.state = new_state
             self.transition_count += 1
+
+            if new_state == ACBC_COMMIT:
+                self.commit_start_step = self.step_count
+
+            if old_state == ACBC_COMMIT and new_state != ACBC_COMMIT:
+                self.commit_start_step = None
+
             return True
 
         self.prev_state = self.state
@@ -456,52 +654,71 @@ class ACBCController:
         w_edge: float = 50.0,
         w_overshoot: float = 2.0,
     ):
-        """
-        Run one ACBC decision step.
-
-        Returns
-        -------
-        best_currents, best_force, best_cost, converged, info
-        """
         self.step_count += 1
 
         particle_pos = particle.pos.copy()
         nominal_target = navigator(particle_pos)
 
-        bif_point, bif_ids, bif_dist = self._nearest_bifurcation(particle_pos)
-        near_bifurcation = (
-            bif_point is not None
-            and bif_dist <= self.branch_detection_radius
+        bif_point, bif_ids, bif_dist = self._route_relevant_bifurcation(
+            particle_pos,
+            navigator,
+        )
+
+        near_bifurcation = bif_point is not None
+
+        wall_clearance, wall_margin, wall_fraction = self._wall_safety_at_position(
+            particle_pos,
+            particle,
+        )
+
+        wall_unsafe = (
+            wall_clearance < self.absolute_wall_clearance_threshold
+            or wall_fraction < self.min_wall_safety_fraction
         )
 
         candidates: List[BranchCandidate] = []
         selected: Optional[BranchCandidate] = None
         recovery_target = None
-
         transitioned = False
 
         # --------------------------------------------------------------
-        # State transition logic
+        # State transitions
         # --------------------------------------------------------------
+
+        # --------------------------------------------------------------
+        # Global wall-safety guard
+        # --------------------------------------------------------------
+        # ACBC should not remain in FREE_NAVIGATION while the particle is
+        # nearly scraping the vessel wall. This is independent of whether
+        # a bifurcation is nearby.
+        # --------------------------------------------------------------
+
+        if wall_unsafe and self.state != ACBC_RECOVER:
+            self.selected_branch = None
+            self.recovery_count += 1
+            transitioned = self._transition(ACBC_RECOVER) or transitioned
 
         if self.state == ACBC_FREE:
             if near_bifurcation:
-                transitioned = self._transition(ACBC_ASSESS)
+                transitioned = self._transition(ACBC_ASSESS) or transitioned
             else:
-                transitioned = self._transition(ACBC_FREE)
+                transitioned = self._transition(ACBC_FREE) or transitioned
 
         if self.state == ACBC_ASSESS:
             if not near_bifurcation:
                 self.selected_branch = None
                 transitioned = self._transition(ACBC_FREE) or transitioned
             else:
-                branches = self._candidate_branches(bif_point, bif_ids)
+                branches = self._candidate_branches(
+                    bif_point,
+                    bif_ids,
+                    particle_pos=particle_pos,
+                )
 
                 for seg, direction in branches:
                     cand = self._evaluate_branch(
                         particle=particle,
                         particle_pos=particle_pos,
-                        final_target=final_target,
                         nominal_target=nominal_target,
                         bif_point=bif_point,
                         seg=seg,
@@ -521,9 +738,19 @@ class ACBCController:
                         self.commitment_count += 1
                         transitioned = self._transition(ACBC_COMMIT) or transitioned
                     else:
-                        self.recovery_count += 1
-                        transitioned = self._transition(ACBC_RECOVER) or transitioned
+                        # Only recover if the selected branch is truly unsafe.
+                        # Otherwise, stay in free navigation instead of trapping.
+                        if selected.authority_margin < self.recovery_threshold:
+                            self.recovery_count += 1
+                            transitioned = self._transition(ACBC_RECOVER) or transitioned
+                        else:
+                            self.selected_branch = None
+                            transitioned = self._transition(ACBC_FREE) or transitioned
                 else:
+                    # Critical trap fix:
+                    # ACBC should never remain in VIABILITY_ASSESSMENT
+                    # with zero usable candidates.
+                    self.selected_branch = None
                     transitioned = self._transition(ACBC_FREE) or transitioned
 
         elif self.state == ACBC_COMMIT:
@@ -532,32 +759,78 @@ class ACBCController:
             if selected is None:
                 transitioned = self._transition(ACBC_FREE) or transitioned
             else:
-                dist_from_bif = np.linalg.norm(particle_pos - selected.bifurcation_point)
+                dist_from_bif = float(
+                    np.linalg.norm(particle_pos - selected.bifurcation_point)
+                )
 
-                # Once sufficiently downstream of the bifurcation, return to nominal navigation.
-                if dist_from_bif > 1.25 * self.branch_detection_radius:
+                dist_to_commit_target = float(
+                    np.linalg.norm(particle_pos - selected.target_point)
+                )
+
+                if self.commit_start_step is None:
+                    self.commit_start_step = self.step_count
+
+                commit_age = self.step_count - self.commit_start_step
+
+                commitment_complete = (
+                    dist_to_commit_target < self.commit_target_reach_radius
+                    or dist_from_bif > 0.75 * self.branch_detection_radius
+                    or commit_age >= self.max_commitment_steps
+                )
+
+                if commitment_complete:
                     self.selected_branch = None
                     transitioned = self._transition(ACBC_FREE) or transitioned
 
         elif self.state == ACBC_RECOVER:
-            recovery_target = self._recovery_target(particle_pos)
+            recovery_target = self._recovery_target(
+                particle_pos,
+                nominal_target=nominal_target,
+            )
 
             recoverability = self._recoverability_score(particle_pos, particle)
 
-            if recoverability >= self.recovery_threshold and not near_bifurcation:
-                transitioned = self._transition(ACBC_FREE) or transitioned
-            elif recoverability >= self.recovery_threshold and near_bifurcation:
-                transitioned = self._transition(ACBC_ASSESS) or transitioned
+            wall_clearance, wall_margin, wall_fraction = (
+                self._wall_safety_at_position(
+                    particle_pos,
+                    particle,
+                )
+            )
+
+            wall_safe_again = (
+                wall_clearance >= 1.5 * self.absolute_wall_clearance_threshold
+                and wall_fraction >= 1.5 * self.min_wall_safety_fraction
+            )
+
+            # Do not leave recovery just because recoverability is high.
+            # The particle must actually regain wall clearance.
+            if recoverability >= self.recovery_threshold and wall_safe_again:
+                if near_bifurcation:
+                    transitioned = self._transition(ACBC_ASSESS) or transitioned
+                else:
+                    transitioned = self._transition(ACBC_FREE) or transitioned
 
         # --------------------------------------------------------------
-        # Select control target based on hybrid state
+        # Final guard against impossible ACBC state
+        # --------------------------------------------------------------
+        # If a route-relevant bifurcation was detected but no candidates
+        # survived/evaluated, force nominal free navigation.
+        # This prevents the state machine from getting stuck in:
+        #     VIABILITY_ASSESSMENT + cands=0
+        # --------------------------------------------------------------
+
+        if self.state == ACBC_ASSESS and len(candidates) == 0:
+            self.selected_branch = None
+            transitioned = self._transition(ACBC_FREE) or transitioned
+
+        # --------------------------------------------------------------
+        # Choose control target
         # --------------------------------------------------------------
 
         if self.state == ACBC_FREE:
             control_target = nominal_target
 
         elif self.state == ACBC_ASSESS:
-            # If assessment has a selected viable candidate, bias toward it.
             if self.selected_branch is not None:
                 control_target = self.selected_branch.target_point
             else:
@@ -570,7 +843,10 @@ class ACBCController:
                 control_target = nominal_target
 
         elif self.state == ACBC_RECOVER:
-            recovery_target = self._recovery_target(particle_pos)
+            recovery_target = self._recovery_target(
+                particle_pos,
+                nominal_target=nominal_target,
+            )
             control_target = recovery_target
 
         else:
@@ -619,12 +895,16 @@ class ACBCController:
             nominal_target=np.asarray(nominal_target, dtype=float),
             near_bifurcation=bool(near_bifurcation),
             bifurcation_distance_m=float(bif_dist),
-            bifurcation_point=None if bif_point is None else np.asarray(bif_point, dtype=float),
+            bifurcation_point=None
+            if bif_point is None
+            else np.asarray(bif_point, dtype=float),
             selected_branch_seg_id=selected_branch_id,
             selected_authority_margin=float(selected_margin),
             selected_score=float(selected_score),
             target_branch_capturable=bool(target_capturable),
-            recovery_target=None if recovery_target is None else np.asarray(recovery_target, dtype=float),
+            recovery_target=None
+            if recovery_target is None
+            else np.asarray(recovery_target, dtype=float),
             num_candidates=len(candidates),
         )
 
@@ -638,6 +918,15 @@ class ACBCController:
             "acbc_recoveries": self.recovery_count,
             "acbc_branch_detection_radius_m": self.branch_detection_radius,
             "acbc_branch_lookahead_m": self.branch_lookahead,
+            "acbc_route_corridor_radius_m": self.route_corridor_radius,
             "acbc_authority_threshold": self.authority_threshold,
             "acbc_recovery_threshold": self.recovery_threshold,
+            "acbc_min_wall_safety_fraction": self.min_wall_safety_fraction,
+            "acbc_absolute_wall_clearance_threshold_m": (
+                self.absolute_wall_clearance_threshold
+            ),
+            "acbc_max_commitment_steps": self.max_commitment_steps,
+            "acbc_commit_target_reach_radius_m": self.commit_target_reach_radius,
+            "acbc_recovery_center_fraction": self.recovery_center_fraction,
+            "acbc_recovery_route_fraction": self.recovery_route_fraction,
         }
