@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import numpy as np
 
-from dynamag_simulation.core.profiles import PhysicalProfile, NANOPARTICLE_500NM
+from dynamag_simulation.core.profiles import PhysicalProfile, SPION_CARRIER_10UM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
 from dynamag_simulation.core.integrator import adaptive_step
@@ -164,7 +164,7 @@ def simulate_trial_mpc(
     max_current: float = 8.0,
     placement_radius: float = 0.06,
     magnet_center=None,
-    profile: PhysicalProfile = NANOPARTICLE_500NM,
+    profile: PhysicalProfile = SPION_CARRIER_10UM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
     w_progress: float = 120.0,
