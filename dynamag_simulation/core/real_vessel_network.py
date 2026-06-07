@@ -21,7 +21,11 @@ class RealVesselSegment:
         self.end = np.asarray(self.end, dtype=float)
         diff = self.end - self.start
         self._length = float(np.linalg.norm(diff))
-        self._axis = diff / self._length if self._length > EPS else np.array([0.0, 1.0, 0.0])
+        self._axis = (
+            diff / self._length
+            if self._length > EPS
+            else np.array([0.0, 1.0, 0.0])
+        )
 
     def closest_point_and_radial(self, pos):
         pos = np.asarray(pos, dtype=float)
@@ -39,12 +43,14 @@ class RealVesselSegment:
 
     def flow_velocity(self, pos, time=0.0):
         _, _, r, _ = self.closest_point_and_radial(pos)
+
         if r >= self.radius:
             return np.zeros(3)
 
         v_max = 2.0 * abs(self.v_mean)
         profile = 1.0 - (r / self.radius) ** 2
         pulsation = 1.0 + 0.15 * np.sin(2.0 * PI * time)
+
         return v_max * profile * pulsation * self._axis
 
     def clip_to_interior(self, pos, inset=0.01):
@@ -58,8 +64,12 @@ class RealVesselSegment:
 class RealVesselNetwork:
     name = "real_vessel_network"
 
-    def __init__(self, pkl_file="real_vessel_segments.pkl", connection_tol=1e-6,
-                 flow_scale=1.0):
+    def __init__(
+        self,
+        pkl_file="real_vessel_segments.pkl",
+        connection_tol=1e-6,
+        flow_scale=1.0,
+    ):
         """
         Parameters
         ----------
@@ -69,20 +79,25 @@ class RealVesselNetwork:
             Tolerance for connecting segment endpoints in the graph.
         flow_scale : float
             Global multiplier applied to all segment flow velocities.
-            Use < 1.0 to reduce flow (easier magnetic steering),
-            > 1.0 to increase flow.
+            Use < 1.0 to reduce flow, > 1.0 to increase flow.
         """
         import os
-        # Fallback search path logic for repo reorganization compatibility
+
         if not os.path.exists(pkl_file):
+            repo_root = os.path.dirname(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            )
+
             candidates = [
                 os.path.join("data", pkl_file),
-                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", pkl_file),
+                os.path.join(repo_root, "data", pkl_file),
             ]
+
             for candidate in candidates:
                 if os.path.exists(candidate):
                     pkl_file = candidate
                     break
+
         with open(pkl_file, "rb") as f:
             raw_segments = pickle.load(f)
 
@@ -90,20 +105,23 @@ class RealVesselNetwork:
         self.flow_scale = float(flow_scale)
 
         self.segments = []
+
         radii = []
         for s in raw_segments:
             radii.append(float(s["radius"]))
 
-        # Murray's law flow scaling: v_mean ∝ radius.
-        # Reference: largest vessel gets the raw v_mean from data;
-        # smaller vessels get proportionally slower flow.
+        # Murray's law flow scaling:
+        #   Q ∝ r^3
+        #   v = Q / area ∝ r^3 / r^2 = r
+        #
+        # Largest vessel gets the raw/reference v_mean. Smaller vessels get
+        # proportionally slower mean flow.
         r_ref = max(radii) if radii else 1.0
-        v_mean_ref = 0.02  # m/s — reference v_mean from pickle data
+        v_mean_ref = 0.02
 
         for s in raw_segments:
             r = float(s["radius"])
             raw_v = float(s.get("v_mean", v_mean_ref))
-            # Murray's law: v ∝ r (since Q ∝ r³ and v = Q / πr²)
             scaled_v = raw_v * (r / r_ref) * self.flow_scale
 
             self.segments.append(
@@ -118,21 +136,27 @@ class RealVesselNetwork:
             )
 
         self.n_segments = len(self.segments)
-        self.connection_tol = connection_tol
+        self.connection_tol = float(connection_tol)
+
         self._build_spatial_index()
         self._graph = self._build_graph()
 
     @property
     def half(self):
         pts = []
+
         for s in self.segments:
             pts.append(s.start)
             pts.append(s.end)
+
         arr = np.array(pts)
+
         return float(np.max(np.abs(arr))) * 1.1
 
     def bounds(self, include_radius: bool = False):
-        """Return axis-aligned vessel bounds as ``(min_xyz, max_xyz)``."""
+        """
+        Return axis-aligned vessel bounds as (min_xyz, max_xyz).
+        """
         starts = np.array([s.start for s in self.segments], dtype=float)
         ends = np.array([s.end for s in self.segments], dtype=float)
 
@@ -141,20 +165,26 @@ class RealVesselNetwork:
             return pts.min(axis=0), pts.max(axis=0)
 
         radii = np.array([s.radius for s in self.segments], dtype=float)
+
         lo = np.minimum(starts, ends) - radii[:, None]
         hi = np.maximum(starts, ends) + radii[:, None]
+
         return lo.min(axis=0), hi.max(axis=0)
 
     def _build_spatial_index(self, grid_res=40):
-        coords = np.array([pt for seg in self.segments for pt in (seg.start, seg.end)])
+        coords = np.array(
+            [pt for seg in self.segments for pt in (seg.start, seg.end)]
+        )
+
         self._bbox_min = coords.min(axis=0) - 0.01
         self._bbox_max = coords.max(axis=0) + 0.01
-        self._grid_res = grid_res
+        self._grid_res = int(grid_res)
         self._grid = {}
 
         for seg in self.segments:
             lo = np.minimum(seg.start, seg.end) - seg.radius
             hi = np.maximum(seg.start, seg.end) + seg.radius
+
             i0, j0, k0 = self._world_to_cell(lo)
             i1, j1, k1 = self._world_to_cell(hi)
 
@@ -165,33 +195,42 @@ class RealVesselNetwork:
 
     def _world_to_cell(self, pos):
         pos = np.asarray(pos, dtype=float)
+
         denom = self._bbox_max - self._bbox_min
         denom = np.where(denom < EPS, EPS, denom)
+
         idx = (pos - self._bbox_min) / denom * self._grid_res
         i, j, k = np.clip(idx.astype(int), 0, self._grid_res - 1)
+
         return int(i), int(j), int(k)
 
     def _candidates(self, pos):
         key = self._world_to_cell(pos)
         cands = self._grid.get(key)
+
         if cands:
             return cands
+
         return self.segments
 
     def find_segment(self, pos) -> Tuple[Optional[RealVesselSegment], float]:
         best_seg = None
         best_dist = np.inf
+
         for seg in self._candidates(pos):
             _, _, r, _ = seg.closest_point_and_radial(pos)
+
             if r < best_dist:
                 best_dist = r
                 best_seg = seg
-        return best_seg, best_dist
+
+        return best_seg, float(best_dist)
 
     def in_any_vessel(self, pos):
         for seg in self._candidates(pos):
             if seg.contains(pos):
                 return True
+
         return False
 
     def clip(self, pos):
@@ -201,6 +240,7 @@ class RealVesselNetwork:
             return pos.copy()
 
         seg, _ = self.find_segment(pos)
+
         if seg is None:
             return pos.copy()
 
@@ -215,8 +255,10 @@ class RealVesselNetwork:
 
     def velocity_at(self, pos, time=0.0):
         seg, dist = self.find_segment(pos)
+
         if seg is None or dist > seg.radius:
             return np.zeros(3)
+
         return seg.flow_velocity(pos, time)
 
     def _node_key(self, p):
@@ -234,10 +276,13 @@ class RealVesselNetwork:
         seg_by_id = {s.seg_id: s for s in self.segments}
 
         for ids in endpoints.values():
-            for a in ids:
-                for b in ids:
+            unique_ids = sorted(set(ids))
+
+            for a in unique_ids:
+                for b in unique_ids:
                     if a == b:
                         continue
+
                     graph[a].append((b, seg_by_id[b].start))
 
         return graph
@@ -258,6 +303,7 @@ class RealVesselNetwork:
 
         seg = rng.choice(self.segments)
         t = rng.uniform(0.05, 0.95)
+
         return seg.start + t * (seg.end - seg.start)
 
     def params_dict(self):
@@ -271,6 +317,7 @@ class RealVesselNetwork:
     def segment_summary(self):
         v_means = [seg.v_mean * 1000 for seg in self.segments]
         radii = [seg.radius * 1000 for seg in self.segments]
+
         return (
             f"RealVesselNetwork: {self.n_segments} segments, "
             f"flow_scale={self.flow_scale:.2f}, "
@@ -327,11 +374,13 @@ class RealVesselNetwork:
         path_ids.reverse()
 
         waypoints = []
+
         for sid in path_ids[1:]:
             seg = seg_by_id[sid]
             waypoints.append(seg.start.copy())
 
         waypoints.append(np.asarray(target_pos, dtype=float))
+
         return waypoints
 
     def _sparsify_waypoints(self, points, min_spacing=0.0015):
@@ -354,11 +403,13 @@ class RealVesselNetwork:
 
         for p in points[1:]:
             p = np.asarray(p, dtype=float)
+
             if np.linalg.norm(p - last_kept) >= min_spacing:
                 sparse.append(p)
                 last_kept = p
 
         final_point = np.asarray(points[-1], dtype=float)
+
         if np.linalg.norm(final_point - sparse[-1]) > EPS:
             sparse.append(final_point)
 
@@ -371,6 +422,7 @@ class RealVesselNetwork:
         arrival_tol=0.003,
         waypoint_spacing=0.0015,
         lookahead=3,
+        forward_search_points=35,
     ):
         """
         Build a waypoint navigator for MPC.
@@ -384,13 +436,22 @@ class RealVesselNetwork:
         lookahead:
             Tracks a waypoint several sparse points ahead while still measuring
             progress against the current waypoint.
+
+        forward_search_points:
+            Maximum number of future sparse waypoints searched for progress.
+            This prevents the navigator from getting stuck when the particle
+            skips past a waypoint or takes a shortcut between nearby centerline
+            points. The default value is compatible with simulation_3d_mpc.py.
         """
         start_pos = np.asarray(start_pos, dtype=float)
         target_pos = np.asarray(target_pos, dtype=float)
 
         raw_waypoints = self.plan_waypoints(start_pos, target_pos)
 
-        full_path = [start_pos] + [np.asarray(wp, dtype=float) for wp in raw_waypoints]
+        full_path = [
+            start_pos,
+            *[np.asarray(wp, dtype=float) for wp in raw_waypoints],
+        ]
 
         sparse_path = self._sparsify_waypoints(
             full_path,
@@ -410,11 +471,40 @@ class RealVesselNetwork:
 
         def next_waypoint(current_pos):
             current_pos = np.asarray(current_pos, dtype=float)
-            idx = state["idx"]
 
-            while idx < len(state["waypoints"]) - 1:
+            waypoints = state["waypoints"]
+            idx = int(state["idx"])
+
+            # ----------------------------------------------------------
+            # Forward-search progress update
+            # ----------------------------------------------------------
+            # The old navigator only advanced if the particle came within
+            # arrival_tol of the current waypoint. In fast/high-flow segments,
+            # the particle can pass a waypoint without entering that exact
+            # small sphere, causing the navigator to lag behind.
+            #
+            # This searches a bounded window ahead and moves idx to the
+            # closest waypoint in that window if it is not behind the current
+            # index. It keeps route ordering while making waypoint progress
+            # robust to small overshoots and shortcuts.
+            # ----------------------------------------------------------
+
+            if len(waypoints) > 0:
+                search_end = min(
+                    len(waypoints),
+                    idx + max(1, int(forward_search_points)),
+                )
+
+                window = np.asarray(waypoints[idx:search_end], dtype=float)
+
+                if len(window) > 0:
+                    dists = np.linalg.norm(window - current_pos, axis=1)
+                    local_best = int(np.argmin(dists))
+                    idx = max(idx, idx + local_best)
+
+            while idx < len(waypoints) - 1:
                 dist_to_current_wp = float(
-                    np.linalg.norm(current_pos - state["waypoints"][idx])
+                    np.linalg.norm(current_pos - waypoints[idx])
                 )
 
                 if dist_to_current_wp < arrival_tol:
@@ -424,17 +514,17 @@ class RealVesselNetwork:
 
             state["idx"] = idx
 
-            look_idx = min(idx + lookahead, len(state["waypoints"]) - 1)
+            look_idx = min(idx + lookahead, len(waypoints) - 1)
 
             next_waypoint.current_idx = idx
             next_waypoint.lookahead_idx = look_idx
-            next_waypoint.current_wp = state["waypoints"][idx]
-            next_waypoint.lookahead_wp = state["waypoints"][look_idx]
+            next_waypoint.current_wp = waypoints[idx]
+            next_waypoint.lookahead_wp = waypoints[look_idx]
             next_waypoint.current_wp_dist = float(
-                np.linalg.norm(current_pos - state["waypoints"][idx])
+                np.linalg.norm(current_pos - waypoints[idx])
             )
 
-            return state["waypoints"][look_idx]
+            return waypoints[look_idx]
 
         next_waypoint.waypoints = active_waypoints
         next_waypoint.raw_waypoint_count = len(raw_waypoints)
@@ -446,5 +536,7 @@ class RealVesselNetwork:
         next_waypoint.current_wp_dist = float("inf")
         next_waypoint.waypoint_spacing = waypoint_spacing
         next_waypoint.lookahead = lookahead
+        next_waypoint.forward_search_points = forward_search_points
+        next_waypoint.arrival_tol = arrival_tol
 
         return next_waypoint
