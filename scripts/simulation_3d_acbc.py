@@ -93,20 +93,35 @@ DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
 # ----------------------------------------------------------------------
 
 # Default scanner/ring radius. Override with --placement-radius.
-FIXED_PLACEMENT_RADIUS = 0.060   # m, coil centers 6 cm from gantry/body axis
-
-FIXED_COIL_RADIUS = 0.018        # m, 3.6 cm coil diameter
-FIXED_COIL_LENGTH = 0.070        # m, 7.0 cm coil/core length
-FIXED_CORE_RADIUS = 0.008        # m, 1.6 cm core diameter
-FIXED_TURNS = 3000.0
-FIXED_MAX_CURRENT = 12.0         # A, simulated pulsed/peak current
-
-FIXED_CORE_MU_R_EFFECTIVE = 60.0
-FIXED_CORE_SATURATION_T = 1.8
-
+# Body-scale scanner/ring radius.
+# 0.300 m means coil centers are 30 cm from the gantry/body axis.
+# This is large enough to represent a human-body-scale enclosing scanner bore.
 # ----------------------------------------------------------------------
-# Device mode
+# Electromagnetic steering hardware
 # ----------------------------------------------------------------------
+# These values define the simulated steering hardware.
+# They intentionally do NOT scale with vessel-tree size.
+# ----------------------------------------------------------------------
+
+# Body-scale scanner/ring radius.
+# 0.300 m means coil centers are 30 cm from the gantry/body axis.
+# This is large enough to represent a human-body-scale enclosing scanner bore.
+FIXED_PLACEMENT_RADIUS = 0.300   # m, coil centers 30 cm from gantry/body axis
+
+# High-authority large-bore scanner coil model.
+# These are simulation authority parameters, not a solved thermal/electrical build.
+FIXED_COIL_RADIUS = 0.080        # m, 16 cm coil diameter
+FIXED_COIL_LENGTH = 0.280        # m, 28 cm coil/core length
+FIXED_CORE_RADIUS = 0.040        # m, 8 cm core diameter
+FIXED_TURNS = 20000.0
+FIXED_MAX_CURRENT = 60.0         # A, simulated pulsed/peak current
+
+# Compromise core model.
+# 35 / 8.0 was too weak and barely progressed.
+# 120 / 2.2 produced strong movement but repeatedly flattened gradients near saturation.
+# 90 / 6.0 is the next compromise to restore authority without the old low saturation cap.
+FIXED_CORE_MU_R_EFFECTIVE = 90.0
+FIXED_CORE_SATURATION_T = 6.0
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -125,7 +140,11 @@ GANTRY_STANDOFF = 0.180  # m
 # Adaptive scanner defaults. This is the recommended usable system model.
 # It remains body-axis constrained, but allows limited lateral scanner/bed
 # repositioning to keep the target region within controllable magnetic authority.
-MAX_LATERAL_SHIFT = 0.045  # m, max 4.5 cm lateral offset from body axis
+# Larger body-scale scanner can apply a larger bounded table/scanner offset.
+# Adaptive scanner defaults. This is the recommended usable system model.
+# It remains body-axis constrained, but allows limited lateral scanner/bed
+# repositioning to keep the target region within controllable magnetic authority.
+MAX_LATERAL_SHIFT = 0.120  # m, max 12 cm lateral offset from body axis
 LATERAL_GAIN = 0.85        # fraction of particle lateral error corrected
 
 # Kept for CLI compatibility only. Fixed-device mode does not use this to scale coils.
@@ -572,7 +591,7 @@ def simulate_trial_acbc(
     network,
     trial_name: str = "trial",
     dt: float = 0.02,
-    steps: int = 2200,
+    steps: int = 3200,
     tolerance: float = 0.003,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
@@ -667,12 +686,30 @@ def simulate_trial_acbc(
         magnet_array=magnets,
         workspace=workspace,
         max_current=max_current,
+
         branch_detection_radius=None,
         branch_lookahead=None,
-        authority_threshold=1.05,
-        recovery_threshold=0.85,
-        min_wall_safety_fraction=0.05,
+        authority_threshold=1.02,
+        recovery_threshold=0.65,
+
+        # More conservative wall guard.
+        min_wall_safety_fraction=0.015,
         absolute_wall_clearance_threshold=0.00075,
+        stall_escape_min_wall_clearance=0.00100,
+        stall_escape_min_wall_fraction_multiplier=1.00,
+
+        # Pure recentering recovery.
+        recovery_center_fraction=1.00,
+        recovery_route_fraction=0.00,
+        max_recovery_steps=60,
+
+        # Stall escape only when safely away from wall.
+        stall_window_steps=10,
+        stall_escape_lookahead=90,
+        stall_escape_release_hops=18,
+        stall_escape_max_steps=260,
+
+        recovery_escape_lockout_steps=0,
     )
 
     print(
@@ -1032,6 +1069,7 @@ def run_all_trials(
     gantry_standoff: float = GANTRY_STANDOFF,
     max_lateral_shift: float = MAX_LATERAL_SHIFT,
     lateral_gain: float = LATERAL_GAIN,
+    only_trial: str | None = None,
 ):
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -1101,6 +1139,13 @@ def run_all_trials(
         },
     }
 
+    if only_trial is not None:
+        if only_trial not in trials:
+            raise ValueError(
+                f"--only-trial must be one of {sorted(trials)}, got {only_trial}"
+            )
+        trials = {only_trial: trials[only_trial]}
+
     if device_mode == "moving_linear_external_gantry":
         output_dir = "outputs/simulation_outputs_3d_acbc_external_gantry"
     elif device_mode == "moving_linear_enclosing_gantry":
@@ -1120,11 +1165,15 @@ def run_all_trials(
 
     # Representative plotting array.
     # For moving modes, this is a representative static snapshot only.
+    # If --only-trial is used, use the first remaining trial rather than
+    # assuming trial_1_inlet_to_outlet still exists.
     if device_mode == "fixed_enclosing_stress_test":
         plot_center = anatomical_center
     else:
-        first_start = trials["trial_1_inlet_to_outlet"]["start"]
-        first_target = trials["trial_1_inlet_to_outlet"]["target"]
+        first_trial_cfg = next(iter(trials.values()))
+        first_start = first_trial_cfg["start"]
+        first_target = first_trial_cfg["target"]
+
         plot_center = _initial_magnet_center_for_mode(
             device_mode=device_mode,
             start=first_start,
@@ -1216,7 +1265,7 @@ if __name__ == "__main__":
         default=None,
         help=(
             "Override magnet placement radius in meters. "
-            "Default is 0.060 m."
+            "Default is 0.3 m."
         ),
     )
 
@@ -1258,6 +1307,17 @@ if __name__ == "__main__":
         ),
     )
 
+    parser.add_argument(
+        "--only-trial",
+        default=None,
+        choices=[
+            "trial_1_inlet_to_outlet",
+            "trial_2_mid_to_outlet",
+            "trial_3_inlet_to_mid",
+        ],
+        help="Run only one named trial. Useful for tuning Trial 2 quickly.",
+    )
+
     args = parser.parse_args()
 
     run_all_trials(
@@ -1268,4 +1328,5 @@ if __name__ == "__main__":
         gantry_standoff=args.gantry_standoff,
         max_lateral_shift=args.max_lateral_shift,
         lateral_gain=args.lateral_gain,
+        only_trial=args.only_trial,
     )
