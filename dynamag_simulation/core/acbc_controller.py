@@ -4,25 +4,44 @@ Authority-Conditioned Branch Commitment controller.
 ACBC is a hybrid supervisory controller for magnetic carrier navigation
 through bifurcating vascular graphs.
 
-Main correction in this version:
+Main correction:
     ACBC is route-conditioned.
 
 It does NOT activate near the nearest bifurcation anywhere in the vessel tree.
 It only activates when a bifurcation lies ahead on the planned route.
 
-Additional correction in this version:
+Recovery correction:
     Recovery is softened.
 
 Instead of snapping directly to the vessel centerline during RECOVERY_MODE,
-ACBC now targets a partial step toward the centerline. This reduces aggressive
-sideways recovery forces, lowers velocity spikes, and should improve low-Re
-validity while preserving wall-safety behavior.
+ACBC targets a partial step toward the centerline. This reduces aggressive
+sideways recovery forces, lowers velocity spikes, and preserves wall-safety
+behavior.
+
+Stall correction:
+    Stall escape is added.
+
+If the route waypoint index does not improve for many consecutive control
+steps while the particle is safely away from the vessel wall, ACBC temporarily
+targets a farther downstream waypoint and boosts forward-progress weighting.
+
+Latest correction:
+    Stall escape has stronger wall-safety gating and recovery lockout.
+
+Trial 1 needs STALL_ESCAPE at the high-flow wp≈184 plateau, where wall
+clearance is several millimeters. Trial 2 showed that STALL_ESCAPE should NOT
+activate near the wall, and should not immediately re-enter after recovery.
+Therefore STALL_ESCAPE now requires:
+    - wall clearance >= 2.5 mm by default
+    - sufficient wall safety fraction
+    - no recent RECOVERY_MODE lockout
 
 States:
     FREE_NAVIGATION
     VIABILITY_ASSESSMENT
     BRANCH_COMMITMENT
     RECOVERY_MODE
+    STALL_ESCAPE
 """
 
 from __future__ import annotations
@@ -40,6 +59,7 @@ ACBC_FREE = "FREE_NAVIGATION"
 ACBC_ASSESS = "VIABILITY_ASSESSMENT"
 ACBC_COMMIT = "BRANCH_COMMITMENT"
 ACBC_RECOVER = "RECOVERY_MODE"
+ACBC_ESCAPE = "STALL_ESCAPE"
 
 
 @dataclass
@@ -92,7 +112,7 @@ class ACBCController:
     continuous MPC controller only as a low-level current allocator.
 
     The novelty is the supervisory decision:
-        free navigation vs. assess viability vs. commit vs. recover.
+        free navigation vs. assess viability vs. commit vs. recover vs. escape.
     """
 
     def __init__(
@@ -111,6 +131,13 @@ class ACBCController:
         max_commitment_steps: int = 40,
         recovery_center_fraction: float = 0.45,
         recovery_route_fraction: float = 0.12,
+        stall_window_steps: int = 45,
+        stall_escape_lookahead: int = 24,
+        stall_escape_release_hops: int = 5,
+        stall_escape_max_steps: int = 90,
+        stall_escape_min_wall_clearance: float = 0.0025,
+        stall_escape_min_wall_fraction_multiplier: float = 2.0,
+        recovery_escape_lockout_steps: int = 80,
     ):
         self.network = network
         self.magnet_array = magnet_array
@@ -143,20 +170,10 @@ class ACBCController:
         self.recovery_threshold = float(recovery_threshold)
         self.min_wall_safety_fraction = float(min_wall_safety_fraction)
 
-        # Absolute local wall-clearance trigger.
         self.absolute_wall_clearance_threshold = float(
             absolute_wall_clearance_threshold
         )
 
-        # Recovery softening.
-        # recovery_center_fraction:
-        #     Fraction of the radial distance back to centerline used as the
-        #     recovery target. 1.0 would snap all the way to centerline.
-        #     0.45 is gentler and reduces velocity spikes.
-        #
-        # recovery_route_fraction:
-        #     Small downstream nudge after partial recentering, so recovery
-        #     does not become a purely radial local trap.
         self.recovery_center_fraction = float(
             np.clip(recovery_center_fraction, 0.05, 1.0)
         )
@@ -164,15 +181,44 @@ class ACBCController:
             np.clip(recovery_route_fraction, 0.0, 0.5)
         )
 
+        # Stall escape configuration.
+        self.stall_window_steps = int(max(5, stall_window_steps))
+        self.stall_escape_lookahead = int(max(4, stall_escape_lookahead))
+        self.stall_escape_release_hops = int(max(1, stall_escape_release_hops))
+        self.stall_escape_max_steps = int(max(10, stall_escape_max_steps))
+
+        # Extra wall-safety gate for STALL_ESCAPE.
+        #
+        # This is intentionally much stricter than the global wall-unsafe
+        # trigger. STALL_ESCAPE is aggressive; it should only happen when the
+        # particle is clearly away from the wall.
+        self.stall_escape_min_wall_clearance = float(
+            max(0.0, stall_escape_min_wall_clearance)
+        )
+        self.stall_escape_min_wall_fraction_multiplier = float(
+            max(1.0, stall_escape_min_wall_fraction_multiplier)
+        )
+
+        # Recovery lockout:
+        # after RECOVERY_MODE is entered, do not allow STALL_ESCAPE for this
+        # many controller steps. This prevents:
+        #     RECOVERY -> ESCAPE -> wall scrape -> RECOVERY -> ESCAPE
+        self.recovery_escape_lockout_steps = int(
+            max(0, recovery_escape_lockout_steps)
+        )
+        self.last_recovery_step: Optional[int] = None
+
+        self.best_route_idx = -1
+        self.stagnant_steps = 0
+        self.escape_start_step: Optional[int] = None
+        self.escape_start_route_idx: Optional[int] = None
+
         self.state = ACBC_FREE
         self.prev_state = ACBC_FREE
 
         self.selected_branch: Optional[BranchCandidate] = None
         self.last_bifurcation_point: Optional[np.ndarray] = None
 
-        # Commitment release guard.
-        # This prevents ACBC from staying in BRANCH_COMMITMENT forever
-        # after a branch target becomes stale.
         self.commit_start_step: Optional[int] = None
         self.max_commitment_steps = int(max_commitment_steps)
         self.commit_target_reach_radius = max(
@@ -183,6 +229,7 @@ class ACBCController:
         self.recovery_count = 0
         self.commitment_count = 0
         self.transition_count = 0
+        self.stall_escape_count = 0
         self.step_count = 0
 
         self._bifurcation_nodes = self._build_bifurcation_nodes()
@@ -230,6 +277,97 @@ class ACBCController:
 
         return int(np.argmin(dists))
 
+    def _navigator_route_index(self, pos, navigator) -> int:
+        """
+        Return navigator current_idx when available. Fall back to nearest route
+        waypoint index.
+        """
+        idx = getattr(navigator, "current_idx", None)
+
+        if idx is not None:
+            try:
+                return int(idx)
+            except Exception:
+                pass
+
+        return self._nearest_route_index(pos, navigator)
+
+    def _update_stall_status(self, route_idx: int, navigator) -> bool:
+        """
+        Detect when route progress has plateaued.
+
+        A stall means:
+            - waypoint index has not improved for stall_window_steps
+            - there are still downstream route waypoints ahead
+        """
+        total_hops = int(getattr(navigator, "total_hops", 0) or 0)
+
+        if route_idx > self.best_route_idx:
+            self.best_route_idx = int(route_idx)
+            self.stagnant_steps = 0
+        else:
+            self.stagnant_steps += 1
+
+        has_route_ahead = True
+
+        if total_hops > 0:
+            has_route_ahead = route_idx < total_hops - 3
+
+        return bool(
+            self.stagnant_steps >= self.stall_window_steps
+            and has_route_ahead
+        )
+
+    def _stall_escape_target(self, particle_pos, navigator):
+        """
+        Pick a farther downstream waypoint on the same planned route.
+
+        This does not change the route or invent a new path. It only tells the
+        low-level allocator to stop obsessing over a local waypoint it cannot
+        cleanly reach.
+        """
+        waypoints = getattr(navigator, "waypoints", None)
+
+        if waypoints is None or len(waypoints) == 0:
+            return np.asarray(particle_pos, dtype=float)
+
+        current_idx = self._navigator_route_index(particle_pos, navigator)
+        target_idx = min(
+            len(waypoints) - 1,
+            current_idx + self.stall_escape_lookahead,
+        )
+
+        return self.workspace.clip(np.asarray(waypoints[target_idx], dtype=float))
+
+    def _escape_release_ready(self, route_idx: int) -> bool:
+        """
+        Leave STALL_ESCAPE after meaningful downstream progress, or after a
+        maximum number of escape steps so the state does not become permanent.
+        """
+        if self.escape_start_step is None or self.escape_start_route_idx is None:
+            return False
+
+        escape_age = self.step_count - self.escape_start_step
+        progress_hops = route_idx - self.escape_start_route_idx
+
+        return bool(
+            progress_hops >= self.stall_escape_release_hops
+            or escape_age >= self.stall_escape_max_steps
+        )
+
+    def _recent_recovery_lockout_active(self) -> bool:
+        """
+        Returns True if STALL_ESCAPE should be blocked because recovery was
+        entered recently.
+        """
+        if self.last_recovery_step is None:
+            return False
+
+        return bool(
+            self.step_count - self.last_recovery_step
+            < self.recovery_escape_lockout_steps
+        )
+
     def _point_segment_distance(self, p, a, b):
         p = np.asarray(p, dtype=float)
         a = np.asarray(a, dtype=float)
@@ -258,6 +396,7 @@ class ACBCController:
         pos = np.asarray(pos, dtype=float)
 
         waypoints = getattr(navigator, "waypoints", [])
+
         if waypoints is None or len(waypoints) == 0:
             return None, [], np.inf
 
@@ -341,7 +480,8 @@ class ACBCController:
 
             if particle_pos is not None:
                 back_vec = np.asarray(particle_pos, dtype=float) - np.asarray(
-                    bif_point, dtype=float
+                    bif_point,
+                    dtype=float,
                 )
                 back_norm = np.linalg.norm(back_vec)
 
@@ -392,6 +532,7 @@ class ACBCController:
             F = particle.magnetic_force(B, grad)
 
             fmag = np.linalg.norm(F)
+
             if fmag < EPS:
                 continue
 
@@ -514,7 +655,8 @@ class ACBCController:
         wall_margin, wall_fraction = self._wall_safety_for_segment(seg, particle)
 
         route_vec = np.asarray(nominal_target, dtype=float) - np.asarray(
-            bif_point, dtype=float
+            bif_point,
+            dtype=float,
         )
         route_norm = np.linalg.norm(route_vec)
 
@@ -568,11 +710,9 @@ class ACBCController:
             centerline point. That created large sideways corrections and
             velocity spikes in RECOVERY_MODE.
 
-        New behavior:
+        Current behavior:
             Target only a partial step toward the centerline, optionally with
             a small downstream route nudge once partial recentering is defined.
-
-        This preserves wall-safety recovery while reducing aggressive impulses.
         """
         particle_pos = np.asarray(particle_pos, dtype=float)
 
@@ -589,7 +729,6 @@ class ACBCController:
         if dist_to_center < EPS:
             base_target = closest.copy()
         else:
-            # Partial recentering instead of snapping all the way to centerline.
             base_target = particle_pos + self.recovery_center_fraction * to_center
 
         if nominal_target is None:
@@ -603,8 +742,6 @@ class ACBCController:
 
         route_hat = route_vec / route_norm
 
-        # Small downstream nudge. Keep this conservative so recovery remains
-        # primarily a safety maneuver, not an aggressive route-following command.
         downstream_step = min(
             self.recovery_route_fraction * self.branch_lookahead,
             0.20 * seg._length,
@@ -629,8 +766,19 @@ class ACBCController:
             if new_state == ACBC_COMMIT:
                 self.commit_start_step = self.step_count
 
+            if new_state == ACBC_RECOVER:
+                self.last_recovery_step = self.step_count
+
+            if new_state == ACBC_ESCAPE:
+                self.escape_start_step = self.step_count
+                self.escape_start_route_idx = self.best_route_idx
+
             if old_state == ACBC_COMMIT and new_state != ACBC_COMMIT:
                 self.commit_start_step = None
+
+            if old_state == ACBC_ESCAPE and new_state != ACBC_ESCAPE:
+                self.escape_start_step = None
+                self.escape_start_route_idx = None
 
             return True
 
@@ -658,6 +806,7 @@ class ACBCController:
 
         particle_pos = particle.pos.copy()
         nominal_target = navigator(particle_pos)
+        route_idx = self._navigator_route_index(particle_pos, navigator)
 
         bif_point, bif_ids, bif_dist = self._route_relevant_bifurcation(
             particle_pos,
@@ -676,27 +825,54 @@ class ACBCController:
             or wall_fraction < self.min_wall_safety_fraction
         )
 
+        stalled = self._update_stall_status(route_idx, navigator)
+
+        # Important safety gate:
+        # STALL_ESCAPE should only activate when the particle is safely away
+        # from the wall. Trial 1 had several millimeters of clearance during
+        # the useful escape. Trial 2 hit escape near ~0.1--1.7 mm clearance,
+        # which should instead force recovery/recentering.
+        safe_for_escape = (
+            wall_clearance >= self.stall_escape_min_wall_clearance
+            and wall_fraction
+            >= self.stall_escape_min_wall_fraction_multiplier
+            * self.min_wall_safety_fraction
+        )
+
+        recovery_lockout_active = self._recent_recovery_lockout_active()
+
+        stall_escape_allowed = bool(
+            stalled
+            and safe_for_escape
+            and not recovery_lockout_active
+        )
+
         candidates: List[BranchCandidate] = []
         selected: Optional[BranchCandidate] = None
         recovery_target = None
         transitioned = False
 
         # --------------------------------------------------------------
-        # State transitions
-        # --------------------------------------------------------------
-
-        # --------------------------------------------------------------
         # Global wall-safety guard
-        # --------------------------------------------------------------
-        # ACBC should not remain in FREE_NAVIGATION while the particle is
-        # nearly scraping the vessel wall. This is independent of whether
-        # a bifurcation is nearby.
         # --------------------------------------------------------------
 
         if wall_unsafe and self.state != ACBC_RECOVER:
             self.selected_branch = None
             self.recovery_count += 1
             transitioned = self._transition(ACBC_RECOVER) or transitioned
+
+        # --------------------------------------------------------------
+        # Route-progress stall guard
+        # --------------------------------------------------------------
+
+        if stall_escape_allowed and self.state != ACBC_ESCAPE:
+            self.selected_branch = None
+            self.stall_escape_count += 1
+            transitioned = self._transition(ACBC_ESCAPE) or transitioned
+
+        # --------------------------------------------------------------
+        # State transitions
+        # --------------------------------------------------------------
 
         if self.state == ACBC_FREE:
             if near_bifurcation:
@@ -747,9 +923,6 @@ class ACBCController:
                             self.selected_branch = None
                             transitioned = self._transition(ACBC_FREE) or transitioned
                 else:
-                    # Critical trap fix:
-                    # ACBC should never remain in VIABILITY_ASSESSMENT
-                    # with zero usable candidates.
                     self.selected_branch = None
                     transitioned = self._transition(ACBC_FREE) or transitioned
 
@@ -782,6 +955,15 @@ class ACBCController:
                     self.selected_branch = None
                     transitioned = self._transition(ACBC_FREE) or transitioned
 
+        elif self.state == ACBC_ESCAPE:
+            # If clearance degrades while escaping, or if recovery was recent,
+            # immediately return to recovery.
+            if not safe_for_escape or recovery_lockout_active:
+                self.recovery_count += 1
+                transitioned = self._transition(ACBC_RECOVER) or transitioned
+            elif self._escape_release_ready(route_idx):
+                transitioned = self._transition(ACBC_FREE) or transitioned
+
         elif self.state == ACBC_RECOVER:
             recovery_target = self._recovery_target(
                 particle_pos,
@@ -790,11 +972,9 @@ class ACBCController:
 
             recoverability = self._recoverability_score(particle_pos, particle)
 
-            wall_clearance, wall_margin, wall_fraction = (
-                self._wall_safety_at_position(
-                    particle_pos,
-                    particle,
-                )
+            wall_clearance, wall_margin, wall_fraction = self._wall_safety_at_position(
+                particle_pos,
+                particle,
             )
 
             wall_safe_again = (
@@ -802,8 +982,6 @@ class ACBCController:
                 and wall_fraction >= 1.5 * self.min_wall_safety_fraction
             )
 
-            # Do not leave recovery just because recoverability is high.
-            # The particle must actually regain wall clearance.
             if recoverability >= self.recovery_threshold and wall_safe_again:
                 if near_bifurcation:
                     transitioned = self._transition(ACBC_ASSESS) or transitioned
@@ -812,11 +990,6 @@ class ACBCController:
 
         # --------------------------------------------------------------
         # Final guard against impossible ACBC state
-        # --------------------------------------------------------------
-        # If a route-relevant bifurcation was detected but no candidates
-        # survived/evaluated, force nominal free navigation.
-        # This prevents the state machine from getting stuck in:
-        #     VIABILITY_ASSESSMENT + cands=0
         # --------------------------------------------------------------
 
         if self.state == ACBC_ASSESS and len(candidates) == 0:
@@ -842,6 +1015,9 @@ class ACBCController:
             else:
                 control_target = nominal_target
 
+        elif self.state == ACBC_ESCAPE:
+            control_target = self._stall_escape_target(particle_pos, navigator)
+
         elif self.state == ACBC_RECOVER:
             recovery_target = self._recovery_target(
                 particle_pos,
@@ -856,6 +1032,33 @@ class ACBCController:
         # Low-level current allocation
         # --------------------------------------------------------------
 
+        if self.state == ACBC_ESCAPE:
+            w_progress_eff = 1.85 * w_progress
+            w_align_eff = 1.35 * w_align
+            w_dist_eff = 1.25 * w_dist
+            w_curr_eff = 0.50 * w_curr
+            w_smooth_eff = 0.50 * w_smooth
+            w_edge_eff = 1.10 * w_edge
+            w_overshoot_eff = w_overshoot
+        elif self.state == ACBC_RECOVER:
+            # During near-wall recovery, reduce forward aggression and increase
+            # edge cost. This should help Trial 2 stop scraping the wall.
+            w_progress_eff = 0.55 * w_progress
+            w_align_eff = 0.75 * w_align
+            w_dist_eff = 1.35 * w_dist
+            w_curr_eff = w_curr
+            w_smooth_eff = w_smooth
+            w_edge_eff = 2.00 * w_edge
+            w_overshoot_eff = w_overshoot
+        else:
+            w_progress_eff = w_progress
+            w_align_eff = w_align
+            w_dist_eff = w_dist
+            w_curr_eff = w_curr
+            w_smooth_eff = w_smooth
+            w_edge_eff = w_edge
+            w_overshoot_eff = w_overshoot
+
         best_currents, best_force, best_cost, converged = continuous_mpc_controller(
             particle=particle,
             particle_pos=particle_pos,
@@ -865,13 +1068,13 @@ class ACBCController:
             dt=dt,
             max_current=self.max_current,
             initial_guess=initial_guess,
-            w_progress=w_progress,
-            w_align=w_align,
-            w_dist=w_dist,
-            w_curr=w_curr,
-            w_smooth=w_smooth,
-            w_edge=w_edge,
-            w_overshoot=w_overshoot,
+            w_progress=w_progress_eff,
+            w_align=w_align_eff,
+            w_dist=w_dist_eff,
+            w_curr=w_curr_eff,
+            w_smooth=w_smooth_eff,
+            w_edge=w_edge_eff,
+            w_overshoot=w_overshoot_eff,
             flow=flow,
             sim_time=sim_time,
         )
@@ -916,6 +1119,7 @@ class ACBCController:
             "acbc_transitions": self.transition_count,
             "acbc_commitments": self.commitment_count,
             "acbc_recoveries": self.recovery_count,
+            "acbc_stall_escapes": self.stall_escape_count,
             "acbc_branch_detection_radius_m": self.branch_detection_radius,
             "acbc_branch_lookahead_m": self.branch_lookahead,
             "acbc_route_corridor_radius_m": self.route_corridor_radius,
@@ -929,4 +1133,17 @@ class ACBCController:
             "acbc_commit_target_reach_radius_m": self.commit_target_reach_radius,
             "acbc_recovery_center_fraction": self.recovery_center_fraction,
             "acbc_recovery_route_fraction": self.recovery_route_fraction,
+            "acbc_stall_window_steps": self.stall_window_steps,
+            "acbc_stall_escape_lookahead": self.stall_escape_lookahead,
+            "acbc_stall_escape_release_hops": self.stall_escape_release_hops,
+            "acbc_stall_escape_max_steps": self.stall_escape_max_steps,
+            "acbc_stall_escape_min_wall_clearance_m": (
+                self.stall_escape_min_wall_clearance
+            ),
+            "acbc_stall_escape_min_wall_fraction_multiplier": (
+                self.stall_escape_min_wall_fraction_multiplier
+            ),
+            "acbc_recovery_escape_lockout_steps": (
+                self.recovery_escape_lockout_steps
+            ),
         }

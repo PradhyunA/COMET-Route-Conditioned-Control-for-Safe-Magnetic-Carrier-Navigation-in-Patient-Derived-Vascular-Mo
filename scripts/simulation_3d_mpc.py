@@ -13,31 +13,50 @@ This runner uses:
 ACBC is the main algorithmic contribution.
 The MPC allocator is only the low-level coil-current solver.
 
-Main correction in this version:
-    The magnetic device geometry is fixed and the low-level controller is
-    tuned for smoother, more physically defensible motion.
+This version implements multiple physical device modes.
 
-Previous behavior:
-    coil size was derived from the full vessel bounds.
+Device modes:
+    moving_internal_upper_bound:
+        Idealized upper-bound model.
+        The magnetic array center follows the particle directly.
+        This is NOT physically realistic for a human body, but useful as a
+        maximum-authority control benchmark.
 
-Problem:
-    This created huge coils such as:
-        coil_radius ≈ 12 cm
-        coil_length ≈ 48 cm
+    moving_linear_external_gantry:
+        One-sided external gantry stress test.
+        The magnetic array moves along one straight line parallel to the
+        start-target/body/aorta axis while staying outside the route axis by a
+        fixed standoff distance.
 
-New fixed device:
-    placement_radius = 6.0 cm
-    coil_radius      = 1.8 cm
-    coil_diameter    = 3.6 cm
-    coil_length      = 7.0 cm
-    turns            = 3000
-    max_current      = 12 A
+    moving_linear_enclosing_gantry:
+        Scanner/ring-like moving gantry model.
+        The magnetic array surrounds the body/route axis and slides in a
+        straight line along the body/aorta axis. The gantry center stays on the
+        projected route axis, and placement_radius determines how far the coil
+        centers are from the body/route axis.
 
-Optional:
-    The simulated device can follow the particle using a local moving-frame
-    model. This represents a local steering stage/gantry and prevents the
-    compact fixed device from being unrealistically centered over the entire
-    40 cm vascular path.
+    moving_adaptive_enclosing_gantry:
+        Recommended usable external scanner model.
+        The array remains physically constrained by the body/scanner axis, but
+        it may apply a bounded lateral repositioning offset, like a robotic
+        scanner head or patient bed adjustment. It does NOT track the curved
+        aorta exactly. The lateral offset is capped by max_lateral_shift.
+
+    fixed_enclosing_stress_test:
+        Device stays fixed at the vessel-tree anatomical center.
+        This is a hard physical authority stress test.
+
+Current default:
+    DEVICE_MODE = "moving_adaptive_enclosing_gantry"
+
+Recommended final working run:
+    python -u scripts/simulation_3d_mpc.py
+
+Interpretation:
+    placement_radius = ring radius from scanner centerline to coil centers.
+    max_lateral_shift = maximum external scanner/bed lateral offset from the
+    straight body axis. This makes the system usable without unrealistically
+    centering the ring exactly around the curved aorta.
 """
 
 import os
@@ -67,33 +86,49 @@ from dynamag_simulation.core.acbc_controller import ACBCController
 DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
 
 # ----------------------------------------------------------------------
-# Fixed electromagnetic steering device
+# Electromagnetic steering hardware
 # ----------------------------------------------------------------------
 # These values define the simulated steering hardware.
 # They intentionally do NOT scale with vessel-tree size.
 # ----------------------------------------------------------------------
 
-FIXED_PLACEMENT_RADIUS = 0.060   # m, coil centers 6 cm from device center
+# Default scanner/ring radius. Override with --placement-radius.
+FIXED_PLACEMENT_RADIUS = 0.060   # m, coil centers 6 cm from gantry/body axis
+
 FIXED_COIL_RADIUS = 0.018        # m, 3.6 cm coil diameter
 FIXED_COIL_LENGTH = 0.070        # m, 7.0 cm coil/core length
 FIXED_CORE_RADIUS = 0.008        # m, 1.6 cm core diameter
 FIXED_TURNS = 3000.0
-
-# Tuned down from 16 A.
-# 16 A proved the architecture could move, but it produced aggressive motion,
-# frequent saturation, high velocities, and Low-Re validity failures.
 FIXED_MAX_CURRENT = 12.0         # A, simulated pulsed/peak current
 
-# Effective steel-core model.
 FIXED_CORE_MU_R_EFFECTIVE = 60.0
 FIXED_CORE_SATURATION_T = 1.8
 
-# If True, the compact steering array follows the particle.
-# This is the best simulation model for a local steering stage.
-# If False, the compact device stays centered at the route midpoint.
-FOLLOW_PARTICLE_DEVICE = True
+# ----------------------------------------------------------------------
+# Device mode
+# ----------------------------------------------------------------------
 
-# Keep this CLI argument for compatibility, but it no longer controls coil size.
+VALID_DEVICE_MODES = {
+    "moving_internal_upper_bound",
+    "moving_linear_external_gantry",
+    "moving_linear_enclosing_gantry",
+    "moving_adaptive_enclosing_gantry",
+    "fixed_enclosing_stress_test",
+}
+
+DEVICE_MODE = "moving_adaptive_enclosing_gantry"
+
+# Only used for moving_linear_external_gantry.
+# Ignored for moving_linear_enclosing_gantry and moving_adaptive_enclosing_gantry.
+GANTRY_STANDOFF = 0.180  # m
+
+# Adaptive scanner defaults. This is the recommended usable system model.
+# It remains body-axis constrained, but allows limited lateral scanner/bed
+# repositioning to keep the target region within controllable magnetic authority.
+MAX_LATERAL_SHIFT = 0.045  # m, max 4.5 cm lateral offset from body axis
+LATERAL_GAIN = 0.85        # fraction of particle lateral error corrected
+
+# Kept for CLI compatibility only. Fixed-device mode does not use this to scale coils.
 DEFAULT_MAGNET_CLEARANCE = 0.04
 
 
@@ -105,7 +140,7 @@ def magnet_setup_for_network(
     """
     Build fixed-size magnetic device settings.
 
-    The network is used only to compute a default anatomical center and bounds.
+    The network is used only to compute anatomical bounds/center.
     Coil radius/length are NOT derived from the network bounds.
     """
     bounds_min, bounds_max = network.bounds(include_radius=True)
@@ -131,17 +166,330 @@ def magnet_setup_for_network(
     }
 
 
+def _unit_vector(v, fallback=None):
+    v = np.asarray(v, dtype=float)
+    n = float(np.linalg.norm(v))
+
+    if n < 1e-12:
+        if fallback is None:
+            return np.array([0.0, 0.0, 1.0], dtype=float)
+        return _unit_vector(np.asarray(fallback, dtype=float))
+
+    return v / n
+
+
+def _external_normal_for_axis(axis):
+    """
+    Choose a stable external normal direction perpendicular to route/body axis.
+
+    The VTP coordinate frame is not guaranteed to match anatomical axes, so we
+    build a normal from the route axis itself.
+    """
+    axis = _unit_vector(axis)
+
+    preferred = np.array([0.0, 1.0, 0.0], dtype=float)
+    normal = preferred - np.dot(preferred, axis) * axis
+
+    if np.linalg.norm(normal) < 1e-6:
+        preferred = np.array([1.0, 0.0, 0.0], dtype=float)
+        normal = preferred - np.dot(preferred, axis) * axis
+
+    return _unit_vector(normal, fallback=np.array([1.0, 0.0, 0.0]))
+
+
+def _route_axis_projection(
+    particle_pos,
+    start,
+    target,
+):
+    """
+    Project particle progress onto the straight start-target route/body axis.
+
+    This defines the straight-line rail/gantry coordinate. The gantry moves only
+    along this axis, not in full 3D with the particle.
+    """
+    particle_pos = np.asarray(particle_pos, dtype=float)
+    start = np.asarray(start, dtype=float)
+    target = np.asarray(target, dtype=float)
+
+    route_axis = _unit_vector(target - start)
+    route_midpoint = 0.5 * (start + target)
+
+    s_start = float(np.dot(start - route_midpoint, route_axis))
+    s_target = float(np.dot(target - route_midpoint, route_axis))
+    s_min = min(s_start, s_target)
+    s_max = max(s_start, s_target)
+
+    s_particle = float(np.dot(particle_pos - route_midpoint, route_axis))
+    s_particle = float(np.clip(s_particle, s_min, s_max))
+
+    axis_point = route_midpoint + s_particle * route_axis
+
+    return axis_point, route_axis
+
+
+def _moving_linear_external_gantry_center(
+    particle_pos,
+    start,
+    target,
+    standoff: float,
+):
+    """
+    One-sided external gantry model.
+
+    The gantry does NOT center on the internal particle.
+
+    It projects the particle position onto the start-target route axis, then
+    places the magnetic device center on a parallel external line offset by
+    `standoff`.
+
+    This approximates a one-sided external rail/applicator. It is useful as a
+    stress test, but it is NOT the ring/scanner-like model.
+    """
+    axis_point, route_axis = _route_axis_projection(
+        particle_pos=particle_pos,
+        start=start,
+        target=target,
+    )
+
+    external_normal = _external_normal_for_axis(route_axis)
+    gantry_center = axis_point + float(standoff) * external_normal
+
+    return gantry_center, axis_point, external_normal, route_axis
+
+
+def _moving_linear_enclosing_gantry_center(
+    particle_pos,
+    start,
+    target,
+):
+    """
+    Moving scanner/ring-like enclosing gantry model.
+
+    The gantry center moves along the straight route/body axis.
+    The body/aorta route passes through the scanner centerline.
+    The electromagnets surround that centerline at `placement_radius`.
+
+    There is no side standoff offset here.
+    """
+    axis_point, route_axis = _route_axis_projection(
+        particle_pos=particle_pos,
+        start=start,
+        target=target,
+    )
+
+    gantry_center = axis_point.copy()
+
+    return gantry_center, axis_point, route_axis
+
+
+def _moving_adaptive_enclosing_gantry_center(
+    particle_pos,
+    start,
+    target,
+    max_lateral_shift: float,
+    lateral_gain: float,
+):
+    """
+    Physically constrained adaptive enclosing gantry model.
+
+    The scanner primarily travels along the straight body/scanner axis, but it
+    can apply a bounded lateral repositioning offset. This represents a robotic
+    external scanner head or patient bed adjustment, not a ring magically
+    centered on the curved aorta.
+
+    The center is:
+        body_axis_projection + clipped(lateral_gain * lateral_error)
+
+    where lateral_error is the particle's offset from the body axis.
+    """
+    particle_pos = np.asarray(particle_pos, dtype=float)
+
+    axis_point, route_axis = _route_axis_projection(
+        particle_pos=particle_pos,
+        start=start,
+        target=target,
+    )
+
+    lateral_error = particle_pos - axis_point
+    lateral_error = lateral_error - np.dot(lateral_error, route_axis) * route_axis
+
+    desired_shift = float(lateral_gain) * lateral_error
+    shift_norm = float(np.linalg.norm(desired_shift))
+    max_shift = max(0.0, float(max_lateral_shift))
+
+    if shift_norm > max_shift and shift_norm > 1e-12:
+        lateral_shift = desired_shift * (max_shift / shift_norm)
+    else:
+        lateral_shift = desired_shift
+
+    gantry_center = axis_point + lateral_shift
+
+    return gantry_center, axis_point, lateral_shift, route_axis
+
+
+def _initial_magnet_center_for_mode(
+    device_mode,
+    start,
+    target,
+    network,
+    gantry_standoff,
+):
+    if device_mode == "moving_internal_upper_bound":
+        return np.asarray(start, dtype=float)
+
+    if device_mode == "moving_linear_external_gantry":
+        center, _, _, _ = _moving_linear_external_gantry_center(
+            particle_pos=start,
+            start=start,
+            target=target,
+            standoff=gantry_standoff,
+        )
+        return center
+
+    if device_mode in {
+        "moving_linear_enclosing_gantry",
+        "moving_adaptive_enclosing_gantry",
+    }:
+        center, _, _ = _moving_linear_enclosing_gantry_center(
+            particle_pos=start,
+            start=start,
+            target=target,
+        )
+        return center
+
+    if device_mode == "fixed_enclosing_stress_test":
+        bounds_min, bounds_max = network.bounds(include_radius=True)
+        return 0.5 * (bounds_min + bounds_max)
+
+    raise ValueError(f"Unknown device_mode: {device_mode}")
+
+
+def _apply_device_motion(
+    magnets,
+    device_mode,
+    particle_pos,
+    start,
+    target,
+    network,
+    gantry_standoff,
+    max_lateral_shift=MAX_LATERAL_SHIFT,
+    lateral_gain=LATERAL_GAIN,
+):
+    """
+    Apply device motion rule and return diagnostic geometry.
+    """
+    particle_pos = np.asarray(particle_pos, dtype=float)
+
+    if device_mode == "moving_internal_upper_bound":
+        magnets.recenter(particle_pos)
+
+        return {
+            "gantry_center": magnets.center.copy(),
+            "gantry_axis_point": particle_pos.copy(),
+            "gantry_external_normal": np.array([np.nan, np.nan, np.nan]),
+            "gantry_route_axis": _unit_vector(target - start),
+            "gantry_particle_dist": 0.0,
+            "gantry_axis_dist": 0.0,
+            "gantry_lateral_shift": np.zeros(3, dtype=float),
+        }
+
+    if device_mode == "moving_linear_external_gantry":
+        center, axis_point, external_normal, route_axis = (
+            _moving_linear_external_gantry_center(
+                particle_pos=particle_pos,
+                start=start,
+                target=target,
+                standoff=gantry_standoff,
+            )
+        )
+
+        magnets.recenter(center)
+
+        return {
+            "gantry_center": center.copy(),
+            "gantry_axis_point": axis_point.copy(),
+            "gantry_external_normal": external_normal.copy(),
+            "gantry_route_axis": route_axis.copy(),
+            "gantry_particle_dist": float(np.linalg.norm(center - particle_pos)),
+            "gantry_axis_dist": float(np.linalg.norm(center - axis_point)),
+            "gantry_lateral_shift": np.zeros(3, dtype=float),
+        }
+
+    if device_mode == "moving_linear_enclosing_gantry":
+        center, axis_point, route_axis = _moving_linear_enclosing_gantry_center(
+            particle_pos=particle_pos,
+            start=start,
+            target=target,
+        )
+
+        magnets.recenter(center)
+
+        return {
+            "gantry_center": center.copy(),
+            "gantry_axis_point": axis_point.copy(),
+            "gantry_external_normal": np.array([np.nan, np.nan, np.nan]),
+            "gantry_route_axis": route_axis.copy(),
+            "gantry_particle_dist": float(np.linalg.norm(center - particle_pos)),
+            "gantry_axis_dist": 0.0,
+            "gantry_lateral_shift": np.zeros(3, dtype=float),
+        }
+
+    if device_mode == "moving_adaptive_enclosing_gantry":
+        center, axis_point, lateral_shift, route_axis = (
+            _moving_adaptive_enclosing_gantry_center(
+                particle_pos=particle_pos,
+                start=start,
+                target=target,
+                max_lateral_shift=max_lateral_shift,
+                lateral_gain=lateral_gain,
+            )
+        )
+
+        magnets.recenter(center)
+
+        return {
+            "gantry_center": center.copy(),
+            "gantry_axis_point": axis_point.copy(),
+            "gantry_external_normal": np.array([np.nan, np.nan, np.nan]),
+            "gantry_route_axis": route_axis.copy(),
+            "gantry_particle_dist": float(np.linalg.norm(center - particle_pos)),
+            "gantry_axis_dist": float(np.linalg.norm(center - axis_point)),
+            "gantry_lateral_shift": lateral_shift.copy(),
+        }
+
+    if device_mode == "fixed_enclosing_stress_test":
+        bounds_min, bounds_max = network.bounds(include_radius=True)
+        axis_point = 0.5 * (bounds_min + bounds_max)
+
+        return {
+            "gantry_center": magnets.center.copy(),
+            "gantry_axis_point": axis_point.copy(),
+            "gantry_external_normal": np.array([np.nan, np.nan, np.nan]),
+            "gantry_route_axis": _unit_vector(target - start),
+            "gantry_particle_dist": float(np.linalg.norm(magnets.center - particle_pos)),
+            "gantry_axis_dist": float(np.linalg.norm(magnets.center - axis_point)),
+            "gantry_lateral_shift": np.zeros(3, dtype=float),
+        }
+
+    raise ValueError(f"Unknown device_mode: {device_mode}")
+
+
 def _vec_or_nan(v):
     if v is None:
         return [np.nan, np.nan, np.nan]
 
     v = np.asarray(v, dtype=float)
+
+    if v.shape[0] < 3:
+        return [np.nan, np.nan, np.nan]
+
     return [float(v[0]), float(v[1]), float(v[2])]
 
 
 def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
     """
-    Save per-step ACBC state-machine diagnostics.
+    Save per-step ACBC state-machine and device-motion diagnostics.
     """
     path = os.path.join(output_dir, filename)
 
@@ -168,6 +516,17 @@ def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
         "recovery_target_x",
         "recovery_target_y",
         "recovery_target_z",
+        "gantry_center_x",
+        "gantry_center_y",
+        "gantry_center_z",
+        "gantry_axis_point_x",
+        "gantry_axis_point_y",
+        "gantry_axis_point_z",
+        "gantry_particle_dist_m",
+        "gantry_axis_dist_m",
+        "gantry_lateral_shift_x",
+        "gantry_lateral_shift_y",
+        "gantry_lateral_shift_z",
     ]
 
     with open(path, "w", newline="") as f:
@@ -196,6 +555,11 @@ def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
                         *row["control_target"],
                         *row["nominal_target"],
                         *row["recovery_target"],
+                        *row["gantry_center"],
+                        *row["gantry_axis_point"],
+                        row["gantry_particle_dist_m"],
+                        row["gantry_axis_dist_m"],
+                        *row["gantry_lateral_shift"],
                     ]
                 )
 
@@ -208,7 +572,7 @@ def simulate_trial_mpc(
     network,
     trial_name: str = "trial",
     dt: float = 0.02,
-    steps: int = 1600,
+    steps: int = 2200,
     tolerance: float = 0.003,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
@@ -219,50 +583,45 @@ def simulate_trial_mpc(
     magnet_center=None,
     core_relative_permeability: float = FIXED_CORE_MU_R_EFFECTIVE,
     core_saturation_tesla: float = FIXED_CORE_SATURATION_T,
-    follow_particle_device: bool = FOLLOW_PARTICLE_DEVICE,
+    device_mode: str = DEVICE_MODE,
+    gantry_standoff: float = GANTRY_STANDOFF,
+    max_lateral_shift: float = MAX_LATERAL_SHIFT,
+    lateral_gain: float = LATERAL_GAIN,
     profile: PhysicalProfile = SPION_CARRIER_10UM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
 
-    # ------------------------------------------------------------------
-    # Smoother MPC weights
-    # ------------------------------------------------------------------
-    # Previous aggressive values:
-    #     w_progress = 300
-    #     w_align    = 20
-    #     w_dist     = 0.5
-    #     w_curr     = 1e-6
-    #     w_smooth   = 1e-5
-    #     w_edge     = 25
-    #     w_overshoot= 1
-    #
-    # Those proved the system could move, but caused:
-    #     high speeds,
-    #     frequent current saturation,
-    #     Low-Re validity failures,
-    #     many optimizer non-convergence warnings.
-    # ------------------------------------------------------------------
-
-    w_progress: float = 170.0,
-    w_align: float = 10.0,
-    w_dist: float = 1.2,
-    w_curr: float = 8e-5,
-    w_smooth: float = 8e-4,
-    w_edge: float = 120.0,
-    w_overshoot: float = 6.0,
+    # High-authority weights.
+    # These are intentionally aggressive because weak penalties previously made
+    # the current allocator avoid using the available 12 A authority.
+    w_progress: float = 450.0,
+    w_align: float = 35.0,
+    w_dist: float = 2.0,
+    w_curr: float = 1e-7,
+    w_smooth: float = 1e-6,
+    w_edge: float = 250.0,
+    w_overshoot: float = 8.0,
 ) -> TrialResult:
+    if device_mode not in VALID_DEVICE_MODES:
+        raise ValueError(
+            f"device_mode must be one of {sorted(VALID_DEVICE_MODES)}, "
+            f"got {device_mode}"
+        )
+
     workspace = WorkspaceVessel(network)
     flow = network
 
     start = workspace.clip(np.asarray(start, dtype=float))
     target = workspace.clip(np.asarray(target, dtype=float))
 
-    # For a fixed compact device, route midpoint is a better static default
-    # than the full vessel-tree center.
-    route_midpoint = 0.5 * (start + target)
-
     if magnet_center is None:
-        magnet_center = route_midpoint
+        magnet_center = _initial_magnet_center_for_mode(
+            device_mode=device_mode,
+            start=start,
+            target=target,
+            network=network,
+            gantry_standoff=gantry_standoff,
+        )
 
     magnets = ElectromagnetArray3D(
         coil_radius=coil_radius,
@@ -282,9 +641,17 @@ def simulate_trial_mpc(
         rng_seed=rng_seed,
     )
 
-    # If using the local moving-frame device, begin centered around the particle.
-    if follow_particle_device:
-        magnets.recenter(particle.pos)
+    initial_device_diag = _apply_device_motion(
+        magnets=magnets,
+        device_mode=device_mode,
+        particle_pos=particle.pos,
+        start=start,
+        target=target,
+        network=network,
+        gantry_standoff=gantry_standoff,
+        max_lateral_shift=max_lateral_shift,
+        lateral_gain=lateral_gain,
+    )
 
     navigator = network.waypoint_navigator(
         start,
@@ -329,6 +696,18 @@ def simulate_trial_mpc(
         f"branch_lookahead={acbc.branch_lookahead * 1000:.1f} mm"
     )
 
+    print(
+        "    Device motion: "
+        f"mode={device_mode}, "
+        f"placement_radius={placement_radius * 1000:.1f} mm, "
+        f"gantry_standoff={gantry_standoff * 1000:.1f} mm, "
+        f"max_lateral_shift={max_lateral_shift * 1000:.1f} mm, "
+        f"lateral_gain={lateral_gain:.2f}, "
+        f"initial_center={np.round(initial_device_diag['gantry_center'] * 1000, 1)} mm, "
+        f"initial_axis_dist={initial_device_diag['gantry_axis_dist'] * 1000:.1f} mm, "
+        f"initial_particle_dist={initial_device_diag['gantry_particle_dist'] * 1000:.1f} mm"
+    )
+
     trajectory = [particle.pos.copy()]
     distance_log = []
     current_log = []
@@ -338,24 +717,32 @@ def simulate_trial_mpc(
     reynolds_log = []
     cost_log = []
     step_time_log = []
-
+    gantry_center_log = []
+    gantry_particle_dist_log = []
+    gantry_axis_dist_log = []
+    gantry_lateral_shift_log = []
     acbc_log = []
 
     reached = False
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
-
     converged_count = 0
 
     for step in range(steps):
         sim_time = step * dt
         t0 = time.perf_counter()
 
-        # Local moving-frame steering stage.
-        # This keeps the compact coil array close enough to generate useful
-        # gradients along a long 40 cm anatomical path.
-        if follow_particle_device:
-            magnets.recenter(particle.pos)
+        device_diag = _apply_device_motion(
+            magnets=magnets,
+            device_mode=device_mode,
+            particle_pos=particle.pos,
+            start=start,
+            target=target,
+            network=network,
+            gantry_standoff=gantry_standoff,
+            max_lateral_shift=max_lateral_shift,
+            lateral_gain=lateral_gain,
+        )
 
         best_currents, best_force, best_cost, converged, acbc_info = acbc.step(
             particle=particle,
@@ -424,6 +811,10 @@ def simulate_trial_mpc(
         reynolds_log.append(re)
         cost_log.append(best_cost)
         step_time_log.append(t1 - t0)
+        gantry_center_log.append(device_diag["gantry_center"].copy())
+        gantry_particle_dist_log.append(device_diag["gantry_particle_dist"])
+        gantry_axis_dist_log.append(device_diag["gantry_axis_dist"])
+        gantry_lateral_shift_log.append(device_diag["gantry_lateral_shift"].copy())
 
         acbc_log.append(
             {
@@ -442,6 +833,11 @@ def simulate_trial_mpc(
                 "control_target": _vec_or_nan(acbc_info.control_target),
                 "nominal_target": _vec_or_nan(acbc_info.nominal_target),
                 "recovery_target": _vec_or_nan(acbc_info.recovery_target),
+                "gantry_center": _vec_or_nan(device_diag["gantry_center"]),
+                "gantry_axis_point": _vec_or_nan(device_diag["gantry_axis_point"]),
+                "gantry_particle_dist_m": float(device_diag["gantry_particle_dist"]),
+                "gantry_axis_dist_m": float(device_diag["gantry_axis_dist"]),
+                "gantry_lateral_shift": _vec_or_nan(device_diag["gantry_lateral_shift"]),
             }
         )
 
@@ -458,12 +854,12 @@ def simulate_trial_mpc(
             seg, _ = network.find_segment(particle.pos)
 
             if seg is not None:
-                _, _, radial_dist, _ = seg.closest_point_and_radial(
-                    particle.pos
-                )
+                _, _, radial_dist, _ = seg.closest_point_and_radial(particle.pos)
                 wall_clearance = seg.radius - radial_dist
             else:
                 wall_clearance = np.nan
+
+            lateral_shift_norm = np.linalg.norm(device_diag["gantry_lateral_shift"])
 
             print(
                 f"  step {step + 1:>4d}/{steps}  "
@@ -483,7 +879,10 @@ def simulate_trial_mpc(
                 f"particle_v={particle_speed * 1000:.2f} mm/s  "
                 f"flow_v={flow_speed * 1000:.2f} mm/s  "
                 f"wall_clear={wall_clearance * 1000:.2f} mm  "
-                f"Re={re:.2e}"
+                f"Re={re:.2e}  "
+                f"gantry_axis_dist={device_diag['gantry_axis_dist'] * 1000:.1f} mm  "
+                f"gantry_particle_dist={device_diag['gantry_particle_dist'] * 1000:.1f} mm  "
+                f"lateral_shift={lateral_shift_norm * 1000:.1f} mm"
             )
 
     wall_end = time.perf_counter()
@@ -497,6 +896,10 @@ def simulate_trial_mpc(
     reynolds_log = np.array(reynolds_log)
     cost_log = np.array(cost_log)
     step_time_log = np.array(step_time_log)
+    gantry_center_log = np.array(gantry_center_log)
+    gantry_particle_dist_log = np.array(gantry_particle_dist_log)
+    gantry_axis_dist_log = np.array(gantry_axis_dist_log)
+    gantry_lateral_shift_log = np.array(gantry_lateral_shift_log)
 
     re_stats = check_low_re_validity(reynolds_log)
 
@@ -542,6 +945,7 @@ def simulate_trial_mpc(
         params={
             "controller": "ACBC",
             "low_level_allocator": "continuous_mpc_controller",
+            "device_mode": device_mode,
             "dt": dt,
             "steps": steps,
             "tolerance": tolerance,
@@ -551,11 +955,30 @@ def simulate_trial_mpc(
             "core_radius": core_radius,
             "turns": turns,
             "max_current": max_current,
-            "magnet_center": magnets.center.tolist(),
+            "magnet_center_final": magnets.center.tolist(),
             "placement_radius": placement_radius,
+            "gantry_standoff_m": gantry_standoff,
+            "max_lateral_shift_m": max_lateral_shift,
+            "lateral_gain": lateral_gain,
+            "gantry_mean_particle_dist_m": float(np.mean(gantry_particle_dist_log))
+            if len(gantry_particle_dist_log) > 0
+            else np.nan,
+            "gantry_mean_axis_dist_m": float(np.mean(gantry_axis_dist_log))
+            if len(gantry_axis_dist_log) > 0
+            else np.nan,
+            "gantry_mean_lateral_shift_m": float(
+                np.mean(np.linalg.norm(gantry_lateral_shift_log, axis=1))
+            )
+            if len(gantry_lateral_shift_log) > 0
+            else np.nan,
+            "gantry_max_lateral_shift_m": float(
+                np.max(np.linalg.norm(gantry_lateral_shift_log, axis=1))
+            )
+            if len(gantry_lateral_shift_log) > 0
+            else np.nan,
             "core_relative_permeability": core_relative_permeability,
             "core_saturation_tesla": core_saturation_tesla,
-            "follow_particle_device": follow_particle_device,
+            "follow_particle_device": device_mode == "moving_internal_upper_bound",
             "profile": profile.name,
             "max_substep_disp": max_substep_disp,
             "vessel_network": network.params_dict(),
@@ -573,6 +996,10 @@ def simulate_trial_mpc(
     )
 
     result.acbc_log = acbc_log
+    result.gantry_center_log = gantry_center_log
+    result.gantry_particle_dist_log = gantry_particle_dist_log
+    result.gantry_axis_dist_log = gantry_axis_dist_log
+    result.gantry_lateral_shift_log = gantry_lateral_shift_log
 
     print(
         f"  ACBC summary: transitions={acbc_summary['acbc_transitions']}, "
@@ -581,6 +1008,19 @@ def simulate_trial_mpc(
         f"low-level convergence={low_level_convergence_rate:.2%}"
     )
 
+    if len(gantry_axis_dist_log) > 0:
+        lateral_norms = np.linalg.norm(gantry_lateral_shift_log, axis=1)
+
+        print(
+            f"  Gantry summary: "
+            f"mean_axis_dist={np.mean(gantry_axis_dist_log) * 1000:.1f} mm, "
+            f"mean_particle_dist={np.mean(gantry_particle_dist_log) * 1000:.1f} mm, "
+            f"min_particle_dist={np.min(gantry_particle_dist_log) * 1000:.1f} mm, "
+            f"max_particle_dist={np.max(gantry_particle_dist_log) * 1000:.1f} mm, "
+            f"mean_lateral_shift={np.mean(lateral_norms) * 1000:.1f} mm, "
+            f"max_lateral_shift={np.max(lateral_norms) * 1000:.1f} mm"
+        )
+
     return result
 
 
@@ -588,7 +1028,17 @@ def run_all_trials(
     vessel_file: str = DEFAULT_VESSEL_FILE,
     magnet_clearance: float = DEFAULT_MAGNET_CLEARANCE,
     placement_radius: float | None = None,
+    device_mode: str = DEVICE_MODE,
+    gantry_standoff: float = GANTRY_STANDOFF,
+    max_lateral_shift: float = MAX_LATERAL_SHIFT,
+    lateral_gain: float = LATERAL_GAIN,
 ):
+    if device_mode not in VALID_DEVICE_MODES:
+        raise ValueError(
+            f"device_mode must be one of {sorted(VALID_DEVICE_MODES)}, "
+            f"got {device_mode}"
+        )
+
     flow_scale = 1.0
 
     network = RealVesselNetwork(
@@ -612,15 +1062,12 @@ def run_all_trials(
     max_current = magnet_setup["max_current"]
     core_relative_permeability = magnet_setup["core_relative_permeability"]
     core_saturation_tesla = magnet_setup["core_saturation_tesla"]
-
-    # This is only the default static center.
-    # For FOLLOW_PARTICLE_DEVICE=True, each trial recenters the device around
-    # the particle during the control loop.
-    magnet_center = magnet_setup["center"]
+    anatomical_center = magnet_setup["center"]
 
     print(
-        "Fixed magnet setup: "
-        f"default_center={np.round(magnet_center, 4)} m, "
+        "Magnet setup: "
+        f"device_mode={device_mode}, "
+        f"anatomical_center={np.round(anatomical_center, 4)} m, "
         f"placement_radius={placement_radius:.3f} m, "
         f"coil_radius={coil_radius:.3f} m, "
         f"coil_diameter={2.0 * coil_radius:.3f} m, "
@@ -628,7 +1075,9 @@ def run_all_trials(
         f"core_radius={core_radius:.3f} m, "
         f"turns={turns:.0f}, "
         f"max_current={max_current:.1f} A, "
-        f"follow_particle_device={FOLLOW_PARTICLE_DEVICE}"
+        f"gantry_standoff={gantry_standoff:.3f} m, "
+        f"max_lateral_shift={max_lateral_shift:.3f} m, "
+        f"lateral_gain={lateral_gain:.2f}"
     )
 
     rng = np.random.default_rng(42)
@@ -652,11 +1101,37 @@ def run_all_trials(
         },
     }
 
-    output_dir = "outputs/simulation_outputs_3d_acbc"
+    if device_mode == "moving_linear_external_gantry":
+        output_dir = "outputs/simulation_outputs_3d_acbc_external_gantry"
+    elif device_mode == "moving_linear_enclosing_gantry":
+        output_dir = "outputs/simulation_outputs_3d_acbc_enclosing_gantry"
+    elif device_mode == "moving_adaptive_enclosing_gantry":
+        output_dir = "outputs/simulation_outputs_3d_acbc_adaptive_enclosing_gantry"
+    elif device_mode == "moving_internal_upper_bound":
+        output_dir = "outputs/simulation_outputs_3d_acbc_moving_internal"
+    elif device_mode == "fixed_enclosing_stress_test":
+        output_dir = "outputs/simulation_outputs_3d_acbc_fixed_stress"
+    else:
+        raise ValueError(f"Unknown device_mode: {device_mode}")
 
     os.makedirs(output_dir, exist_ok=True)
 
     results = []
+
+    # Representative plotting array.
+    # For moving modes, this is a representative static snapshot only.
+    if device_mode == "fixed_enclosing_stress_test":
+        plot_center = anatomical_center
+    else:
+        first_start = trials["trial_1_inlet_to_outlet"]["start"]
+        first_target = trials["trial_1_inlet_to_outlet"]["target"]
+        plot_center = _initial_magnet_center_for_mode(
+            device_mode=device_mode,
+            start=first_start,
+            target=first_target,
+            network=network,
+            gantry_standoff=gantry_standoff,
+        )
 
     magnets_for_plots = ElectromagnetArray3D(
         coil_radius=coil_radius,
@@ -664,7 +1139,7 @@ def run_all_trials(
         turns=turns,
         max_current=max_current,
         placement_radius=placement_radius,
-        center=magnet_center,
+        center=plot_center,
         core_radius=core_radius,
         core_relative_permeability=core_relative_permeability,
         core_saturation_tesla=core_saturation_tesla,
@@ -686,19 +1161,18 @@ def run_all_trials(
             turns=turns,
             max_current=max_current,
             placement_radius=placement_radius,
-            magnet_center=magnet_center,
+            magnet_center=None,
             core_relative_permeability=core_relative_permeability,
             core_saturation_tesla=core_saturation_tesla,
-            follow_particle_device=FOLLOW_PARTICLE_DEVICE,
+            device_mode=device_mode,
+            gantry_standoff=gantry_standoff,
+            max_lateral_shift=max_lateral_shift,
+            lateral_gain=lateral_gain,
         )
 
         results.append(result)
-
         print_summary(result)
 
-        # Plot using the default static device geometry.
-        # If follow_particle_device=True, the trajectory/control data are still valid;
-        # the plotted magnet geometry is representative rather than time-varying.
         save_all_plots(
             result,
             output_dir,
@@ -741,8 +1215,46 @@ if __name__ == "__main__":
         type=float,
         default=None,
         help=(
-            "Override fixed magnet placement radius in meters. "
+            "Override magnet placement radius in meters. "
             "Default is 0.060 m."
+        ),
+    )
+
+    parser.add_argument(
+        "--device-mode",
+        default=DEVICE_MODE,
+        choices=sorted(VALID_DEVICE_MODES),
+        help="Device motion model to run.",
+    )
+
+    parser.add_argument(
+        "--gantry-standoff",
+        type=float,
+        default=GANTRY_STANDOFF,
+        help=(
+            "Distance from route/body axis to moving external gantry center "
+            "in meters. Used only for moving_linear_external_gantry. "
+            "Ignored for moving_linear_enclosing_gantry."
+        ),
+    )
+
+    parser.add_argument(
+        "--max-lateral-shift",
+        type=float,
+        default=MAX_LATERAL_SHIFT,
+        help=(
+            "Maximum lateral scanner/bed offset from the straight body axis, "
+            "in meters. Used for moving_adaptive_enclosing_gantry."
+        ),
+    )
+
+    parser.add_argument(
+        "--lateral-gain",
+        type=float,
+        default=LATERAL_GAIN,
+        help=(
+            "Fraction of particle lateral error corrected by the adaptive "
+            "gantry, before clipping to --max-lateral-shift."
         ),
     )
 
@@ -752,4 +1264,8 @@ if __name__ == "__main__":
         vessel_file=args.vessel_file,
         magnet_clearance=args.magnet_clearance,
         placement_radius=args.placement_radius,
+        device_mode=args.device_mode,
+        gantry_standoff=args.gantry_standoff,
+        max_lateral_shift=args.max_lateral_shift,
+        lateral_gain=args.lateral_gain,
     )
