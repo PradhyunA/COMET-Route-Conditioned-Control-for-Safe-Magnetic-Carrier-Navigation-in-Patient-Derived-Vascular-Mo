@@ -1,7 +1,7 @@
 """
 Electromagnet array: 9-magnet triangular-prism regularized dipole model.
 
-Fixed-device version.
+Body-scale scanner version.
 
 Layout:
     Front triangle (z = -d)
@@ -31,8 +31,13 @@ Regularized dipole field:
            [3(m·r_hat)r_hat - m]
            / (r^2 + a^2)^(3/2)
 
-This file intentionally models a fixed compact steering device, not a
+This file intentionally models a fixed body-scale steering device, not a
 vessel-bounds-scaled device.
+
+Important:
+    This is a simulation authority model.
+    It does NOT solve coil resistance, heating, power electronics, duty cycle,
+    voltage limits, insulation, cooling, or patient safety constraints.
 
 Reference:
 Jackson, Classical Electrodynamics, ch. 5
@@ -50,32 +55,42 @@ class ElectromagnetArray3D:
     """
     9 electromagnets arranged in a triangular prism.
 
-    Default fixed device geometry:
-        placement_radius = 0.060 m   # coil centers 6 cm from device center
-        coil_radius      = 0.018 m   # 3.6 cm coil diameter
-        coil_length      = 0.070 m   # 7.0 cm core/coil length
-        core_radius      = 0.008 m   # 1.6 cm core diameter
-        turns            = 3000
-        max_current      = 12 A peak/pulsed
+    Default body-scale scanner geometry:
+        placement_radius = 0.300 m   # coil centers 30 cm from device center
+        coil_radius      = 0.080 m   # 16 cm coil diameter
+        coil_length      = 0.280 m   # 28 cm core/coil length
+        core_radius      = 0.040 m   # 8 cm core diameter
+        turns            = 20000
+        max_current      = 60 A peak/pulsed simulation limit
+
+    Core model:
+        core_relative_permeability = 90
+        core_saturation_tesla      = 6.0
+
+    Why these values:
+        - 35 / 8.0 was too weak and barely progressed.
+        - 120 / 2.2 caused repeated flat-gradient saturation.
+        - 90 / 6.0 is a compromise: high authority without the low 2.2 T cap.
 
     Notes:
-        - This is a simulation model.
+        - This is a simulation authority model.
         - AWG, resistance, heating, voltage, and thermal limits are not solved here.
         - The steel-core model is an effective gain with soft saturation.
-        - 12 A should be interpreted as a pulsed peak current, not continuous DC.
+        - 60 A should be interpreted as a pulsed peak simulation limit,
+          not continuous DC.
     """
 
     def __init__(
         self,
-        coil_radius: float = 0.018,
-        coil_length: float = 0.070,
-        turns: float = 3000.0,
-        max_current: float = 12.0,
-        placement_radius: float = 0.060,
+        coil_radius: float = 0.080,
+        coil_length: float = 0.280,
+        turns: float = 20000.0,
+        max_current: float = 60.0,
+        placement_radius: float = 0.300,
         center=None,
-        core_radius: float = 0.008,
-        core_relative_permeability: float = 60.0,
-        core_saturation_tesla: float = 1.8,
+        core_radius: float = 0.040,
+        core_relative_permeability: float = 90.0,
+        core_saturation_tesla: float = 6.0,
     ):
         self.placement_radius = float(placement_radius)
         self.center = (
@@ -98,6 +113,10 @@ class ElectromagnetArray3D:
         # Regularization length.
         # Use a nonzero effective source size so the dipole field does not blow up
         # near a coil. This also roughly represents finite coil/core size.
+        #
+        # For a large body-scale scanner, the core radius dominates the
+        # regularization. This prevents unrealistic near-singular fields while
+        # preserving useful gradients in the bore.
         reg_len = max(0.5 * self.coil_radius, self.core_radius, 1e-4)
         self._a_sq = reg_len ** 2
 
@@ -163,8 +182,7 @@ class ElectromagnetArray3D:
         """
         Move the entire magnetic steering frame to a new center.
 
-        This is useful for simulating a local moving steering stage or gantry
-        that remains centered around the particle/region of interest.
+        This is useful for simulating a moving scanner/gantry frame.
 
         It does not change coil geometry, orientations, turns, or currents.
         """
@@ -294,4 +312,5 @@ class ElectromagnetArray3D:
             "moment_per_amp_A_m2": self.moment_per_amp,
             "thermal_model_included": False,
             "awg_model_included": False,
+            "body_scale_scanner_model": True,
         }
