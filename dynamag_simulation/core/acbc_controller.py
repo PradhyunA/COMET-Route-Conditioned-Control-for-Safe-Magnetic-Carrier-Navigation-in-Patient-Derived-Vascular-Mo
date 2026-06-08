@@ -820,12 +820,26 @@ class ACBCController:
             particle,
         )
 
+        # Hard wall-unsafe condition.
+        # This is the emergency trigger: the particle is already too close to
+        # the wall and should immediately prioritize recentering.
         wall_unsafe = (
             wall_clearance < self.absolute_wall_clearance_threshold
             or wall_fraction < self.min_wall_safety_fraction
         )
 
         stalled = self._update_stall_status(route_idx, navigator)
+
+        # Soft near-wall warning.
+        # This is stricter than wall_unsafe and is used for hysteresis:
+        # if the route is stalled while the particle is not safely centered,
+        # prefer RECOVERY_MODE over aggressive STALL_ESCAPE.
+        near_wall_warning = (
+            wall_clearance < self.stall_escape_min_wall_clearance
+            or wall_fraction
+            < self.stall_escape_min_wall_fraction_multiplier
+            * self.min_wall_safety_fraction
+        )
 
         # Important safety gate:
         # STALL_ESCAPE should only activate when the particle is safely away
@@ -856,7 +870,10 @@ class ACBCController:
         # Global wall-safety guard
         # --------------------------------------------------------------
 
-        if wall_unsafe and self.state != ACBC_RECOVER:
+        if (
+            wall_unsafe
+            or (stalled and near_wall_warning)
+        ) and self.state != ACBC_RECOVER:
             self.selected_branch = None
             self.recovery_count += 1
             transitioned = self._transition(ACBC_RECOVER) or transitioned
@@ -977,12 +994,29 @@ class ACBCController:
                 particle,
             )
 
+            # Recovery release must be LESS strict than STALL_ESCAPE entry.
+            # Otherwise Trial 1 can get stuck around ~2.26-2.28 mm clearance
+            # because STALL_ESCAPE requires 2.5 mm by default.
+            #
+            # This creates three useful zones:
+            #   < 0.75 mm  -> forced RECOVERY
+            #   0.75-1.8 mm -> remain in RECOVERY
+            #   1.8-2.5 mm -> FREE/COMMIT allowed, STALL_ESCAPE blocked
+            #   > 2.5 mm -> STALL_ESCAPE allowed if stalled
+            recovery_release_clearance = 0.0018  # 1.8 mm
+            recovery_release_fraction = 1.25 * self.min_wall_safety_fraction
+
             wall_safe_again = (
-                wall_clearance >= 1.5 * self.absolute_wall_clearance_threshold
-                and wall_fraction >= 1.5 * self.min_wall_safety_fraction
+                wall_clearance >= recovery_release_clearance
+                and wall_fraction >= recovery_release_fraction
             )
 
-            if recoverability >= self.recovery_threshold and wall_safe_again:
+            can_leave_recovery = bool(
+                recoverability >= self.recovery_threshold
+                and wall_safe_again
+            )
+
+            if can_leave_recovery:
                 if near_bifurcation:
                     transitioned = self._transition(ACBC_ASSESS) or transitioned
                 else:
