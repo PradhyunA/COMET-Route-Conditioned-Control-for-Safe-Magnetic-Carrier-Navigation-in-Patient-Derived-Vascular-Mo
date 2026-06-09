@@ -38,6 +38,10 @@ class TrialResult:
     mean_reynolds: float = 0.0
     max_reynolds: float = 0.0
     low_re_valid: bool = True
+    stokes_regime: bool = True
+    finite_re_drag_valid: bool = True
+    drag_model: str = "schiller_naumann"
+    drag_regime_label: str = "stokes"
 
     # Timing
     wall_time_s: float = 0.0
@@ -73,7 +77,10 @@ def print_summary(result: TrialResult):
     print(f"  Wall time (s)   : {result.wall_time_s:.2f}")
     print(f"  Mean Re         : {result.mean_reynolds:.3e}")
     print(f"  Max  Re         : {result.max_reynolds:.3e}")
-    print(f"  Low-Re valid    : {result.low_re_valid}")
+    print(f"  Stokes regime   : {result.stokes_regime}")
+    print(f"  Drag model      : {result.drag_model}")
+    print(f"  Drag regime     : {result.drag_regime_label}")
+    print(f"  Finite-Re valid : {result.finite_re_drag_valid}")
 
     if len(result.force_log) > 0:
         print(f"  Peak |F|  (N)   : {np.max(result.force_log):.3e}")
@@ -92,6 +99,8 @@ CSV_HEADER = [
     "wall_time_s",
     "avg_control_step_time_s", "max_control_step_time_s",
     "mean_reynolds", "max_reynolds", "low_re_valid",
+    "stokes_regime", "finite_re_drag_valid",
+    "drag_model", "drag_regime_label",
     "seed", "profile_name",
     "peak_force_N", "peak_velocity_m_s", "peak_field_T",
 ]
@@ -123,6 +132,10 @@ def save_results_csv(results: list, output_dir: str,
                 r.mean_reynolds,
                 r.max_reynolds,
                 r.low_re_valid,
+                r.stokes_regime,
+                r.finite_re_drag_valid,
+                r.drag_model,
+                r.drag_regime_label,
                 r.seed,
                 r.profile_name,
                 float(np.max(r.force_log)) if len(r.force_log) > 0 else 0.0,

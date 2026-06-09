@@ -3,7 +3,11 @@
 import numpy as np
 import pytest
 
-from dynamag_simulation.core.validation import compute_reynolds, check_low_re_validity
+from dynamag_simulation.core.validation import (
+    compute_reynolds,
+    check_low_re_validity,
+    classify_reynolds_regime,
+)
 from dynamag_simulation.core.profiles import MICROSPHERE_500UM
 
 
@@ -50,3 +54,18 @@ def test_high_force_triggers_invalid_re():
     assert re > 0.1
     stats = check_low_re_validity([re])
     assert stats["low_re_valid"] is False
+
+
+def test_finite_re_carrier_regime_is_valid_but_not_stokes():
+    stats = classify_reynolds_regime([140.0, 190.0])
+    assert stats["stokes_regime"] is False
+    assert stats["finite_re_drag_valid"] is True
+    assert stats["drag_regime_label"] == "finite_re_schiller_naumann"
+    assert stats["drag_model"] == "schiller_naumann"
+
+
+def test_outside_drag_model_range_flags_invalid():
+    stats = classify_reynolds_regime([801.0])
+    assert stats["stokes_regime"] is False
+    assert stats["finite_re_drag_valid"] is False
+    assert stats["drag_regime_label"] == "outside_model_range"

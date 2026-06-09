@@ -401,6 +401,7 @@ def simulate_trial_mpc(
     w_smooth: float = 1e-4,
     w_edge: float = 50.0,
     w_overshoot: float = 2.0,
+    w_route: float = 0.0,
     # Dense local waypoint baseline.
     waypoint_arrival_tol: float = 0.001,
     waypoint_spacing: float = 0.001,
@@ -545,6 +546,21 @@ def simulate_trial_mpc(
 
         current_target = navigator(particle.pos)
 
+        route_tangent = None
+        nav_waypoints = getattr(navigator, "waypoints", None)
+        if nav_waypoints is not None and len(nav_waypoints) > 1:
+            nav_idx = getattr(navigator, "current_idx", 0)
+            tidx = min(nav_idx, len(nav_waypoints) - 1)
+            tidx_next = min(tidx + 3, len(nav_waypoints) - 1)
+            if tidx_next > tidx:
+                rt = (
+                    np.asarray(nav_waypoints[tidx_next], dtype=float)
+                    - np.asarray(nav_waypoints[tidx], dtype=float)
+                )
+                rtn = np.linalg.norm(rt)
+                if rtn > 1e-10:
+                    route_tangent = rt / rtn
+
         best_currents, best_force, best_cost, converged = continuous_mpc_controller(
             particle=particle,
             particle_pos=particle.pos,
@@ -561,6 +577,8 @@ def simulate_trial_mpc(
             w_smooth=w_smooth,
             w_edge=w_edge,
             w_overshoot=w_overshoot,
+            w_route=w_route,
+            route_tangent=route_tangent,
             flow=flow,
             sim_time=sim_time,
         )
@@ -702,6 +720,10 @@ def simulate_trial_mpc(
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
+        stokes_regime=re_stats["stokes_regime"],
+        finite_re_drag_valid=re_stats["finite_re_drag_valid"],
+        drag_model=re_stats["drag_model"],
+        drag_regime_label=re_stats["drag_regime_label"],
         wall_time_s=wall_end - wall_start,
         avg_control_step_time_s=float(np.mean(step_time_log))
         if len(step_time_log) > 0 else 0.0,
@@ -762,6 +784,7 @@ def simulate_trial_mpc(
             "w_smooth": w_smooth,
             "w_edge": w_edge,
             "w_overshoot": w_overshoot,
+            "w_route": w_route,
             **hardware_diag,
         },
     )

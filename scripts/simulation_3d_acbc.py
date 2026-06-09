@@ -460,6 +460,10 @@ def simulate_trial_acbc(
     w_edge: float = 250.0,
     w_overshoot: float = 8.0,
     w_route: float = 15.0,
+    enable_branch_commitment: bool = True,
+    enable_authority_assessment: bool = True,
+    enable_recovery: bool = True,
+    enable_stall_escape: bool = True,
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -549,6 +553,10 @@ def simulate_trial_acbc(
         stall_escape_max_steps=80,
 
         recovery_escape_lockout_steps=0,
+        enable_branch_commitment=enable_branch_commitment,
+        enable_authority_assessment=enable_authority_assessment,
+        enable_recovery=enable_recovery,
+        enable_stall_escape=enable_stall_escape,
     )
 
     print(
@@ -822,6 +830,10 @@ def simulate_trial_acbc(
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
+        stokes_regime=re_stats["stokes_regime"],
+        finite_re_drag_valid=re_stats["finite_re_drag_valid"],
+        drag_model=re_stats["drag_model"],
+        drag_regime_label=re_stats["drag_regime_label"],
         wall_time_s=wall_end - wall_start,
         avg_control_step_time_s=float(np.mean(step_time_log))
         if len(step_time_log) > 0 else 0.0,
@@ -877,6 +889,10 @@ def simulate_trial_acbc(
                 navigator, "forward_search_points", None,
             ),
             "w_route": w_route,
+            "enable_branch_commitment": enable_branch_commitment,
+            "enable_authority_assessment": enable_authority_assessment,
+            "enable_recovery": enable_recovery,
+            "enable_stall_escape": enable_stall_escape,
             **hardware_diag,
             **acbc_summary,
         },

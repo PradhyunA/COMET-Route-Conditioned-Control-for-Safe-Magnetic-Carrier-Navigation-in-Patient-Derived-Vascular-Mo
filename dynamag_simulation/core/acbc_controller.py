@@ -125,6 +125,10 @@ class ACBCController:
         recovery_escape_lockout_steps: int = 0,
         max_recovery_steps: int = 40,
         recovery_release_clearance: float = 0.00090,
+        enable_branch_commitment: bool = True,
+        enable_authority_assessment: bool = True,
+        enable_recovery: bool = True,
+        enable_stall_escape: bool = True,
     ):
         self.network = network
         self.magnet_array = magnet_array
@@ -189,6 +193,10 @@ class ACBCController:
 
         self.max_recovery_steps = int(max(10, max_recovery_steps))
         self.recovery_release_clearance = float(recovery_release_clearance)
+        self.enable_branch_commitment = bool(enable_branch_commitment)
+        self.enable_authority_assessment = bool(enable_authority_assessment)
+        self.enable_recovery = bool(enable_recovery)
+        self.enable_stall_escape = bool(enable_stall_escape)
 
         # Route progress tracking (internal, monotonic)
         # best_route_idx tracks the highest waypoint index the particle has
@@ -725,8 +733,14 @@ class ACBCController:
 
         recoverability = self._recoverability_score(particle_pos, particle)
 
-        capturable = (
+        authority_ok = (
             authority_margin >= self.authority_threshold
+            if self.enable_authority_assessment
+            else True
+        )
+
+        capturable = (
+            authority_ok
             and wall_fraction >= self.min_wall_safety_fraction
             and recoverability >= self.recovery_threshold
             and route_alignment > -0.25
@@ -864,7 +878,7 @@ class ACBCController:
         # PRIORITY 1: Hard wall danger → RECOVERY_MODE
         # This overrides everything except existing recovery.
         # ==============================================================
-        if wall_unsafe and self.state != ACBC_RECOVER:
+        if self.enable_recovery and wall_unsafe and self.state != ACBC_RECOVER:
             self.selected_branch = None
             self.recovery_count += 1
             transitioned = self._transition(ACBC_RECOVER) or transitioned
@@ -872,7 +886,11 @@ class ACBCController:
         # ==============================================================
         # PRIORITY 2: Stall escape (only when safe AND not recovering)
         # ==============================================================
-        elif stall_escape_allowed and self.state not in (ACBC_ESCAPE, ACBC_RECOVER):
+        elif (
+            self.enable_stall_escape
+            and stall_escape_allowed
+            and self.state not in (ACBC_ESCAPE, ACBC_RECOVER)
+        ):
             self.selected_branch = None
             self.stall_escape_count += 1
             transitioned = self._transition(ACBC_ESCAPE) or transitioned
@@ -884,6 +902,7 @@ class ACBCController:
             stalled
             and near_wall_warning
             and not safe_for_escape
+            and self.enable_recovery
             and self.state not in (ACBC_RECOVER, ACBC_ESCAPE)
         ):
             self.selected_branch = None
@@ -928,11 +947,11 @@ class ACBCController:
                     self.selected_branch = selected
                     self.last_bifurcation_point = bif_point
 
-                    if selected.capturable:
+                    if selected.capturable and self.enable_branch_commitment:
                         self.commitment_count += 1
                         transitioned = self._transition(ACBC_COMMIT) or transitioned
                     else:
-                        if wall_unsafe:
+                        if self.enable_recovery and wall_unsafe:
                             self.recovery_count += 1
                             transitioned = self._transition(ACBC_RECOVER) or transitioned
                         else:
@@ -972,7 +991,7 @@ class ACBCController:
                     transitioned = self._transition(ACBC_FREE) or transitioned
 
         elif self.state == ACBC_ESCAPE:
-            if wall_unsafe:
+            if self.enable_recovery and wall_unsafe:
                 # Hard wall danger overrides escape
                 self.recovery_count += 1
                 transitioned = self._transition(ACBC_RECOVER) or transitioned
@@ -1196,4 +1215,8 @@ class ACBCController:
             ),
             "acbc_max_recovery_steps": self.max_recovery_steps,
             "acbc_recovery_release_clearance_m": self.recovery_release_clearance,
+            "acbc_enable_branch_commitment": self.enable_branch_commitment,
+            "acbc_enable_authority_assessment": self.enable_authority_assessment,
+            "acbc_enable_recovery": self.enable_recovery,
+            "acbc_enable_stall_escape": self.enable_stall_escape,
         }

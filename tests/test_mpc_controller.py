@@ -14,6 +14,7 @@ from dynamag_simulation.core.controllers import continuous_mpc_controller
 def setup():
     profile = PhysicalProfile(
         name="test", diameter=500e-6, chi_eff=3.0, M_sat=4.5e5,
+        magnetic_loading_fraction=1.0, hydrodynamic_drag_multiplier=1.0,
         fluid_viscosity=8.9e-4, fluid_density=997.0,
         temperature=298.0, enable_brownian=False,
     )

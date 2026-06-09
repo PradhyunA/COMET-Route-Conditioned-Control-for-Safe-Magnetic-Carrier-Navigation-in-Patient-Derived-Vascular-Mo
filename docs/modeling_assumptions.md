@@ -10,8 +10,9 @@ noted otherwise.
 
 ### Regularized Magnetic Dipole
 
-Each of the 8 corner electromagnets is modelled as a **regularized magnetic
-dipole**. The magnetic moment vector for coil *i* carrying current *I_i* is:
+Each electromagnet is modelled as a **regularized magnetic dipole**. The
+current body-scale benchmark uses a 9-magnet triangular-prism layout. The
+magnetic moment vector for coil *i* carrying current *I_i* is:
 
 ```
 m_i = N * I_i * pi * R^2 * hat{o}_i     (A*m^2)
@@ -61,15 +62,21 @@ model) are not included.
 
 ### Superparamagnetic Microsphere
 
-Three particle profiles are defined:
+The suite includes both microsphere/nanoparticle profiles and larger
+SPION-loaded carrier profiles:
 
 | Profile              | Diameter | Key Use Case                                  |
 |----------------------|----------|-----------------------------------------------|
 | `microsphere_500um`  | 500 µm   | Default: benchtop phantom system              |
 | `microsphere_50um`   | 50 µm    | Scaled-down runs with uniform flow            |
 | `nanoparticle_500nm` | 500 nm   | Theoretical comparison (true nanoparticle)     |
+| `spion_carrier_1mm`  | 1 mm     | Large-vessel magnetic-carrier steering study   |
 
-All share the following magnetic/fluid properties:
+The 1 mm carrier is **not** a nanoparticle. Manuscripts should describe it
+as a magnetic carrier, magnetic milliparticle, or large-vessel carrier.
+
+Microsphere and nanoparticle profiles share the following legacy
+magnetic/fluid properties:
 
 | Parameter                  | Symbol    | Value     | Unit    |
 |----------------------------|-----------|-----------|---------| 
@@ -94,6 +101,17 @@ F = (V_p * chi_eff) / (2 * mu_0) * grad(|B|^2)
 F = V_p * M_sat * grad(|B|) = V_p * M_sat / (2|B|) * grad(|B|^2)
 ```
 
+For SPION-loaded carrier profiles, only the loaded magnetic volume contributes
+to the magnetic force:
+
+```
+V_mag = magnetic_loading_fraction * V_carrier
+```
+
+The force prefactors use `V_mag`, while hydrodynamic drag uses the full
+carrier diameter. The profile values `chi_eff` and `M_sat` are interpreted as
+properties of the magnetic loading phase, not the entire carrier volume.
+
 The gradient `grad(|B|²)` is computed via **central finite differences**
 with step size `h = 5×10⁻⁵ m`.
 
@@ -112,7 +130,9 @@ This corresponds to an effective drag coefficient:
 gamma_eff = gamma_Stokes * (1 + 0.15 * Re^0.687)
 ```
 
-where `gamma_Stokes = 6πηr` is the classical Stokes drag.
+where `gamma_Stokes = 6πηr` is the classical Stokes drag. For non-ideal
+carriers, the profile field `hydrodynamic_drag_multiplier` scales
+`gamma_Stokes` before the Schiller-Naumann correction is applied.
 
 At Re ≪ 1 the correction factor → 1, recovering pure Stokes drag. At
 higher Re (near coil singularities or during aggressive steering) the
@@ -136,6 +156,27 @@ the Schiller-Naumann effective drag. The Reynolds number is computed from
 the *magnetic* velocity component only (i.e., velocity relative to the
 fluid), since the particle is entrained by the flow with no relative slip
 at the flow velocity.
+
+For 1 mm carrier studies, Reynolds numbers around `10^2` are expected. These
+runs are not in the Stokes/creeping-flow regime, but remain inside the
+empirical Schiller-Naumann range as long as `Re <= 800`. Reports therefore
+distinguish:
+
+- `stokes_regime`: `max_reynolds < 0.1`
+- `finite_re_drag_valid`: `max_reynolds <= 800`
+- `drag_regime_label`: `stokes`, `finite_re_schiller_naumann`, or
+  `outside_model_range`
+
+The legacy `low_re_valid` field is equivalent to `stokes_regime` and is kept
+for backward compatibility only.
+
+### 1 mm carrier limitations
+
+The finite-Re carrier model is suitable for controller benchmarking, not for
+medical-device validation. It neglects particle inertia, added mass, history
+forces, wall contact/rolling/sliding, near-wall hydrodynamic corrections,
+non-Newtonian blood behavior, and experimentally calibrated FEM magnetic
+fields. These assumptions must be stated in publications.
 
 ### Brownian Thermal Noise
 
@@ -289,7 +330,7 @@ can actively compensate for fluid convection.
 ## 6. Validity Limits and What Is Not Modelled
 
 ### Included
-- Regularized dipole magnetic field (superposition of 8 coils, softened at r < R)
+- Regularized dipole magnetic field (coil superposition, softened near sources)
 - Magnetic gradient force (linear + saturated regime with smooth crossover)
 - Schiller-Naumann nonlinear drag (reduces to Stokes at Re ≪ 1, valid to Re ≈ 800)
 - Brownian thermal noise (Stokes-Einstein diffusion)
@@ -297,7 +338,7 @@ can actively compensate for fluid convection.
 - Flow-aware MPC controller prediction
 - Workspace boundary clipping (hard walls)
 - Adaptive substepping with per-substep flow evaluation
-- Reynolds number tracking and low-Re validity flagging
+- Reynolds number tracking with Stokes and finite-Re validity labels
 
 ### Not Modelled
 - **Particle-particle interactions**: single-particle simulation
@@ -318,12 +359,16 @@ can actively compensate for fluid convection.
 
 ### Reynolds Number Validity
 
-The simulation flags runs where the particle Reynolds number exceeds 0.1.
-At Re > 0.1, the simple Stokes drag assumption would break down, but the
-Schiller-Naumann correction extends accurate drag to Re ≈ 800. The
-`low_re_valid` flag is still useful for identifying runs that operate
-outside the strict creeping-flow regime.
+The simulation reports both creeping-flow and finite-Re drag-model regimes.
+At Re > 0.1, the simple Stokes drag assumption breaks down, but the
+Schiller-Naumann correction is used for drag estimates up to Re ≈ 800.
+The `low_re_valid` field is retained as a legacy alias for
+`stokes_regime`; 1 mm carrier publications should use
+`finite_re_drag_valid` and `drag_regime_label` as the relevant validity
+fields.
 
 For the default 500 µm microsphere, Re can approach O(1–10), where the
 Schiller-Naumann correction is physically necessary. For the 50 µm
-microsphere under flow, Re ≈ 0.02, well within creeping flow.
+microsphere under flow, Re ≈ 0.02, well within creeping flow. For 1 mm
+large-vessel carriers, Re can be O(10^2), outside Stokes flow but still
+inside the intended finite-Re drag-model range when `max_reynolds <= 800`.
