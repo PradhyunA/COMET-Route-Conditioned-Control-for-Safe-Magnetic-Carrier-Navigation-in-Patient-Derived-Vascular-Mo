@@ -1,0 +1,258 @@
+RealVesselNetwork: 13975 segments, flow_scale=1.00, v_mean=1.2–20.0 mm/s, radius=1.06–17.39 mm
+Fixed magnet setup: default_center=[-0.0084 -0.0028 -0.2338] m, placement_radius=0.060 m, coil_radius=0.018 m, coil_diameter=0.036 m, coil_length=0.070 m, core_radius=0.008 m, turns=3000, max_current=12.0 A, follow_particle_device=True
+
+>>> Running trial_1_inlet_to_outlet
+    start:  [ 0.07029893  0.0182373  -0.43109387]
+    target: [-0.04681534 -0.05247942 -0.04449917]
+    Raw waypoints: 2127, sparse waypoints: 296
+      wp1: [  69.9   18.1 -429.6] mm
+      wp2: [  69.7   18.  -428.1] mm
+      wp3: [  69.7   17.7 -426.6] mm
+      wp4: [  69.7   17.4 -425. ] mm
+      wp5: [  69.7   17.  -423.6] mm
+      wp6: [  69.6   16.5 -422. ] mm
+      wp7: [  69.3   16.  -420.2] mm
+      wp8: [  68.8   15.4 -418.5] mm
+      wp9: [  68.3   15.1 -417.1] mm
+      wp10: [  67.6   14.7 -415.7] mm
+      ...
+      wp296: [-46.8 -52.5 -44.5] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+  step   10/1600  state=BRANCH_COMMITMENT  final_dist=404.4 mm  wp=6/296  lookahead=14/296  wp_dist=4.3 mm  auth=6.45  capturable=True  cands=2  |I|max=12.000 A  |F|=1.839e-08 N  |B|=7.070e-02 T  particle_v=44.11 mm/s  flow_v=9.03 mm/s  wall_clear=3.18 mm  Re=1.62e-01
+  step   20/1600  state=BRANCH_COMMITMENT  final_dist=395.8 mm  wp=11/296  lookahead=19/296  wp_dist=4.1 mm  auth=5.40  capturable=True  cands=2  |I|max=12.000 A  |F|=1.613e-08 N  |B|=7.323e-02 T  particle_v=42.43 mm/s  flow_v=4.92 mm/s  wall_clear=1.37 mm  Re=1.42e-01
+  step   30/1600  state=FREE_NAVIGATION  final_dist=389.3 mm  wp=16/296  lookahead=24/296  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=1  |I|max=11.490 A  |F|=1.431e-08 N  |B|=7.073e-02 T  particle_v=36.25 mm/s  flow_v=5.64 mm/s  wall_clear=1.90 mm  Re=1.27e-01
+  step   40/1600  state=BRANCH_COMMITMENT  final_dist=382.2 mm  wp=20/296  lookahead=28/296  wp_dist=4.4 mm  auth=5.53  capturable=True  cands=1  |I|max=12.000 A  |F|=1.387e-08 N  |B|=7.269e-02 T  particle_v=36.40 mm/s  flow_v=4.44 mm/s  wall_clear=1.54 mm  Re=1.23e-01
+  step   50/1600  state=FREE_NAVIGATION  final_dist=377.0 mm  wp=24/296  lookahead=32/296  wp_dist=5.6 mm  auth=0.00  capturable=False  cands=1  |I|max=11.765 A  |F|=1.220e-08 N  |B|=1.931e-01 T  particle_v=28.75 mm/s  flow_v=7.36 mm/s  wall_clear=2.80 mm  Re=1.08e-01
+  step   60/1600  state=BRANCH_COMMITMENT  final_dist=371.9 mm  wp=26/296  lookahead=34/296  wp_dist=4.2 mm  auth=4.82  capturable=True  cands=0  |I|max=12.000 A  |F|=1.329e-08 N  |B|=7.079e-02 T  particle_v=32.63 mm/s  flow_v=5.92 mm/s  wall_clear=1.46 mm  Re=1.18e-01
+  step   70/1600  state=FREE_NAVIGATION  final_dist=367.2 mm  wp=30/296  lookahead=38/296  wp_dist=5.0 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.210e-08 N  |B|=1.251e-01 T  particle_v=30.82 mm/s  flow_v=4.72 mm/s  wall_clear=1.15 mm  Re=1.08e-01
+  step   80/1600  state=FREE_NAVIGATION  final_dist=364.2 mm  wp=32/296  lookahead=40/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=1  |I|max=12.000 A  |F|=1.098e-08 N  |B|=1.047e-01 T  particle_v=26.11 mm/s  flow_v=6.75 mm/s  wall_clear=2.33 mm  Re=9.78e-02
+  step   90/1600  state=FREE_NAVIGATION  final_dist=360.3 mm  wp=35/296  lookahead=43/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=1  |I|max=12.000 A  |F|=1.054e-08 N  |B|=7.340e-02 T  particle_v=24.50 mm/s  flow_v=6.52 mm/s  wall_clear=2.18 mm  Re=9.40e-02
+  step  100/1600  state=BRANCH_COMMITMENT  final_dist=356.9 mm  wp=38/296  lookahead=46/296  wp_dist=4.3 mm  auth=4.00  capturable=True  cands=0  |I|max=12.000 A  |F|=1.032e-08 N  |B|=7.122e-02 T  particle_v=23.83 mm/s  flow_v=6.62 mm/s  wall_clear=1.85 mm  Re=9.21e-02
+  step  110/1600  state=BRANCH_COMMITMENT  final_dist=353.8 mm  wp=41/296  lookahead=49/296  wp_dist=4.0 mm  auth=4.00  capturable=True  cands=0  |I|max=12.000 A  |F|=1.021e-08 N  |B|=7.089e-02 T  particle_v=22.09 mm/s  flow_v=8.34 mm/s  wall_clear=2.11 mm  Re=9.11e-02
+  step  120/1600  state=FREE_NAVIGATION  final_dist=351.1 mm  wp=44/296  lookahead=52/296  wp_dist=4.4 mm  auth=0.00  capturable=False  cands=0  |I|max=11.960 A  |F|=9.535e-09 N  |B|=7.085e-02 T  particle_v=18.83 mm/s  flow_v=9.41 mm/s  wall_clear=2.74 mm  Re=8.52e-02
+  step  130/1600  state=FREE_NAVIGATION  final_dist=348.7 mm  wp=47/296  lookahead=55/296  wp_dist=5.2 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=9.761e-09 N  |B|=7.083e-02 T  particle_v=20.50 mm/s  flow_v=8.45 mm/s  wall_clear=3.20 mm  Re=8.72e-02
+  step  140/1600  state=FREE_NAVIGATION  final_dist=346.7 mm  wp=49/296  lookahead=57/296  wp_dist=5.2 mm  auth=0.00  capturable=False  cands=1  |I|max=12.000 A  |F|=1.035e-08 N  |B|=7.069e-02 T  particle_v=22.70 mm/s  flow_v=8.12 mm/s  wall_clear=3.59 mm  Re=9.24e-02
+  step  150/1600  state=FREE_NAVIGATION  final_dist=343.2 mm  wp=51/296  lookahead=59/296  wp_dist=4.8 mm  auth=0.00  capturable=False  cands=1  |I|max=12.000 A  |F|=1.069e-08 N  |B|=7.076e-02 T  particle_v=25.62 mm/s  flow_v=5.89 mm/s  wall_clear=1.64 mm  Re=9.53e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 154: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  160/1600  state=FREE_NAVIGATION  final_dist=341.7 mm  wp=53/296  lookahead=61/296  wp_dist=5.3 mm  auth=0.00  capturable=False  cands=0  |I|max=10.171 A  |F|=5.811e-09 N  |B|=8.423e-01 T  particle_v=13.03 mm/s  flow_v=4.33 mm/s  wall_clear=0.94 mm  Re=5.23e-02
+  step  170/1600  state=FREE_NAVIGATION  final_dist=340.7 mm  wp=54/296  lookahead=62/296  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=0  |I|max=9.990 A  |F|=6.496e-09 N  |B|=6.751e-01 T  particle_v=15.83 mm/s  flow_v=3.24 mm/s  wall_clear=0.70 mm  Re=5.84e-02
+  step  180/1600  state=RECOVERY_MODE  final_dist=340.6 mm  wp=54/296  lookahead=62/296  wp_dist=4.0 mm  auth=0.00  capturable=False  cands=0  |I|max=11.987 A  |F|=4.073e-09 N  |B|=7.071e-02 T  particle_v=12.64 mm/s  flow_v=3.90 mm/s  wall_clear=1.07 mm  Re=3.68e-02
+  step  190/1600  state=FREE_NAVIGATION  final_dist=339.2 mm  wp=56/296  lookahead=64/296  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=0  |I|max=11.934 A  |F|=8.510e-09 N  |B|=2.486e-01 T  particle_v=22.09 mm/s  flow_v=2.92 mm/s  wall_clear=0.84 mm  Re=7.62e-02
+  step  200/1600  state=FREE_NAVIGATION  final_dist=337.7 mm  wp=57/296  lookahead=65/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=0  |I|max=9.919 A  |F|=8.435e-09 N  |B|=1.355e-01 T  particle_v=21.30 mm/s  flow_v=3.38 mm/s  wall_clear=0.85 mm  Re=7.55e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 205: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 208: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  210/1600  state=FREE_NAVIGATION  final_dist=336.6 mm  wp=58/296  lookahead=66/296  wp_dist=4.1 mm  auth=0.00  capturable=False  cands=0  |I|max=7.588 A  |F|=8.875e-09 N  |B|=1.584e-01 T  particle_v=21.11 mm/s  flow_v=5.01 mm/s  wall_clear=1.14 mm  Re=7.94e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 215: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  220/1600  state=RECOVERY_MODE  final_dist=332.8 mm  wp=62/296  lookahead=70/296  wp_dist=4.7 mm  auth=0.00  capturable=False  cands=0  |I|max=11.702 A  |F|=8.614e-09 N  |B|=7.075e-02 T  particle_v=25.56 mm/s  flow_v=6.17 mm/s  wall_clear=1.60 mm  Re=7.71e-02
+  step  230/1600  state=FREE_NAVIGATION  final_dist=327.9 mm  wp=65/296  lookahead=73/296  wp_dist=5.3 mm  auth=0.00  capturable=False  cands=2  |I|max=10.870 A  |F|=1.546e-08 N  |B|=7.166e-02 T  particle_v=41.41 mm/s  flow_v=3.19 mm/s  wall_clear=0.89 mm  Re=1.37e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 239: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  240/1600  state=FREE_NAVIGATION  final_dist=325.0 mm  wp=67/296  lookahead=75/296  wp_dist=4.8 mm  auth=0.00  capturable=False  cands=0  |I|max=5.358 A  |F|=6.685e-09 N  |B|=1.086e-01 T  particle_v=16.37 mm/s  flow_v=3.40 mm/s  wall_clear=1.10 mm  Re=6.01e-02
+  step  250/1600  state=FREE_NAVIGATION  final_dist=320.4 mm  wp=70/296  lookahead=78/296  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=2  |I|max=9.618 A  |F|=1.264e-08 N  |B|=7.069e-02 T  particle_v=34.19 mm/s  flow_v=2.67 mm/s  wall_clear=0.69 mm  Re=1.12e-01
+  step  260/1600  state=FREE_NAVIGATION  final_dist=316.6 mm  wp=72/296  lookahead=80/296  wp_dist=4.0 mm  auth=0.00  capturable=False  cands=2  |I|max=8.776 A  |F|=1.047e-08 N  |B|=7.071e-02 T  particle_v=26.79 mm/s  flow_v=4.35 mm/s  wall_clear=1.06 mm  Re=9.34e-02
+  step  270/1600  state=FREE_NAVIGATION  final_dist=312.3 mm  wp=76/296  lookahead=84/296  wp_dist=5.5 mm  auth=0.00  capturable=False  cands=2  |I|max=8.782 A  |F|=9.394e-09 N  |B|=7.088e-02 T  particle_v=21.50 mm/s  flow_v=6.41 mm/s  wall_clear=2.01 mm  Re=8.39e-02
+  step  280/1600  state=BRANCH_COMMITMENT  final_dist=308.4 mm  wp=78/296  lookahead=86/296  wp_dist=4.5 mm  auth=4.06  capturable=True  cands=0  |I|max=8.782 A  |F|=9.186e-09 N  |B|=7.069e-02 T  particle_v=23.12 mm/s  flow_v=3.81 mm/s  wall_clear=1.46 mm  Re=8.21e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 287: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  290/1600  state=BRANCH_COMMITMENT  final_dist=305.8 mm  wp=80/296  lookahead=88/296  wp_dist=4.5 mm  auth=5.81  capturable=True  cands=0  |I|max=8.201 A  |F|=7.330e-09 N  |B|=7.069e-02 T  particle_v=19.10 mm/s  flow_v=2.55 mm/s  wall_clear=0.96 mm  Re=6.58e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 296: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  300/1600  state=BRANCH_COMMITMENT  final_dist=302.9 mm  wp=82/296  lookahead=90/296  wp_dist=4.6 mm  auth=5.36  capturable=True  cands=0  |I|max=9.205 A  |F|=8.189e-09 N  |B|=7.069e-02 T  particle_v=21.10 mm/s  flow_v=3.06 mm/s  wall_clear=0.96 mm  Re=7.34e-02
+  step  310/1600  state=FREE_NAVIGATION  final_dist=298.4 mm  wp=85/296  lookahead=93/296  wp_dist=4.9 mm  auth=0.00  capturable=False  cands=0  |I|max=10.673 A  |F|=1.348e-08 N  |B|=7.079e-02 T  particle_v=35.29 mm/s  flow_v=3.82 mm/s  wall_clear=0.89 mm  Re=1.20e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 318: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 319: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  320/1600  state=BRANCH_COMMITMENT  final_dist=295.8 mm  wp=87/296  lookahead=95/296  wp_dist=4.6 mm  auth=1.82  capturable=True  cands=3  |I|max=10.147 A  |F|=1.101e-08 N  |B|=7.369e-02 T  particle_v=33.79 mm/s  flow_v=6.26 mm/s  wall_clear=1.58 mm  Re=9.81e-02
+  step  330/1600  state=BRANCH_COMMITMENT  final_dist=290.4 mm  wp=90/296  lookahead=98/296  wp_dist=4.6 mm  auth=4.83  capturable=True  cands=0  |I|max=12.000 A  |F|=1.406e-08 N  |B|=7.084e-02 T  particle_v=37.64 mm/s  flow_v=3.36 mm/s  wall_clear=0.88 mm  Re=1.25e-01
+  step  340/1600  state=RECOVERY_MODE  final_dist=285.3 mm  wp=95/296  lookahead=103/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=6.053e-09 N  |B|=9.950e-01 T  particle_v=18.23 mm/s  flow_v=4.41 mm/s  wall_clear=1.37 mm  Re=5.45e-02
+  step  350/1600  state=BRANCH_COMMITMENT  final_dist=277.7 mm  wp=100/296  lookahead=108/296  wp_dist=4.1 mm  auth=3.75  capturable=True  cands=0  |I|max=12.000 A  |F|=1.730e-08 N  |B|=7.130e-02 T  particle_v=42.86 mm/s  flow_v=7.87 mm/s  wall_clear=2.80 mm  Re=1.53e-01
+  step  360/1600  state=BRANCH_COMMITMENT  final_dist=273.0 mm  wp=105/296  lookahead=113/296  wp_dist=5.4 mm  auth=2.64  capturable=True  cands=0  |I|max=12.000 A  |F|=1.416e-08 N  |B|=7.096e-02 T  particle_v=30.79 mm/s  flow_v=10.84 mm/s  wall_clear=4.06 mm  Re=1.26e-01
+  step  370/1600  state=BRANCH_COMMITMENT  final_dist=270.4 mm  wp=107/296  lookahead=115/296  wp_dist=4.2 mm  auth=2.19  capturable=True  cands=0  |I|max=11.972 A  |F|=1.229e-08 N  |B|=7.074e-02 T  particle_v=25.32 mm/s  flow_v=10.85 mm/s  wall_clear=3.75 mm  Re=1.09e-01
+  step  380/1600  state=BRANCH_COMMITMENT  final_dist=268.7 mm  wp=110/296  lookahead=118/296  wp_dist=4.4 mm  auth=3.47  capturable=True  cands=0  |I|max=11.842 A  |F|=1.050e-08 N  |B|=7.069e-02 T  particle_v=25.36 mm/s  flow_v=5.18 mm/s  wall_clear=1.47 mm  Re=9.36e-02
+  step  390/1600  state=BRANCH_COMMITMENT  final_dist=267.7 mm  wp=114/296  lookahead=122/296  wp_dist=5.1 mm  auth=6.67  capturable=True  cands=2  |I|max=11.968 A  |F|=1.029e-08 N  |B|=1.702e-01 T  particle_v=26.90 mm/s  flow_v=3.64 mm/s  wall_clear=1.07 mm  Re=9.18e-02
+  step  400/1600  state=FREE_NAVIGATION  final_dist=267.5 mm  wp=117/296  lookahead=125/296  wp_dist=4.4 mm  auth=0.00  capturable=False  cands=0  |I|max=11.641 A  |F|=9.007e-09 N  |B|=1.784e-01 T  particle_v=22.85 mm/s  flow_v=3.44 mm/s  wall_clear=0.86 mm  Re=8.06e-02
+  step  410/1600  state=BRANCH_COMMITMENT  final_dist=268.0 mm  wp=121/296  lookahead=129/296  wp_dist=4.8 mm  auth=3.64  capturable=True  cands=0  |I|max=12.000 A  |F|=9.391e-09 N  |B|=1.307e-01 T  particle_v=23.01 mm/s  flow_v=4.94 mm/s  wall_clear=1.11 mm  Re=8.39e-02
+  step  420/1600  state=BRANCH_COMMITMENT  final_dist=268.3 mm  wp=124/296  lookahead=132/296  wp_dist=4.6 mm  auth=4.86  capturable=True  cands=2  |I|max=11.943 A  |F|=9.325e-09 N  |B|=7.363e-02 T  particle_v=19.68 mm/s  flow_v=8.76 mm/s  wall_clear=2.37 mm  Re=8.34e-02
+  step  430/1600  state=BRANCH_COMMITMENT  final_dist=268.5 mm  wp=126/296  lookahead=134/296  wp_dist=4.1 mm  auth=6.39  capturable=True  cands=0  |I|max=11.926 A  |F|=9.210e-09 N  |B|=7.103e-02 T  particle_v=20.25 mm/s  flow_v=6.86 mm/s  wall_clear=2.45 mm  Re=8.23e-02
+  step  440/1600  state=BRANCH_COMMITMENT  final_dist=268.6 mm  wp=129/296  lookahead=137/296  wp_dist=4.9 mm  auth=2.52  capturable=True  cands=2  |I|max=11.861 A  |F|=8.932e-09 N  |B|=7.091e-02 T  particle_v=22.14 mm/s  flow_v=4.32 mm/s  wall_clear=1.50 mm  Re=7.99e-02
+  step  450/1600  state=FREE_NAVIGATION  final_dist=268.7 mm  wp=131/296  lookahead=139/296  wp_dist=4.4 mm  auth=0.00  capturable=False  cands=0  |I|max=7.532 A  |F|=3.592e-09 N  |B|=6.428e-01 T  particle_v=8.32 mm/s  flow_v=3.70 mm/s  wall_clear=1.03 mm  Re=3.25e-02
+  step  460/1600  state=RECOVERY_MODE  final_dist=268.8 mm  wp=132/296  lookahead=140/296  wp_dist=5.0 mm  auth=0.00  capturable=False  cands=0  |I|max=4.515 A  |F|=2.877e-09 N  |B|=3.970e-01 T  particle_v=8.80 mm/s  flow_v=3.73 mm/s  wall_clear=0.87 mm  Re=2.61e-02
+  step  470/1600  state=BRANCH_COMMITMENT  final_dist=268.9 mm  wp=132/296  lookahead=140/296  wp_dist=4.5 mm  auth=3.68  capturable=True  cands=0  |I|max=5.882 A  |F|=3.447e-09 N  |B|=6.685e-01 T  particle_v=6.89 mm/s  flow_v=3.61 mm/s  wall_clear=0.87 mm  Re=3.12e-02
+  step  480/1600  state=BRANCH_COMMITMENT  final_dist=268.8 mm  wp=133/296  lookahead=141/296  wp_dist=5.0 mm  auth=4.24  capturable=True  cands=0  |I|max=5.703 A  |F|=3.510e-09 N  |B|=6.573e-01 T  particle_v=7.73 mm/s  flow_v=2.78 mm/s  wall_clear=0.78 mm  Re=3.18e-02
+  step  490/1600  state=BRANCH_COMMITMENT  final_dist=268.7 mm  wp=134/296  lookahead=142/296  wp_dist=5.3 mm  auth=6.88  capturable=True  cands=0  |I|max=5.854 A  |F|=3.764e-09 N  |B|=6.628e-01 T  particle_v=8.21 mm/s  flow_v=3.01 mm/s  wall_clear=0.96 mm  Re=3.41e-02
+  step  500/1600  state=RECOVERY_MODE  final_dist=268.4 mm  wp=135/296  lookahead=143/296  wp_dist=5.3 mm  auth=0.00  capturable=False  cands=0  |I|max=7.943 A  |F|=6.837e-09 N  |B|=4.929e-01 T  particle_v=19.84 mm/s  flow_v=4.31 mm/s  wall_clear=1.35 mm  Re=6.14e-02
+  step  510/1600  state=RECOVERY_MODE  final_dist=267.6 mm  wp=136/296  lookahead=144/296  wp_dist=4.9 mm  auth=0.00  capturable=False  cands=0  |I|max=5.568 A  |F|=4.215e-09 N  |B|=7.098e-02 T  particle_v=12.59 mm/s  flow_v=3.71 mm/s  wall_clear=0.91 mm  Re=3.81e-02
+  step  520/1600  state=FREE_NAVIGATION  final_dist=267.5 mm  wp=137/296  lookahead=145/296  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=0  |I|max=7.988 A  |F|=5.720e-09 N  |B|=5.047e-01 T  particle_v=13.42 mm/s  flow_v=4.13 mm/s  wall_clear=1.19 mm  Re=5.15e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 527: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  530/1600  state=BRANCH_COMMITMENT  final_dist=266.6 mm  wp=138/296  lookahead=146/296  wp_dist=4.5 mm  auth=5.22  capturable=True  cands=0  |I|max=7.774 A  |F|=6.160e-09 N  |B|=7.088e-02 T  particle_v=15.09 mm/s  flow_v=3.21 mm/s  wall_clear=1.05 mm  Re=5.54e-02
+  step  540/1600  state=BRANCH_COMMITMENT  final_dist=264.2 mm  wp=140/296  lookahead=148/296  wp_dist=4.3 mm  auth=5.48  capturable=True  cands=0  |I|max=9.274 A  |F|=7.580e-09 N  |B|=7.071e-02 T  particle_v=18.58 mm/s  flow_v=4.11 mm/s  wall_clear=1.35 mm  Re=6.80e-02
+  step  550/1600  state=FREE_NAVIGATION  final_dist=260.0 mm  wp=143/296  lookahead=151/296  wp_dist=4.1 mm  auth=0.00  capturable=False  cands=2  |I|max=12.000 A  |F|=1.307e-08 N  |B|=7.076e-02 T  particle_v=33.95 mm/s  flow_v=4.23 mm/s  wall_clear=1.11 mm  Re=1.16e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 558: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  560/1600  state=FREE_NAVIGATION  final_dist=256.9 mm  wp=146/296  lookahead=154/296  wp_dist=4.2 mm  auth=0.00  capturable=False  cands=2  |I|max=9.093 A  |F|=1.065e-08 N  |B|=7.621e-02 T  particle_v=26.33 mm/s  flow_v=4.47 mm/s  wall_clear=1.01 mm  Re=9.50e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 564: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  570/1600  state=BRANCH_COMMITMENT  final_dist=253.3 mm  wp=149/296  lookahead=157/296  wp_dist=4.9 mm  auth=6.23  capturable=True  cands=0  |I|max=10.505 A  |F|=1.025e-08 N  |B|=7.069e-02 T  particle_v=24.88 mm/s  flow_v=5.72 mm/s  wall_clear=1.43 mm  Re=9.15e-02
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 577: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  580/1600  state=FREE_NAVIGATION  final_dist=250.9 mm  wp=151/296  lookahead=159/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=0  |I|max=11.155 A  |F|=1.314e-08 N  |B|=7.067e-02 T  particle_v=34.51 mm/s  flow_v=3.58 mm/s  wall_clear=1.04 mm  Re=1.17e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 582: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  590/1600  state=FREE_NAVIGATION  final_dist=244.4 mm  wp=155/296  lookahead=163/296  wp_dist=4.3 mm  auth=0.00  capturable=False  cands=2  |I|max=12.000 A  |F|=1.780e-08 N  |B|=7.074e-02 T  particle_v=46.79 mm/s  flow_v=5.32 mm/s  wall_clear=1.89 mm  Re=1.57e-01
+  step  600/1600  state=FREE_NAVIGATION  final_dist=236.0 mm  wp=162/296  lookahead=170/296  wp_dist=5.2 mm  auth=0.00  capturable=False  cands=2  |I|max=12.000 A  |F|=1.851e-08 N  |B|=7.075e-02 T  particle_v=45.54 mm/s  flow_v=8.54 mm/s  wall_clear=2.50 mm  Re=1.63e-01
+  step  610/1600  state=FREE_NAVIGATION  final_dist=227.9 mm  wp=168/296  lookahead=176/296  wp_dist=5.4 mm  auth=0.00  capturable=False  cands=4  |I|max=12.000 A  |F|=1.800e-08 N  |B|=7.069e-02 T  particle_v=41.13 mm/s  flow_v=11.36 mm/s  wall_clear=3.89 mm  Re=1.59e-01
+  step  620/1600  state=BRANCH_COMMITMENT  final_dist=221.0 mm  wp=173/296  lookahead=181/296  wp_dist=5.5 mm  auth=1.90  capturable=True  cands=0  |I|max=12.000 A  |F|=1.626e-08 N  |B|=7.075e-02 T  particle_v=33.66 mm/s  flow_v=14.84 mm/s  wall_clear=5.40 mm  Re=1.44e-01
+  step  630/1600  state=BRANCH_COMMITMENT  final_dist=214.7 mm  wp=176/296  lookahead=184/296  wp_dist=4.7 mm  auth=1.67  capturable=True  cands=0  |I|max=12.000 A  |F|=1.700e-08 N  |B|=7.102e-02 T  particle_v=34.92 mm/s  flow_v=15.39 mm/s  wall_clear=5.36 mm  Re=1.50e-01
+  step  640/1600  state=FREE_NAVIGATION  final_dist=208.5 mm  wp=181/296  lookahead=189/296  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.890e-08 N  |B|=7.073e-02 T  particle_v=35.08 mm/s  flow_v=21.14 mm/s  wall_clear=8.87 mm  Re=1.66e-01
+  step  650/1600  state=BRANCH_COMMITMENT  final_dist=203.7 mm  wp=184/296  lookahead=192/296  wp_dist=4.9 mm  auth=1.06  capturable=True  cands=0  |I|max=12.000 A  |F|=1.827e-08 N  |B|=7.551e-02 T  particle_v=23.38 mm/s  flow_v=30.05 mm/s  wall_clear=12.10 mm  Re=1.61e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 656: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 659: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  660/1600  state=FREE_NAVIGATION  final_dist=203.2 mm  wp=185/296  lookahead=193/296  wp_dist=5.8 mm  auth=0.00  capturable=False  cands=0  |I|max=11.821 A  |F|=1.742e-08 N  |B|=7.081e-02 T  particle_v=19.76 mm/s  flow_v=36.24 mm/s  wall_clear=12.24 mm  Re=1.54e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 662: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 663: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step  670/1600  state=RECOVERY_MODE  final_dist=203.0 mm  wp=185/296  lookahead=193/296  wp_dist=5.6 mm  auth=0.63  capturable=False  cands=4  |I|max=12.000 A  |F|=1.010e-08 N  |B|=1.414e-01 T  particle_v=42.87 mm/s  flow_v=34.13 mm/s  wall_clear=11.05 mm  Re=9.01e-02
+  step  680/1600  state=BRANCH_COMMITMENT  final_dist=202.2 mm  wp=185/296  lookahead=193/296  wp_dist=5.8 mm  auth=1.13  capturable=True  cands=4  |I|max=12.000 A  |F|=1.444e-08 N  |B|=7.069e-02 T  particle_v=14.36 mm/s  flow_v=28.10 mm/s  wall_clear=10.45 mm  Re=1.28e-01
+  step  690/1600  state=BRANCH_COMMITMENT  final_dist=198.6 mm  wp=185/296  lookahead=193/296  wp_dist=4.3 mm  auth=1.19  capturable=True  cands=0  |I|max=11.999 A  |F|=1.357e-08 N  |B|=7.076e-02 T  particle_v=18.42 mm/s  flow_v=29.87 mm/s  wall_clear=14.19 mm  Re=1.20e-01
+  step  700/1600  state=BRANCH_COMMITMENT  final_dist=196.8 mm  wp=186/296  lookahead=194/296  wp_dist=5.3 mm  auth=1.52  capturable=True  cands=4  |I|max=11.957 A  |F|=1.258e-08 N  |B|=7.079e-02 T  particle_v=9.10 mm/s  flow_v=34.63 mm/s  wall_clear=13.68 mm  Re=1.12e-01
+  step  710/1600  state=BRANCH_COMMITMENT  final_dist=196.8 mm  wp=187/296  lookahead=195/296  wp_dist=6.3 mm  auth=1.52  capturable=True  cands=0  |I|max=11.958 A  |F|=1.123e-08 N  |B|=7.072e-02 T  particle_v=7.15 mm/s  flow_v=38.24 mm/s  wall_clear=12.11 mm  Re=1.00e-01
+  step  720/1600  state=BRANCH_COMMITMENT  final_dist=197.2 mm  wp=187/296  lookahead=195/296  wp_dist=7.7 mm  auth=1.52  capturable=True  cands=0  |I|max=11.971 A  |F|=1.071e-08 N  |B|=7.069e-02 T  particle_v=3.86 mm/s  flow_v=35.08 mm/s  wall_clear=10.90 mm  Re=9.55e-02
+  step  730/1600  state=BRANCH_COMMITMENT  final_dist=197.2 mm  wp=187/296  lookahead=195/296  wp_dist=7.9 mm  auth=1.52  capturable=True  cands=0  |I|max=11.978 A  |F|=1.055e-08 N  |B|=7.069e-02 T  particle_v=1.98 mm/s  flow_v=29.31 mm/s  wall_clear=10.73 mm  Re=9.41e-02
+  step  740/1600  state=FREE_NAVIGATION  final_dist=195.9 mm  wp=187/296  lookahead=195/296  wp_dist=7.7 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.762e-08 N  |B|=7.073e-02 T  particle_v=37.39 mm/s  flow_v=26.54 mm/s  wall_clear=10.09 mm  Re=1.55e-01
+  step  750/1600  state=BRANCH_COMMITMENT  final_dist=193.8 mm  wp=188/296  lookahead=196/296  wp_dist=8.8 mm  auth=1.81  capturable=True  cands=0  |I|max=11.958 A  |F|=1.131e-08 N  |B|=7.070e-02 T  particle_v=8.87 mm/s  flow_v=30.10 mm/s  wall_clear=9.43 mm  Re=1.01e-01
+  step  760/1600  state=BRANCH_COMMITMENT  final_dist=193.5 mm  wp=188/296  lookahead=196/296  wp_dist=8.4 mm  auth=1.81  capturable=True  cands=0  |I|max=12.000 A  |F|=1.148e-08 N  |B|=7.087e-02 T  particle_v=10.85 mm/s  flow_v=33.79 mm/s  wall_clear=9.13 mm  Re=1.02e-01
+  step  770/1600  state=BRANCH_COMMITMENT  final_dist=192.8 mm  wp=188/296  lookahead=196/296  wp_dist=9.3 mm  auth=1.81  capturable=True  cands=0  |I|max=12.000 A  |F|=1.067e-08 N  |B|=7.070e-02 T  particle_v=2.72 mm/s  flow_v=31.89 mm/s  wall_clear=8.56 mm  Re=9.51e-02
+  step  780/1600  state=BRANCH_COMMITMENT  final_dist=192.7 mm  wp=188/296  lookahead=196/296  wp_dist=8.5 mm  auth=1.81  capturable=True  cands=0  |I|max=12.000 A  |F|=1.121e-08 N  |B|=7.094e-02 T  particle_v=5.48 mm/s  flow_v=28.61 mm/s  wall_clear=9.46 mm  Re=9.99e-02
+  step  790/1600  state=BRANCH_COMMITMENT  final_dist=191.5 mm  wp=188/296  lookahead=196/296  wp_dist=8.0 mm  auth=1.63  capturable=True  cands=0  |I|max=12.000 A  |F|=1.045e-08 N  |B|=7.073e-02 T  particle_v=13.72 mm/s  flow_v=25.62 mm/s  wall_clear=9.13 mm  Re=9.32e-02
+  step  800/1600  state=BRANCH_COMMITMENT  final_dist=191.5 mm  wp=189/296  lookahead=197/296  wp_dist=6.8 mm  auth=1.63  capturable=True  cands=0  |I|max=12.000 A  |F|=1.083e-08 N  |B|=7.068e-02 T  particle_v=9.12 mm/s  flow_v=31.14 mm/s  wall_clear=10.05 mm  Re=9.65e-02
+  step  810/1600  state=BRANCH_COMMITMENT  final_dist=192.1 mm  wp=189/296  lookahead=197/296  wp_dist=6.8 mm  auth=1.63  capturable=True  cands=0  |I|max=12.000 A  |F|=1.123e-08 N  |B|=7.088e-02 T  particle_v=4.84 mm/s  flow_v=36.37 mm/s  wall_clear=10.22 mm  Re=1.00e-01
+  step  820/1600  state=BRANCH_COMMITMENT  final_dist=192.4 mm  wp=189/296  lookahead=197/296  wp_dist=7.5 mm  auth=1.63  capturable=True  cands=0  |I|max=12.000 A  |F|=1.100e-08 N  |B|=7.068e-02 T  particle_v=6.81 mm/s  flow_v=35.05 mm/s  wall_clear=9.97 mm  Re=9.80e-02
+  step  830/1600  state=BRANCH_COMMITMENT  final_dist=191.7 mm  wp=189/296  lookahead=197/296  wp_dist=8.2 mm  auth=1.46  capturable=True  cands=0  |I|max=11.932 A  |F|=1.014e-08 N  |B|=7.076e-02 T  particle_v=2.75 mm/s  flow_v=27.87 mm/s  wall_clear=9.05 mm  Re=9.05e-02
+  step  840/1600  state=BRANCH_COMMITMENT  final_dist=191.4 mm  wp=189/296  lookahead=197/296  wp_dist=7.2 mm  auth=1.46  capturable=True  cands=0  |I|max=12.000 A  |F|=1.055e-08 N  |B|=7.069e-02 T  particle_v=6.76 mm/s  flow_v=26.38 mm/s  wall_clear=9.60 mm  Re=9.41e-02
+  step  850/1600  state=BRANCH_COMMITMENT  final_dist=191.1 mm  wp=189/296  lookahead=197/296  wp_dist=6.4 mm  auth=1.46  capturable=True  cands=0  |I|max=12.000 A  |F|=1.089e-08 N  |B|=7.074e-02 T  particle_v=1.55 mm/s  flow_v=30.74 mm/s  wall_clear=9.88 mm  Re=9.71e-02
+  step  860/1600  state=BRANCH_COMMITMENT  final_dist=191.5 mm  wp=189/296  lookahead=197/296  wp_dist=6.5 mm  auth=1.46  capturable=True  cands=0  |I|max=12.000 A  |F|=1.090e-08 N  |B|=7.070e-02 T  particle_v=4.33 mm/s  flow_v=36.27 mm/s  wall_clear=10.17 mm  Re=9.71e-02
+  step  870/1600  state=BRANCH_COMMITMENT  final_dist=188.6 mm  wp=190/296  lookahead=198/296  wp_dist=7.0 mm  auth=1.64  capturable=True  cands=0  |I|max=11.997 A  |F|=1.162e-08 N  |B|=7.068e-02 T  particle_v=21.25 mm/s  flow_v=21.67 mm/s  wall_clear=5.55 mm  Re=1.03e-01
+  step  880/1600  state=FREE_NAVIGATION  final_dist=184.7 mm  wp=191/296  lookahead=199/296  wp_dist=4.1 mm  auth=0.00  capturable=False  cands=4  |I|max=12.000 A  |F|=1.894e-08 N  |B|=7.074e-02 T  particle_v=32.42 mm/s  flow_v=19.06 mm/s  wall_clear=6.42 mm  Re=1.67e-01
+  step  890/1600  state=FREE_NAVIGATION  final_dist=177.2 mm  wp=196/296  lookahead=204/296  wp_dist=5.6 mm  auth=0.00  capturable=False  cands=5  |I|max=12.000 A  |F|=1.873e-08 N  |B|=7.070e-02 T  particle_v=41.23 mm/s  flow_v=14.43 mm/s  wall_clear=5.96 mm  Re=1.65e-01
+  step  900/1600  state=BRANCH_COMMITMENT  final_dist=169.9 mm  wp=200/296  lookahead=208/296  wp_dist=4.5 mm  auth=1.88  capturable=True  cands=0  |I|max=12.000 A  |F|=1.875e-08 N  |B|=7.117e-02 T  particle_v=37.17 mm/s  flow_v=18.38 mm/s  wall_clear=7.14 mm  Re=1.65e-01
+  step  910/1600  state=FREE_NAVIGATION  final_dist=164.2 mm  wp=203/296  lookahead=211/296  wp_dist=4.2 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.836e-08 N  |B|=7.241e-02 T  particle_v=32.41 mm/s  flow_v=23.02 mm/s  wall_clear=8.10 mm  Re=1.62e-01
+  step  920/1600  state=BRANCH_COMMITMENT  final_dist=159.8 mm  wp=206/296  lookahead=214/296  wp_dist=4.2 mm  auth=1.96  capturable=True  cands=0  |I|max=12.000 A  |F|=1.556e-08 N  |B|=9.141e-02 T  particle_v=23.13 mm/s  flow_v=23.19 mm/s  wall_clear=7.74 mm  Re=1.38e-01
+  step  930/1600  state=FREE_NAVIGATION  final_dist=154.6 mm  wp=209/296  lookahead=217/296  wp_dist=5.0 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.867e-08 N  |B|=7.384e-02 T  particle_v=39.40 mm/s  flow_v=14.67 mm/s  wall_clear=5.11 mm  Re=1.64e-01
+  step  940/1600  state=FREE_NAVIGATION  final_dist=147.8 mm  wp=213/296  lookahead=221/296  wp_dist=4.8 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.878e-08 N  |B|=7.304e-02 T  particle_v=42.03 mm/s  flow_v=12.48 mm/s  wall_clear=4.89 mm  Re=1.65e-01
+  step  950/1600  state=FREE_NAVIGATION  final_dist=140.8 mm  wp=218/296  lookahead=226/296  wp_dist=4.7 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.856e-08 N  |B|=7.134e-02 T  particle_v=38.29 mm/s  flow_v=15.83 mm/s  wall_clear=5.97 mm  Re=1.63e-01
+  step  960/1600  state=BRANCH_COMMITMENT  final_dist=134.4 mm  wp=223/296  lookahead=231/296  wp_dist=5.6 mm  auth=1.65  capturable=True  cands=0  |I|max=11.999 A  |F|=1.818e-08 N  |B|=7.077e-02 T  particle_v=32.26 mm/s  flow_v=20.82 mm/s  wall_clear=6.92 mm  Re=1.60e-01
+  step  970/1600  state=BRANCH_COMMITMENT  final_dist=129.1 mm  wp=226/296  lookahead=234/296  wp_dist=4.4 mm  auth=1.60  capturable=True  cands=5  |I|max=12.000 A  |F|=1.706e-08 N  |B|=7.074e-02 T  particle_v=28.74 mm/s  flow_v=21.86 mm/s  wall_clear=7.82 mm  Re=1.50e-01
+  step  980/1600  state=FREE_NAVIGATION  final_dist=124.1 mm  wp=230/296  lookahead=238/296  wp_dist=5.9 mm  auth=0.00  capturable=False  cands=5  |I|max=12.000 A  |F|=1.537e-08 N  |B|=7.084e-02 T  particle_v=26.09 mm/s  flow_v=18.96 mm/s  wall_clear=7.63 mm  Re=1.36e-01
+  step  990/1600  state=FREE_NAVIGATION  final_dist=119.0 mm  wp=232/296  lookahead=240/296  wp_dist=4.8 mm  auth=0.00  capturable=False  cands=1  |I|max=12.000 A  |F|=1.422e-08 N  |B|=7.070e-02 T  particle_v=32.36 mm/s  flow_v=16.51 mm/s  wall_clear=7.16 mm  Re=1.26e-01
+  step 1000/1600  state=FREE_NAVIGATION  final_dist=114.4 mm  wp=234/296  lookahead=242/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=1  |I|max=12.000 A  |F|=1.350e-08 N  |B|=7.069e-02 T  particle_v=21.42 mm/s  flow_v=18.37 mm/s  wall_clear=5.97 mm  Re=1.20e-01
+  step 1010/1600  state=BRANCH_COMMITMENT  final_dist=111.8 mm  wp=236/296  lookahead=244/296  wp_dist=4.4 mm  auth=1.38  capturable=True  cands=8  |I|max=11.988 A  |F|=1.102e-08 N  |B|=7.085e-02 T  particle_v=11.84 mm/s  flow_v=22.55 mm/s  wall_clear=6.52 mm  Re=9.82e-02
+  step 1020/1600  state=BRANCH_COMMITMENT  final_dist=108.7 mm  wp=238/296  lookahead=246/296  wp_dist=4.6 mm  auth=1.49  capturable=True  cands=0  |I|max=12.000 A  |F|=1.853e-08 N  |B|=7.072e-02 T  particle_v=34.87 mm/s  flow_v=22.37 mm/s  wall_clear=6.44 mm  Re=1.63e-01
+  step 1030/1600  state=FREE_NAVIGATION  final_dist=102.4 mm  wp=240/296  lookahead=248/296  wp_dist=5.9 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.466e-08 N  |B|=8.260e-02 T  particle_v=34.50 mm/s  flow_v=14.39 mm/s  wall_clear=6.32 mm  Re=1.30e-01
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:382: RuntimeWarning: Step 1031: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step 1040/1600  state=FREE_NAVIGATION  final_dist=98.1 mm  wp=245/296  lookahead=253/296  wp_dist=6.1 mm  auth=0.00  capturable=False  cands=2  |I|max=12.000 A  |F|=1.454e-08 N  |B|=7.200e-02 T  particle_v=29.57 mm/s  flow_v=14.36 mm/s  wall_clear=5.19 mm  Re=1.29e-01
+  step 1050/1600  state=FREE_NAVIGATION  final_dist=93.3 mm  wp=247/296  lookahead=255/296  wp_dist=4.2 mm  auth=0.00  capturable=False  cands=2  |I|max=12.000 A  |F|=1.383e-08 N  |B|=7.212e-02 T  particle_v=23.33 mm/s  flow_v=20.11 mm/s  wall_clear=6.49 mm  Re=1.23e-01
+  step 1060/1600  state=BRANCH_COMMITMENT  final_dist=89.8 mm  wp=250/296  lookahead=258/296  wp_dist=4.3 mm  auth=1.86  capturable=True  cands=10  |I|max=12.000 A  |F|=1.389e-08 N  |B|=7.089e-02 T  particle_v=16.09 mm/s  flow_v=24.73 mm/s  wall_clear=8.12 mm  Re=1.23e-01
+  step 1070/1600  state=BRANCH_COMMITMENT  final_dist=86.3 mm  wp=252/296  lookahead=260/296  wp_dist=5.0 mm  auth=1.77  capturable=True  cands=0  |I|max=12.000 A  |F|=1.402e-08 N  |B|=7.305e-02 T  particle_v=19.12 mm/s  flow_v=22.07 mm/s  wall_clear=7.63 mm  Re=1.24e-01
+  step 1080/1600  state=BRANCH_COMMITMENT  final_dist=82.3 mm  wp=254/296  lookahead=262/296  wp_dist=4.3 mm  auth=1.65  capturable=True  cands=0  |I|max=12.000 A  |F|=1.353e-08 N  |B|=7.809e-02 T  particle_v=21.62 mm/s  flow_v=18.21 mm/s  wall_clear=7.71 mm  Re=1.20e-01
+  step 1090/1600  state=FREE_NAVIGATION  final_dist=78.1 mm  wp=257/296  lookahead=265/296  wp_dist=4.8 mm  auth=0.00  capturable=False  cands=10  |I|max=12.000 A  |F|=1.395e-08 N  |B|=7.666e-02 T  particle_v=22.85 mm/s  flow_v=18.46 mm/s  wall_clear=8.82 mm  Re=1.24e-01
+  step 1100/1600  state=FREE_NAVIGATION  final_dist=74.9 mm  wp=259/296  lookahead=267/296  wp_dist=5.2 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.382e-08 N  |B|=7.886e-02 T  particle_v=21.31 mm/s  flow_v=22.91 mm/s  wall_clear=9.38 mm  Re=1.23e-01
+  step 1110/1600  state=BRANCH_COMMITMENT  final_dist=73.1 mm  wp=260/296  lookahead=268/296  wp_dist=5.2 mm  auth=1.41  capturable=True  cands=0  |I|max=11.998 A  |F|=1.131e-08 N  |B|=7.070e-02 T  particle_v=6.38 mm/s  flow_v=26.94 mm/s  wall_clear=9.01 mm  Re=1.01e-01
+  step 1120/1600  state=BRANCH_COMMITMENT  final_dist=71.3 mm  wp=260/296  lookahead=268/296  wp_dist=4.1 mm  auth=1.43  capturable=True  cands=10  |I|max=11.984 A  |F|=1.106e-08 N  |B|=7.082e-02 T  particle_v=8.86 mm/s  flow_v=26.06 mm/s  wall_clear=8.36 mm  Re=9.85e-02
+  step 1130/1600  state=BRANCH_COMMITMENT  final_dist=69.9 mm  wp=262/296  lookahead=270/296  wp_dist=5.6 mm  auth=1.43  capturable=True  cands=0  |I|max=12.000 A  |F|=1.099e-08 N  |B|=7.067e-02 T  particle_v=10.47 mm/s  flow_v=23.18 mm/s  wall_clear=9.36 mm  Re=9.79e-02
+  step 1140/1600  state=BRANCH_COMMITMENT  final_dist=67.0 mm  wp=263/296  lookahead=271/296  wp_dist=5.8 mm  auth=1.82  capturable=True  cands=0  |I|max=12.000 A  |F|=1.256e-08 N  |B|=8.399e-02 T  particle_v=15.04 mm/s  flow_v=22.06 mm/s  wall_clear=9.37 mm  Re=1.12e-01
+  step 1150/1600  state=BRANCH_COMMITMENT  final_dist=64.3 mm  wp=264/296  lookahead=272/296  wp_dist=4.9 mm  auth=1.80  capturable=True  cands=0  |I|max=12.000 A  |F|=1.240e-08 N  |B|=8.674e-02 T  particle_v=10.36 mm/s  flow_v=26.14 mm/s  wall_clear=9.57 mm  Re=1.10e-01
+  step 1160/1600  state=FREE_NAVIGATION  final_dist=62.7 mm  wp=265/296  lookahead=273/296  wp_dist=6.0 mm  auth=0.00  capturable=False  cands=10  |I|max=12.000 A  |F|=1.322e-08 N  |B|=8.516e-02 T  particle_v=8.14 mm/s  flow_v=31.64 mm/s  wall_clear=10.60 mm  Re=1.17e-01
+  step 1170/1600  state=BRANCH_COMMITMENT  final_dist=61.0 mm  wp=265/296  lookahead=273/296  wp_dist=4.3 mm  auth=1.38  capturable=True  cands=0  |I|max=12.000 A  |F|=1.421e-08 N  |B|=1.165e-01 T  particle_v=12.20 mm/s  flow_v=31.49 mm/s  wall_clear=12.16 mm  Re=1.26e-01
+  step 1180/1600  state=BRANCH_COMMITMENT  final_dist=58.2 mm  wp=267/296  lookahead=275/296  wp_dist=5.4 mm  auth=1.62  capturable=True  cands=0  |I|max=12.000 A  |F|=1.426e-08 N  |B|=1.186e-01 T  particle_v=17.06 mm/s  flow_v=26.02 mm/s  wall_clear=11.63 mm  Re=1.26e-01
+  step 1190/1600  state=FREE_NAVIGATION  final_dist=55.1 mm  wp=268/296  lookahead=276/296  wp_dist=4.1 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.280e-08 N  |B|=1.310e-01 T  particle_v=14.59 mm/s  flow_v=23.47 mm/s  wall_clear=11.14 mm  Re=1.14e-01
+  step 1200/1600  state=BRANCH_COMMITMENT  final_dist=52.7 mm  wp=270/296  lookahead=278/296  wp_dist=6.8 mm  auth=1.68  capturable=True  cands=10  |I|max=12.000 A  |F|=1.258e-08 N  |B|=1.336e-01 T  particle_v=12.09 mm/s  flow_v=27.06 mm/s  wall_clear=11.10 mm  Re=1.12e-01
+  step 1210/1600  state=BRANCH_COMMITMENT  final_dist=51.0 mm  wp=270/296  lookahead=278/296  wp_dist=4.9 mm  auth=1.36  capturable=True  cands=0  |I|max=12.000 A  |F|=1.288e-08 N  |B|=1.328e-01 T  particle_v=7.08 mm/s  flow_v=30.80 mm/s  wall_clear=11.38 mm  Re=1.14e-01
+  step 1220/1600  state=BRANCH_COMMITMENT  final_dist=49.8 mm  wp=271/296  lookahead=279/296  wp_dist=5.9 mm  auth=1.43  capturable=True  cands=0  |I|max=12.000 A  |F|=1.247e-08 N  |B|=1.359e-01 T  particle_v=6.78 mm/s  flow_v=29.91 mm/s  wall_clear=11.39 mm  Re=1.11e-01
+  step 1230/1600  state=BRANCH_COMMITMENT  final_dist=47.9 mm  wp=271/296  lookahead=279/296  wp_dist=4.1 mm  auth=1.71  capturable=True  cands=0  |I|max=12.000 A  |F|=1.222e-08 N  |B|=1.405e-01 T  particle_v=11.27 mm/s  flow_v=24.75 mm/s  wall_clear=11.27 mm  Re=1.09e-01
+  step 1240/1600  state=BRANCH_COMMITMENT  final_dist=45.4 mm  wp=273/296  lookahead=281/296  wp_dist=5.5 mm  auth=2.04  capturable=True  cands=0  |I|max=12.000 A  |F|=1.184e-08 N  |B|=1.462e-01 T  particle_v=11.82 mm/s  flow_v=22.99 mm/s  wall_clear=11.19 mm  Re=1.05e-01
+  step 1250/1600  state=BRANCH_COMMITMENT  final_dist=43.2 mm  wp=274/296  lookahead=282/296  wp_dist=5.7 mm  auth=1.82  capturable=True  cands=0  |I|max=12.000 A  |F|=1.132e-08 N  |B|=1.545e-01 T  particle_v=7.80 mm/s  flow_v=26.14 mm/s  wall_clear=10.45 mm  Re=1.01e-01
+  step 1260/1600  state=BRANCH_COMMITMENT  final_dist=42.3 mm  wp=274/296  lookahead=282/296  wp_dist=4.7 mm  auth=1.50  capturable=True  cands=10  |I|max=12.000 A  |F|=1.130e-08 N  |B|=1.571e-01 T  particle_v=4.08 mm/s  flow_v=29.74 mm/s  wall_clear=10.12 mm  Re=1.01e-01
+  step 1270/1600  state=BRANCH_COMMITMENT  final_dist=41.7 mm  wp=274/296  lookahead=282/296  wp_dist=4.0 mm  auth=1.50  capturable=True  cands=0  |I|max=12.000 A  |F|=1.130e-08 N  |B|=1.559e-01 T  particle_v=4.73 mm/s  flow_v=28.65 mm/s  wall_clear=10.11 mm  Re=1.01e-01
+  step 1280/1600  state=BRANCH_COMMITMENT  final_dist=40.0 mm  wp=275/296  lookahead=283/296  wp_dist=4.3 mm  auth=1.74  capturable=True  cands=10  |I|max=12.000 A  |F|=1.154e-08 N  |B|=1.497e-01 T  particle_v=10.13 mm/s  flow_v=23.85 mm/s  wall_clear=9.79 mm  Re=1.03e-01
+  step 1290/1600  state=BRANCH_COMMITMENT  final_dist=37.6 mm  wp=277/296  lookahead=285/296  wp_dist=5.3 mm  auth=1.88  capturable=True  cands=0  |I|max=12.000 A  |F|=1.161e-08 N  |B|=1.434e-01 T  particle_v=12.18 mm/s  flow_v=21.92 mm/s  wall_clear=9.61 mm  Re=1.03e-01
+  step 1300/1600  state=BRANCH_COMMITMENT  final_dist=35.4 mm  wp=278/296  lookahead=286/296  wp_dist=5.0 mm  auth=1.65  capturable=True  cands=0  |I|max=12.000 A  |F|=1.183e-08 N  |B|=1.369e-01 T  particle_v=8.66 mm/s  flow_v=26.05 mm/s  wall_clear=10.05 mm  Re=1.05e-01
+  step 1310/1600  state=BRANCH_COMMITMENT  final_dist=34.1 mm  wp=279/296  lookahead=287/296  wp_dist=5.1 mm  auth=1.40  capturable=True  cands=0  |I|max=12.000 A  |F|=1.207e-08 N  |B|=1.317e-01 T  particle_v=6.16 mm/s  flow_v=31.09 mm/s  wall_clear=10.36 mm  Re=1.07e-01
+  step 1320/1600  state=FREE_NAVIGATION  final_dist=33.1 mm  wp=279/296  lookahead=287/296  wp_dist=4.1 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.406e-08 N  |B|=1.195e-01 T  particle_v=12.05 mm/s  flow_v=30.80 mm/s  wall_clear=10.84 mm  Re=1.25e-01
+  step 1330/1600  state=FREE_NAVIGATION  final_dist=31.1 mm  wp=280/296  lookahead=288/296  wp_dist=4.5 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.423e-08 N  |B|=1.196e-01 T  particle_v=17.38 mm/s  flow_v=26.08 mm/s  wall_clear=10.57 mm  Re=1.26e-01
+  step 1340/1600  state=BRANCH_COMMITMENT  final_dist=28.5 mm  wp=282/296  lookahead=290/296  wp_dist=5.4 mm  auth=1.76  capturable=True  cands=0  |I|max=12.000 A  |F|=1.266e-08 N  |B|=1.280e-01 T  particle_v=14.17 mm/s  flow_v=23.89 mm/s  wall_clear=10.71 mm  Re=1.13e-01
+  step 1350/1600  state=BRANCH_COMMITMENT  final_dist=26.0 mm  wp=283/296  lookahead=291/296  wp_dist=4.4 mm  auth=1.70  capturable=True  cands=0  |I|max=12.000 A  |F|=1.275e-08 N  |B|=1.249e-01 T  particle_v=10.18 mm/s  flow_v=27.61 mm/s  wall_clear=11.13 mm  Re=1.13e-01
+  step 1360/1600  state=BRANCH_COMMITMENT  final_dist=24.4 mm  wp=284/296  lookahead=292/296  wp_dist=4.3 mm  auth=1.50  capturable=True  cands=0  |I|max=12.000 A  |F|=1.312e-08 N  |B|=1.200e-01 T  particle_v=6.40 mm/s  flow_v=32.11 mm/s  wall_clear=11.41 mm  Re=1.16e-01
+  step 1370/1600  state=BRANCH_COMMITMENT  final_dist=23.0 mm  wp=285/296  lookahead=293/296  wp_dist=4.6 mm  auth=1.41  capturable=True  cands=0  |I|max=12.000 A  |F|=1.331e-08 N  |B|=1.184e-01 T  particle_v=8.28 mm/s  flow_v=30.97 mm/s  wall_clear=11.09 mm  Re=1.18e-01
+  step 1380/1600  state=FREE_NAVIGATION  final_dist=20.8 mm  wp=286/296  lookahead=294/296  wp_dist=4.8 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.603e-08 N  |B|=9.732e-02 T  particle_v=24.47 mm/s  flow_v=25.38 mm/s  wall_clear=10.40 mm  Re=1.42e-01
+  step 1390/1600  state=BRANCH_COMMITMENT  final_dist=17.4 mm  wp=288/296  lookahead=296/296  wp_dist=5.4 mm  auth=1.91  capturable=True  cands=0  |I|max=12.000 A  |F|=1.302e-08 N  |B|=8.553e-02 T  particle_v=16.27 mm/s  flow_v=21.97 mm/s  wall_clear=9.16 mm  Re=1.16e-01
+  step 1400/1600  state=BRANCH_COMMITMENT  final_dist=14.0 mm  wp=290/296  lookahead=296/296  wp_dist=5.5 mm  auth=1.61  capturable=True  cands=0  |I|max=12.000 A  |F|=1.403e-08 N  |B|=8.683e-02 T  particle_v=16.50 mm/s  flow_v=24.88 mm/s  wall_clear=9.11 mm  Re=1.24e-01
+  step 1410/1600  state=BRANCH_COMMITMENT  final_dist=10.7 mm  wp=291/296  lookahead=296/296  wp_dist=4.1 mm  auth=1.38  capturable=True  cands=0  |I|max=12.000 A  |F|=1.511e-08 N  |B|=8.858e-02 T  particle_v=15.66 mm/s  flow_v=28.55 mm/s  wall_clear=9.32 mm  Re=1.34e-01
+  step 1420/1600  state=FREE_NAVIGATION  final_dist=7.2 mm  wp=293/296  lookahead=296/296  wp_dist=4.0 mm  auth=0.00  capturable=False  cands=0  |I|max=12.000 A  |F|=1.603e-08 N  |B|=8.452e-02 T  particle_v=19.31 mm/s  flow_v=27.63 mm/s  wall_clear=9.33 mm  Re=1.42e-01
+  step 1430/1600  state=FREE_NAVIGATION  final_dist=3.3 mm  wp=296/296  lookahead=296/296  wp_dist=3.7 mm  auth=0.00  capturable=False  cands=10  |I|max=12.000 A  |F|=1.497e-08 N  |B|=8.408e-02 T  particle_v=20.44 mm/s  flow_v=23.90 mm/s  wall_clear=9.96 mm  Re=1.32e-01
+  ACBC summary: transitions=1185, commitments=196, recoveries=48, low-level convergence=98.67%
+
+============================================================
+  trial_1_inlet_to_outlet
+============================================================
+  Profile         : spion_carrier_10um_blood
+  Start           : [ 0.07029893  0.0182373  -0.43109387]
+  Target          : [-0.04681534 -0.05247942 -0.04449917]
+  Final position  : [-0.04597306 -0.05084649 -0.0467287 ]
+  Steps taken     : 1431
+  Final error (m) : 0.002889
+  Final error (mm): 2.889
+  Reached target  : True
+  Max current (A) : 12.000
+  Avg ctrl time(s): 0.5452
+  Wall time (s)   : 790.14
+  Mean Re         : 1.064e-01
+  Max  Re         : 1.695e-01
+  Low-Re valid    : False
+  Peak |F|  (N)   : 1.928e-08
+  Peak |v|  (m/s) : 5.933e-02
+  Peak |B|  (T)   : 1.091e+00
+
+>>> Running trial_2_mid_to_outlet
+    start:  [-0.0322086  -0.01253763 -0.31953124]
+    target: [-0.04681534 -0.05247942 -0.04449917]
+    Raw waypoints: 1222, sparse waypoints: 198
+      wp1: [ -30.7  -12.4 -319.7] mm
+      wp2: [ -29.2  -12.3 -319.9] mm
+      wp3: [ -27.6  -12.1 -320.2] mm
+      wp4: [ -26.2  -11.9 -320.5] mm
+      wp5: [ -24.5  -11.6 -320.7] mm
+      wp6: [ -23.   -11.3 -321.2] mm
+      wp7: [ -21.2  -10.9 -321.7] mm
+      wp8: [ -19.7  -10.4 -321.9] mm
+      wp9: [ -18.4   -9.8 -321.9] mm
+      wp10: [ -17.1   -9.1 -321.5] mm
+      ...
+      wp198: [-46.8 -52.5 -44.5] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+  step   10/1600  state=FREE_NAVIGATION  final_dist=278.5 mm  wp=4/198  lookahead=12/198  wp_dist=5.0 mm  auth=0.00  capturable=False  cands=2  |I|max=7.818 A  |F|=4.874e-09 N  |B|=7.754e-01 T  particle_v=8.41 mm/s  flow_v=6.18 mm/s  wall_clear=2.23 mm  Re=4.40e-02
+  step   20/1600  state=BRANCH_COMMITMENT  final_dist=278.8 mm  wp=5/198  lookahead=13/198  wp_dist=4.7 mm  auth=4.09  capturable=True  cands=2  |I|max=8.977 A  |F|=5.784e-09 N  |B|=8.577e-01 T  particle_v=11.07 mm/s  flow_v=6.16 mm/s  wall_clear=2.18 mm  Re=5.21e-02
+  step   30/1600  state=BRANCH_COMMITMENT  final_dist=279.4 mm  wp=6/198  lookahead=14/198  wp_dist=4.1 mm  auth=2.46  capturable=True  cands=0  |I|max=9.528 A  |F|=5.863e-09 N  |B|=8.823e-01 T  particle_v=12.16 mm/s  flow_v=5.28 mm/s  wall_clear=2.32 mm  Re=5.28e-02
+  step   40/1600  state=FREE_NAVIGATION  final_dist=279.6 mm  wp=8/198  lookahead=16/198  wp_dist=5.3 mm  auth=0.00  capturable=False  cands=2  |I|max=9.781 A  |F|=5.104e-09 N  |B|=9.324e-01 T  particle_v=10.92 mm/s  flow_v=4.69 mm/s  wall_clear=1.96 mm  Re=4.60e-02
+  step   50/1600  state=BRANCH_COMMITMENT  final_dist=279.8 mm  wp=9/198  lookahead=17/198  wp_dist=4.7 mm  auth=1.40  capturable=True  cands=0  |I|max=9.616 A  |F|=4.736e-09 N  |B|=9.405e-01 T  particle_v=9.72 mm/s  flow_v=4.47 mm/s  wall_clear=1.34 mm  Re=4.27e-02
+  step   60/1600  state=BRANCH_COMMITMENT  final_dist=280.2 mm  wp=10/198  lookahead=18/198  wp_dist=4.3 mm  auth=2.06  capturable=True  cands=2  |I|max=9.050 A  |F|=4.356e-09 N  |B|=8.505e-01 T  particle_v=8.56 mm/s  flow_v=4.84 mm/s  wall_clear=1.19 mm  Re=3.94e-02
+  step   70/1600  state=BRANCH_COMMITMENT  final_dist=280.4 mm  wp=11/198  lookahead=19/198  wp_dist=4.3 mm  auth=2.45  capturable=True  cands=2  |I|max=8.268 A  |F|=3.727e-09 N  |B|=6.670e-01 T  particle_v=6.71 mm/s  flow_v=4.51 mm/s  wall_clear=1.12 mm  Re=3.37e-02
+  step   80/1600  state=BRANCH_COMMITMENT  final_dist=280.1 mm  wp=12/198  lookahead=20/198  wp_dist=4.0 mm  auth=4.24  capturable=True  cands=0  |I|max=9.114 A  |F|=4.831e-09 N  |B|=7.978e-01 T  particle_v=11.26 mm/s  flow_v=3.45 mm/s  wall_clear=0.98 mm  Re=4.36e-02
+  step   90/1600  state=FREE_NAVIGATION  final_dist=280.0 mm  wp=14/198  lookahead=22/198  wp_dist=5.2 mm  auth=0.00  capturable=False  cands=0  |I|max=8.476 A  |F|=4.269e-09 N  |B|=7.482e-01 T  particle_v=8.73 mm/s  flow_v=4.04 mm/s  wall_clear=1.33 mm  Re=3.86e-02
+  step  100/1600  state=BRANCH_COMMITMENT  final_dist=279.7 mm  wp=15/198  lookahead=23/198  wp_dist=4.9 mm  auth=4.27  capturable=True  cands=0  |I|max=9.359 A  |F|=4.853e-09 N  |B|=8.502e-01 T  particle_v=9.60 mm/s  flow_v=5.15 mm/s  wall_clear=1.50 mm  Re=4.38e-02
+  step  110/1600  state=FREE_NAVIGATION  final_dist=278.9 mm  wp=16/198  lookahead=24/198  wp_dist=5.4 mm  auth=0.00  capturable=False  cands=2  |I|max=8.095 A  |F|=4.872e-09 N  |B|=6.458e-01 T  particle_v=9.78 mm/s  flow_v=6.16 mm/s  wall_clear=1.55 mm  Re=4.40e-02
+  step  120/1600  state=BRANCH_COMMITMENT  final_dist=278.2 mm  wp=16/198  lookahead=24/198  wp_dist=4.0 mm  auth=5.27  capturable=True  cands=2  |I|max=8.804 A  |F|=5.570e-09 N  |B|=7.537e-01 T  particle_v=11.91 mm/s  flow_v=5.44 mm/s  wall_clear=1.36 mm  Re=5.02e-02
+  step  130/1600  state=RECOVERY_MODE  final_dist=277.7 mm  wp=17/198  lookahead=25/198  wp_dist=4.6 mm  auth=0.00  capturable=False  cands=0  |I|max=6.257 A  |F|=9.638e-13 N  |B|=3.595e-01 T  particle_v=2.83 mm/s  flow_v=2.83 mm/s  wall_clear=0.76 mm  Re=8.85e-06
+  step  140/1600  state=RECOVERY_MODE  final_dist=277.7 mm  wp=17/198  lookahead=25/198  wp_dist=5.1 mm  auth=0.00  capturable=False  cands=0  |I|max=6.257 A  |F|=9.513e-13 N  |B|=3.595e-01 T  particle_v=2.90 mm/s  flow_v=2.90 mm/s  wall_clear=0.85 mm  Re=8.73e-06
+  step  150/1600  state=RECOVERY_MODE  final_dist=277.7 mm  wp=17/198  lookahead=25/198  wp_dist=5.6 mm  auth=0.00  capturable=False  cands=0  |I|max=6.257 A  |F|=9.212e-13 N  |B|=3.595e-01 T  particle_v=3.34 mm/s  flow_v=3.33 mm/s  wall_clear=0.85 mm  Re=8.46e-06
+  step  160/1600  state=RECOVERY_MODE  final_dist=277.8 mm  wp=17/198  lookahead=25/198  wp_dist=6.3 mm  auth=0.00  capturable=False  cands=0  |I|max=6.270 A  |F|=1.110e-12 N  |B|=3.593e-01 T  particle_v=3.87 mm/s  flow_v=3.87 mm/s  wall_clear=0.85 mm  Re=1.02e-05
+  step  170/1600  state=RECOVERY_MODE  final_dist=278.0 mm  wp=17/198  lookahead=25/198  wp_dist=7.0 mm  auth=0.00  capturable=False  cands=0  |I|max=6.412 A  |F|=2.419e-11 N  |B|=3.651e-01 T  particle_v=3.59 mm/s  flow_v=3.60 mm/s  wall_clear=0.81 mm  Re=2.22e-04

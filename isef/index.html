@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MagNav — Magnetic Nanoparticle Steering System</title>
+  <meta name="description" content="Adaptive magnetic nanoparticle steering platform for targeted drug delivery using real-time MPC control.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">⬡ MagNav</div>
+    <div class="nav-links">
+      <a class="nav-link active" data-section="home">Home</a>
+      <a class="nav-link" data-section="electromagnet">Electromagnet</a>
+      <a class="nav-link" data-section="submodule">Submodule</a>
+      <a class="nav-link" data-section="teensy">Teensy</a>
+      <a class="nav-link" data-section="vascular">Phantom</a>
+      <a class="nav-link" data-section="motordriver">Motor Driver</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-bg-glow g1"></div>
+    <div class="hero-bg-glow g2"></div>
+    <div class="hero-bg-glow g3"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          ISEF 2026 — Biomedical Engineering
+        </div>
+        <h1 class="hero-title">
+          Adaptive <span class="gradient-text">Magnetic Steering</span> for Targeted Drug Delivery
+        </h1>
+        <p class="hero-subtitle">
+          A closed-loop electromagnetic platform that uses Model Predictive Control to navigate superparamagnetic nanoparticles through vascular networks with real-time precision.
+        </p>
+        <div class="hero-cta">
+          <a class="btn-primary" href="#components">Explore Components</a>
+          <a class="btn-outline" onclick="openDetail('vascular')">View Phantom →</a>
+        </div>
+      </div>
+      <div class="hero-image-wrapper">
+        <div class="hero-image-container">
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <img src="home.png" alt="Full magnetic steering assembly">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENTS GRID -->
+  <section class="sections-overview" id="components">
+    <div class="section-header fade-in">
+      <h2>System Components</h2>
+      <p>Click any component to explore its design, engineering, and specifications.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="component-card fade-in" style="--card-accent: var(--accent-gold);" onclick="openDetail('electromagnet')">
+        <div class="card-icon" style="background:rgba(251,191,36,0.12);color:#fbbf24;">⚡</div>
+        <div class="card-title">Electromagnet</div>
+        <div class="card-desc">Custom-wound solenoid coils generating precise field gradients for 3D nanoparticle control.</div>
+        <span class="card-tag">Actuation</span>
+      </div>
+      <div class="component-card fade-in" style="--card-accent: var(--accent-cyan);" onclick="openDetail('submodule')">
+        <div class="card-icon" style="background:rgba(0,212,255,0.12);color:#00d4ff;">◈</div>
+        <div class="card-title">Submodule</div>
+        <div class="card-desc">3D-printed tri-axis junction holding electromagnets in an orthogonal configuration.</div>
+        <span class="card-tag">Structure</span>
+      </div>
+      <div class="component-card fade-in" style="--card-accent: var(--accent-blue);" onclick="openDetail('teensy')">
+        <div class="card-icon" style="background:rgba(74,125,255,0.12);color:#4a7dff;">⬢</div>
+        <div class="card-title">Teensy 4.1</div>
+        <div class="card-desc">600 MHz ARM Cortex-M7 running the real-time MPC control loop at 1 kHz.</div>
+        <span class="card-tag">Control</span>
+      </div>
+      <div class="component-card fade-in" style="--card-accent: var(--accent-purple);" onclick="openDetail('vascular')">
+        <div class="card-icon" style="background:rgba(139,92,246,0.12);color:#8b5cf6;">◎</div>
+        <div class="card-title">Vascular Phantom</div>
+        <div class="card-desc">Optically-clear resin model simulating branching vasculature for steering validation.</div>
+        <span class="card-tag">Testing</span>
+      </div>
+      <div class="component-card fade-in" style="--card-accent: var(--accent-rose);" onclick="openDetail('motordriver')">
+        <div class="card-icon" style="background:rgba(244,63,94,0.12);color:#f43f5e;">⚙</div>
+        <div class="card-title">Motor Driver</div>
+        <div class="card-desc">IBT-2 H-bridge modules enabling bidirectional 43A current control per coil.</div>
+        <span class="card-tag">Power</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETAIL OVERLAY -->
+  <div class="detail-overlay" id="detail-overlay">
+    <div class="detail-modal" id="detail-modal"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
