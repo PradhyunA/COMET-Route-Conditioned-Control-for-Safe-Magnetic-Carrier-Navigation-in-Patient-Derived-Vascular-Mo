@@ -1,16 +1,17 @@
 """
 MPC controller for 3D magnetic particle steering in a vessel network.
 
-Controller model:
-  1. Currents are signed/bidirectional and clamped to [-max_current, max_current].
-     This matches the ElectromagnetArray3D model, where reversing current reverses
-     the dipole moment direction.
+Changes from v1:
+  1. Bidirectional current allocation:
+        I_i ∈ [-max_current, max_current]
+     This matches the electromagnet model, where current sign reverses coil
+     polarity.
   2. Wall penalty uses vessel radial distance instead of cubic edge distance.
   3. Flow-aware 1-step prediction includes background blood-flow convection.
   4. Optional route-tangent alignment term w_route * step_along_route.
      This keeps the particle moving along the vessel axis during MPC optimization,
      preventing wall-hugging when Euclidean target direction diverges from route.
-  5. Fast-mode evaluates all starts and optimizes the best starts.
+  5. Fast-mode evaluates all heuristic starts and optimizes the best starts.
 """
 
 import numpy as np
@@ -64,9 +65,9 @@ def _wall_penalty(pos, workspace, wall_buffer_fraction: float = 0.15):
     """
     Vessel-aware wall proximity penalty.
 
-    Returns a positive penalty when the predicted position is too close to the
-    vessel wall. If no vessel-aware workspace is available, falls back to the
-    legacy cubic workspace edge penalty.
+    Returns a positive penalty when the predicted position is too close
+    to the vessel wall. Falls back to cubic workspace edge penalty when
+    no vessel network is attached.
     """
     pos = np.asarray(pos, dtype=float)
 
@@ -91,24 +92,25 @@ def _wall_penalty(pos, workspace, wall_buffer_fraction: float = 0.15):
 
 def _overshoot_penalty(step_vec, current_distance, fraction=0.65):
     """
-    Penalize taking a step that is too large relative to remaining target distance.
+    Penalize predicted steps that are too large relative to remaining distance.
     """
-    return max(0.0, np.linalg.norm(step_vec) - fraction * current_distance)
+    step_len = float(np.linalg.norm(step_vec))
+    return max(0.0, step_len - fraction * current_distance)
 
 
 def _heuristic_starts(target_pos, particle_pos, magnet_array, max_current):
     """
     Cheap nonzero initial guesses to seed the optimizer.
 
-    Because the controller is bidirectional, include both positive and negative
-    versions of useful seeds. The optimizer can then discover both polarity
-    directions without being trapped near a unipolar initial guess.
+    Since the allocator is bidirectional, this returns both positive and
+    negative polarity seeds. The optimizer is still free to find mixed-polarity
+    current patterns.
     """
     particle_pos = np.asarray(particle_pos, dtype=float)
     target_pos = np.asarray(target_pos, dtype=float)
 
     desired = target_pos - particle_pos
-    dist = np.linalg.norm(desired)
+    dist = float(np.linalg.norm(desired))
     n = magnet_array.n_magnets
 
     zero = np.zeros(n, dtype=float)
@@ -118,16 +120,11 @@ def _heuristic_starts(target_pos, particle_pos, magnet_array, max_current):
 
     desired_hat = desired / dist
 
-    # Approximate each coil's geometric direction relative to the particle.
-    # This is only a heuristic seed, not the actual field calculation.
     pull_dirs = magnet_array.positions - particle_pos
     norms = np.linalg.norm(pull_dirs, axis=1)
     pull_dirs = pull_dirs / (norms[:, np.newaxis] + EPS)
 
     proj = pull_dirs @ desired_hat
-
-    # Positive-polarity seed: coils whose geometric pull direction aligns
-    # with desired target direction.
     proj_pos = np.clip(proj, 0.0, None)
 
     if float(np.max(proj_pos)) > EPS:
@@ -141,8 +138,9 @@ def _heuristic_starts(target_pos, particle_pos, magnet_array, max_current):
     single = zero.copy()
     single[best_idx] = max_current
 
-    # Signed seed: use the signed projection directly, normalized by max abs.
-    # This can initialize mixed-polarity patterns.
+    uniform = np.ones(n, dtype=float) * (0.5 * max_current)
+
+    # Signed projection seed can initialize mixed-polarity current patterns.
     max_abs_proj = float(np.max(np.abs(proj)))
     if max_abs_proj > EPS:
         signed_seed = max_current * proj / (max_abs_proj + EPS)
@@ -151,30 +149,25 @@ def _heuristic_starts(target_pos, particle_pos, magnet_array, max_current):
 
     half_signed_seed = 0.5 * signed_seed
 
-    # Negative versions of useful seeds.
     negative_full_seed = -full_seed
     negative_half_seed = -half_seed
     negative_single = -single
-
-    # Uniform positive and negative seeds can sometimes help in symmetric fields.
-    uniform_pos = np.ones(n, dtype=float) * (0.5 * max_current)
-    uniform_neg = -uniform_pos
+    negative_uniform = -uniform
 
     starts = [
         zero,
         full_seed.astype(float),
         half_seed.astype(float),
         single.astype(float),
-        uniform_pos.astype(float),
+        uniform.astype(float),
         signed_seed.astype(float),
         half_signed_seed.astype(float),
         negative_full_seed.astype(float),
         negative_half_seed.astype(float),
         negative_single.astype(float),
-        uniform_neg.astype(float),
+        negative_uniform.astype(float),
     ]
 
-    # Final safety clamp for all heuristic guesses.
     return [
         np.clip(s, -max_current, max_current).astype(float)
         for s in starts
@@ -208,7 +201,7 @@ def _mpc_cost(
     currents = np.asarray(currents, dtype=float)
 
     desired = target_pos - particle_pos
-    current_distance = np.linalg.norm(desired)
+    current_distance = float(np.linalg.norm(desired))
 
     if current_distance < EPS:
         return 0.0
@@ -226,16 +219,16 @@ def _mpc_cost(
         sim_time=sim_time,
     )
 
-    # Use unclipped position for wall-cost sensing so we penalize attempted
-    # wall exits even if workspace.clip() keeps the final prediction inside.
+    # Use the unclipped predicted position for wall penalty so attempted
+    # wall exits are penalized even if workspace.clip keeps the prediction inside.
     unclipped_pos = particle_pos + step_vec
 
-    next_distance = np.linalg.norm(target_pos - next_pos)
+    next_distance = float(np.linalg.norm(target_pos - next_pos))
     progress = current_distance - next_distance
 
     step_along_target = float(np.dot(step_vec, desired_hat))
 
-    force_norm = np.linalg.norm(force)
+    force_norm = float(np.linalg.norm(force))
     alignment = float(np.dot(desired_hat, force / (force_norm + EPS)))
 
     wall_cost = _wall_penalty(unclipped_pos, workspace)
@@ -244,14 +237,14 @@ def _mpc_cost(
     smoothness_cost = 0.0
     if prev_currents is not None:
         prev_currents = np.asarray(prev_currents, dtype=float)
-        smoothness_cost = np.sum((currents - prev_currents) ** 2)
+        smoothness_cost = float(np.sum((currents - prev_currents) ** 2))
 
     # Route-tangent alignment term.
-    # Reward displacement aligned with local planned-route direction.
+    # This rewards predicted displacement along the route direction.
     route_align_cost = 0.0
     if w_route > 0.0 and route_tangent is not None:
         rt = np.asarray(route_tangent, dtype=float)
-        rtn = np.linalg.norm(rt)
+        rtn = float(np.linalg.norm(rt))
 
         if rtn > EPS:
             rt_hat = rt / rtn
@@ -306,11 +299,10 @@ def continuous_mpc_controller(
     Returns:
         best_currents, best_force, best_cost, optimizer_converged
 
-    Parameters:
-        w_route / route_tangent:
-            Optional route-tangent alignment term. This helps motion follow the
-            planned vessel path rather than only minimizing Euclidean distance
-            to the local target.
+    w_route / route_tangent:
+        Optional route-tangent alignment term. This helps the predicted motion
+        follow the planned vessel path rather than only minimizing Euclidean
+        distance to the local target.
     """
     particle_pos = np.asarray(particle_pos, dtype=float)
     target_pos = np.asarray(target_pos, dtype=float)
@@ -322,7 +314,6 @@ def continuous_mpc_controller(
         z = np.zeros(magnet_array.n_magnets, dtype=float)
         return z, np.zeros(3, dtype=float), 0.0, True
 
-    # Bidirectional current bounds.
     bounds = [(-max_current, max_current)] * magnet_array.n_magnets
 
     starts = _heuristic_starts(
@@ -365,7 +356,6 @@ def continuous_mpc_controller(
         route_tangent,
     )
 
-    # Evaluate all starts cheaply, then optimize the best few.
     if fast_mode:
         start_costs = []
 

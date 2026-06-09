@@ -11,6 +11,7 @@ Updated for:
     - SPION-loaded aggregates
     - hydrodynamic drag scaling
     - magnetic loading fraction
+    - larger magnetic carrier / milliparticle profiles
 """
 
 from dataclasses import dataclass
@@ -40,14 +41,17 @@ class PhysicalProfile:
 
     Parameters
     ----------
+    name:
+        Human-readable profile name.
+
     diameter:
-        Effective hydrodynamic diameter [m]
+        Effective hydrodynamic diameter [m].
 
     chi_eff:
-        Effective magnetic susceptibility
+        Effective magnetic susceptibility.
 
     M_sat:
-        Saturation magnetisation [A/m]
+        Saturation magnetisation [A/m].
 
     magnetic_loading_fraction:
         Fraction of carrier volume occupied by magnetic material.
@@ -56,6 +60,18 @@ class PhysicalProfile:
     hydrodynamic_drag_multiplier:
         Additional drag scaling for non-ideal carrier geometry,
         roughness, protein corona, porous structures, etc.
+
+    fluid_viscosity:
+        Dynamic viscosity [Pa*s].
+
+    fluid_density:
+        Fluid density [kg/m^3].
+
+    temperature:
+        Temperature [K].
+
+    enable_brownian:
+        Whether Brownian motion is included.
     """
 
     name: str
@@ -80,7 +96,6 @@ class PhysicalProfile:
     enable_brownian: bool
 
     def __post_init__(self):
-
         if self.diameter <= 0:
             raise ValueError(
                 f"diameter must be > 0, got {self.diameter}"
@@ -114,7 +129,7 @@ class PhysicalProfile:
 MICROSPHERE_500UM = PhysicalProfile(
     name="microsphere_500um",
 
-    diameter=500e-6,
+    diameter=500e-6,  # 500 µm
 
     chi_eff=3.0,
     M_sat=4.5e5,
@@ -132,7 +147,7 @@ MICROSPHERE_500UM = PhysicalProfile(
 MICROSPHERE_50UM = PhysicalProfile(
     name="microsphere_50um",
 
-    diameter=50e-6,
+    diameter=50e-6,  # 50 µm
 
     chi_eff=3.0,
     M_sat=4.5e5,
@@ -172,7 +187,7 @@ NANOPARTICLE_500NM = PhysicalProfile(
 
 
 # -------------------------------------------------------------------
-# Realistic SPION-loaded carrier profiles
+# SPION-loaded microcarrier profiles in blood
 # -------------------------------------------------------------------
 
 SPION_CARRIER_5UM = PhysicalProfile(
@@ -227,4 +242,111 @@ SPION_CARRIER_20UM = PhysicalProfile(
 
     temperature=310.15,
     enable_brownian=True,
+)
+
+
+# -------------------------------------------------------------------
+# Larger magnetic carrier / milliparticle profiles in blood
+# -------------------------------------------------------------------
+#
+# These are NOT nanoparticles.
+#
+# They are included for large-vessel magnetic steering feasibility tests
+# where a body-scale scanner must steer a much larger magnetic carrier.
+# Use language such as:
+#     "magnetic carrier"
+#     "magnetic milliparticle"
+#     "large-vessel carrier"
+#
+# Do not describe these as nanoparticles.
+# -------------------------------------------------------------------
+
+SPION_CARRIER_50UM = PhysicalProfile(
+    name="spion_carrier_50um_blood",
+
+    diameter=50e-6,    # 50 µm
+
+    chi_eff=10.0,
+    M_sat=4.5e5,
+
+    magnetic_loading_fraction=0.55,
+    hydrodynamic_drag_multiplier=1.30,
+
+    fluid_viscosity=BLOOD_VISCOSITY_37C,
+    fluid_density=BLOOD_DENSITY_37C,
+
+    temperature=310.15,
+    enable_brownian=True,
+)
+
+SPION_CARRIER_100UM = PhysicalProfile(
+    name="spion_carrier_100um_blood",
+
+    diameter=100e-6,   # 100 µm
+
+    chi_eff=10.0,
+    M_sat=4.5e5,
+
+    magnetic_loading_fraction=0.55,
+    hydrodynamic_drag_multiplier=1.35,
+
+    fluid_viscosity=BLOOD_VISCOSITY_37C,
+    fluid_density=BLOOD_DENSITY_37C,
+
+    temperature=310.15,
+    enable_brownian=False,
+)
+
+SPION_CARRIER_250UM = PhysicalProfile(
+    name="spion_carrier_250um_blood",
+
+    diameter=250e-6,   # 250 µm
+
+    chi_eff=10.0,
+    M_sat=4.5e5,
+
+    magnetic_loading_fraction=0.60,
+    hydrodynamic_drag_multiplier=1.40,
+
+    fluid_viscosity=BLOOD_VISCOSITY_37C,
+    fluid_density=BLOOD_DENSITY_37C,
+
+    temperature=310.15,
+    enable_brownian=False,
+)
+
+SPION_CARRIER_500UM = PhysicalProfile(
+    name="spion_carrier_500um_blood",
+
+    diameter=500e-6,   # 500 µm
+
+    chi_eff=10.0,
+    M_sat=4.5e5,
+
+    magnetic_loading_fraction=0.60,
+    hydrodynamic_drag_multiplier=1.45,
+
+    fluid_viscosity=BLOOD_VISCOSITY_37C,
+    fluid_density=BLOOD_DENSITY_37C,
+
+    temperature=310.15,
+    enable_brownian=False,
+)
+
+SPION_CARRIER_1MM = PhysicalProfile(
+    name="spion_carrier_1mm_blood",
+
+    diameter=1e-3,     # 1 mm
+
+    chi_eff=10.0,
+    M_sat=4.5e5,
+
+    magnetic_loading_fraction=0.60,
+    hydrodynamic_drag_multiplier=1.50,
+
+    fluid_viscosity=BLOOD_VISCOSITY_37C,
+    fluid_density=BLOOD_DENSITY_37C,
+
+    temperature=310.15,
+    enable_brownian=False,
 )

@@ -2,9 +2,16 @@
 simulation_3d_acbc.py — v2
 ==========================
 
-3D ACBC magnetic nanoparticle steering — real vessel network edition.
+3D ACBC magnetic carrier steering — real vessel network edition.
 
 ACBC high-level supervisor + continuous MPC current allocator.
+
+Recommended current setting:
+    profile = SPION_CARRIER_1MM
+
+Important:
+    A 1 mm carrier is NOT a nanoparticle. It should be described as a
+    magnetic milliparticle / large-vessel magnetic carrier.
 
 Device modes:
     moving_internal_upper_bound
@@ -13,29 +20,11 @@ Device modes:
     moving_adaptive_enclosing_gantry   ← recommended / default
     fixed_enclosing_stress_test
 
-Key parameter changes in v2:
-    - stall_window_steps: 15
-    - stall_escape_lookahead: 12
-    - stall_escape_release_hops: 3
-    - stall_escape_max_steps: 80
-    - recovery_center_fraction: 0.30
-    - recovery_route_fraction: 0.25
-    - max_recovery_steps: 40
-    - absolute_wall_clearance_threshold: 0.00045 m
-    - stall_escape_min_wall_clearance: 0.00090 m
-    - recovery_release_clearance: 0.00090 m
-    - navigator: forward_search_points=50, lookahead=5
-    - w_route: 15.0
-
-Flow scaling:
-    --flow-scale controls the global multiplier applied to all vessel segment
-    mean velocities through RealVesselNetwork(..., flow_scale=...).
-
-Examples:
-    --flow-scale 1   baseline reduced-flow benchmark
-    --flow-scale 5   moderate stress
-    --flow-scale 10  high stress
-    --flow-scale 15  lower aorta-like stress
+Key settings:
+    - Hardware-constrained body-scale scanner constants
+    - 1 mm magnetic carrier by default
+    - --flow-scale default 5.0, making max segment mean flow ~100 mm/s
+    - Bidirectional current allocation assumed in controllers.py
 """
 
 import os
@@ -49,7 +38,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import numpy as np
 
-from dynamag_simulation.core.profiles import PhysicalProfile, SPION_CARRIER_10UM
+from dynamag_simulation.core.profiles import (
+    PhysicalProfile,
+    SPION_CARRIER_1MM,
+)
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
 from dynamag_simulation.core.integrator import adaptive_step
@@ -64,16 +56,27 @@ from dynamag_simulation.core.acbc_controller import ACBCController
 DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
 
 # ----------------------------------------------------------------------
-# Fixed scanner hardware parameters
+# Hardware-constrained body-scale scanner parameters
 # ----------------------------------------------------------------------
-FIXED_PLACEMENT_RADIUS = 0.300
-FIXED_COIL_RADIUS = 0.070
-FIXED_COIL_LENGTH = 0.160
-FIXED_CORE_RADIUS = 0.030
+# These are intentionally much more plausible than the old:
+#     20,000 turns / 60 A / 6 T saturation
+#
+# They match a strong, MRI-like research-scanner authority benchmark:
+#     - large body-scale placement radius
+#     - hundreds of turns, not tens of thousands
+#     - moderate/high peak current
+#     - realistic soft core saturation
+#     - hardware limits handled inside magnets.py
+# ----------------------------------------------------------------------
+
+FIXED_PLACEMENT_RADIUS = 0.300       # m
+FIXED_COIL_RADIUS = 0.070            # m
+FIXED_COIL_LENGTH = 0.160            # m
+FIXED_CORE_RADIUS = 0.030            # m
 FIXED_TURNS = 600.0
-FIXED_MAX_CURRENT = 16.0
+FIXED_MAX_CURRENT = 16.0             # A peak command limit
 FIXED_CORE_MU_R_EFFECTIVE = 70.0
-FIXED_CORE_SATURATION_T = 1.8
+FIXED_CORE_SATURATION_T = 1.8        # T
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -88,6 +91,9 @@ GANTRY_STANDOFF = 0.180
 MAX_LATERAL_SHIFT = 0.120
 LATERAL_GAIN = 0.85
 DEFAULT_MAGNET_CLEARANCE = 0.04
+
+# flow_scale=5 means current baseline max v_mean 20 mm/s becomes ~100 mm/s
+DEFAULT_FLOW_SCALE = 1.0
 
 
 def magnet_setup_for_network(
@@ -357,6 +363,19 @@ def _vec_or_nan(v):
     return [float(v[0]), float(v[1]), float(v[2])]
 
 
+def _set_currents_with_optional_thermal(magnets, currents, dt=None):
+    """
+    Compatibility helper.
+
+    New hardware-constrained magnets.py accepts set_currents(currents, dt=...).
+    Older magnets.py accepts only set_currents(currents).
+    """
+    try:
+        magnets.set_currents(currents, dt=dt)
+    except TypeError:
+        magnets.set_currents(currents)
+
+
 def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
     path = os.path.join(output_dir, filename)
 
@@ -429,7 +448,7 @@ def simulate_trial_acbc(
     gantry_standoff: float = GANTRY_STANDOFF,
     max_lateral_shift: float = MAX_LATERAL_SHIFT,
     lateral_gain: float = LATERAL_GAIN,
-    profile: PhysicalProfile = SPION_CARRIER_10UM,
+    profile: PhysicalProfile = SPION_CARRIER_1MM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
     # MPC weights — aggressive authority, moderate route-tangent
@@ -530,6 +549,11 @@ def simulate_trial_acbc(
         stall_escape_max_steps=80,
 
         recovery_escape_lockout_steps=0,
+    )
+
+    print(
+        f"    Profile: {profile.name}, "
+        f"diameter={profile.diameter * 1000:.3f} mm"
     )
 
     print(
@@ -646,7 +670,7 @@ def simulate_trial_acbc(
 
         prev_currents = best_currents.copy()
 
-        magnets.set_currents(best_currents, dt=dt)
+        _set_currents_with_optional_thermal(magnets, best_currents, dt=dt)
         B = magnets.field_at(particle.pos)
 
         adaptive_step(
@@ -732,7 +756,6 @@ def simulate_trial_acbc(
             lateral_shift_norm = np.linalg.norm(device_diag["gantry_lateral_shift"])
             nav_curr_idx = getattr(navigator, "current_idx", 0)
             nav_best_idx = getattr(navigator, "best_idx", 0)
-            hw = magnets.hardware_diagnostics()
 
             print(
                 f"  step {step + 1:>4d}/{steps}  "
@@ -746,12 +769,7 @@ def simulate_trial_acbc(
                 f"wall_frac={acbc_info.wall_fraction:.3f}  "
                 f"|F|={np.linalg.norm(best_force):.2e}N  "
                 f"|B|={np.linalg.norm(B):.2e}T  "
-                f"cmd_I={np.max(np.abs(best_currents)):.1f}A  "
-                f"actual_I={hw['max_actual_current_A']:.1f}A  "
-                f"V={hw['max_voltage_V']:.1f}V  "
-                f"P={hw['max_power_W']:.1f}W  "
-                f"T={hw['max_coil_temp_C']:.1f}C  "
-                f"clip={hw['min_hardware_scale']:.2f}  "
+                f"|I|={np.max(np.abs(best_currents)):.1f}A  "
                 f"v={particle_speed * 1000:.2f}mm/s  "
                 f"flow={flow_speed * 1000:.2f}mm/s  "
                 f"Re={re:.2e}  "
@@ -777,6 +795,10 @@ def simulate_trial_acbc(
     re_stats = check_low_re_validity(reynolds_log)
     acbc_summary = acbc.summary_dict()
     low_level_convergence_rate = converged_count / max(1, len(step_time_log))
+
+    hardware_diag = {}
+    if hasattr(magnets, "hardware_diagnostics"):
+        hardware_diag = magnets.hardware_diagnostics()
 
     result = TrialResult(
         trial_name=trial_name,
@@ -843,6 +865,8 @@ def simulate_trial_acbc(
             "core_saturation_tesla": core_saturation_tesla,
             "follow_particle_device": device_mode == "moving_internal_upper_bound",
             "profile": profile.name,
+            "particle_diameter_m": profile.diameter,
+            "particle_diameter_mm": profile.diameter * 1000.0,
             "max_substep_disp": max_substep_disp,
             "vessel_network": network.params_dict(),
             "low_level_convergence_rate": low_level_convergence_rate,
@@ -853,7 +877,7 @@ def simulate_trial_acbc(
                 navigator, "forward_search_points", None,
             ),
             "w_route": w_route,
-            "hardware_diagnostics_final": magnets.hardware_diagnostics(),
+            **hardware_diag,
             **acbc_summary,
         },
     )
@@ -871,6 +895,14 @@ def simulate_trial_acbc(
         f"escapes={acbc_summary['acbc_stall_escapes']}, "
         f"low-level convergence={low_level_convergence_rate:.2%}"
     )
+
+    if hardware_diag:
+        print(
+            f"  Hardware: max_actual_I={hardware_diag.get('max_actual_current_A', np.nan):.2f}A, "
+            f"max_V={hardware_diag.get('max_voltage_V', np.nan):.1f}V, "
+            f"max_P={hardware_diag.get('max_power_W', np.nan):.1f}W, "
+            f"max_temp={hardware_diag.get('max_coil_temp_C', np.nan):.1f}C"
+        )
 
     if len(gantry_axis_dist_log) > 0:
         lateral_norms = np.linalg.norm(gantry_lateral_shift_log, axis=1)
@@ -891,7 +923,7 @@ def run_all_trials(
     max_lateral_shift: float = MAX_LATERAL_SHIFT,
     lateral_gain: float = LATERAL_GAIN,
     only_trial: str | None = None,
-    flow_scale: float = 1.0,
+    flow_scale: float = DEFAULT_FLOW_SCALE,
 ):
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -921,8 +953,10 @@ def run_all_trials(
 
     print(
         f"Magnet: mode={device_mode}, placement_r={placement_radius:.3f}m, "
-        f"turns={turns:.0f}, max_I={max_current:.1f}A, "
-        f"mu_r={core_relative_permeability:.0f}, B_sat={core_saturation_tesla:.1f}T"
+        f"coil_r={coil_radius:.3f}m, turns={turns:.0f}, "
+        f"max_I={max_current:.1f}A, "
+        f"mu_r={core_relative_permeability:.0f}, "
+        f"B_sat={core_saturation_tesla:.1f}T"
     )
 
     rng = np.random.default_rng(42)
@@ -1011,6 +1045,7 @@ def run_all_trials(
             gantry_standoff=gantry_standoff,
             max_lateral_shift=max_lateral_shift,
             lateral_gain=lateral_gain,
+            profile=SPION_CARRIER_1MM,
         )
 
         result.params["flow_scale"] = flow_scale
@@ -1047,7 +1082,7 @@ if __name__ == "__main__":
     parser.add_argument("--gantry-standoff", type=float, default=GANTRY_STANDOFF)
     parser.add_argument("--max-lateral-shift", type=float, default=MAX_LATERAL_SHIFT)
     parser.add_argument("--lateral-gain", type=float, default=LATERAL_GAIN)
-    parser.add_argument("--flow-scale", type=float, default=1.0)
+    parser.add_argument("--flow-scale", type=float, default=DEFAULT_FLOW_SCALE)
     parser.add_argument(
         "--only-trial",
         default=None,
