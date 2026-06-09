@@ -18,7 +18,10 @@ os.environ.setdefault(
     "MPLCONFIGDIR",
     os.path.join(tempfile.gettempdir(), "dynamag_matplotlib"),
 )
+os.environ.setdefault("MPLBACKEND", "Agg")
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -45,6 +48,45 @@ def _read_rows(path):
         for row in csv.DictReader(f):
             rows.append(row)
     return rows
+
+
+def _write_reconstructed_rows(path, rows):
+    headers = sorted({key for row in rows for key in row})
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _load_rows(run_dir):
+    paired_path = os.path.join(run_dir, "paired_results.csv")
+    if os.path.exists(paired_path):
+        return _read_rows(paired_path)
+
+    npz_paths = sorted(glob.glob(os.path.join(run_dir, "**", "*_data.npz"), recursive=True))
+    rows = []
+    for path in npz_paths:
+        try:
+            with np.load(path, allow_pickle=True) as data:
+                if "metrics" not in data:
+                    continue
+                raw = data["metrics"]
+                metrics_json = raw.item() if hasattr(raw, "item") else str(raw)
+                rows.append(json.loads(metrics_json))
+        except Exception:
+            continue
+
+    if rows:
+        _write_reconstructed_rows(paired_path, rows)
+        print(f"Reconstructed missing paired_results.csv from {len(rows)} trial files.")
+        return rows
+
+    raise SystemExit(
+        "No paired_results.csv or saved trial metrics were found in "
+        f"{run_dir}. This benchmark run did not produce trial outputs; "
+        "rerun the benchmark or point the figure script at a completed run."
+    )
 
 
 def _as_float(row, key):
@@ -337,9 +379,8 @@ def write_tables(rows, run_config, out_dir):
 
 
 def generate(run_dir, out_dir):
-    paired_path = os.path.join(run_dir, "paired_results.csv")
     config_path = os.path.join(run_dir, "run_config.json")
-    rows = _read_rows(paired_path)
+    rows = _load_rows(run_dir)
     with open(config_path) as f:
         run_config = json.load(f)
 

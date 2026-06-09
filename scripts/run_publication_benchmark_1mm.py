@@ -31,6 +31,7 @@ os.environ.setdefault(
     "MPLCONFIGDIR",
     os.path.join(tempfile.gettempdir(), "dynamag_matplotlib"),
 )
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -441,6 +442,22 @@ def _paired_stats(rows, baseline="mpc_tuned", comparator="acbc_tuned"):
     return stats
 
 
+def _write_benchmark_summary(root, run_id, seed_records, paired_rows):
+    summary = {
+        "run_id": run_id,
+        "config_path": "run_config.json",
+        "paired_results_path": "paired_results.csv",
+        "n_rows": len(paired_rows),
+        "n_pairs": len(seed_records),
+        "seed_records": seed_records,
+        "aggregate": _aggregate(paired_rows),
+        "paired_statistics": _paired_stats(paired_rows),
+    }
+    with open(os.path.join(root, "benchmark_summary.json"), "w") as f:
+        json.dump(summary, f, indent=2)
+    return summary
+
+
 def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     if variant.kind == "mpc":
         return simulate_trial_mpc(
@@ -574,6 +591,8 @@ def run_benchmark(
                 )
                 paired_rows.append(metrics)
                 _save_trial_npz(result, metrics, out_dir)
+                _write_paired_csv(paired_rows, os.path.join(root, "paired_results.csv"))
+                _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
                 results_by_controller[controller_key].append(result)
 
                 result._benchmark_controller_key = controller_key
@@ -589,18 +608,7 @@ def run_benchmark(
     paired_csv = os.path.join(root, "paired_results.csv")
     _write_paired_csv(paired_rows, paired_csv)
 
-    summary = {
-        "run_id": run_id,
-        "config_path": "run_config.json",
-        "paired_results_path": "paired_results.csv",
-        "n_rows": len(paired_rows),
-        "n_pairs": len(all_seed_records),
-        "seed_records": all_seed_records,
-        "aggregate": _aggregate(paired_rows),
-        "paired_statistics": _paired_stats(paired_rows),
-    }
-    with open(os.path.join(root, "benchmark_summary.json"), "w") as f:
-        json.dump(summary, f, indent=2)
+    _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
 
     print(f"\nBenchmark outputs saved to: {root}")
     print(f"Paired CSV: {paired_csv}")
