@@ -1,62 +1,41 @@
 """
-simulation_3d_acbc.py
-====================
+simulation_3d_acbc.py — v2
+==========================
 
 3D ACBC magnetic nanoparticle steering — real vessel network edition.
 
-This runner uses:
-
-    ACBC high-level supervisor
-        +
-    existing continuous MPC current allocator
-
-ACBC is the main algorithmic contribution.
-The MPC allocator is only the low-level coil-current solver.
-
-This version implements multiple physical device modes.
+ACBC high-level supervisor + continuous MPC current allocator.
 
 Device modes:
-    moving_internal_upper_bound:
-        Idealized upper-bound model.
-        The magnetic array center follows the particle directly.
-        This is NOT physically realistic for a human body, but useful as a
-        maximum-authority control benchmark.
+    moving_internal_upper_bound
+    moving_linear_external_gantry
+    moving_linear_enclosing_gantry
+    moving_adaptive_enclosing_gantry   ← recommended / default
+    fixed_enclosing_stress_test
 
-    moving_linear_external_gantry:
-        One-sided external gantry stress test.
-        The magnetic array moves along one straight line parallel to the
-        start-target/body/aorta axis while staying outside the route axis by a
-        fixed standoff distance.
+Key parameter changes in v2:
+    - stall_window_steps: 15
+    - stall_escape_lookahead: 12
+    - stall_escape_release_hops: 3
+    - stall_escape_max_steps: 80
+    - recovery_center_fraction: 0.30
+    - recovery_route_fraction: 0.25
+    - max_recovery_steps: 40
+    - absolute_wall_clearance_threshold: 0.00045 m
+    - stall_escape_min_wall_clearance: 0.00090 m
+    - recovery_release_clearance: 0.00090 m
+    - navigator: forward_search_points=50, lookahead=5
+    - w_route: 15.0
 
-    moving_linear_enclosing_gantry:
-        Scanner/ring-like moving gantry model.
-        The magnetic array surrounds the body/route axis and slides in a
-        straight line along the body/aorta axis. The gantry center stays on the
-        projected route axis, and placement_radius determines how far the coil
-        centers are from the body/route axis.
+Flow scaling:
+    --flow-scale controls the global multiplier applied to all vessel segment
+    mean velocities through RealVesselNetwork(..., flow_scale=...).
 
-    moving_adaptive_enclosing_gantry:
-        Recommended usable external scanner model.
-        The array remains physically constrained by the body/scanner axis, but
-        it may apply a bounded lateral repositioning offset, like a robotic
-        scanner head or patient bed adjustment. It does NOT track the curved
-        aorta exactly. The lateral offset is capped by max_lateral_shift.
-
-    fixed_enclosing_stress_test:
-        Device stays fixed at the vessel-tree anatomical center.
-        This is a hard physical authority stress test.
-
-Current default:
-    DEVICE_MODE = "moving_adaptive_enclosing_gantry"
-
-Recommended final working run:
-    python -u scripts/simulation_3d_acbc.py
-
-Interpretation:
-    placement_radius = ring radius from scanner centerline to coil centers.
-    max_lateral_shift = maximum external scanner/bed lateral offset from the
-    straight body axis. This makes the system usable without unrealistically
-    centering the ring exactly around the curved aorta.
+Examples:
+    --flow-scale 1   baseline reduced-flow benchmark
+    --flow-scale 5   moderate stress
+    --flow-scale 10  high stress
+    --flow-scale 15  lower aorta-like stress
 """
 
 import os
@@ -66,7 +45,6 @@ import warnings
 import argparse
 import csv
 
-# Add parent directory to path to allow importing dynamag_simulation when run directly
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
@@ -86,42 +64,16 @@ from dynamag_simulation.core.acbc_controller import ACBCController
 DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
 
 # ----------------------------------------------------------------------
-# Electromagnetic steering hardware
+# Fixed scanner hardware parameters
 # ----------------------------------------------------------------------
-# These values define the simulated steering hardware.
-# They intentionally do NOT scale with vessel-tree size.
-# ----------------------------------------------------------------------
-
-# Default scanner/ring radius. Override with --placement-radius.
-# Body-scale scanner/ring radius.
-# 0.300 m means coil centers are 30 cm from the gantry/body axis.
-# This is large enough to represent a human-body-scale enclosing scanner bore.
-# ----------------------------------------------------------------------
-# Electromagnetic steering hardware
-# ----------------------------------------------------------------------
-# These values define the simulated steering hardware.
-# They intentionally do NOT scale with vessel-tree size.
-# ----------------------------------------------------------------------
-
-# Body-scale scanner/ring radius.
-# 0.300 m means coil centers are 30 cm from the gantry/body axis.
-# This is large enough to represent a human-body-scale enclosing scanner bore.
-FIXED_PLACEMENT_RADIUS = 0.300   # m, coil centers 30 cm from gantry/body axis
-
-# High-authority large-bore scanner coil model.
-# These are simulation authority parameters, not a solved thermal/electrical build.
-FIXED_COIL_RADIUS = 0.080        # m, 16 cm coil diameter
-FIXED_COIL_LENGTH = 0.280        # m, 28 cm coil/core length
-FIXED_CORE_RADIUS = 0.040        # m, 8 cm core diameter
-FIXED_TURNS = 20000.0
-FIXED_MAX_CURRENT = 60.0         # A, simulated pulsed/peak current
-
-# Compromise core model.
-# 35 / 8.0 was too weak and barely progressed.
-# 120 / 2.2 produced strong movement but repeatedly flattened gradients near saturation.
-# 90 / 6.0 is the next compromise to restore authority without the old low saturation cap.
-FIXED_CORE_MU_R_EFFECTIVE = 90.0
-FIXED_CORE_SATURATION_T = 6.0
+FIXED_PLACEMENT_RADIUS = 0.300
+FIXED_COIL_RADIUS = 0.070
+FIXED_COIL_LENGTH = 0.160
+FIXED_CORE_RADIUS = 0.030
+FIXED_TURNS = 600.0
+FIXED_MAX_CURRENT = 16.0
+FIXED_CORE_MU_R_EFFECTIVE = 70.0
+FIXED_CORE_SATURATION_T = 1.8
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -132,22 +84,9 @@ VALID_DEVICE_MODES = {
 }
 
 DEVICE_MODE = "moving_adaptive_enclosing_gantry"
-
-# Only used for moving_linear_external_gantry.
-# Ignored for moving_linear_enclosing_gantry and moving_adaptive_enclosing_gantry.
-GANTRY_STANDOFF = 0.180  # m
-
-# Adaptive scanner defaults. This is the recommended usable system model.
-# It remains body-axis constrained, but allows limited lateral scanner/bed
-# repositioning to keep the target region within controllable magnetic authority.
-# Larger body-scale scanner can apply a larger bounded table/scanner offset.
-# Adaptive scanner defaults. This is the recommended usable system model.
-# It remains body-axis constrained, but allows limited lateral scanner/bed
-# repositioning to keep the target region within controllable magnetic authority.
-MAX_LATERAL_SHIFT = 0.120  # m, max 12 cm lateral offset from body axis
-LATERAL_GAIN = 0.85        # fraction of particle lateral error corrected
-
-# Kept for CLI compatibility only. Fixed-device mode does not use this to scale coils.
+GANTRY_STANDOFF = 0.180
+MAX_LATERAL_SHIFT = 0.120
+LATERAL_GAIN = 0.85
 DEFAULT_MAGNET_CLEARANCE = 0.04
 
 
@@ -156,12 +95,6 @@ def magnet_setup_for_network(
     clearance: float = DEFAULT_MAGNET_CLEARANCE,
     placement_radius: float | None = None,
 ):
-    """
-    Build fixed-size magnetic device settings.
-
-    The network is used only to compute anatomical bounds/center.
-    Coil radius/length are NOT derived from the network bounds.
-    """
     bounds_min, bounds_max = network.bounds(include_radius=True)
     center = 0.5 * (bounds_min + bounds_max)
 
@@ -198,14 +131,7 @@ def _unit_vector(v, fallback=None):
 
 
 def _external_normal_for_axis(axis):
-    """
-    Choose a stable external normal direction perpendicular to route/body axis.
-
-    The VTP coordinate frame is not guaranteed to match anatomical axes, so we
-    build a normal from the route axis itself.
-    """
     axis = _unit_vector(axis)
-
     preferred = np.array([0.0, 1.0, 0.0], dtype=float)
     normal = preferred - np.dot(preferred, axis) * axis
 
@@ -216,17 +142,7 @@ def _external_normal_for_axis(axis):
     return _unit_vector(normal, fallback=np.array([1.0, 0.0, 0.0]))
 
 
-def _route_axis_projection(
-    particle_pos,
-    start,
-    target,
-):
-    """
-    Project particle progress onto the straight start-target route/body axis.
-
-    This defines the straight-line rail/gantry coordinate. The gantry moves only
-    along this axis, not in full 3D with the particle.
-    """
+def _route_axis_projection(particle_pos, start, target):
     particle_pos = np.asarray(particle_pos, dtype=float)
     start = np.asarray(start, dtype=float)
     target = np.asarray(target, dtype=float)
@@ -247,58 +163,24 @@ def _route_axis_projection(
     return axis_point, route_axis
 
 
-def _moving_linear_external_gantry_center(
-    particle_pos,
-    start,
-    target,
-    standoff: float,
-):
-    """
-    One-sided external gantry model.
-
-    The gantry does NOT center on the internal particle.
-
-    It projects the particle position onto the start-target route axis, then
-    places the magnetic device center on a parallel external line offset by
-    `standoff`.
-
-    This approximates a one-sided external rail/applicator. It is useful as a
-    stress test, but it is NOT the ring/scanner-like model.
-    """
+def _moving_linear_external_gantry_center(particle_pos, start, target, standoff):
     axis_point, route_axis = _route_axis_projection(
         particle_pos=particle_pos,
         start=start,
         target=target,
     )
-
     external_normal = _external_normal_for_axis(route_axis)
     gantry_center = axis_point + float(standoff) * external_normal
-
     return gantry_center, axis_point, external_normal, route_axis
 
 
-def _moving_linear_enclosing_gantry_center(
-    particle_pos,
-    start,
-    target,
-):
-    """
-    Moving scanner/ring-like enclosing gantry model.
-
-    The gantry center moves along the straight route/body axis.
-    The body/aorta route passes through the scanner centerline.
-    The electromagnets surround that centerline at `placement_radius`.
-
-    There is no side standoff offset here.
-    """
+def _moving_linear_enclosing_gantry_center(particle_pos, start, target):
     axis_point, route_axis = _route_axis_projection(
         particle_pos=particle_pos,
         start=start,
         target=target,
     )
-
     gantry_center = axis_point.copy()
-
     return gantry_center, axis_point, route_axis
 
 
@@ -306,24 +188,10 @@ def _moving_adaptive_enclosing_gantry_center(
     particle_pos,
     start,
     target,
-    max_lateral_shift: float,
-    lateral_gain: float,
+    max_lateral_shift,
+    lateral_gain,
 ):
-    """
-    Physically constrained adaptive enclosing gantry model.
-
-    The scanner primarily travels along the straight body/scanner axis, but it
-    can apply a bounded lateral repositioning offset. This represents a robotic
-    external scanner head or patient bed adjustment, not a ring magically
-    centered on the curved aorta.
-
-    The center is:
-        body_axis_projection + clipped(lateral_gain * lateral_error)
-
-    where lateral_error is the particle's offset from the body axis.
-    """
     particle_pos = np.asarray(particle_pos, dtype=float)
-
     axis_point, route_axis = _route_axis_projection(
         particle_pos=particle_pos,
         start=start,
@@ -347,13 +215,7 @@ def _moving_adaptive_enclosing_gantry_center(
     return gantry_center, axis_point, lateral_shift, route_axis
 
 
-def _initial_magnet_center_for_mode(
-    device_mode,
-    start,
-    target,
-    network,
-    gantry_standoff,
-):
+def _initial_magnet_center_for_mode(device_mode, start, target, network, gantry_standoff):
     if device_mode == "moving_internal_upper_bound":
         return np.asarray(start, dtype=float)
 
@@ -395,14 +257,10 @@ def _apply_device_motion(
     max_lateral_shift=MAX_LATERAL_SHIFT,
     lateral_gain=LATERAL_GAIN,
 ):
-    """
-    Apply device motion rule and return diagnostic geometry.
-    """
     particle_pos = np.asarray(particle_pos, dtype=float)
 
     if device_mode == "moving_internal_upper_bound":
         magnets.recenter(particle_pos)
-
         return {
             "gantry_center": magnets.center.copy(),
             "gantry_axis_point": particle_pos.copy(),
@@ -422,9 +280,7 @@ def _apply_device_motion(
                 standoff=gantry_standoff,
             )
         )
-
         magnets.recenter(center)
-
         return {
             "gantry_center": center.copy(),
             "gantry_axis_point": axis_point.copy(),
@@ -441,9 +297,7 @@ def _apply_device_motion(
             start=start,
             target=target,
         )
-
         magnets.recenter(center)
-
         return {
             "gantry_center": center.copy(),
             "gantry_axis_point": axis_point.copy(),
@@ -464,9 +318,7 @@ def _apply_device_motion(
                 lateral_gain=lateral_gain,
             )
         )
-
         magnets.recenter(center)
-
         return {
             "gantry_center": center.copy(),
             "gantry_axis_point": axis_point.copy(),
@@ -480,7 +332,6 @@ def _apply_device_motion(
     if device_mode == "fixed_enclosing_stress_test":
         bounds_min, bounds_max = network.bounds(include_radius=True)
         axis_point = 0.5 * (bounds_min + bounds_max)
-
         return {
             "gantry_center": magnets.center.copy(),
             "gantry_axis_point": axis_point.copy(),
@@ -507,45 +358,23 @@ def _vec_or_nan(v):
 
 
 def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
-    """
-    Save per-step ACBC state-machine and device-motion diagnostics.
-    """
     path = os.path.join(output_dir, filename)
 
     header = [
-        "trial_name",
-        "step",
-        "time_s",
-        "state",
-        "previous_state",
-        "transition",
-        "near_bifurcation",
-        "bifurcation_distance_m",
-        "selected_branch_seg_id",
-        "selected_authority_margin",
-        "selected_score",
-        "target_branch_capturable",
-        "num_candidates",
-        "control_target_x",
-        "control_target_y",
-        "control_target_z",
-        "nominal_target_x",
-        "nominal_target_y",
-        "nominal_target_z",
-        "recovery_target_x",
-        "recovery_target_y",
-        "recovery_target_z",
-        "gantry_center_x",
-        "gantry_center_y",
-        "gantry_center_z",
-        "gantry_axis_point_x",
-        "gantry_axis_point_y",
-        "gantry_axis_point_z",
-        "gantry_particle_dist_m",
-        "gantry_axis_dist_m",
-        "gantry_lateral_shift_x",
-        "gantry_lateral_shift_y",
-        "gantry_lateral_shift_z",
+        "trial_name", "step", "time_s", "state", "previous_state", "transition",
+        "near_bifurcation", "bifurcation_distance_m",
+        "selected_branch_seg_id", "selected_authority_margin",
+        "selected_score", "target_branch_capturable", "num_candidates",
+        "best_route_idx", "stagnant_steps",
+        "wall_clearance_m", "wall_fraction",
+        "control_target_x", "control_target_y", "control_target_z",
+        "nominal_target_x", "nominal_target_y", "nominal_target_z",
+        "recovery_target_x", "recovery_target_y", "recovery_target_z",
+        "escape_target_x", "escape_target_y", "escape_target_z",
+        "gantry_center_x", "gantry_center_y", "gantry_center_z",
+        "gantry_axis_point_x", "gantry_axis_point_y", "gantry_axis_point_z",
+        "gantry_particle_dist_m", "gantry_axis_dist_m",
+        "gantry_lateral_shift_x", "gantry_lateral_shift_y", "gantry_lateral_shift_z",
     ]
 
     with open(path, "w", newline="") as f:
@@ -556,31 +385,25 @@ def save_acbc_diagnostics(results, output_dir, filename="acbc_diagnostics.csv"):
             log = getattr(result, "acbc_log", [])
 
             for row in log:
-                writer.writerow(
-                    [
-                        result.trial_name,
-                        row["step"],
-                        row["time_s"],
-                        row["state"],
-                        row["previous_state"],
-                        row["transition"],
-                        row["near_bifurcation"],
-                        row["bifurcation_distance_m"],
-                        row["selected_branch_seg_id"],
-                        row["selected_authority_margin"],
-                        row["selected_score"],
-                        row["target_branch_capturable"],
-                        row["num_candidates"],
-                        *row["control_target"],
-                        *row["nominal_target"],
-                        *row["recovery_target"],
-                        *row["gantry_center"],
-                        *row["gantry_axis_point"],
-                        row["gantry_particle_dist_m"],
-                        row["gantry_axis_dist_m"],
-                        *row["gantry_lateral_shift"],
-                    ]
-                )
+                writer.writerow([
+                    result.trial_name,
+                    row["step"], row["time_s"],
+                    row["state"], row["previous_state"], row["transition"],
+                    row["near_bifurcation"], row["bifurcation_distance_m"],
+                    row["selected_branch_seg_id"], row["selected_authority_margin"],
+                    row["selected_score"], row["target_branch_capturable"],
+                    row["num_candidates"],
+                    row["best_route_idx"], row["stagnant_steps"],
+                    row["wall_clearance_m"], row["wall_fraction"],
+                    *row["control_target"],
+                    *row["nominal_target"],
+                    *row["recovery_target"],
+                    *row["escape_target"],
+                    *row["gantry_center"],
+                    *row["gantry_axis_point"],
+                    row["gantry_particle_dist_m"], row["gantry_axis_dist_m"],
+                    *row["gantry_lateral_shift"],
+                ])
 
     print(f"ACBC diagnostics saved to: {path}")
 
@@ -591,7 +414,7 @@ def simulate_trial_acbc(
     network,
     trial_name: str = "trial",
     dt: float = 0.02,
-    steps: int = 3200,
+    steps: int = 4000,
     tolerance: float = 0.003,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
@@ -609,10 +432,7 @@ def simulate_trial_acbc(
     profile: PhysicalProfile = SPION_CARRIER_10UM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
-
-    # High-authority weights.
-    # These are intentionally aggressive because weak penalties previously made
-    # the current allocator avoid using the available 12 A authority.
+    # MPC weights — aggressive authority, moderate route-tangent
     w_progress: float = 450.0,
     w_align: float = 35.0,
     w_dist: float = 2.0,
@@ -620,6 +440,7 @@ def simulate_trial_acbc(
     w_smooth: float = 1e-6,
     w_edge: float = 250.0,
     w_overshoot: float = 8.0,
+    w_route: float = 15.0,
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -675,10 +496,10 @@ def simulate_trial_acbc(
     navigator = network.waypoint_navigator(
         start,
         target,
-        arrival_tol=0.004,
+        arrival_tol=0.003,
         waypoint_spacing=0.0015,
-        lookahead=8,
-        forward_search_points=35,
+        lookahead=5,
+        forward_search_points=50,
     )
 
     acbc = ACBCController(
@@ -692,22 +513,21 @@ def simulate_trial_acbc(
         authority_threshold=1.02,
         recovery_threshold=0.65,
 
-        # More conservative wall guard.
         min_wall_safety_fraction=0.015,
-        absolute_wall_clearance_threshold=0.00075,
-        stall_escape_min_wall_clearance=0.00100,
+        absolute_wall_clearance_threshold=0.00045,
+        stall_escape_min_wall_clearance=0.00090,
         stall_escape_min_wall_fraction_multiplier=1.00,
 
-        # Pure recentering recovery.
-        recovery_center_fraction=1.00,
-        recovery_route_fraction=0.00,
-        max_recovery_steps=60,
+        recovery_center_fraction=0.30,
+        recovery_route_fraction=0.25,
+        recovery_route_tangent_steps=3,
+        max_recovery_steps=40,
+        recovery_release_clearance=0.00090,
 
-        # Stall escape only when safely away from wall.
-        stall_window_steps=10,
-        stall_escape_lookahead=90,
-        stall_escape_release_hops=18,
-        stall_escape_max_steps=260,
+        stall_window_steps=15,
+        stall_escape_lookahead=12,
+        stall_escape_release_hops=3,
+        stall_escape_max_steps=80,
 
         recovery_escape_lockout_steps=0,
     )
@@ -737,12 +557,7 @@ def simulate_trial_acbc(
         "    Device motion: "
         f"mode={device_mode}, "
         f"placement_radius={placement_radius * 1000:.1f} mm, "
-        f"gantry_standoff={gantry_standoff * 1000:.1f} mm, "
-        f"max_lateral_shift={max_lateral_shift * 1000:.1f} mm, "
-        f"lateral_gain={lateral_gain:.2f}, "
-        f"initial_center={np.round(initial_device_diag['gantry_center'] * 1000, 1)} mm, "
-        f"initial_axis_dist={initial_device_diag['gantry_axis_dist'] * 1000:.1f} mm, "
-        f"initial_particle_dist={initial_device_diag['gantry_particle_dist'] * 1000:.1f} mm"
+        f"initial_center={np.round(initial_device_diag['gantry_center'] * 1000, 1)} mm"
     )
 
     trajectory = [particle.pos.copy()]
@@ -781,6 +596,23 @@ def simulate_trial_acbc(
             lateral_gain=lateral_gain,
         )
 
+        nav_waypoints = getattr(navigator, "waypoints", None)
+        route_tangent = None
+
+        if nav_waypoints is not None and len(nav_waypoints) > 1:
+            nav_idx = getattr(navigator, "current_idx", 0)
+            tidx = min(nav_idx, len(nav_waypoints) - 1)
+            tidx_next = min(tidx + 3, len(nav_waypoints) - 1)
+
+            if tidx_next > tidx:
+                rt = (
+                    np.asarray(nav_waypoints[tidx_next], dtype=float)
+                    - np.asarray(nav_waypoints[tidx], dtype=float)
+                )
+                rtn = np.linalg.norm(rt)
+                if rtn > 1e-10:
+                    route_tangent = rt / rtn
+
         best_currents, best_force, best_cost, converged, acbc_info = acbc.step(
             particle=particle,
             final_target=target,
@@ -796,6 +628,8 @@ def simulate_trial_acbc(
             w_smooth=w_smooth,
             w_edge=w_edge,
             w_overshoot=w_overshoot,
+            w_route=w_route,
+            route_tangent=route_tangent,
         )
 
         t1 = time.perf_counter()
@@ -804,17 +638,15 @@ def simulate_trial_acbc(
             converged_count += 1
         else:
             warnings.warn(
-                (
-                    f"Step {step}: low-level current allocator did not converge; "
-                    f"using best-so-far"
-                ),
+                f"Step {step}: low-level current allocator did not converge; "
+                f"using best-so-far",
                 RuntimeWarning,
                 stacklevel=1,
             )
 
         prev_currents = best_currents.copy()
 
-        magnets.set_currents(best_currents)
+        magnets.set_currents(best_currents, dt=dt)
         B = magnets.field_at(particle.pos)
 
         adaptive_step(
@@ -837,7 +669,6 @@ def simulate_trial_acbc(
         )
 
         trajectory.append(particle.pos.copy())
-
         distance = np.linalg.norm(particle.pos - target)
 
         distance_log.append(distance)
@@ -853,30 +684,33 @@ def simulate_trial_acbc(
         gantry_axis_dist_log.append(device_diag["gantry_axis_dist"])
         gantry_lateral_shift_log.append(device_diag["gantry_lateral_shift"].copy())
 
-        acbc_log.append(
-            {
-                "step": step,
-                "time_s": sim_time,
-                "state": acbc_info.state,
-                "previous_state": acbc_info.previous_state,
-                "transition": acbc_info.transition,
-                "near_bifurcation": acbc_info.near_bifurcation,
-                "bifurcation_distance_m": acbc_info.bifurcation_distance_m,
-                "selected_branch_seg_id": acbc_info.selected_branch_seg_id,
-                "selected_authority_margin": acbc_info.selected_authority_margin,
-                "selected_score": acbc_info.selected_score,
-                "target_branch_capturable": acbc_info.target_branch_capturable,
-                "num_candidates": acbc_info.num_candidates,
-                "control_target": _vec_or_nan(acbc_info.control_target),
-                "nominal_target": _vec_or_nan(acbc_info.nominal_target),
-                "recovery_target": _vec_or_nan(acbc_info.recovery_target),
-                "gantry_center": _vec_or_nan(device_diag["gantry_center"]),
-                "gantry_axis_point": _vec_or_nan(device_diag["gantry_axis_point"]),
-                "gantry_particle_dist_m": float(device_diag["gantry_particle_dist"]),
-                "gantry_axis_dist_m": float(device_diag["gantry_axis_dist"]),
-                "gantry_lateral_shift": _vec_or_nan(device_diag["gantry_lateral_shift"]),
-            }
-        )
+        acbc_log.append({
+            "step": step,
+            "time_s": sim_time,
+            "state": acbc_info.state,
+            "previous_state": acbc_info.previous_state,
+            "transition": acbc_info.transition,
+            "near_bifurcation": acbc_info.near_bifurcation,
+            "bifurcation_distance_m": acbc_info.bifurcation_distance_m,
+            "selected_branch_seg_id": acbc_info.selected_branch_seg_id,
+            "selected_authority_margin": acbc_info.selected_authority_margin,
+            "selected_score": acbc_info.selected_score,
+            "target_branch_capturable": acbc_info.target_branch_capturable,
+            "num_candidates": acbc_info.num_candidates,
+            "best_route_idx": acbc_info.best_route_idx,
+            "stagnant_steps": acbc_info.stagnant_steps,
+            "wall_clearance_m": acbc_info.wall_clearance_m,
+            "wall_fraction": acbc_info.wall_fraction,
+            "control_target": _vec_or_nan(acbc_info.control_target),
+            "nominal_target": _vec_or_nan(acbc_info.nominal_target),
+            "recovery_target": _vec_or_nan(acbc_info.recovery_target),
+            "escape_target": _vec_or_nan(acbc_info.stall_escape_target),
+            "gantry_center": _vec_or_nan(device_diag["gantry_center"]),
+            "gantry_axis_point": _vec_or_nan(device_diag["gantry_axis_point"]),
+            "gantry_particle_dist_m": float(device_diag["gantry_particle_dist"]),
+            "gantry_axis_dist_m": float(device_diag["gantry_axis_dist"]),
+            "gantry_lateral_shift": _vec_or_nan(device_diag["gantry_lateral_shift"]),
+        })
 
         if distance < tolerance:
             reached = True
@@ -885,7 +719,6 @@ def simulate_trial_acbc(
         if (step + 1) % 10 == 0:
             flow_v = flow.velocity_at(particle.pos, sim_time)
             flow_speed = np.linalg.norm(flow_v)
-
             particle_speed = np.linalg.norm(particle.realized_vel)
 
             seg, _ = network.find_segment(particle.pos)
@@ -897,29 +730,32 @@ def simulate_trial_acbc(
                 wall_clearance = np.nan
 
             lateral_shift_norm = np.linalg.norm(device_diag["gantry_lateral_shift"])
+            nav_curr_idx = getattr(navigator, "current_idx", 0)
+            nav_best_idx = getattr(navigator, "best_idx", 0)
+            hw = magnets.hardware_diagnostics()
 
             print(
                 f"  step {step + 1:>4d}/{steps}  "
-                f"state={acbc_info.state}  "
-                f"final_dist={distance * 1000:.1f} mm  "
-                f"wp={getattr(navigator, 'current_idx', 0) + 1}/"
-                f"{navigator.total_hops}  "
-                f"lookahead={getattr(navigator, 'lookahead_idx', 0) + 1}/"
-                f"{navigator.total_hops}  "
-                f"wp_dist={getattr(navigator, 'current_wp_dist', np.nan) * 1000:.1f} mm  "
-                f"auth={acbc_info.selected_authority_margin:.2f}  "
-                f"capturable={acbc_info.target_branch_capturable}  "
-                f"cands={acbc_info.num_candidates}  "
-                f"|I|max={np.max(np.abs(best_currents)):.3f} A  "
-                f"|F|={np.linalg.norm(best_force):.3e} N  "
-                f"|B|={np.linalg.norm(B):.3e} T  "
-                f"particle_v={particle_speed * 1000:.2f} mm/s  "
-                f"flow_v={flow_speed * 1000:.2f} mm/s  "
-                f"wall_clear={wall_clearance * 1000:.2f} mm  "
+                f"state={acbc_info.state:<20s}  "
+                f"dist={distance * 1000:.1f}mm  "
+                f"wp={nav_curr_idx + 1}/{navigator.total_hops}  "
+                f"best_wp={nav_best_idx + 1}/{navigator.total_hops}  "
+                f"acbc_best={acbc_info.best_route_idx + 1}/{navigator.total_hops}  "
+                f"stag={acbc_info.stagnant_steps}  "
+                f"wall={wall_clearance * 1000:.2f}mm  "
+                f"wall_frac={acbc_info.wall_fraction:.3f}  "
+                f"|F|={np.linalg.norm(best_force):.2e}N  "
+                f"|B|={np.linalg.norm(B):.2e}T  "
+                f"cmd_I={np.max(np.abs(best_currents)):.1f}A  "
+                f"actual_I={hw['max_actual_current_A']:.1f}A  "
+                f"V={hw['max_voltage_V']:.1f}V  "
+                f"P={hw['max_power_W']:.1f}W  "
+                f"T={hw['max_coil_temp_C']:.1f}C  "
+                f"clip={hw['min_hardware_scale']:.2f}  "
+                f"v={particle_speed * 1000:.2f}mm/s  "
+                f"flow={flow_speed * 1000:.2f}mm/s  "
                 f"Re={re:.2e}  "
-                f"gantry_axis_dist={device_diag['gantry_axis_dist'] * 1000:.1f} mm  "
-                f"gantry_particle_dist={device_diag['gantry_particle_dist'] * 1000:.1f} mm  "
-                f"lateral_shift={lateral_shift_norm * 1000:.1f} mm"
+                f"lat={lateral_shift_norm * 1000:.1f}mm"
             )
 
     wall_end = time.perf_counter()
@@ -939,7 +775,6 @@ def simulate_trial_acbc(
     gantry_lateral_shift_log = np.array(gantry_lateral_shift_log)
 
     re_stats = check_low_re_validity(reynolds_log)
-
     acbc_summary = acbc.summary_dict()
     low_level_convergence_rate = converged_count / max(1, len(step_time_log))
 
@@ -961,18 +796,15 @@ def simulate_trial_acbc(
         steps_taken=len(trajectory) - 1,
         final_error=float(np.linalg.norm(trajectory[-1] - target)),
         max_current_used=float(np.max(np.abs(current_log)))
-        if len(current_log) > 0
-        else 0.0,
+        if len(current_log) > 0 else 0.0,
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
         wall_time_s=wall_end - wall_start,
         avg_control_step_time_s=float(np.mean(step_time_log))
-        if len(step_time_log) > 0
-        else 0.0,
+        if len(step_time_log) > 0 else 0.0,
         max_control_step_time_s=float(np.max(step_time_log))
-        if len(step_time_log) > 0
-        else 0.0,
+        if len(step_time_log) > 0 else 0.0,
         seed=rng_seed,
         profile_name=profile.name,
         dt=dt,
@@ -980,8 +812,8 @@ def simulate_trial_acbc(
         magnets=magnets.positions.copy(),
         orientations=magnets.orientations.copy(),
         params={
-            "controller": "ACBC",
-            "low_level_allocator": "continuous_mpc_controller",
+            "controller": "ACBC_v2",
+            "low_level_allocator": "continuous_mpc_controller_v2",
             "device_mode": device_mode,
             "dt": dt,
             "steps": steps,
@@ -998,21 +830,15 @@ def simulate_trial_acbc(
             "max_lateral_shift_m": max_lateral_shift,
             "lateral_gain": lateral_gain,
             "gantry_mean_particle_dist_m": float(np.mean(gantry_particle_dist_log))
-            if len(gantry_particle_dist_log) > 0
-            else np.nan,
+            if len(gantry_particle_dist_log) > 0 else np.nan,
             "gantry_mean_axis_dist_m": float(np.mean(gantry_axis_dist_log))
-            if len(gantry_axis_dist_log) > 0
-            else np.nan,
+            if len(gantry_axis_dist_log) > 0 else np.nan,
             "gantry_mean_lateral_shift_m": float(
                 np.mean(np.linalg.norm(gantry_lateral_shift_log, axis=1))
-            )
-            if len(gantry_lateral_shift_log) > 0
-            else np.nan,
+            ) if len(gantry_lateral_shift_log) > 0 else np.nan,
             "gantry_max_lateral_shift_m": float(
                 np.max(np.linalg.norm(gantry_lateral_shift_log, axis=1))
-            )
-            if len(gantry_lateral_shift_log) > 0
-            else np.nan,
+            ) if len(gantry_lateral_shift_log) > 0 else np.nan,
             "core_relative_permeability": core_relative_permeability,
             "core_saturation_tesla": core_saturation_tesla,
             "follow_particle_device": device_mode == "moving_internal_upper_bound",
@@ -1024,10 +850,10 @@ def simulate_trial_acbc(
             "navigator_waypoint_spacing": getattr(navigator, "waypoint_spacing", None),
             "navigator_lookahead": getattr(navigator, "lookahead", None),
             "navigator_forward_search_points": getattr(
-                navigator,
-                "forward_search_points",
-                None,
+                navigator, "forward_search_points", None,
             ),
+            "w_route": w_route,
+            "hardware_diagnostics_final": magnets.hardware_diagnostics(),
             **acbc_summary,
         },
     )
@@ -1042,20 +868,15 @@ def simulate_trial_acbc(
         f"  ACBC summary: transitions={acbc_summary['acbc_transitions']}, "
         f"commitments={acbc_summary['acbc_commitments']}, "
         f"recoveries={acbc_summary['acbc_recoveries']}, "
+        f"escapes={acbc_summary['acbc_stall_escapes']}, "
         f"low-level convergence={low_level_convergence_rate:.2%}"
     )
 
     if len(gantry_axis_dist_log) > 0:
         lateral_norms = np.linalg.norm(gantry_lateral_shift_log, axis=1)
-
         print(
-            f"  Gantry summary: "
-            f"mean_axis_dist={np.mean(gantry_axis_dist_log) * 1000:.1f} mm, "
-            f"mean_particle_dist={np.mean(gantry_particle_dist_log) * 1000:.1f} mm, "
-            f"min_particle_dist={np.min(gantry_particle_dist_log) * 1000:.1f} mm, "
-            f"max_particle_dist={np.max(gantry_particle_dist_log) * 1000:.1f} mm, "
-            f"mean_lateral_shift={np.mean(lateral_norms) * 1000:.1f} mm, "
-            f"max_lateral_shift={np.max(lateral_norms) * 1000:.1f} mm"
+            f"  Gantry: mean_particle_dist={np.mean(gantry_particle_dist_log) * 1000:.1f}mm, "
+            f"max_lateral={np.max(lateral_norms) * 1000:.1f}mm"
         )
 
     return result
@@ -1070,6 +891,7 @@ def run_all_trials(
     max_lateral_shift: float = MAX_LATERAL_SHIFT,
     lateral_gain: float = LATERAL_GAIN,
     only_trial: str | None = None,
+    flow_scale: float = 1.0,
 ):
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -1077,14 +899,9 @@ def run_all_trials(
             f"got {device_mode}"
         )
 
-    flow_scale = 1.0
-
-    network = RealVesselNetwork(
-        vessel_file,
-        flow_scale=flow_scale,
-    )
-
+    network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
     print(network.segment_summary())
+    print(f"Flow scale: {flow_scale:.2f}x")
 
     magnet_setup = magnet_setup_for_network(
         network,
@@ -1103,36 +920,19 @@ def run_all_trials(
     anatomical_center = magnet_setup["center"]
 
     print(
-        "Magnet setup: "
-        f"device_mode={device_mode}, "
-        f"anatomical_center={np.round(anatomical_center, 4)} m, "
-        f"placement_radius={placement_radius:.3f} m, "
-        f"coil_radius={coil_radius:.3f} m, "
-        f"coil_diameter={2.0 * coil_radius:.3f} m, "
-        f"coil_length={coil_length:.3f} m, "
-        f"core_radius={core_radius:.3f} m, "
-        f"turns={turns:.0f}, "
-        f"max_current={max_current:.1f} A, "
-        f"gantry_standoff={gantry_standoff:.3f} m, "
-        f"max_lateral_shift={max_lateral_shift:.3f} m, "
-        f"lateral_gain={lateral_gain:.2f}"
+        f"Magnet: mode={device_mode}, placement_r={placement_radius:.3f}m, "
+        f"turns={turns:.0f}, max_I={max_current:.1f}A, "
+        f"mu_r={core_relative_permeability:.0f}, B_sat={core_saturation_tesla:.1f}T"
     )
 
     rng = np.random.default_rng(42)
-
     inlet = network.inlet_start()
     outlet = network.outlet_end()
     mid = network.random_point_in_vessel(rng)
 
     trials = {
-        "trial_1_inlet_to_outlet": {
-            "start": inlet,
-            "target": outlet,
-        },
-        "trial_2_mid_to_outlet": {
-            "start": mid,
-            "target": outlet,
-        },
+        "trial_1_inlet_to_outlet": {"start": inlet, "target": outlet},
+        "trial_2_mid_to_outlet": {"start": mid, "target": outlet},
         "trial_3_inlet_to_mid": {
             "start": inlet,
             "target": network.random_point_in_vessel(rng),
@@ -1146,38 +946,32 @@ def run_all_trials(
             )
         trials = {only_trial: trials[only_trial]}
 
-    if device_mode == "moving_linear_external_gantry":
-        output_dir = "outputs/simulation_outputs_3d_acbc_external_gantry"
-    elif device_mode == "moving_linear_enclosing_gantry":
-        output_dir = "outputs/simulation_outputs_3d_acbc_enclosing_gantry"
-    elif device_mode == "moving_adaptive_enclosing_gantry":
-        output_dir = "outputs/simulation_outputs_3d_acbc_adaptive_enclosing_gantry"
-    elif device_mode == "moving_internal_upper_bound":
-        output_dir = "outputs/simulation_outputs_3d_acbc_moving_internal"
-    elif device_mode == "fixed_enclosing_stress_test":
-        output_dir = "outputs/simulation_outputs_3d_acbc_fixed_stress"
-    else:
-        raise ValueError(f"Unknown device_mode: {device_mode}")
+    output_dirs = {
+        "moving_linear_external_gantry":
+            "outputs/simulation_outputs_3d_acbc_external_gantry",
+        "moving_linear_enclosing_gantry":
+            "outputs/simulation_outputs_3d_acbc_enclosing_gantry",
+        "moving_adaptive_enclosing_gantry":
+            "outputs/simulation_outputs_3d_acbc_adaptive_enclosing_gantry",
+        "moving_internal_upper_bound":
+            "outputs/simulation_outputs_3d_acbc_moving_internal",
+        "fixed_enclosing_stress_test":
+            "outputs/simulation_outputs_3d_acbc_fixed_stress",
+    }
 
+    output_dir = output_dirs[device_mode]
     os.makedirs(output_dir, exist_ok=True)
 
     results = []
 
-    # Representative plotting array.
-    # For moving modes, this is a representative static snapshot only.
-    # If --only-trial is used, use the first remaining trial rather than
-    # assuming trial_1_inlet_to_outlet still exists.
     if device_mode == "fixed_enclosing_stress_test":
         plot_center = anatomical_center
     else:
         first_trial_cfg = next(iter(trials.values()))
-        first_start = first_trial_cfg["start"]
-        first_target = first_trial_cfg["target"]
-
         plot_center = _initial_magnet_center_for_mode(
             device_mode=device_mode,
-            start=first_start,
-            target=first_target,
+            start=first_trial_cfg["start"],
+            target=first_trial_cfg["target"],
             network=network,
             gantry_standoff=gantry_standoff,
         )
@@ -1219,6 +1013,8 @@ def run_all_trials(
             lateral_gain=lateral_gain,
         )
 
+        result.params["flow_scale"] = flow_scale
+
         results.append(result)
         print_summary(result)
 
@@ -1240,73 +1036,18 @@ def run_all_trials(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "--vessel-file",
-        default=DEFAULT_VESSEL_FILE,
-        help=(
-            "Vessel segment pickle to load. Defaults to the cm-corrected "
-            "aorta geometry in data/."
-        ),
-    )
-
-    parser.add_argument(
-        "--magnet-clearance",
-        type=float,
-        default=DEFAULT_MAGNET_CLEARANCE,
-        help=(
-            "Kept for compatibility. Fixed-device mode does not use this to "
-            "scale coil dimensions."
-        ),
-    )
-
-    parser.add_argument(
-        "--placement-radius",
-        type=float,
-        default=None,
-        help=(
-            "Override magnet placement radius in meters. "
-            "Default is 0.3 m."
-        ),
-    )
-
+    parser.add_argument("--vessel-file", default=DEFAULT_VESSEL_FILE)
+    parser.add_argument("--magnet-clearance", type=float, default=DEFAULT_MAGNET_CLEARANCE)
+    parser.add_argument("--placement-radius", type=float, default=None)
     parser.add_argument(
         "--device-mode",
         default=DEVICE_MODE,
         choices=sorted(VALID_DEVICE_MODES),
-        help="Device motion model to run.",
     )
-
-    parser.add_argument(
-        "--gantry-standoff",
-        type=float,
-        default=GANTRY_STANDOFF,
-        help=(
-            "Distance from route/body axis to moving external gantry center "
-            "in meters. Used only for moving_linear_external_gantry. "
-            "Ignored for moving_linear_enclosing_gantry."
-        ),
-    )
-
-    parser.add_argument(
-        "--max-lateral-shift",
-        type=float,
-        default=MAX_LATERAL_SHIFT,
-        help=(
-            "Maximum lateral scanner/bed offset from the straight body axis, "
-            "in meters. Used for moving_adaptive_enclosing_gantry."
-        ),
-    )
-
-    parser.add_argument(
-        "--lateral-gain",
-        type=float,
-        default=LATERAL_GAIN,
-        help=(
-            "Fraction of particle lateral error corrected by the adaptive "
-            "gantry, before clipping to --max-lateral-shift."
-        ),
-    )
-
+    parser.add_argument("--gantry-standoff", type=float, default=GANTRY_STANDOFF)
+    parser.add_argument("--max-lateral-shift", type=float, default=MAX_LATERAL_SHIFT)
+    parser.add_argument("--lateral-gain", type=float, default=LATERAL_GAIN)
+    parser.add_argument("--flow-scale", type=float, default=1.0)
     parser.add_argument(
         "--only-trial",
         default=None,
@@ -1315,7 +1056,6 @@ if __name__ == "__main__":
             "trial_2_mid_to_outlet",
             "trial_3_inlet_to_mid",
         ],
-        help="Run only one named trial. Useful for tuning Trial 2 quickly.",
     )
 
     args = parser.parse_args()
@@ -1329,4 +1069,5 @@ if __name__ == "__main__":
         max_lateral_shift=args.max_lateral_shift,
         lateral_gain=args.lateral_gain,
         only_trial=args.only_trial,
+        flow_scale=args.flow_scale,
     )

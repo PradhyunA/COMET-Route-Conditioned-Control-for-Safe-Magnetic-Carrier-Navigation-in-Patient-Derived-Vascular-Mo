@@ -1,3 +1,15 @@
+"""
+Real vessel network: graph, flow, waypoint navigation.
+
+Navigator fix (v2):
+    - Uses a true monotonic best-index tracker inside next_waypoint.
+    - forward_search_points window searches from best_idx forward, not just
+      from current_idx. This prevents navigator from lagging behind the
+      particle when the particle skips a waypoint.
+    - Arrival tolerance applied relative to current_idx, but best_idx can
+      advance independently via closest-point search.
+"""
+
 import pickle
 import heapq
 import numpy as np
@@ -70,17 +82,6 @@ class RealVesselNetwork:
         connection_tol=1e-6,
         flow_scale=1.0,
     ):
-        """
-        Parameters
-        ----------
-        pkl_file : str
-            Path to pickled vessel segment data.
-        connection_tol : float
-            Tolerance for connecting segment endpoints in the graph.
-        flow_scale : float
-            Global multiplier applied to all segment flow velocities.
-            Use < 1.0 to reduce flow, > 1.0 to increase flow.
-        """
         import os
 
         if not os.path.exists(pkl_file):
@@ -110,12 +111,6 @@ class RealVesselNetwork:
         for s in raw_segments:
             radii.append(float(s["radius"]))
 
-        # Murray's law flow scaling:
-        #   Q ∝ r^3
-        #   v = Q / area ∝ r^3 / r^2 = r
-        #
-        # Largest vessel gets the raw/reference v_mean. Smaller vessels get
-        # proportionally slower mean flow.
         r_ref = max(radii) if radii else 1.0
         v_mean_ref = 0.02
 
@@ -154,9 +149,6 @@ class RealVesselNetwork:
         return float(np.max(np.abs(arr))) * 1.1
 
     def bounds(self, include_radius: bool = False):
-        """
-        Return axis-aligned vessel bounds as (min_xyz, max_xyz).
-        """
         starts = np.array([s.start for s in self.segments], dtype=float)
         ends = np.array([s.end for s in self.segments], dtype=float)
 
@@ -384,14 +376,6 @@ class RealVesselNetwork:
         return waypoints
 
     def _sparsify_waypoints(self, points, min_spacing=0.0015):
-        """
-        Reduce raw centerline waypoints to scientifically valid control waypoints.
-
-        This does NOT change vessel anatomy or graph topology.
-        It only changes reference trajectory resolution for MPC tracking.
-
-        min_spacing=0.0015 means approximately 1.5 mm spacing.
-        """
         if points is None or len(points) == 0:
             return []
 
@@ -422,26 +406,19 @@ class RealVesselNetwork:
         arrival_tol=0.003,
         waypoint_spacing=0.0015,
         lookahead=3,
-        forward_search_points=35,
+        forward_search_points=50,
     ):
         """
-        Build a waypoint navigator for MPC.
+        Build a waypoint navigator for MPC — v2.
 
-        raw_waypoints:
-            Dense graph path from centerline segments.
+        Key fix: the navigator maintains its own monotonic best_idx.
+        Progress is advanced by searching forward_search_points ahead of
+        best_idx, not just current_idx. This prevents the navigator from
+        lagging when the particle physically passes a waypoint without
+        triggering arrival_tol.
 
-        sparse waypoints:
-            Arc-length-spaced reference points for stable MPC tracking.
-
-        lookahead:
-            Tracks a waypoint several sparse points ahead while still measuring
-            progress against the current waypoint.
-
-        forward_search_points:
-            Maximum number of future sparse waypoints searched for progress.
-            This prevents the navigator from getting stuck when the particle
-            skips past a waypoint or takes a shortcut between nearby centerline
-            points. The default value is compatible with simulation_3d_mpc.py.
+        lookahead: how many waypoints ahead of current_idx to return as target.
+        forward_search_points: window for closest-point search from best_idx.
         """
         start_pos = np.asarray(start_pos, dtype=float)
         target_pos = np.asarray(target_pos, dtype=float)
@@ -454,8 +431,7 @@ class RealVesselNetwork:
         ]
 
         sparse_path = self._sparsify_waypoints(
-            full_path,
-            min_spacing=waypoint_spacing,
+            full_path, min_spacing=waypoint_spacing,
         )
 
         if len(sparse_path) > 1:
@@ -463,8 +439,10 @@ class RealVesselNetwork:
         else:
             active_waypoints = [target_pos]
 
+        # Navigator state: use a dict so it's mutable inside closure
         state = {
-            "idx": 0,
+            "idx": 0,          # current waypoint index (arrival-tol based)
+            "best_idx": 0,     # monotonic best (closest-point search based)
             "waypoints": active_waypoints,
             "raw_count": len(raw_waypoints),
         }
@@ -474,35 +452,41 @@ class RealVesselNetwork:
 
             waypoints = state["waypoints"]
             idx = int(state["idx"])
+            best_idx = int(state["best_idx"])
+            n = len(waypoints)
+
+            if n == 0:
+                next_waypoint.current_idx = 0
+                next_waypoint.lookahead_idx = 0
+                return target_pos
 
             # ----------------------------------------------------------
-            # Forward-search progress update
+            # Step 1: Update best_idx via forward closest-point search.
+            # This is monotonic — best_idx never retreats.
+            # Search from current best_idx forward in a window.
             # ----------------------------------------------------------
-            # The old navigator only advanced if the particle came within
-            # arrival_tol of the current waypoint. In fast/high-flow segments,
-            # the particle can pass a waypoint without entering that exact
-            # small sphere, causing the navigator to lag behind.
-            #
-            # This searches a bounded window ahead and moves idx to the
-            # closest waypoint in that window if it is not behind the current
-            # index. It keeps route ordering while making waypoint progress
-            # robust to small overshoots and shortcuts.
+            search_start = best_idx
+            search_end = min(n, search_start + max(1, int(forward_search_points)))
+
+            window = np.asarray(waypoints[search_start:search_end], dtype=float)
+
+            if len(window) > 0:
+                dists = np.linalg.norm(window - current_pos, axis=1)
+                local_best = int(np.argmin(dists))
+                candidate_best = search_start + local_best
+
+                if candidate_best > best_idx:
+                    best_idx = candidate_best
+
+            state["best_idx"] = best_idx
+
             # ----------------------------------------------------------
+            # Step 2: Advance current idx by arrival tolerance.
+            # Also advance to catch up with best_idx if it's ahead.
+            # ----------------------------------------------------------
+            idx = max(idx, best_idx)
 
-            if len(waypoints) > 0:
-                search_end = min(
-                    len(waypoints),
-                    idx + max(1, int(forward_search_points)),
-                )
-
-                window = np.asarray(waypoints[idx:search_end], dtype=float)
-
-                if len(window) > 0:
-                    dists = np.linalg.norm(window - current_pos, axis=1)
-                    local_best = int(np.argmin(dists))
-                    idx = max(idx, idx + local_best)
-
-            while idx < len(waypoints) - 1:
+            while idx < n - 1:
                 dist_to_current_wp = float(
                     np.linalg.norm(current_pos - waypoints[idx])
                 )
@@ -514,9 +498,13 @@ class RealVesselNetwork:
 
             state["idx"] = idx
 
-            look_idx = min(idx + lookahead, len(waypoints) - 1)
+            # ----------------------------------------------------------
+            # Step 3: Choose lookahead target
+            # ----------------------------------------------------------
+            look_idx = min(idx + lookahead, n - 1)
 
             next_waypoint.current_idx = idx
+            next_waypoint.best_idx = best_idx
             next_waypoint.lookahead_idx = look_idx
             next_waypoint.current_wp = waypoints[idx]
             next_waypoint.lookahead_wp = waypoints[look_idx]
@@ -530,6 +518,7 @@ class RealVesselNetwork:
         next_waypoint.raw_waypoint_count = len(raw_waypoints)
         next_waypoint.total_hops = len(active_waypoints)
         next_waypoint.current_idx = 0
+        next_waypoint.best_idx = 0
         next_waypoint.lookahead_idx = min(lookahead, len(active_waypoints) - 1)
         next_waypoint.current_wp = active_waypoints[0]
         next_waypoint.lookahead_wp = active_waypoints[next_waypoint.lookahead_idx]

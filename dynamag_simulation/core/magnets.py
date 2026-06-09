@@ -1,17 +1,17 @@
 """
 Electromagnet array: 9-magnet triangular-prism regularized dipole model.
 
-Body-scale scanner version.
+Optimized hardware-constrained body-scale / large-phantom scanner version.
 
 Layout:
     Front triangle (z = -d)
         A
-       / \
+       / \\
       B---C
 
     Back triangle (z = +d)
         D
-       / \
+       / \\
       E---F
 
     Mid-edge magnets:
@@ -21,7 +21,7 @@ Layout:
 
 All magnets point toward the configured array center.
 
-Each solenoid is modelled as a regularized magnetic dipole.
+Each solenoid is modeled as a regularized magnetic dipole.
 
 Magnetic moment:
     m = N I pi R^2
@@ -31,17 +31,32 @@ Regularized dipole field:
            [3(m·r_hat)r_hat - m]
            / (r^2 + a^2)^(3/2)
 
-This file intentionally models a fixed body-scale steering device, not a
-vessel-bounds-scaled device.
-
 Important:
-    This is a simulation authority model.
-    It does NOT solve coil resistance, heating, power electronics, duty cycle,
-    voltage limits, insulation, cooling, or patient safety constraints.
+    This version is still not a certified medical-device model.
+    It is a hardware-constrained simulation model intended for physically
+    plausible controller benchmarking.
 
-Reference:
-Jackson, Classical Electrodynamics, ch. 5
-Furlani, Permanent Magnet and Electromechanical Devices (2001)
+    It includes:
+        - finite wire resistance
+        - voltage clipping
+        - per-coil electrical power clipping
+        - simple lumped thermal model
+        - temperature-dependent copper resistance
+        - thermal current derating
+        - soft core saturation
+
+    It still does NOT replace:
+        - finite-element electromagnetic modeling
+        - measured B-field calibration
+        - full power electronics simulation
+        - insulation design
+        - cooling validation
+        - biomedical safety certification
+        - human or animal use approval
+
+References:
+    Jackson, Classical Electrodynamics, ch. 5
+    Furlani, Permanent Magnet and Electromechanical Devices (2001)
 """
 
 from __future__ import annotations
@@ -55,42 +70,61 @@ class ElectromagnetArray3D:
     """
     9 electromagnets arranged in a triangular prism.
 
-    Default body-scale scanner geometry:
-        placement_radius = 0.300 m   # coil centers 30 cm from device center
-        coil_radius      = 0.080 m   # 16 cm coil diameter
-        coil_length      = 0.280 m   # 28 cm core/coil length
-        core_radius      = 0.040 m   # 8 cm core diameter
-        turns            = 20000
-        max_current      = 60 A peak/pulsed simulation limit
+    Optimized realistic benchmark:
+        placement_radius = 0.300 m
+        coil_radius      = 0.070 m
+        coil_length      = 0.160 m
+        core_radius      = 0.030 m
+        turns            = 600
+        max_current      = 16 A peak command limit
+
+    Electrical model:
+        wire_awg                 = 10
+        supply_voltage_limit     = 48 V
+        max_coil_power_w         = 250 W
+        copper_temp_coeff        = 0.00393 1/C
+        copper_resistivity_20c   = 1.68e-8 ohm*m
+
+    Thermal model:
+        ambient_temp_c             = 22 C
+        max_coil_temp_c            = 80 C
+        thermal_mass_j_per_c       = 900 J/C
+        thermal_resistance_c_per_w = 0.25 C/W
 
     Core model:
-        core_relative_permeability = 90
-        core_saturation_tesla      = 6.0
-
-    Why these values:
-        - 35 / 8.0 was too weak and barely progressed.
-        - 120 / 2.2 caused repeated flat-gradient saturation.
-        - 90 / 6.0 is a compromise: high authority without the low 2.2 T cap.
+        core_relative_permeability = 70 effective
+        core_saturation_tesla      = 1.8 T
 
     Notes:
-        - This is a simulation authority model.
-        - AWG, resistance, heating, voltage, and thermal limits are not solved here.
-        - The steel-core model is an effective gain with soft saturation.
-        - 60 A should be interpreted as a pulsed peak simulation limit,
-          not continuous DC.
+        - This is far more realistic than the old 20,000-turn / 60 A model.
+        - It is stronger than the first conservative 900-turn / 8 A model.
+        - 16 A is treated as a peak command limit, not guaranteed continuous DC.
+        - Actual current is clipped by voltage, power, and temperature limits.
     """
 
     def __init__(
         self,
-        coil_radius: float = 0.080,
-        coil_length: float = 0.280,
-        turns: float = 20000.0,
-        max_current: float = 60.0,
+        coil_radius: float = 0.070,
+        coil_length: float = 0.160,
+        turns: float = 600.0,
+        max_current: float = 16.0,
         placement_radius: float = 0.300,
         center=None,
-        core_radius: float = 0.040,
-        core_relative_permeability: float = 90.0,
-        core_saturation_tesla: float = 6.0,
+        core_radius: float = 0.030,
+        core_relative_permeability: float = 70.0,
+        core_saturation_tesla: float = 1.8,
+        wire_awg: int = 10,
+        supply_voltage_limit: float = 48.0,
+        max_coil_power_w: float = 250.0,
+        ambient_temp_c: float = 22.0,
+        max_coil_temp_c: float = 80.0,
+        thermal_mass_j_per_c: float = 900.0,
+        thermal_resistance_c_per_w: float = 0.25,
+        copper_resistivity_20c: float = 1.68e-8,
+        copper_temp_coeff_per_c: float = 0.00393,
+        winding_length_factor: float = 1.20,
+        insulation_fill_factor: float = 0.70,
+        enforce_hardware_limits: bool = True,
     ):
         self.placement_radius = float(placement_radius)
         self.center = (
@@ -108,15 +142,26 @@ class ElectromagnetArray3D:
         self.core_relative_permeability = float(core_relative_permeability)
         self.core_saturation_tesla = float(core_saturation_tesla)
 
+        self.wire_awg = int(wire_awg)
+        self.supply_voltage_limit = float(supply_voltage_limit)
+        self.max_coil_power_w = float(max_coil_power_w)
+
+        self.ambient_temp_c = float(ambient_temp_c)
+        self.max_coil_temp_c = float(max_coil_temp_c)
+        self.thermal_mass_j_per_c = float(thermal_mass_j_per_c)
+        self.thermal_resistance_c_per_w = float(thermal_resistance_c_per_w)
+
+        self.copper_resistivity_20c = float(copper_resistivity_20c)
+        self.copper_temp_coeff_per_c = float(copper_temp_coeff_per_c)
+
+        self.winding_length_factor = float(winding_length_factor)
+        self.insulation_fill_factor = float(insulation_fill_factor)
+        self.enforce_hardware_limits = bool(enforce_hardware_limits)
+
         self._mu_over_4pi = MU_0 / (4.0 * PI)
 
         # Regularization length.
-        # Use a nonzero effective source size so the dipole field does not blow up
-        # near a coil. This also roughly represents finite coil/core size.
-        #
-        # For a large body-scale scanner, the core radius dominates the
-        # regularization. This prevents unrealistic near-singular fields while
-        # preserving useful gradients in the bore.
+        # This prevents the dipole approximation from exploding near a source.
         reg_len = max(0.5 * self.coil_radius, self.core_radius, 1e-4)
         self._a_sq = reg_len ** 2
 
@@ -127,10 +172,192 @@ class ElectromagnetArray3D:
         self.orientations = self._build_orientations(self._local_positions)
 
         self.currents = np.zeros(self.n_magnets, dtype=float)
+        self.commanded_currents = np.zeros(self.n_magnets, dtype=float)
+
+        self.coil_temps_c = np.full(
+            self.n_magnets,
+            self.ambient_temp_c,
+            dtype=float,
+        )
 
         # Magnetic moment per ampere.
         # m = N I A, where A = pi R^2.
         self.moment_per_amp = self.turns * PI * self.coil_radius ** 2
+
+        self.wire_diameter_m = self._awg_diameter_m(self.wire_awg)
+        self.wire_area_m2 = PI * (0.5 * self.wire_diameter_m) ** 2
+
+        self.estimated_wire_length_m = self._estimate_wire_length()
+        self.coil_resistance_20c_ohm = self._coil_resistance_at_temp(
+            self.ambient_temp_c
+        )
+
+        self.last_voltage_v = np.zeros(self.n_magnets, dtype=float)
+        self.last_power_w = np.zeros(self.n_magnets, dtype=float)
+        self.last_hardware_scale = np.ones(self.n_magnets, dtype=float)
+
+    @staticmethod
+    def _awg_diameter_m(awg: int) -> float:
+        """
+        Convert AWG gauge to bare copper diameter in meters.
+
+        AWG diameter formula:
+            d_inch = 0.005 inch * 92^((36 - AWG) / 39)
+        """
+        d_inch = 0.005 * (92.0 ** ((36.0 - float(awg)) / 39.0))
+        return d_inch * 0.0254
+
+    def _estimate_wire_length(self) -> float:
+        """
+        Estimate total copper length per coil.
+
+        For a solenoid, each turn is roughly one circumference.
+        The winding_length_factor accounts for layering, leads, imperfect packing,
+        and the fact that outer layers are slightly larger than inner layers.
+        """
+        mean_turn_length = 2.0 * PI * self.coil_radius
+        return self.turns * mean_turn_length * self.winding_length_factor
+
+    def _coil_resistance_at_temp(self, temp_c: float) -> float:
+        """
+        Copper resistance with linear temperature correction.
+
+        R(T) = R20 * [1 + alpha * (T - 20 C)]
+        """
+        r20 = (
+            self.copper_resistivity_20c
+            * self.estimated_wire_length_m
+            / max(self.wire_area_m2 * self.insulation_fill_factor, EPS)
+        )
+
+        return r20 * (
+            1.0 + self.copper_temp_coeff_per_c * (float(temp_c) - 20.0)
+        )
+
+    def _coil_resistances_now(self):
+        return np.array(
+            [self._coil_resistance_at_temp(t) for t in self.coil_temps_c],
+            dtype=float,
+        )
+
+    def _thermal_current_derating(self):
+        """
+        Reduce allowable current as coil temperature approaches max temperature.
+
+        Conservative derating:
+            - full current below 60% of the allowed temperature rise
+            - linearly derated after that
+            - near zero at max temperature
+        """
+        temp_span = max(self.max_coil_temp_c - self.ambient_temp_c, EPS)
+        hot_fraction = (self.coil_temps_c - self.ambient_temp_c) / temp_span
+        hot_fraction = np.clip(hot_fraction, 0.0, 1.0)
+
+        derating = np.ones_like(hot_fraction)
+
+        start_derate = 0.60
+        mask = hot_fraction > start_derate
+
+        derating[mask] = (
+            1.0
+            - (hot_fraction[mask] - start_derate)
+            / max(1.0 - start_derate, EPS)
+        )
+
+        return np.clip(derating, 0.0, 1.0)
+
+    def _hardware_clip_currents(self, requested_currents):
+        """
+        Clip currents using:
+            1. peak current limit
+            2. thermal derating
+            3. voltage limit
+            4. per-coil power limit
+        """
+        requested_currents = np.asarray(requested_currents, dtype=float)
+
+        current_limit = self.max_current * self._thermal_current_derating()
+
+        currents = np.clip(
+            requested_currents,
+            -current_limit,
+            current_limit,
+        )
+
+        resistances = self._coil_resistances_now()
+
+        # Voltage limit:
+        # |V| = |I| R <= Vmax
+        voltage_current_limit = (
+            self.supply_voltage_limit / np.maximum(resistances, EPS)
+        )
+
+        currents = np.clip(
+            currents,
+            -voltage_current_limit,
+            voltage_current_limit,
+        )
+
+        # Power limit:
+        # P = I^2 R <= Pmax
+        power_current_limit = np.sqrt(
+            self.max_coil_power_w / np.maximum(resistances, EPS)
+        )
+
+        currents = np.clip(
+            currents,
+            -power_current_limit,
+            power_current_limit,
+        )
+
+        self.last_voltage_v = currents * resistances
+        self.last_power_w = currents ** 2 * resistances
+
+        with np.errstate(divide="ignore", invalid="ignore"):
+            scale = np.divide(
+                np.abs(currents),
+                np.maximum(np.abs(requested_currents), EPS),
+            )
+
+        self.last_hardware_scale = np.clip(scale, 0.0, 1.0)
+
+        return currents
+
+    def _update_thermal_state(self, dt: float):
+        """
+        Simple lumped RC thermal model.
+
+        dT/dt = (P - (T - Tambient) / Rth) / Cth
+
+        where:
+            P    = coil electrical heating power
+            Rth  = thermal resistance, C/W
+            Cth  = thermal mass, J/C
+        """
+        dt = float(dt)
+
+        if dt <= 0.0:
+            return
+
+        cooling_power_w = (
+            (self.coil_temps_c - self.ambient_temp_c)
+            / max(self.thermal_resistance_c_per_w, EPS)
+        )
+
+        net_power_w = self.last_power_w - cooling_power_w
+
+        dtemp = (
+            net_power_w
+            / max(self.thermal_mass_j_per_c, EPS)
+        ) * dt
+
+        self.coil_temps_c = self.coil_temps_c + dtemp
+
+        # Do not let the toy model go below ambient.
+        self.coil_temps_c = np.maximum(
+            self.coil_temps_c,
+            self.ambient_temp_c,
+        )
 
     def _build_local_positions(self):
         d = self.placement_radius
@@ -173,7 +400,6 @@ class ElectromagnetArray3D:
             if norm < 1e-12:
                 orientations[i] = np.array([0.0, 0.0, 1.0])
             else:
-                # Point all magnets toward array center.
                 orientations[i] = -pos / norm
 
         return orientations
@@ -189,7 +415,18 @@ class ElectromagnetArray3D:
         self.center = np.asarray(center, dtype=float)
         self.positions = self._local_positions + self.center
 
-    def set_currents(self, currents):
+    def set_currents(self, currents, dt: float | None = None):
+        """
+        Set commanded currents.
+
+        If enforce_hardware_limits=True, the requested current is clipped by:
+            - max_current
+            - temperature derating
+            - voltage limit
+            - power limit
+
+        If dt is provided, the coil thermal state is updated for this timestep.
+        """
         currents = np.asarray(currents, dtype=float)
 
         if currents.shape != (self.n_magnets,):
@@ -197,23 +434,42 @@ class ElectromagnetArray3D:
                 f"expected {self.n_magnets} currents, got shape {currents.shape}"
             )
 
-        self.currents = np.clip(
-            currents,
-            -self.max_current,
-            self.max_current,
-        )
+        self.commanded_currents = currents.copy()
+
+        if self.enforce_hardware_limits:
+            safe_currents = self._hardware_clip_currents(currents)
+        else:
+            safe_currents = np.clip(
+                currents,
+                -self.max_current,
+                self.max_current,
+            )
+
+            resistances = self._coil_resistances_now()
+            self.last_voltage_v = safe_currents * resistances
+            self.last_power_w = safe_currents ** 2 * resistances
+            self.last_hardware_scale = np.ones(self.n_magnets, dtype=float)
+
+        self.currents = safe_currents
+
+        if dt is not None:
+            self._update_thermal_state(float(dt))
+
+    def step_thermal(self, dt: float):
+        """
+        Optional explicit thermal update.
+
+        Use this if the caller cannot pass dt into set_currents().
+        """
+        self._update_thermal_state(float(dt))
 
     def _apply_core_model(self, B):
         """
-        Effective soft-saturating steel-core approximation.
+        Effective soft-saturating core approximation.
 
-        A naive B *= mu_r followed by hard clipping can flatten gradients too
-        aggressively. This uses smooth tanh saturation:
+        This is still simplified. It does not solve the real B-H curve.
 
-            B_out = B_hat * B_sat * tanh(mu_eff * |B_air| / B_sat)
-
-        This preserves a usable gradient before saturation while preventing
-        unrealistic multi-tesla fields.
+        B_out = B_hat * B_sat * tanh(mu_eff * |B_air| / B_sat)
         """
         B = np.asarray(B, dtype=float)
         B_mag = float(np.linalg.norm(B))
@@ -272,8 +528,7 @@ class ElectromagnetArray3D:
         """
         Gradient of |B|^2 using central differences.
 
-        h = 1e-4 m gives a stable 0.1 mm finite-difference step for vessel-scale
-        steering. Smaller values can become noisy with saturation.
+        h = 1e-4 m gives a stable 0.1 mm finite-difference step.
         """
         point = np.asarray(point, dtype=float)
 
@@ -293,6 +548,28 @@ class ElectromagnetArray3D:
 
         return grad
 
+    def hardware_diagnostics(self):
+        """
+        Return current electrical and thermal state.
+        """
+        resistances = self._coil_resistances_now()
+
+        return {
+            "max_commanded_current_A": float(
+                np.max(np.abs(self.commanded_currents))
+            ),
+            "max_actual_current_A": float(np.max(np.abs(self.currents))),
+            "max_voltage_V": float(np.max(np.abs(self.last_voltage_v))),
+            "max_power_W": float(np.max(self.last_power_w)),
+            "mean_power_W": float(np.mean(self.last_power_w)),
+            "max_coil_temp_C": float(np.max(self.coil_temps_c)),
+            "mean_coil_temp_C": float(np.mean(self.coil_temps_c)),
+            "min_hardware_scale": float(np.min(self.last_hardware_scale)),
+            "mean_hardware_scale": float(np.mean(self.last_hardware_scale)),
+            "mean_resistance_ohm": float(np.mean(resistances)),
+            "max_resistance_ohm": float(np.max(resistances)),
+        }
+
     def params_dict(self):
         return {
             "n_magnets": self.n_magnets,
@@ -302,7 +579,7 @@ class ElectromagnetArray3D:
             "coil_length_m": self.coil_length,
             "turns": self.turns,
             "max_current_A": self.max_current,
-            "current_mode": "peak_pulsed_simulation_limit",
+            "current_mode": "hardware_constrained_peak_limit",
             "core_radius_m": self.core_radius,
             "core_diameter_m": 2.0 * self.core_radius,
             "core_relative_permeability_effective": (
@@ -310,7 +587,25 @@ class ElectromagnetArray3D:
             ),
             "core_saturation_tesla": self.core_saturation_tesla,
             "moment_per_amp_A_m2": self.moment_per_amp,
-            "thermal_model_included": False,
-            "awg_model_included": False,
+            "wire_awg": self.wire_awg,
+            "wire_diameter_m": self.wire_diameter_m,
+            "wire_area_m2": self.wire_area_m2,
+            "estimated_wire_length_m_per_coil": self.estimated_wire_length_m,
+            "coil_resistance_20c_ohm": self.coil_resistance_20c_ohm,
+            "supply_voltage_limit_V": self.supply_voltage_limit,
+            "max_coil_power_W": self.max_coil_power_w,
+            "ambient_temp_C": self.ambient_temp_c,
+            "max_coil_temp_C": self.max_coil_temp_c,
+            "thermal_mass_J_per_C": self.thermal_mass_j_per_c,
+            "thermal_resistance_C_per_W": self.thermal_resistance_c_per_w,
+            "thermal_model_included": True,
+            "awg_model_included": True,
+            "voltage_limit_included": True,
+            "power_limit_included": True,
+            "temperature_derating_included": True,
             "body_scale_scanner_model": True,
+            "medical_safety_validated": False,
+            "human_use_validated": False,
+            "animal_use_validated": False,
+            **self.hardware_diagnostics(),
         }

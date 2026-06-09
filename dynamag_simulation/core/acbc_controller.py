@@ -1,28 +1,21 @@
 """
-Authority-Conditioned Branch Commitment controller.
+Authority-Conditioned Branch Commitment controller — v2.
 
-ACBC is a hybrid supervisory controller for magnetic carrier navigation
-through bifurcating vascular graphs.
+Key fixes over v1:
+    1. STALL_ESCAPE target uses best navigator progress index, not current_idx.
+       Lookahead is small (12 waypoints) so the escape target stays near the
+       particle's actual position in route space.
 
-Main correction:
-    ACBC is route-conditioned.
+    2. Recovery target is route-conditioned. It finds the nearest waypoint on
+       the planned path and steps a small amount downstream along the route
+       tangent, preventing lateral/backward pull in curved vessels.
 
-It does NOT activate near the nearest bifurcation anywhere in the vessel tree.
-It only activates when a bifurcation lies ahead on the planned route.
+    3. State machine uses strict priority ordering with early-return semantics.
+       Hard wall danger beats everything. STALL_ESCAPE is blocked when wall is
+       unsafe. Recovery is bounded and cannot trap the controller.
 
-Recovery correction:
-    Recovery is softened and bounded.
-
-Instead of snapping directly to the vessel centerline during RECOVERY_MODE,
-ACBC targets a partial step toward the centerline. Recovery exits at moderate
-wall clearance and has a max duration so it cannot trap forever.
-
-Stall correction:
-    Stall escape is usable for the 30 cm body-scale scanner.
-
-If the route waypoint index does not improve for many consecutive control
-steps while the particle is not in hard wall danger, ACBC temporarily targets
-a farther downstream waypoint and boosts forward-progress weighting.
+    4. Navigator progress is tracked via a separate best-index counter inside
+       the ACBC step, independent of the navigator's own current_idx.
 
 States:
     FREE_NAVIGATION
@@ -91,16 +84,19 @@ class ACBCStepInfo:
     recovery_target: Optional[np.ndarray]
     num_candidates: int
 
+    # Extended diagnostics
+    stall_escape_target: Optional[np.ndarray]
+    best_route_idx: int
+    stagnant_steps: int
+    wall_clearance_m: float
+    wall_fraction: float
+
 
 class ACBCController:
     """
-    Authority-Conditioned Branch Commitment.
+    Authority-Conditioned Branch Commitment — v2.
 
-    ACBC is a route-conditioned hybrid supervisor. It uses the existing
-    continuous MPC controller only as a low-level current allocator.
-
-    The supervisory decision is:
-        free navigation vs. assess viability vs. commit vs. recover vs. escape.
+    Route-conditioned hybrid supervisor over continuous MPC current allocator.
     """
 
     def __init__(
@@ -117,16 +113,18 @@ class ACBCController:
         min_wall_safety_fraction: float = 0.015,
         absolute_wall_clearance_threshold: float = 0.00045,
         max_commitment_steps: int = 90,
-        recovery_center_fraction: float = 0.25,
-        recovery_route_fraction: float = 0.30,
-        stall_window_steps: int = 10,
-        stall_escape_lookahead: int = 90,
-        stall_escape_release_hops: int = 18,
-        stall_escape_max_steps: int = 260,
-        stall_escape_min_wall_clearance: float = 0.00055,
+        recovery_center_fraction: float = 0.30,
+        recovery_route_fraction: float = 0.25,
+        recovery_route_tangent_steps: int = 3,
+        stall_window_steps: int = 15,
+        stall_escape_lookahead: int = 12,
+        stall_escape_release_hops: int = 3,
+        stall_escape_max_steps: int = 120,
+        stall_escape_min_wall_clearance: float = 0.00090,
         stall_escape_min_wall_fraction_multiplier: float = 1.00,
         recovery_escape_lockout_steps: int = 0,
-        max_recovery_steps: int = 18,
+        max_recovery_steps: int = 40,
+        recovery_release_clearance: float = 0.00090,
     ):
         self.network = network
         self.magnet_array = magnet_array
@@ -168,23 +166,15 @@ class ACBCController:
         self.recovery_route_fraction = float(
             np.clip(recovery_route_fraction, 0.0, 0.5)
         )
+        self.recovery_route_tangent_steps = int(
+            max(1, recovery_route_tangent_steps)
+        )
 
-        # Stall escape configuration.
-        #
-        # These defaults are intentionally more aggressive than the earlier
-        # compact-device version. The 30 cm scanner can move the particle, but
-        # it can plateau at moderate wall clearance. STALL_ESCAPE must be able
-        # to break that plateau.
         self.stall_window_steps = int(max(5, stall_window_steps))
-        self.stall_escape_lookahead = int(max(4, stall_escape_lookahead))
+        self.stall_escape_lookahead = int(max(2, stall_escape_lookahead))
         self.stall_escape_release_hops = int(max(1, stall_escape_release_hops))
         self.stall_escape_max_steps = int(max(10, stall_escape_max_steps))
 
-        # STALL_ESCAPE safety gate.
-        #
-        # This is above the hard danger threshold but below the old overly
-        # conservative 2.5 mm gate. For a 10 um carrier, 1.2 mm wall clearance
-        # is already very large relative to particle size.
         self.stall_escape_min_wall_clearance = float(
             max(0.0, stall_escape_min_wall_clearance)
         )
@@ -192,20 +182,21 @@ class ACBCController:
             max(1.0, stall_escape_min_wall_fraction_multiplier)
         )
 
-        # Short recovery lockout.
-        #
-        # A long lockout made small recovery blips block STALL_ESCAPE for too
-        # long. Keep it short so local stalls can still be escaped.
         self.recovery_escape_lockout_steps = int(
             max(0, recovery_escape_lockout_steps)
         )
         self.last_recovery_step: Optional[int] = None
 
-        # RECOVERY_MODE should never become permanent.
         self.max_recovery_steps = int(max(10, max_recovery_steps))
+        self.recovery_release_clearance = float(recovery_release_clearance)
 
+        # Route progress tracking (internal, monotonic)
+        # best_route_idx tracks the highest waypoint index the particle has
+        # been closest to. This is separate from the navigator's current_idx
+        # so ACBC can detect stalls independently.
         self.best_route_idx = -1
         self.stagnant_steps = 0
+
         self.escape_start_step: Optional[int] = None
         self.escape_start_route_idx: Optional[int] = None
 
@@ -262,6 +253,7 @@ class ACBCController:
         return nodes
 
     def _nearest_route_index(self, pos, navigator) -> int:
+        """Find the closest waypoint index to pos (no monotonicity enforced)."""
         waypoints = getattr(navigator, "waypoints", [])
 
         if waypoints is None or len(waypoints) == 0:
@@ -273,6 +265,7 @@ class ACBCController:
         return int(np.argmin(dists))
 
     def _navigator_route_index(self, pos, navigator) -> int:
+        """Get navigator's current waypoint index."""
         idx = getattr(navigator, "current_idx", None)
 
         if idx is not None:
@@ -283,19 +276,57 @@ class ACBCController:
 
         return self._nearest_route_index(pos, navigator)
 
-    def _update_stall_status(self, route_idx: int, navigator) -> bool:
-        total_hops = int(getattr(navigator, "total_hops", 0) or 0)
+    def _update_best_route_idx(self, pos, navigator) -> int:
+        """
+        Update best_route_idx by finding the closest waypoint in a forward
+        search window from best_route_idx. This is monotonic — it never retreats.
 
-        if route_idx > self.best_route_idx:
-            self.best_route_idx = int(route_idx)
+        Returns the updated best_route_idx.
+        """
+        waypoints = getattr(navigator, "waypoints", [])
+
+        if waypoints is None or len(waypoints) == 0:
+            return self.best_route_idx
+
+        pos = np.asarray(pos, dtype=float)
+        n = len(waypoints)
+
+        # Search from current best index forward in a window.
+        # Also include a small backward window in case navigator is ahead.
+        search_start = max(0, self.best_route_idx)
+        search_end = min(n, search_start + 50)
+
+        pts = np.asarray(waypoints[search_start:search_end], dtype=float)
+
+        if len(pts) == 0:
+            return self.best_route_idx
+
+        dists = np.linalg.norm(pts - pos, axis=1)
+        local_best = int(np.argmin(dists))
+        candidate = search_start + local_best
+
+        # Monotonic: only advance
+        if candidate > self.best_route_idx:
+            self.best_route_idx = candidate
             self.stagnant_steps = 0
         else:
             self.stagnant_steps += 1
 
+        return self.best_route_idx
+
+    def _update_stall_status(self, pos, navigator) -> bool:
+        """
+        Returns True if route progress has stalled.
+
+        Uses best_route_idx (monotonic) rather than navigator's current_idx.
+        """
+        self._update_best_route_idx(pos, navigator)
+
+        total_hops = int(getattr(navigator, "total_hops", 0) or 0)
         has_route_ahead = True
 
         if total_hops > 0:
-            has_route_ahead = route_idx < total_hops - 3
+            has_route_ahead = self.best_route_idx < total_hops - 3
 
         return bool(
             self.stagnant_steps >= self.stall_window_steps
@@ -303,18 +334,103 @@ class ACBCController:
         )
 
     def _stall_escape_target(self, particle_pos, navigator):
+        """
+        Choose a stall escape target that is just ahead of where the particle
+        actually is in route space (based on best_route_idx, not current_idx).
+
+        Uses a small lookahead so the particle moves to a nearby reachable
+        point rather than jumping 90 waypoints ahead.
+        """
         waypoints = getattr(navigator, "waypoints", None)
 
         if waypoints is None or len(waypoints) == 0:
             return np.asarray(particle_pos, dtype=float)
 
-        current_idx = self._navigator_route_index(particle_pos, navigator)
+        # Base on best_route_idx (monotonic), not current_idx (can lag)
+        base_idx = max(0, self.best_route_idx)
         target_idx = min(
             len(waypoints) - 1,
-            current_idx + self.stall_escape_lookahead,
+            base_idx + self.stall_escape_lookahead,
         )
 
         return self.workspace.clip(np.asarray(waypoints[target_idx], dtype=float))
+
+    def _route_conditioned_recovery_target(self, particle_pos, navigator):
+        """
+        Recovery target that pulls toward vessel centerline while staying
+        downstream along the planned route.
+
+        Steps:
+        1. Find nearest vessel centerline point (recentering component).
+        2. Find nearest waypoint on planned route.
+        3. Compute downstream route tangent from waypoints.
+        4. Target = partial_step_to_center + downstream_tangent_step.
+
+        This prevents recovery from pulling the particle backward or sideways
+        in curved vessel geometries.
+        """
+        particle_pos = np.asarray(particle_pos, dtype=float)
+
+        # --- Recentering component ---
+        seg, _ = self.network.find_segment(particle_pos)
+
+        if seg is None:
+            center_target = particle_pos.copy()
+        else:
+            closest, _, _, _ = seg.closest_point_and_radial(particle_pos)
+            to_center = closest - particle_pos
+            dist_to_center = float(np.linalg.norm(to_center))
+
+            if dist_to_center < EPS:
+                center_target = closest.copy()
+            else:
+                center_target = (
+                    particle_pos + self.recovery_center_fraction * to_center
+                )
+
+        # --- Route-conditioned downstream component ---
+        waypoints = getattr(navigator, "waypoints", None)
+
+        if waypoints is None or len(waypoints) == 0:
+            return self.workspace.clip(center_target)
+
+        # Find nearest waypoint (near best_route_idx)
+        base_idx = max(0, self.best_route_idx)
+        search_start = max(0, base_idx - 2)
+        search_end = min(len(waypoints), base_idx + 10)
+
+        pts = np.asarray(waypoints[search_start:search_end], dtype=float)
+        dists = np.linalg.norm(pts - particle_pos, axis=1)
+        local_best = int(np.argmin(dists))
+        near_idx = search_start + local_best
+
+        # Get downstream tangent from waypoints
+        tangent_end_idx = min(
+            len(waypoints) - 1,
+            near_idx + self.recovery_route_tangent_steps,
+        )
+
+        if tangent_end_idx > near_idx:
+            wp_near = np.asarray(waypoints[near_idx], dtype=float)
+            wp_far = np.asarray(waypoints[tangent_end_idx], dtype=float)
+            route_vec = wp_far - wp_near
+            route_norm = float(np.linalg.norm(route_vec))
+
+            if route_norm > EPS:
+                route_hat = route_vec / route_norm
+
+                downstream_step = min(
+                    self.recovery_route_fraction * self.branch_lookahead,
+                    0.30 * (seg._length if seg is not None else 0.01),
+                )
+
+                target = center_target + downstream_step * route_hat
+            else:
+                target = center_target
+        else:
+            target = center_target
+
+        return self.workspace.clip(target)
 
     def _escape_release_ready(self, route_idx: int) -> bool:
         if self.escape_start_step is None or self.escape_start_route_idx is None:
@@ -444,8 +560,7 @@ class ACBCController:
 
             if particle_pos is not None:
                 back_vec = np.asarray(particle_pos, dtype=float) - np.asarray(
-                    bif_point,
-                    dtype=float,
+                    bif_point, dtype=float,
                 )
                 back_norm = np.linalg.norm(back_vec)
 
@@ -545,9 +660,7 @@ class ACBCController:
         center_dir = center_dir / center_norm
 
         v_recenter = self._max_magnetic_projection_speed(
-            particle,
-            particle_pos,
-            center_dir,
+            particle, particle_pos, center_dir,
         )
 
         clearance = seg.radius - radial_dist
@@ -576,8 +689,7 @@ class ACBCController:
         target_point = self.workspace.clip(target_point)
 
         eval_point = bif_point + direction * min(
-            0.25 * self.branch_lookahead,
-            seg._length,
+            0.25 * self.branch_lookahead, seg._length,
         )
         eval_point = self.workspace.clip(eval_point)
 
@@ -590,9 +702,7 @@ class ACBCController:
         flow_projection = float(np.dot(flow_v, direction))
 
         max_mag_projection = self._max_magnetic_projection_speed(
-            particle,
-            eval_point,
-            direction,
+            particle, eval_point, direction,
         )
 
         opposing_flow = max(0.0, -flow_projection)
@@ -604,8 +714,7 @@ class ACBCController:
         wall_margin, wall_fraction = self._wall_safety_for_segment(seg, particle)
 
         route_vec = np.asarray(nominal_target, dtype=float) - np.asarray(
-            bif_point,
-            dtype=float,
+            bif_point, dtype=float,
         )
         route_norm = np.linalg.norm(route_vec)
 
@@ -649,44 +758,6 @@ class ACBCController:
             score=float(score),
             capturable=bool(capturable),
         )
-
-    def _recovery_target(self, particle_pos, nominal_target=None):
-        particle_pos = np.asarray(particle_pos, dtype=float)
-
-        seg, _ = self.network.find_segment(particle_pos)
-
-        if seg is None:
-            return particle_pos.copy()
-
-        closest, _, _, _ = seg.closest_point_and_radial(particle_pos)
-
-        to_center = closest - particle_pos
-        dist_to_center = float(np.linalg.norm(to_center))
-
-        if dist_to_center < EPS:
-            base_target = closest.copy()
-        else:
-            base_target = particle_pos + self.recovery_center_fraction * to_center
-
-        if nominal_target is None:
-            return self.workspace.clip(base_target)
-
-        route_vec = np.asarray(nominal_target, dtype=float) - base_target
-        route_norm = float(np.linalg.norm(route_vec))
-
-        if route_norm < EPS:
-            return self.workspace.clip(base_target)
-
-        route_hat = route_vec / route_norm
-
-        downstream_step = min(
-            self.recovery_route_fraction * self.branch_lookahead,
-            0.20 * seg._length,
-        )
-
-        target = base_target + downstream_step * route_hat
-
-        return self.workspace.clip(target)
 
     # ------------------------------------------------------------------
     # Hybrid state machine
@@ -738,6 +809,8 @@ class ACBCController:
         w_smooth: float = 1e-4,
         w_edge: float = 50.0,
         w_overshoot: float = 2.0,
+        w_route: float = 0.0,
+        route_tangent: Optional[np.ndarray] = None,
     ):
         self.step_count += 1
 
@@ -745,30 +818,23 @@ class ACBCController:
         nominal_target = navigator(particle_pos)
         route_idx = self._navigator_route_index(particle_pos, navigator)
 
+        # Update best route index (monotonic) and stall status
+        stalled = self._update_stall_status(particle_pos, navigator)
+
         bif_point, bif_ids, bif_dist = self._route_relevant_bifurcation(
-            particle_pos,
-            navigator,
+            particle_pos, navigator,
         )
 
         near_bifurcation = bif_point is not None
 
         wall_clearance, wall_margin, wall_fraction = self._wall_safety_at_position(
-            particle_pos,
-            particle,
+            particle_pos, particle,
         )
 
+        # --- Wall danger classification ---
         wall_unsafe = (
             wall_clearance < self.absolute_wall_clearance_threshold
             or wall_fraction < self.min_wall_safety_fraction
-        )
-
-        stalled = self._update_stall_status(route_idx, navigator)
-
-        near_wall_warning = (
-            wall_clearance < self.stall_escape_min_wall_clearance
-            or wall_fraction
-            < self.stall_escape_min_wall_fraction_multiplier
-            * self.min_wall_safety_fraction
         )
 
         safe_for_escape = (
@@ -777,6 +843,8 @@ class ACBCController:
             >= self.stall_escape_min_wall_fraction_multiplier
             * self.min_wall_safety_fraction
         )
+
+        near_wall_warning = not safe_for_escape
 
         recovery_lockout_active = self._recent_recovery_lockout_active()
 
@@ -789,40 +857,42 @@ class ACBCController:
         candidates: List[BranchCandidate] = []
         selected: Optional[BranchCandidate] = None
         recovery_target = None
+        escape_target = None
         transitioned = False
 
-        # --------------------------------------------------------------
-        # Global wall-safety guard
-        # --------------------------------------------------------------
-        # Hard wall danger still wins.
-        # Moderate wall clearance should not automatically block progress.
+        # ==============================================================
+        # PRIORITY 1: Hard wall danger → RECOVERY_MODE
+        # This overrides everything except existing recovery.
+        # ==============================================================
         if wall_unsafe and self.state != ACBC_RECOVER:
             self.selected_branch = None
             self.recovery_count += 1
             transitioned = self._transition(ACBC_RECOVER) or transitioned
 
-        # --------------------------------------------------------------
-        # Route-progress stall guard
-        # --------------------------------------------------------------
-        if stall_escape_allowed and self.state != ACBC_ESCAPE:
+        # ==============================================================
+        # PRIORITY 2: Stall escape (only when safe AND not recovering)
+        # ==============================================================
+        elif stall_escape_allowed and self.state not in (ACBC_ESCAPE, ACBC_RECOVER):
             self.selected_branch = None
             self.stall_escape_count += 1
             transitioned = self._transition(ACBC_ESCAPE) or transitioned
 
-        # If stalled but not safe for escape, recover only if actually near wall.
+        # ==============================================================
+        # Stalled but near wall → recovery (not escape)
+        # ==============================================================
         if (
             stalled
             and near_wall_warning
             and not safe_for_escape
-            and self.state != ACBC_RECOVER
+            and self.state not in (ACBC_RECOVER, ACBC_ESCAPE)
         ):
             self.selected_branch = None
             self.recovery_count += 1
             transitioned = self._transition(ACBC_RECOVER) or transitioned
 
-        # --------------------------------------------------------------
-        # State transitions
-        # --------------------------------------------------------------
+        # ==============================================================
+        # State-specific logic
+        # ==============================================================
 
         if self.state == ACBC_FREE:
             if near_bifurcation:
@@ -836,9 +906,7 @@ class ACBCController:
                 transitioned = self._transition(ACBC_FREE) or transitioned
             else:
                 branches = self._candidate_branches(
-                    bif_point,
-                    bif_ids,
-                    particle_pos=particle_pos,
+                    bif_point, bif_ids, particle_pos=particle_pos,
                 )
 
                 for seg, direction in branches:
@@ -864,7 +932,6 @@ class ACBCController:
                         self.commitment_count += 1
                         transitioned = self._transition(ACBC_COMMIT) or transitioned
                     else:
-                        # Do NOT use RECOVERY_MODE just because branch authority is low.
                         if wall_unsafe:
                             self.recovery_count += 1
                             transitioned = self._transition(ACBC_RECOVER) or transitioned
@@ -906,33 +973,25 @@ class ACBCController:
 
         elif self.state == ACBC_ESCAPE:
             if wall_unsafe:
+                # Hard wall danger overrides escape
                 self.recovery_count += 1
                 transitioned = self._transition(ACBC_RECOVER) or transitioned
-            elif self._escape_release_ready(route_idx):
+            elif self._escape_release_ready(self.best_route_idx):
+                # Use best_route_idx for release check, not navigator's route_idx
                 transitioned = self._transition(ACBC_FREE) or transitioned
 
         elif self.state == ACBC_RECOVER:
-            recovery_target = self._recovery_target(
-                particle_pos,
-                nominal_target=nominal_target,
+            recovery_target = self._route_conditioned_recovery_target(
+                particle_pos, navigator,
             )
-
-            recoverability = self._recoverability_score(particle_pos, particle)
 
             wall_clearance, wall_margin, wall_fraction = self._wall_safety_at_position(
-                particle_pos,
-                particle,
+                particle_pos, particle,
             )
 
-            # Body-scale scanner recovery release.
-            # 1.2 mm is still huge relative to a 10 um carrier, but prevents
-            # RECOVERY_MODE from trapping the controller in moderate-clearance zones.
-            recovery_release_clearance = 0.0012
-            recovery_release_fraction = 1.00 * self.min_wall_safety_fraction
-
             wall_safe_again = (
-                wall_clearance >= recovery_release_clearance
-                and wall_fraction >= recovery_release_fraction
+                wall_clearance >= self.recovery_release_clearance
+                and wall_fraction >= self.min_wall_safety_fraction
             )
 
             if self.last_recovery_step is None:
@@ -946,14 +1005,7 @@ class ACBCController:
                 and wall_fraction >= self.min_wall_safety_fraction
             )
 
-            # Success-tuned body-scale scanner recovery release:
-            # Recovery should be a brief wall-clearance correction, not a trap.
-            # Once clearance is safe again, leave recovery even if the local
-            # recoverability estimate is noisy near saturation.
-            can_leave_recovery = bool(
-                wall_safe_again
-                or recovery_timed_out_safely
-            )
+            can_leave_recovery = bool(wall_safe_again or recovery_timed_out_safely)
 
             if can_leave_recovery:
                 if near_bifurcation:
@@ -965,9 +1017,9 @@ class ACBCController:
             self.selected_branch = None
             transitioned = self._transition(ACBC_FREE) or transitioned
 
-        # --------------------------------------------------------------
+        # ==============================================================
         # Choose control target
-        # --------------------------------------------------------------
+        # ==============================================================
 
         if self.state == ACBC_FREE:
             control_target = nominal_target
@@ -985,43 +1037,42 @@ class ACBCController:
                 control_target = nominal_target
 
         elif self.state == ACBC_ESCAPE:
-            control_target = self._stall_escape_target(particle_pos, navigator)
+            escape_target = self._stall_escape_target(particle_pos, navigator)
+            control_target = escape_target
 
         elif self.state == ACBC_RECOVER:
-            recovery_target = self._recovery_target(
-                particle_pos,
-                nominal_target=nominal_target,
-            )
+            if recovery_target is None:
+                recovery_target = self._route_conditioned_recovery_target(
+                    particle_pos, navigator,
+                )
             control_target = recovery_target
 
         else:
             control_target = nominal_target
 
-        # --------------------------------------------------------------
-        # Low-level current allocation
-        # --------------------------------------------------------------
+        # ==============================================================
+        # Low-level current allocation weights
+        # ==============================================================
 
         if self.state == ACBC_ESCAPE:
-            # Escape should break local waypoint plateaus by strongly
-            # prioritizing downstream route progress. Wall safety is guarded
-            # by wall_unsafe / safe_for_escape before entry and hard recovery
-            # during escape.
-            w_progress_eff = 5.00 * w_progress
-            w_align_eff = 2.50 * w_align
-            w_dist_eff = 2.00 * w_dist
+            w_progress_eff = 4.00 * w_progress
+            w_align_eff = 2.00 * w_align
+            w_dist_eff = 1.50 * w_dist
             w_curr_eff = 0.10 * w_curr
-            w_smooth_eff = 0.15 * w_smooth
-            w_edge_eff = 0.70 * w_edge
-            w_overshoot_eff = 0.60 * w_overshoot
+            w_smooth_eff = 0.10 * w_smooth
+            w_edge_eff = 0.60 * w_edge
+            w_overshoot_eff = 0.50 * w_overshoot
+            w_route_eff = 2.0 * w_route
 
         elif self.state == ACBC_RECOVER:
-            w_progress_eff = 0.55 * w_progress
-            w_align_eff = 0.75 * w_align
-            w_dist_eff = 1.35 * w_dist
+            w_progress_eff = 0.40 * w_progress
+            w_align_eff = 0.60 * w_align
+            w_dist_eff = 1.50 * w_dist
             w_curr_eff = w_curr
             w_smooth_eff = w_smooth
-            w_edge_eff = 2.00 * w_edge
+            w_edge_eff = 2.50 * w_edge
             w_overshoot_eff = w_overshoot
+            w_route_eff = 0.5 * w_route
 
         else:
             w_progress_eff = w_progress
@@ -1031,6 +1082,21 @@ class ACBCController:
             w_smooth_eff = w_smooth
             w_edge_eff = w_edge
             w_overshoot_eff = w_overshoot
+            w_route_eff = w_route
+
+        # Build route tangent for MPC if not provided externally
+        if route_tangent is None:
+            waypoints = getattr(navigator, "waypoints", None)
+            if waypoints is not None and len(waypoints) > 1:
+                tidx = min(self.best_route_idx, len(waypoints) - 1)
+                tidx_next = min(tidx + 3, len(waypoints) - 1)
+                if tidx_next > tidx:
+                    rt = (
+                        np.asarray(waypoints[tidx_next], dtype=float)
+                        - np.asarray(waypoints[tidx], dtype=float)
+                    )
+                    rtn = np.linalg.norm(rt)
+                    route_tangent = rt / rtn if rtn > EPS else None
 
         best_currents, best_force, best_cost, converged = continuous_mpc_controller(
             particle=particle,
@@ -1048,6 +1114,8 @@ class ACBCController:
             w_smooth=w_smooth_eff,
             w_edge=w_edge_eff,
             w_overshoot=w_overshoot_eff,
+            w_route=w_route_eff,
+            route_tangent=route_tangent,
             flow=flow,
             sim_time=sim_time,
         )
@@ -1082,6 +1150,13 @@ class ACBCController:
             if recovery_target is None
             else np.asarray(recovery_target, dtype=float),
             num_candidates=len(candidates),
+            stall_escape_target=None
+            if escape_target is None
+            else np.asarray(escape_target, dtype=float),
+            best_route_idx=self.best_route_idx,
+            stagnant_steps=self.stagnant_steps,
+            wall_clearance_m=float(wall_clearance),
+            wall_fraction=float(wall_fraction),
         )
 
         return best_currents, best_force, best_cost, converged, info
@@ -1120,4 +1195,5 @@ class ACBCController:
                 self.recovery_escape_lockout_steps
             ),
             "acbc_max_recovery_steps": self.max_recovery_steps,
+            "acbc_recovery_release_clearance_m": self.recovery_release_clearance,
         }
