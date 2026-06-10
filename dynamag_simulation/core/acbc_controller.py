@@ -34,7 +34,7 @@ from typing import Optional, List, Dict, Tuple
 import numpy as np
 
 from .constants import EPS
-from .controllers import continuous_mpc_controller
+from .controllers import _simulate_one_step, continuous_mpc_controller
 
 
 ACBC_FREE = "FREE_NAVIGATION"
@@ -137,6 +137,7 @@ class ACBCController:
         max_recovery_steps: int = 40,
         recovery_release_clearance: float = 0.00090,
         transition_cooldown_steps: int = 4,
+        enable_wall_safety_current_filter: bool = True,
         enable_branch_commitment: bool = True,
         enable_authority_assessment: bool = True,
         enable_recovery: bool = True,
@@ -215,6 +216,9 @@ class ACBCController:
         self.max_recovery_steps = int(max(10, max_recovery_steps))
         self.recovery_release_clearance = float(recovery_release_clearance)
         self.transition_cooldown_steps = int(max(0, transition_cooldown_steps))
+        self.enable_wall_safety_current_filter = bool(
+            enable_wall_safety_current_filter
+        )
         self.enable_branch_commitment = bool(enable_branch_commitment)
         self.enable_authority_assessment = bool(enable_authority_assessment)
         self.enable_recovery = bool(enable_recovery)
@@ -711,6 +715,78 @@ class ACBCController:
             )
 
         return float(current_w_edge)
+
+    def _filter_wall_unsafe_currents(
+        self,
+        particle,
+        particle_pos,
+        currents,
+        dt: float,
+        flow,
+        sim_time: float,
+    ):
+        """
+        Last-resort ACBC safety filter.
+
+        The low-level MPC wall term is a soft cost. Near tight bends it can still
+        accept a high-progress current vector whose one-step prediction skims
+        inside the carrier clearance band. This filter keeps the selected current
+        direction but backs off its magnitude until the one-step prediction
+        preserves the required center-to-wall clearance.
+        """
+        currents = np.asarray(currents, dtype=float)
+        required = self._required_wall_clearance(particle)
+
+        def predict(candidate):
+            next_pos, force, _ = _simulate_one_step(
+                particle=particle,
+                particle_pos=particle_pos,
+                currents=candidate,
+                magnet_array=self.magnet_array,
+                workspace=self.workspace,
+                dt=dt,
+                flow=flow,
+                sim_time=sim_time,
+            )
+            clearance, _, fraction = self._wall_safety_at_position(
+                next_pos,
+                particle,
+            )
+            safe = (
+                clearance >= required
+                and fraction >= self.min_wall_safety_fraction
+            )
+            return safe, clearance, force
+
+        safe, _, force = predict(currents)
+        if safe:
+            return currents, force, False
+
+        zero = np.zeros_like(currents)
+        zero_safe, _, zero_force = predict(zero)
+        best_currents = zero if zero_safe else currents
+        best_force = zero_force if zero_safe else force
+
+        lo = 0.0 if zero_safe else None
+        hi = 1.0
+
+        if lo is not None:
+            for _ in range(10):
+                alpha = 0.5 * (lo + hi)
+                cand = alpha * currents
+                cand_safe, _, cand_force = predict(cand)
+                if cand_safe:
+                    lo = alpha
+                    best_currents = cand
+                    best_force = cand_force
+                else:
+                    hi = alpha
+
+        logger.debug(
+            "ACBC wall safety current filter active: required_clearance=%.6g",
+            required,
+        )
+        return best_currents, best_force, True
 
     def _recoverability_score(self, particle_pos, particle) -> float:
         seg, _ = self.network.find_segment(particle_pos)
@@ -1458,6 +1534,16 @@ class ACBCController:
             sim_time=sim_time,
         )
 
+        if self.enable_wall_safety_current_filter:
+            best_currents, best_force, _ = self._filter_wall_unsafe_currents(
+                particle=particle,
+                particle_pos=particle_pos,
+                currents=best_currents,
+                dt=dt,
+                flow=flow,
+                sim_time=sim_time,
+            )
+
         selected_branch_id = None
         selected_margin = 0.0
         selected_score = 0.0
@@ -1547,6 +1633,9 @@ class ACBCController:
             "acbc_max_recovery_steps": self.max_recovery_steps,
             "acbc_recovery_release_clearance_m": self.recovery_release_clearance,
             "acbc_transition_cooldown_steps": self.transition_cooldown_steps,
+            "acbc_enable_wall_safety_current_filter": (
+                self.enable_wall_safety_current_filter
+            ),
             "acbc_enable_branch_commitment": self.enable_branch_commitment,
             "acbc_enable_authority_assessment": self.enable_authority_assessment,
             "acbc_enable_recovery": self.enable_recovery,
