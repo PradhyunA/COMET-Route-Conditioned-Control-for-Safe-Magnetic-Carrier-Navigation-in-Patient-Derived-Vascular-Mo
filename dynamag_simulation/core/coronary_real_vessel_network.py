@@ -339,8 +339,8 @@ class RealVesselNetwork:
         waypoints.append(np.asarray(target_pos, dtype=float))
         return waypoints
 
-    def _sparsify_waypoints(self, points, min_spacing=0.5):
-        # min_spacing in mm — 0.5 mm is sensible for coronary scale
+    def _sparsify_waypoints(self, points, min_spacing=1.5):
+        
         if not points:
             return []
         if len(points) == 1:
@@ -363,8 +363,8 @@ class RealVesselNetwork:
         self,
         start_pos,
         target_pos,
-        arrival_tol=0.5,        # mm — must match coordinate scale
-        waypoint_spacing=0.5,   # mm
+        arrival_tol=3.0,        # mm — must match coordinate scale
+        waypoint_spacing=1.5,   # mm
         lookahead=3,
         forward_search_points=50,
     ):
