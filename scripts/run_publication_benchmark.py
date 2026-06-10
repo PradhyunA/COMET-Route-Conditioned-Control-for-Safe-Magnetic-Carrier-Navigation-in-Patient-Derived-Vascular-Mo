@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Callable
@@ -510,6 +511,27 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     raise ValueError(f"Unknown controller kind: {variant.kind}")
 
 
+def _run_variant_task(task):
+    variant = task["variant"]
+    pair = task["pair"]
+    network = RealVesselNetwork(task["vessel_file"], flow_scale=task["flow_scale"])
+    result = _run_variant(
+        variant=variant,
+        pair=pair,
+        network=network,
+        trial_seed=task["trial_seed"],
+        common_kwargs=task["common_kwargs"],
+    )
+    return {
+        "flow_scale": task["flow_scale"],
+        "pair": pair,
+        "pair_idx": task["pair_idx"],
+        "controller_key": task["controller_key"],
+        "variant": variant,
+        "result": result,
+    }
+
+
 def run_benchmark(
     output_dir,
     run_id,
@@ -524,6 +546,7 @@ def run_benchmark(
     tolerance,
     device_mode,
     profile_key,
+    workers=1,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -586,6 +609,7 @@ def run_benchmark(
 
     paired_rows = []
     all_seed_records = []
+    workers = int(max(1, workers))
 
     for flow_scale in flow_scales:
         rng = np.random.default_rng(seed + int(round(flow_scale * 1000)))
@@ -593,6 +617,7 @@ def run_benchmark(
         pairs = _trial_pairs(network, rng, n_random_trials)
         results_by_controller = defaultdict(list)
 
+        tasks = []
         for pair_idx, pair in enumerate(pairs):
             trial_seed = seed + 100000 * int(round(flow_scale * 10)) + pair_idx
             all_seed_records.append({
@@ -604,38 +629,90 @@ def run_benchmark(
             })
 
             for controller_key, variant in selected.items():
+                tasks.append({
+                    "flow_scale": flow_scale,
+                    "pair": pair,
+                    "pair_idx": pair_idx,
+                    "controller_key": controller_key,
+                    "variant": variant,
+                    "trial_seed": trial_seed,
+                    "common_kwargs": common_kwargs,
+                    "vessel_file": vessel_file,
+                })
+
+        def handle_completed(item):
+            pair = item["pair"]
+            controller_key = item["controller_key"]
+            variant = item["variant"]
+            result = item["result"]
+
+            out_dir = os.path.join(root, f"flow_{flow_scale:g}x", controller_key)
+            os.makedirs(out_dir, exist_ok=True)
+            metrics = _result_metrics(
+                run_id=run_id,
+                flow_scale=flow_scale,
+                pair=pair,
+                controller_key=controller_key,
+                variant=variant,
+                result=result,
+                network=network,
+            )
+            paired_rows.append(metrics)
+            _save_trial_npz(result, metrics, out_dir)
+            _write_paired_csv(paired_rows, os.path.join(root, "paired_results.csv"))
+            _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
+            results_by_controller[controller_key].append(result)
+
+            result._benchmark_controller_key = controller_key
+            result._benchmark_flow_scale = flow_scale
+
+        if workers == 1:
+            for task in tasks:
                 print(
                     f"[{run_id}] flow={flow_scale:g} "
-                    f"pair={pair['pair_id']} controller={controller_key}",
+                    f"pair={task['pair']['pair_id']} "
+                    f"controller={task['controller_key']}",
                     flush=True,
                 )
                 result = _run_variant(
-                    variant=variant,
-                    pair=pair,
+                    variant=task["variant"],
+                    pair=task["pair"],
                     network=network,
-                    trial_seed=trial_seed,
+                    trial_seed=task["trial_seed"],
                     common_kwargs=common_kwargs,
                 )
-
-                out_dir = os.path.join(root, f"flow_{flow_scale:g}x", controller_key)
-                os.makedirs(out_dir, exist_ok=True)
-                metrics = _result_metrics(
-                    run_id=run_id,
-                    flow_scale=flow_scale,
-                    pair=pair,
-                    controller_key=controller_key,
-                    variant=variant,
-                    result=result,
-                    network=network,
+                handle_completed({**task, "result": result})
+        else:
+            executor_cls = ProcessPoolExecutor
+            try:
+                executor = executor_cls(max_workers=workers)
+            except PermissionError:
+                print(
+                    "ProcessPoolExecutor unavailable; falling back to threads.",
+                    flush=True,
                 )
-                paired_rows.append(metrics)
-                _save_trial_npz(result, metrics, out_dir)
-                _write_paired_csv(paired_rows, os.path.join(root, "paired_results.csv"))
-                _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
-                results_by_controller[controller_key].append(result)
+                executor = ThreadPoolExecutor(max_workers=workers)
 
-                result._benchmark_controller_key = controller_key
-                result._benchmark_flow_scale = flow_scale
+            with executor:
+                futures = []
+                for task in tasks:
+                    print(
+                        f"[{run_id}] submit flow={flow_scale:g} "
+                        f"pair={task['pair']['pair_id']} "
+                        f"controller={task['controller_key']}",
+                        flush=True,
+                    )
+                    futures.append(executor.submit(_run_variant_task, task))
+
+                for future in as_completed(futures):
+                    item = future.result()
+                    print(
+                        f"[{run_id}] done flow={item['flow_scale']:g} "
+                        f"pair={item['pair']['pair_id']} "
+                        f"controller={item['controller_key']}",
+                        flush=True,
+                    )
+                    handle_completed(item)
 
         # Write per-controller summaries for this flow after completing all pairs.
         for controller_key, variant in selected.items():
@@ -677,6 +754,12 @@ def main():
     parser.add_argument("--dt", type=float, default=0.02)
     parser.add_argument("--steps", type=int, default=4000)
     parser.add_argument("--tolerance", type=float, default=DEFAULT_TARGET_TOLERANCE)
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of parallel trial/controller workers to run.",
+    )
     parser.add_argument("--device-mode", default=DEVICE_MODE)
     parser.add_argument(
         "--profile",
@@ -728,6 +811,7 @@ def main():
         tolerance=args.tolerance,
         device_mode=args.device_mode,
         profile_key=args.profile,
+        workers=args.workers,
     )
 
 
