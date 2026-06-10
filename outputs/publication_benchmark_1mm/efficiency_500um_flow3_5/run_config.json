@@ -1,0 +1,113 @@
+{
+  "run_id": "efficiency_500um_flow3_5",
+  "vessel_file": "real_vessel_segments_cm_corrected.pkl",
+  "flow_scales": [
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 25,
+  "seed": 20260610,
+  "controller_keys": [
+    "mpc_default",
+    "mpc_tuned",
+    "acbc_same_weights",
+    "acbc_tuned"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 4,
+  "software": {
+    "python": "3.12.1 (v3.12.1:2305ca5144, Dec  7 2023, 17:23:38) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 8,
+    "numpy": "1.26.4"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 4000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "mpc_default": {
+      "label": "MPC-default",
+      "kind": "mpc",
+      "kwargs": {
+        "w_progress": 120.0,
+        "w_align": 8.0,
+        "w_dist": 1.0,
+        "w_curr": 1e-05,
+        "w_smooth": 0.0001,
+        "w_edge": 50.0,
+        "w_overshoot": 2.0,
+        "w_route": 0.0
+      }
+    },
+    "mpc_tuned": {
+      "label": "MPC-tuned",
+      "kind": "mpc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    },
+    "acbc_same_weights": {
+      "label": "ACBC-same-weights",
+      "kind": "acbc",
+      "kwargs": {
+        "w_progress": 120.0,
+        "w_align": 8.0,
+        "w_dist": 1.0,
+        "w_curr": 1e-05,
+        "w_smooth": 0.0001,
+        "w_edge": 50.0,
+        "w_overshoot": 2.0,
+        "w_route": 0.0
+      }
+    },
+    "acbc_tuned": {
+      "label": "ACBC-tuned",
+      "kind": "acbc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    }
+  },
+  "git": {
+    "commit": "d631ebdc2804a5d9bbb4c111d5a4b1a44291fe12",
+    "branch": "polish",
+    "status_short": "?? efficiency_500um_flow3_5.log\n?? outputs/publication_benchmark_1mm/efficiency_500um_flow3_5/\n?? outputs/publication_benchmark_500um/\n?? overnight_1mm_pilot_results.zip\n?? saved_runs/ACBC_trial2_500um_no_lateral_shift.log\n?? saved_runs/acbc_direct_trial2_500um_linear_enclosing_flow1.log\n?? saved_runs/acbc_tuned_trial2_500um_adaptive_enclosing_flow1.log\n?? saved_runs/acbc_tuned_trial2_500um_linear_enclosing_flow1.log"
+  }
+}
