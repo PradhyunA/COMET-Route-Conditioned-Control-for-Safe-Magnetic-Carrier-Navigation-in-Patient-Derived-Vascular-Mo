@@ -17,6 +17,7 @@ import argparse
 import csv
 import json
 import os
+import platform
 import subprocess
 import sys
 import tempfile
@@ -56,6 +57,7 @@ from simulation_3d_acbc import (
     simulate_trial_acbc,
 )
 from simulation_3d_mpc import simulate_trial_mpc
+from simulation_3d_naive_mpc import simulate_trial_naive_mpc
 
 
 MPC_DEFAULT_WEIGHTS = {
@@ -94,6 +96,11 @@ class ControllerVariant:
 
 
 CONTROLLER_VARIANTS = {
+    "naive_mpc": ControllerVariant(
+        label="Naive-MPC-final-target",
+        kind="naive_mpc",
+        kwargs={**MPC_DEFAULT_WEIGHTS, "target_mode": "final_target"},
+    ),
     "mpc_default": ControllerVariant(
         label="MPC-default",
         kind="mpc",
@@ -159,7 +166,11 @@ PAIRED_HEADER = [
     "final_error_m",
     "final_error_mm",
     "path_length_m",
+    "planned_route_length_m",
+    "route_length_ratio",
     "path_efficiency",
+    "euclidean_distance_m",
+    "euclidean_path_efficiency",
     "min_wall_clearance_m",
     "min_wall_clearance_mm",
     "min_surface_clearance_m",
@@ -171,7 +182,10 @@ PAIRED_HEADER = [
     "max_current_A",
     "energy_proxy_A2s",
     "wall_time_s",
+    "total_control_time_s",
     "avg_control_step_time_s",
+    "p95_control_step_time_s",
+    "max_control_step_time_s",
     "mean_reynolds",
     "max_reynolds",
     "stokes_regime",
@@ -208,6 +222,17 @@ def _git_metadata():
         "commit": run_git(["rev-parse", "HEAD"]),
         "branch": run_git(["rev-parse", "--abbrev-ref", "HEAD"]),
         "status_short": run_git(["status", "--short"]),
+    }
+
+
+def _software_metadata():
+    return {
+        "python": sys.version,
+        "platform": platform.platform(),
+        "machine": platform.machine(),
+        "processor": platform.processor(),
+        "logical_cpu_count": os.cpu_count(),
+        "numpy": np.__version__,
     }
 
 
@@ -268,6 +293,45 @@ def _wall_clearance_stats(network, trajectory):
     return float(np.min(clearances))
 
 
+def _path_efficiency_metrics(network, start, target, trajectory):
+    trajectory = np.asarray(trajectory, dtype=float)
+    segments = np.diff(trajectory, axis=0)
+    path_length = float(np.sum(np.linalg.norm(segments, axis=1)))
+
+    start = np.asarray(start, dtype=float)
+    target = np.asarray(target, dtype=float)
+    euclidean_distance = float(np.linalg.norm(target - start))
+    euclidean_efficiency = (
+        euclidean_distance / path_length if path_length > 0 else 0.0
+    )
+
+    planned_waypoints = network.plan_waypoints(start, target)
+    planned_path = np.asarray(
+        [start, *[np.asarray(point, dtype=float) for point in planned_waypoints]],
+        dtype=float,
+    )
+    planned_segments = np.diff(planned_path, axis=0)
+    planned_route_length = float(
+        np.sum(np.linalg.norm(planned_segments, axis=1))
+    )
+    route_length_ratio = (
+        planned_route_length / path_length if path_length > 0 else 0.0
+    )
+
+    # A trajectory can geometrically cut a curved centerline corner while still
+    # remaining in the vessel. Treat that as fully efficient rather than >100%.
+    path_efficiency = float(np.clip(route_length_ratio, 0.0, 1.0))
+
+    return {
+        "path_length_m": path_length,
+        "planned_route_length_m": planned_route_length,
+        "route_length_ratio": route_length_ratio,
+        "path_efficiency": path_efficiency,
+        "euclidean_distance_m": euclidean_distance,
+        "euclidean_path_efficiency": euclidean_efficiency,
+    }
+
+
 def _state_fractions(result):
     counts = defaultdict(int)
     log = getattr(result, "acbc_log", [])
@@ -289,10 +353,12 @@ def _state_fractions(result):
 
 def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, network):
     traj = np.asarray(result.trajectory, dtype=float)
-    segments = np.diff(traj, axis=0)
-    path_length = float(np.sum(np.linalg.norm(segments, axis=1)))
-    straight_dist = float(np.linalg.norm(result.target - result.start))
-    path_eff = straight_dist / path_length if path_length > 0 else 0.0
+    path_metrics = _path_efficiency_metrics(
+        network=network,
+        start=result.start,
+        target=result.target,
+        trajectory=traj,
+    )
 
     current_log = np.asarray(result.current_log, dtype=float)
     if current_log.size:
@@ -307,13 +373,17 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
     params = getattr(result, "params", {})
     particle_diameter_m = _safe_float(params.get("particle_diameter_m"), 0.0)
     particle_radius_m = 0.5 * particle_diameter_m
-    surface_clearance_target_m = _safe_float(
-        params.get("acbc_surface_clearance_target_m"),
-        0.0005,
+    clearance_target_m = _safe_float(
+        params.get("wall_clearance_threshold_m"),
+        params.get("acbc_wall_clearance_threshold_m", 0.0007),
     )
-    clearance_target_m = particle_radius_m + surface_clearance_target_m
     min_surface_clearance_m = min_clearance - particle_radius_m
     clearance_target_met = bool(min_clearance >= clearance_target_m)
+    step_times = np.asarray(result.step_time_log, dtype=float)
+    total_control_time_s = float(np.sum(step_times)) if step_times.size else 0.0
+    p95_control_step_time_s = (
+        float(np.percentile(step_times, 95)) if step_times.size else 0.0
+    )
 
     return {
         "run_id": run_id,
@@ -328,8 +398,7 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         "sim_time_s": float(result.steps_taken * result.dt),
         "final_error_m": float(result.final_error),
         "final_error_mm": float(result.final_error * 1000.0),
-        "path_length_m": path_length,
-        "path_efficiency": path_eff,
+        **path_metrics,
         "min_wall_clearance_m": min_clearance,
         "min_wall_clearance_mm": min_clearance * 1000.0,
         "min_surface_clearance_m": min_surface_clearance_m,
@@ -341,7 +410,10 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         "max_current_A": float(result.max_current_used),
         "energy_proxy_A2s": energy_proxy,
         "wall_time_s": float(result.wall_time_s),
+        "total_control_time_s": total_control_time_s,
         "avg_control_step_time_s": float(result.avg_control_step_time_s),
+        "p95_control_step_time_s": p95_control_step_time_s,
+        "max_control_step_time_s": float(result.max_control_step_time_s),
         "mean_reynolds": float(result.mean_reynolds),
         "max_reynolds": float(result.max_reynolds),
         "stokes_regime": bool(result.stokes_regime),
@@ -403,6 +475,19 @@ def _aggregate(rows):
         final_error = np.array([r["final_error_mm"] for r in group], dtype=float)
         sim_time = np.array([r["sim_time_s"] for r in group], dtype=float)
         finite_re = np.array([bool(r["finite_re_drag_valid"]) for r in group], dtype=bool)
+        steps = np.array([r["steps_taken"] for r in group], dtype=float)
+        wall_time = np.array([r["wall_time_s"] for r in group], dtype=float)
+        control_step = np.array(
+            [r["avg_control_step_time_s"] for r in group], dtype=float
+        )
+        path_efficiency = np.array(
+            [r["path_efficiency"] for r in group], dtype=float
+        )
+        current_rms = np.array([r["current_rms_A"] for r in group], dtype=float)
+        energy = np.array([r["energy_proxy_A2s"] for r in group], dtype=float)
+        clearance = np.array(
+            [r["min_wall_clearance_mm"] for r in group], dtype=float
+        )
         out.append({
             "flow_scale": flow_scale,
             "controller_key": controller,
@@ -410,6 +495,26 @@ def _aggregate(rows):
             "success_rate": float(np.mean(success)) if len(success) else 0.0,
             "median_final_error_mm": float(np.median(final_error)) if len(group) else np.nan,
             "median_sim_time_s": float(np.median(sim_time)) if len(group) else np.nan,
+            "median_steps_to_target": float(np.median(steps)) if len(group) else np.nan,
+            "median_wall_time_s": float(np.median(wall_time)) if len(group) else np.nan,
+            "median_avg_control_step_time_s": (
+                float(np.median(control_step)) if len(group) else np.nan
+            ),
+            "median_path_efficiency": (
+                float(np.median(path_efficiency)) if len(group) else np.nan
+            ),
+            "median_current_rms_A": (
+                float(np.median(current_rms)) if len(group) else np.nan
+            ),
+            "median_energy_proxy_A2s": (
+                float(np.median(energy)) if len(group) else np.nan
+            ),
+            "median_min_wall_clearance_mm": (
+                float(np.median(clearance)) if len(group) else np.nan
+            ),
+            "clearance_target_met_rate": float(np.mean([
+                bool(r["clearance_target_met"]) for r in group
+            ])) if len(group) else 0.0,
             "finite_re_drag_valid_rate": (
                 float(np.mean(finite_re)) if len(finite_re) else 0.0
             ),
@@ -421,7 +526,69 @@ def _aggregate(rows):
     return out
 
 
-def _paired_stats(rows, baseline="mpc_tuned", comparator="acbc_tuned"):
+PRIMARY_COMPARISONS = (
+    ("naive_mpc", "acbc_same_weights"),
+    ("mpc_default", "acbc_same_weights"),
+    ("mpc_tuned", "acbc_tuned"),
+)
+
+PAIRED_METRICS = (
+    "reached_target",
+    "steps_taken",
+    "sim_time_s",
+    "wall_time_s",
+    "avg_control_step_time_s",
+    "path_efficiency",
+    "current_rms_A",
+    "energy_proxy_A2s",
+    "min_wall_clearance_mm",
+    "min_surface_clearance_mm",
+)
+
+
+def _paired_difference_rows(rows):
+    by_flow_pair = defaultdict(dict)
+    for row in rows:
+        by_flow_pair[(row["flow_scale"], row["pair_id"])][
+            row["controller_key"]
+        ] = row
+
+    differences = []
+    for (flow_scale, pair_id), controllers in sorted(by_flow_pair.items()):
+        for baseline, comparator in PRIMARY_COMPARISONS:
+            if baseline not in controllers or comparator not in controllers:
+                continue
+            base = controllers[baseline]
+            comp = controllers[comparator]
+            for metric in PAIRED_METRICS:
+                base_value = float(base[metric])
+                comparator_value = float(comp[metric])
+                differences.append({
+                    "flow_scale": flow_scale,
+                    "pair_id": pair_id,
+                    "trial_kind": base["trial_kind"],
+                    "baseline": baseline,
+                    "comparator": comparator,
+                    "metric": metric,
+                    "baseline_value": base_value,
+                    "comparator_value": comparator_value,
+                    "paired_difference": comparator_value - base_value,
+                })
+    return differences
+
+
+def _write_paired_differences(rows, path):
+    fields = [
+        "flow_scale", "pair_id", "trial_kind", "baseline", "comparator",
+        "metric", "baseline_value", "comparator_value", "paired_difference",
+    ]
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(_paired_difference_rows(rows))
+
+
+def _paired_stats(rows):
     try:
         from scipy.stats import wilcoxon
     except Exception:
@@ -433,38 +600,39 @@ def _paired_stats(rows, baseline="mpc_tuned", comparator="acbc_tuned"):
         by_flow_pair[key][row["controller_key"]] = row
 
     stats = []
-    for flow_scale in sorted({r["flow_scale"] for r in rows}):
-        pairs = [
-            controllers
-            for (flow, _), controllers in by_flow_pair.items()
-            if flow == flow_scale
-            and baseline in controllers
-            and comparator in controllers
-        ]
-        if not pairs:
-            continue
+    for baseline, comparator in PRIMARY_COMPARISONS:
+        for flow_scale in sorted({r["flow_scale"] for r in rows}):
+            pairs = [
+                controllers
+                for (flow, _), controllers in by_flow_pair.items()
+                if flow == flow_scale
+                and baseline in controllers
+                and comparator in controllers
+            ]
+            if not pairs:
+                continue
 
-        for metric in ("final_error_mm", "sim_time_s", "path_efficiency"):
-            base = np.array([p[baseline][metric] for p in pairs], dtype=float)
-            comp = np.array([p[comparator][metric] for p in pairs], dtype=float)
-            diff = comp - base
-            p_value = None
-            if wilcoxon is not None and len(diff) > 0 and np.any(diff != 0):
-                try:
-                    p_value = float(wilcoxon(comp, base).pvalue)
-                except Exception:
-                    p_value = None
+            for metric in PAIRED_METRICS:
+                base = np.array([p[baseline][metric] for p in pairs], dtype=float)
+                comp = np.array([p[comparator][metric] for p in pairs], dtype=float)
+                diff = comp - base
+                p_value = None
+                if wilcoxon is not None and len(diff) > 0 and np.any(diff != 0):
+                    try:
+                        p_value = float(wilcoxon(comp, base).pvalue)
+                    except Exception:
+                        p_value = None
 
-            stats.append({
-                "flow_scale": flow_scale,
-                "baseline": baseline,
-                "comparator": comparator,
-                "metric": metric,
-                "n_pairs": len(pairs),
-                "median_paired_difference": float(np.median(diff)),
-                "mean_paired_difference": float(np.mean(diff)),
-                "wilcoxon_p_value": p_value,
-            })
+                stats.append({
+                    "flow_scale": flow_scale,
+                    "baseline": baseline,
+                    "comparator": comparator,
+                    "metric": metric,
+                    "n_pairs": len(pairs),
+                    "median_paired_difference": float(np.median(diff)),
+                    "mean_paired_difference": float(np.mean(diff)),
+                    "wilcoxon_p_value": p_value,
+                })
 
     return stats
 
@@ -474,6 +642,7 @@ def _write_benchmark_summary(root, run_id, seed_records, paired_rows):
         "run_id": run_id,
         "config_path": "run_config.json",
         "paired_results_path": "paired_results.csv",
+        "paired_differences_path": "paired_differences.csv",
         "n_rows": len(paired_rows),
         "n_pairs": len(seed_records),
         "seed_records": seed_records,
@@ -488,6 +657,17 @@ def _write_benchmark_summary(root, run_id, seed_records, paired_rows):
 def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     if variant.kind == "mpc":
         return simulate_trial_mpc(
+            start=pair["start"],
+            target=pair["target"],
+            network=network,
+            trial_name=pair["pair_id"],
+            rng_seed=trial_seed,
+            **common_kwargs,
+            **variant.kwargs,
+        )
+
+    if variant.kind == "naive_mpc":
+        return simulate_trial_naive_mpc(
             start=pair["start"],
             target=pair["target"],
             network=network,
@@ -546,6 +726,7 @@ def run_benchmark(
     tolerance,
     device_mode,
     profile_key,
+    wall_clearance_threshold_m=0.0007,
     workers=1,
 ):
     if include_ablations:
@@ -573,6 +754,7 @@ def run_benchmark(
         "core_saturation_tesla": FIXED_CORE_SATURATION_T,
         "device_mode": device_mode,
         "profile": profile,
+        "wall_clearance_threshold_m": wall_clearance_threshold_m,
     }
 
     config = {
@@ -584,6 +766,9 @@ def run_benchmark(
         "controller_keys": list(selected),
         "include_ablations": include_ablations,
         "profile_key": profile_key,
+        "wall_clearance_threshold_m": wall_clearance_threshold_m,
+        "workers": int(max(1, workers)),
+        "software": _software_metadata(),
         "profile": {
             "name": profile.name,
             "diameter_m": profile.diameter,
@@ -660,6 +845,10 @@ def run_benchmark(
             paired_rows.append(metrics)
             _save_trial_npz(result, metrics, out_dir)
             _write_paired_csv(paired_rows, os.path.join(root, "paired_results.csv"))
+            _write_paired_differences(
+                paired_rows,
+                os.path.join(root, "paired_differences.csv"),
+            )
             _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
             results_by_controller[controller_key].append(result)
 
@@ -723,6 +912,10 @@ def run_benchmark(
 
     paired_csv = os.path.join(root, "paired_results.csv")
     _write_paired_csv(paired_rows, paired_csv)
+    _write_paired_differences(
+        paired_rows,
+        os.path.join(root, "paired_differences.csv"),
+    )
 
     _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
 
@@ -754,6 +947,12 @@ def main():
     parser.add_argument("--dt", type=float, default=0.02)
     parser.add_argument("--steps", type=int, default=4000)
     parser.add_argument("--tolerance", type=float, default=DEFAULT_TARGET_TOLERANCE)
+    parser.add_argument(
+        "--wall-clearance-threshold-mm",
+        type=float,
+        default=0.7,
+        help="Common center-to-wall clearance criterion for every controller.",
+    )
     parser.add_argument(
         "--workers",
         type=int,
@@ -811,6 +1010,7 @@ def main():
         tolerance=args.tolerance,
         device_mode=args.device_mode,
         profile_key=args.profile,
+        wall_clearance_threshold_m=args.wall_clearance_threshold_mm / 1000.0,
         workers=args.workers,
     )
 

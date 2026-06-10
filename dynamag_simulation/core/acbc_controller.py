@@ -115,6 +115,7 @@ class ACBCController:
         commit_enter_authority: float = 1.05,
         commit_exit_authority: float = 0.80,
         recovery_threshold: float = 0.65,
+        wall_clearance_threshold_m: float = 0.0007,
         min_wall_safety_fraction: float = 0.015,
         absolute_wall_clearance_threshold: float = 0.00045,
         surface_clearance_target_m: float = 0.0005,
@@ -174,6 +175,9 @@ class ACBCController:
         self.commit_enter_authority = float(commit_enter_authority)
         self.commit_exit_authority = float(commit_exit_authority)
         self.recovery_threshold = float(recovery_threshold)
+        self.wall_clearance_threshold_m = float(
+            max(0.0, wall_clearance_threshold_m)
+        )
         self.min_wall_safety_fraction = float(min_wall_safety_fraction)
         self.absolute_wall_clearance_threshold = float(
             absolute_wall_clearance_threshold
@@ -682,18 +686,11 @@ class ACBCController:
         return float(clearance), float(margin), float(fraction)
 
     def _required_wall_clearance(self, particle) -> float:
-        """Center-to-wall clearance needed to preserve surface clearance."""
-        return float(particle.radius + self.surface_clearance_target_m)
+        """Common center-to-wall clearance criterion used by every controller."""
+        return self.wall_clearance_threshold_m
 
     def _hard_wall_unsafe(self, wall_clearance, wall_fraction, particle) -> bool:
-        required_clearance = max(
-            self.recovery_enter_wall_clearance,
-            self._required_wall_clearance(particle),
-        )
-        return bool(
-            wall_clearance < required_clearance
-            or wall_fraction < self.min_wall_safety_fraction
-        )
+        return bool(wall_clearance < self._required_wall_clearance(particle))
 
     def _near_wall_safety_band(self, wall_clearance, particle) -> bool:
         safety_band = max(
@@ -1163,12 +1160,7 @@ class ACBCController:
             particle,
         )
 
-        safe_for_escape = (
-            wall_clearance >= self.stall_escape_min_wall_clearance
-            and wall_fraction
-            >= self.stall_escape_min_wall_fraction_multiplier
-            * self.min_wall_safety_fraction
-        )
+        safe_for_escape = wall_clearance >= self.stall_escape_min_wall_clearance
 
         near_wall_warning = not safe_for_escape
 
@@ -1386,10 +1378,7 @@ class ACBCController:
                 particle_pos, particle,
             )
 
-            wall_safe_again = (
-                wall_clearance > self.recovery_exit_wall_clearance
-                and wall_fraction >= self.min_wall_safety_fraction
-            )
+            wall_safe_again = wall_clearance > self.recovery_exit_wall_clearance
 
             if self.last_recovery_step is None:
                 recovery_age = 0
@@ -1399,7 +1388,6 @@ class ACBCController:
             recovery_timed_out_safely = bool(
                 recovery_age >= self.max_recovery_steps
                 and wall_clearance >= self.recovery_enter_wall_clearance
-                and wall_fraction >= self.min_wall_safety_fraction
             )
 
             can_leave_recovery = bool(wall_safe_again or recovery_timed_out_safely)
@@ -1599,6 +1587,7 @@ class ACBCController:
             "acbc_commit_enter_authority": self.commit_enter_authority,
             "acbc_commit_exit_authority": self.commit_exit_authority,
             "acbc_recovery_threshold": self.recovery_threshold,
+            "acbc_wall_clearance_threshold_m": self.wall_clearance_threshold_m,
             "acbc_min_wall_safety_fraction": self.min_wall_safety_fraction,
             "acbc_absolute_wall_clearance_threshold_m": (
                 self.absolute_wall_clearance_threshold

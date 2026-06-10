@@ -28,6 +28,7 @@ def _controller_stub():
     c.min_recovery_steps = 8
     c.recovery_count = 0
     c.surface_clearance_target_m = 0.0005
+    c.wall_clearance_threshold_m = 0.0007
     c.recovery_enter_wall_clearance = 0.0010
     c.recovery_exit_wall_clearance = 0.0015
     c.min_wall_safety_fraction = 0.015
@@ -133,20 +134,19 @@ def test_branch_lock_stores_commitment_metadata():
     assert c.commit_target_idx == 2
 
 
-def test_required_clearance_for_500um_carrier_includes_surface_margin():
+def test_required_clearance_uses_common_absolute_threshold():
     c = _controller_stub()
     particle = SimpleNamespace(radius=0.00025)
 
-    assert np.isclose(c._required_wall_clearance(particle), 0.00075)
+    assert np.isclose(c._required_wall_clearance(particle), 0.0007)
 
 
 def test_hard_wall_safety_uses_required_clearance():
     c = _controller_stub()
-    c.recovery_enter_wall_clearance = 0.00045
     particle = SimpleNamespace(radius=0.00025)
 
-    assert c._hard_wall_unsafe(0.00074, 0.5, particle) is True
-    assert c._hard_wall_unsafe(0.00076, 0.5, particle) is False
+    assert c._hard_wall_unsafe(0.00069, 0.5, particle) is True
+    assert c._hard_wall_unsafe(0.00071, -1.0, particle) is False
 
 
 def test_hard_wall_safety_releases_branch_lock_and_enters_recovery():

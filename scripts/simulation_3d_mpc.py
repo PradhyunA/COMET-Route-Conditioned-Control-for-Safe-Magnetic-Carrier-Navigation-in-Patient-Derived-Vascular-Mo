@@ -394,6 +394,7 @@ def simulate_trial_mpc(
     profile: PhysicalProfile = SPION_CARRIER_1MM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
+    wall_clearance_threshold_m: float = 0.0007,
     # Baseline MPC weights. These are intentionally simpler than ACBC.
     w_progress: float = 120.0,
     w_align: float = 8.0,
@@ -580,6 +581,7 @@ def simulate_trial_mpc(
             w_overshoot=w_overshoot,
             w_route=w_route,
             route_tangent=route_tangent,
+            wall_buffer_m=wall_clearance_threshold_m,
             flow=flow,
             sim_time=sim_time,
         )
@@ -770,6 +772,7 @@ def simulate_trial_mpc(
             "particle_diameter_m": profile.diameter,
             "particle_diameter_mm": profile.diameter * 1000.0,
             "max_substep_disp": max_substep_disp,
+            "wall_clearance_threshold_m": wall_clearance_threshold_m,
             "vessel_network": network.params_dict(),
             "low_level_convergence_rate": low_level_convergence_rate,
             "navigator_arrival_tol": getattr(navigator, "arrival_tol", None),
