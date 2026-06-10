@@ -1,0 +1,128 @@
+{
+  "run_id": "canonical_500um_stabilized_0p5mm_flow1",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "n_rows": 12,
+  "n_pairs": 3,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 21260609,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 21260610,
+      "start": [
+        -0.055085677707460194,
+        -0.04125857063974653,
+        -0.34702631252697536
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_003_inlet_to_mid",
+      "seed": 21260611,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        0.0065425029705397245,
+        0.028975075234756915,
+        -0.1364019113159107
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "acbc_same_weights",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.068761730771034,
+      "median_sim_time_s": 4.7,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 46.666666666666664
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "acbc_tuned",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.012416816084429455,
+      "median_sim_time_s": 4.74,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 48.333333333333336
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "mpc_default",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.00960794966899277,
+      "median_sim_time_s": 4.26,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "mpc_tuned",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.05229582845180042,
+      "median_sim_time_s": 4.24,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    }
+  ],
+  "paired_statistics": [
+    {
+      "flow_scale": 1.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "final_error_mm",
+      "n_pairs": 3,
+      "median_paired_difference": -0.03389616849540134,
+      "mean_paired_difference": -0.1656972761385441,
+      "wilcoxon_p_value": 0.25
+    },
+    {
+      "flow_scale": 1.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "sim_time_s",
+      "n_pairs": 3,
+      "median_paired_difference": 0.5,
+      "mean_paired_difference": 0.5533333333333333,
+      "wilcoxon_p_value": 0.25
+    },
+    {
+      "flow_scale": 1.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "path_efficiency",
+      "n_pairs": 3,
+      "median_paired_difference": -0.03188063420911902,
+      "mean_paired_difference": -0.028697879268789046,
+      "wilcoxon_p_value": 0.25
+    }
+  ]
+}

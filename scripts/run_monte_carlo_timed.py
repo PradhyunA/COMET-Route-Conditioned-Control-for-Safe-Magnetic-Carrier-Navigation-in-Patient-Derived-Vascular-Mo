@@ -25,7 +25,7 @@ import argparse
 
 import numpy as np
 
-from dynamag_simulation.core.constants import HALF, TEST_RANGE
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE, HALF, TEST_RANGE
 from dynamag_simulation.core.profiles import MICROSPHERE_50UM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.flow import UniformFlow
@@ -211,7 +211,7 @@ def run_timed(
     seed=12345,
     dt=1.0,
     steps=3000,
-    tolerance=0.003,
+    tolerance=DEFAULT_TARGET_TOLERANCE,
     flow_speed=0.0002,
     max_current=13.0,
 ):

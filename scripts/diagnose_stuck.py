@@ -12,6 +12,7 @@ from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
 from dynamag_simulation.core.workspace import WorkspaceVessel
 from dynamag_simulation.core.controllers import _simulate_one_step, continuous_mpc_controller
 from dynamag_simulation.core.integrator import adaptive_step
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 
 network = RealVesselNetwork("real_vessel_segments.pkl", flow_scale=1.0)
 workspace = WorkspaceVessel(network)
@@ -21,7 +22,7 @@ inlet = network.inlet_start()
 outlet = network.outlet_end()
 
 # Get waypoints
-nav = network.waypoint_navigator(inlet, outlet, arrival_tol=0.003, waypoint_spacing=0.0015, lookahead=3)
+nav = network.waypoint_navigator(inlet, outlet, arrival_tol=DEFAULT_TARGET_TOLERANCE, waypoint_spacing=0.0015, lookahead=3)
 wps = nav.waypoints
 
 print("=== Waypoints ===")
@@ -90,7 +91,7 @@ print(f"In vessel at unclipped: {network.in_any_vessel(stuck_pos + step_vec)}")
 # Now simulate step-by-step FROM inlet to see where exactly it gets stuck
 print(f"\n=== Step-by-step simulation from inlet ===")
 particle2 = MagneticParticle3D(position=inlet.copy(), profile=MICROSPHERE_500UM, rng_seed=42)
-nav2 = network.waypoint_navigator(inlet, outlet, arrival_tol=0.003, waypoint_spacing=0.0015, lookahead=3)
+nav2 = network.waypoint_navigator(inlet, outlet, arrival_tol=DEFAULT_TARGET_TOLERANCE, waypoint_spacing=0.0015, lookahead=3)
 
 for step in range(80):
     target = nav2(particle2.pos)

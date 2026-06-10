@@ -36,6 +36,8 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
+from dynamag_simulation.core.profiles import SPION_CARRIER_1MM, SPION_CARRIER_500UM
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.reporting import save_results_csv
 
 from simulation_3d_acbc import (
@@ -75,6 +77,11 @@ ACBC_TUNED_WEIGHTS = {
     "w_edge": 250.0,
     "w_overshoot": 8.0,
     "w_route": 15.0,
+}
+
+PROFILE_CHOICES = {
+    "spion_carrier_1mm": SPION_CARRIER_1MM,
+    "spion_carrier_500um": SPION_CARRIER_500UM,
 }
 
 
@@ -154,6 +161,11 @@ PAIRED_HEADER = [
     "path_efficiency",
     "min_wall_clearance_m",
     "min_wall_clearance_mm",
+    "min_surface_clearance_m",
+    "min_surface_clearance_mm",
+    "clearance_target_m",
+    "clearance_target_mm",
+    "clearance_target_met",
     "current_rms_A",
     "max_current_A",
     "energy_proxy_A2s",
@@ -292,6 +304,15 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
     min_clearance = _wall_clearance_stats(network, traj)
     state = _state_fractions(result)
     params = getattr(result, "params", {})
+    particle_diameter_m = _safe_float(params.get("particle_diameter_m"), 0.0)
+    particle_radius_m = 0.5 * particle_diameter_m
+    surface_clearance_target_m = _safe_float(
+        params.get("acbc_surface_clearance_target_m"),
+        0.0005,
+    )
+    clearance_target_m = particle_radius_m + surface_clearance_target_m
+    min_surface_clearance_m = min_clearance - particle_radius_m
+    clearance_target_met = bool(min_clearance >= clearance_target_m)
 
     return {
         "run_id": run_id,
@@ -310,6 +331,11 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         "path_efficiency": path_eff,
         "min_wall_clearance_m": min_clearance,
         "min_wall_clearance_mm": min_clearance * 1000.0,
+        "min_surface_clearance_m": min_surface_clearance_m,
+        "min_surface_clearance_mm": min_surface_clearance_m * 1000.0,
+        "clearance_target_m": clearance_target_m,
+        "clearance_target_mm": clearance_target_m * 1000.0,
+        "clearance_target_met": clearance_target_met,
         "current_rms_A": current_rms,
         "max_current_A": float(result.max_current_used),
         "energy_proxy_A2s": energy_proxy,
@@ -497,6 +523,7 @@ def run_benchmark(
     steps,
     tolerance,
     device_mode,
+    profile_key,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -504,6 +531,7 @@ def run_benchmark(
         variants = dict(CONTROLLER_VARIANTS)
 
     selected = {key: variants[key] for key in controller_keys}
+    profile = PROFILE_CHOICES[profile_key]
 
     root = os.path.abspath(os.path.join(output_dir, run_id))
     os.makedirs(root, exist_ok=True)
@@ -521,6 +549,7 @@ def run_benchmark(
         "core_relative_permeability": FIXED_CORE_MU_R_EFFECTIVE,
         "core_saturation_tesla": FIXED_CORE_SATURATION_T,
         "device_mode": device_mode,
+        "profile": profile,
     }
 
     config = {
@@ -531,7 +560,17 @@ def run_benchmark(
         "seed": seed,
         "controller_keys": list(selected),
         "include_ablations": include_ablations,
-        "common_kwargs": common_kwargs,
+        "profile_key": profile_key,
+        "profile": {
+            "name": profile.name,
+            "diameter_m": profile.diameter,
+            "diameter_um": profile.diameter * 1e6,
+            "magnetic_loading_fraction": profile.magnetic_loading_fraction,
+            "hydrodynamic_drag_multiplier": profile.hydrodynamic_drag_multiplier,
+        },
+        "common_kwargs": {
+            key: value for key, value in common_kwargs.items() if key != "profile"
+        },
         "variants": {
             key: {
                 "label": variant.label,
@@ -637,8 +676,14 @@ def main():
     parser.add_argument("--list-controllers", action="store_true")
     parser.add_argument("--dt", type=float, default=0.02)
     parser.add_argument("--steps", type=int, default=4000)
-    parser.add_argument("--tolerance", type=float, default=0.003)
+    parser.add_argument("--tolerance", type=float, default=DEFAULT_TARGET_TOLERANCE)
     parser.add_argument("--device-mode", default=DEVICE_MODE)
+    parser.add_argument(
+        "--profile",
+        choices=sorted(PROFILE_CHOICES),
+        default="spion_carrier_1mm",
+        help="Carrier physical profile to use for all paired trials.",
+    )
     parser.add_argument(
         "--smoke-test",
         action="store_true",
@@ -682,6 +727,7 @@ def main():
         steps=args.steps,
         tolerance=args.tolerance,
         device_mode=args.device_mode,
+        profile_key=args.profile,
     )
 
 

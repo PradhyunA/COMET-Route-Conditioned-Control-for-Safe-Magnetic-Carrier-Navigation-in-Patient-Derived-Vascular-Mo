@@ -1,5 +1,7 @@
 """Tests for the MPC controller."""
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 
@@ -7,7 +9,10 @@ from dynamag_simulation.core.profiles import PhysicalProfile
 from dynamag_simulation.core.workspace import Workspace3D
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
-from dynamag_simulation.core.controllers import continuous_mpc_controller
+from dynamag_simulation.core.controllers import (
+    _wall_penalty,
+    continuous_mpc_controller,
+)
 
 
 @pytest.fixture
@@ -80,3 +85,26 @@ def test_mpc_returns_convergence_flag(setup):
     )
 
     assert isinstance(converged, bool)
+
+
+def test_wall_penalty_honors_absolute_buffer():
+    class Network:
+        def find_segment(self, pos):
+            return SimpleNamespace(radius=0.002), 0.0014
+
+    workspace = SimpleNamespace(network=Network())
+
+    default_penalty = _wall_penalty(
+        np.zeros(3),
+        workspace,
+        wall_buffer_fraction=0.15,
+    )
+    buffered_penalty = _wall_penalty(
+        np.zeros(3),
+        workspace,
+        wall_buffer_fraction=0.15,
+        wall_buffer_m=0.00075,
+    )
+
+    assert default_penalty == 0.0
+    assert buffered_penalty == pytest.approx(0.00015)

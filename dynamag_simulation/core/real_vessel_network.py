@@ -16,7 +16,7 @@ import numpy as np
 from dataclasses import dataclass
 from typing import Optional, Tuple, List
 
-from .constants import EPS, PI
+from .constants import DEFAULT_TARGET_TOLERANCE, EPS, PI
 
 
 @dataclass
@@ -403,7 +403,7 @@ class RealVesselNetwork:
         self,
         start_pos,
         target_pos,
-        arrival_tol=0.003,
+        arrival_tol=DEFAULT_TARGET_TOLERANCE,
         waypoint_spacing=0.0015,
         lookahead=3,
         forward_search_points=50,

@@ -1,0 +1,62 @@
+{
+  "run_id": "canonical_500um_acbc_safety_mpcbuffer_flow1",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "n_rows": 4,
+  "n_pairs": 2,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 21260609,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 21260610,
+      "start": [
+        -0.055085677707460194,
+        -0.04125857063974653,
+        -0.34702631252697536
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "acbc_same_weights",
+      "n": 2,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.016398002328568615,
+      "median_sim_time_s": 5.51,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 55.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "acbc_tuned",
+      "n": 2,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.06770144716035983,
+      "median_sim_time_s": 5.95,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 57.5
+    }
+  ],
+  "paired_statistics": []
+}

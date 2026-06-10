@@ -30,7 +30,7 @@ import time
 
 import numpy as np
 
-from dynamag_simulation.core.constants import HALF, TEST_RANGE
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE, HALF, TEST_RANGE
 from dynamag_simulation.core.profiles import MICROSPHERE_50UM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
@@ -45,7 +45,7 @@ from dynamag_simulation.core.plotting import save_all_plots
 INNER = max(0.01, HALF - TEST_RANGE)
 DEFAULT_DT = 1.0
 DEFAULT_STEPS = 3000
-DEFAULT_TOL = 0.003       # 3 mm
+DEFAULT_TOL = DEFAULT_TARGET_TOLERANCE  # 0.5 mm
 DEFAULT_FLOW_SPEED = 0.0002   # 200 µm/s  +x
 DEFAULT_MAX_CURRENT = 13.0
 DEFAULT_SEED = 42

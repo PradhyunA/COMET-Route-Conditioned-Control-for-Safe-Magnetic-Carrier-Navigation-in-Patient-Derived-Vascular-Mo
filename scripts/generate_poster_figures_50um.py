@@ -37,7 +37,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 CSV_PATH = os.path.join(DATA_DIR, "trial_summary.csv")
 JSON_PATH = os.path.join(DATA_DIR, "batch_summary.json")
 
-TOLERANCE_MM = 3.0
+TOLERANCE_MM = 0.5
 
 
 def load_csv():

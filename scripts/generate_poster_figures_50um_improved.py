@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-TOLERANCE_MM = 3.0
+TOLERANCE_MM = 0.5
 LOW_RE_THRESHOLD = 0.1
 
 

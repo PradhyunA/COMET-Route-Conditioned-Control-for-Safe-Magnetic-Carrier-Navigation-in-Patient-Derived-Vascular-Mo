@@ -17,6 +17,7 @@ HALF = SIDE / 2.0                # half-side 0.0762 m
 EPS = 1e-30                      # numerical floor to avoid division by zero
 
 TEST_RANGE = 0.04                # default trial extent (m); keeps targets > 2x coil_radius from magnets
+DEFAULT_TARGET_TOLERANCE = 0.0005  # 0.5 mm final-target / waypoint-arrival tolerance
 
 WATER_VISCOSITY_25C = 8.9e-4     # Pa*s
 WATER_DENSITY_25C = 997.0        # kg/m^3

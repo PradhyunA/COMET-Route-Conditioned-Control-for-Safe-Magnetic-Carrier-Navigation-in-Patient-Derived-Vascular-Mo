@@ -43,6 +43,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import numpy as np
 
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.profiles import PhysicalProfile, SPION_CARRIER_1MM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
@@ -376,7 +377,7 @@ def simulate_trial_mpc(
     trial_name: str = "trial",
     dt: float = 0.02,
     steps: int = 4000,
-    tolerance: float = 0.003,
+    tolerance: float = DEFAULT_TARGET_TOLERANCE,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
     core_radius: float = FIXED_CORE_RADIUS,
@@ -403,7 +404,7 @@ def simulate_trial_mpc(
     w_overshoot: float = 2.0,
     w_route: float = 0.0,
     # Dense local waypoint baseline.
-    waypoint_arrival_tol: float = 0.001,
+    waypoint_arrival_tol: float = DEFAULT_TARGET_TOLERANCE,
     waypoint_spacing: float = 0.001,
     waypoint_lookahead: int = 1,
     forward_search_points: int = 50,

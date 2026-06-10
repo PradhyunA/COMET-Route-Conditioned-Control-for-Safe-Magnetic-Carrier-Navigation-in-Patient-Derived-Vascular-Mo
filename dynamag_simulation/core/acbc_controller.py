@@ -27,6 +27,7 @@ States:
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Optional, List, Dict, Tuple
 
@@ -41,6 +42,8 @@ ACBC_ASSESS = "VIABILITY_ASSESSMENT"
 ACBC_COMMIT = "BRANCH_COMMITMENT"
 ACBC_RECOVER = "RECOVERY_MODE"
 ACBC_ESCAPE = "STALL_ESCAPE"
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -109,12 +112,19 @@ class ACBCController:
         branch_lookahead: Optional[float] = None,
         route_corridor_radius: Optional[float] = None,
         authority_threshold: float = 1.02,
+        commit_enter_authority: float = 1.05,
+        commit_exit_authority: float = 0.80,
         recovery_threshold: float = 0.65,
         min_wall_safety_fraction: float = 0.015,
         absolute_wall_clearance_threshold: float = 0.00045,
+        surface_clearance_target_m: float = 0.0005,
+        recovery_enter_wall_clearance: float = 0.00100,
+        recovery_exit_wall_clearance: float = 0.00150,
+        near_wall_edge_multiplier: float = 6.0,
+        min_commitment_steps: int = 10,
         max_commitment_steps: int = 90,
-        recovery_center_fraction: float = 0.30,
-        recovery_route_fraction: float = 0.25,
+        recovery_center_fraction: float = 0.55,
+        recovery_route_fraction: float = 0.10,
         recovery_route_tangent_steps: int = 3,
         stall_window_steps: int = 15,
         stall_escape_lookahead: int = 12,
@@ -123,8 +133,10 @@ class ACBCController:
         stall_escape_min_wall_clearance: float = 0.00090,
         stall_escape_min_wall_fraction_multiplier: float = 1.00,
         recovery_escape_lockout_steps: int = 0,
+        min_recovery_steps: int = 8,
         max_recovery_steps: int = 40,
         recovery_release_clearance: float = 0.00090,
+        transition_cooldown_steps: int = 4,
         enable_branch_commitment: bool = True,
         enable_authority_assessment: bool = True,
         enable_recovery: bool = True,
@@ -158,11 +170,19 @@ class ACBCController:
         )
 
         self.authority_threshold = float(authority_threshold)
+        self.commit_enter_authority = float(commit_enter_authority)
+        self.commit_exit_authority = float(commit_exit_authority)
         self.recovery_threshold = float(recovery_threshold)
         self.min_wall_safety_fraction = float(min_wall_safety_fraction)
         self.absolute_wall_clearance_threshold = float(
             absolute_wall_clearance_threshold
         )
+        self.surface_clearance_target_m = float(
+            max(0.0, surface_clearance_target_m)
+        )
+        self.recovery_enter_wall_clearance = float(recovery_enter_wall_clearance)
+        self.recovery_exit_wall_clearance = float(recovery_exit_wall_clearance)
+        self.near_wall_edge_multiplier = float(max(1.0, near_wall_edge_multiplier))
 
         self.recovery_center_fraction = float(
             np.clip(recovery_center_fraction, 0.05, 1.0)
@@ -191,8 +211,10 @@ class ACBCController:
         )
         self.last_recovery_step: Optional[int] = None
 
+        self.min_recovery_steps = int(max(0, min_recovery_steps))
         self.max_recovery_steps = int(max(10, max_recovery_steps))
         self.recovery_release_clearance = float(recovery_release_clearance)
+        self.transition_cooldown_steps = int(max(0, transition_cooldown_steps))
         self.enable_branch_commitment = bool(enable_branch_commitment)
         self.enable_authority_assessment = bool(enable_authority_assessment)
         self.enable_recovery = bool(enable_recovery)
@@ -212,14 +234,18 @@ class ACBCController:
         self.prev_state = ACBC_FREE
 
         self.selected_branch: Optional[BranchCandidate] = None
+        self.selected_branch_id: Optional[int] = None
         self.last_bifurcation_point: Optional[np.ndarray] = None
 
         self.commit_start_step: Optional[int] = None
+        self.commit_target_idx: Optional[int] = None
+        self.min_commitment_steps = int(max(0, min_commitment_steps))
         self.max_commitment_steps = int(max_commitment_steps)
         self.commit_target_reach_radius = max(
             0.004,
             0.35 * self.branch_lookahead,
         )
+        self.last_transition_step: Optional[int] = None
 
         self.recovery_count = 0
         self.commitment_count = 0
@@ -651,6 +677,41 @@ class ACBCController:
 
         return float(clearance), float(margin), float(fraction)
 
+    def _required_wall_clearance(self, particle) -> float:
+        """Center-to-wall clearance needed to preserve surface clearance."""
+        return float(particle.radius + self.surface_clearance_target_m)
+
+    def _hard_wall_unsafe(self, wall_clearance, wall_fraction, particle) -> bool:
+        required_clearance = max(
+            self.recovery_enter_wall_clearance,
+            self._required_wall_clearance(particle),
+        )
+        return bool(
+            wall_clearance < required_clearance
+            or wall_fraction < self.min_wall_safety_fraction
+        )
+
+    def _near_wall_safety_band(self, wall_clearance, particle) -> bool:
+        safety_band = max(
+            self.recovery_exit_wall_clearance,
+            self._required_wall_clearance(particle),
+        )
+        return bool(wall_clearance < safety_band)
+
+    def _edge_weight_with_near_wall_boost(
+        self,
+        base_w_edge: float,
+        current_w_edge: float,
+        wall_clearance: float,
+        particle,
+    ) -> float:
+        if self._near_wall_safety_band(wall_clearance, particle):
+            return float(
+                max(current_w_edge, self.near_wall_edge_multiplier * base_w_edge)
+            )
+
+        return float(current_w_edge)
+
     def _recoverability_score(self, particle_pos, particle) -> float:
         seg, _ = self.network.find_segment(particle_pos)
 
@@ -734,13 +795,14 @@ class ACBCController:
         recoverability = self._recoverability_score(particle_pos, particle)
 
         authority_ok = (
-            authority_margin >= self.authority_threshold
+            authority_margin > self.commit_enter_authority
             if self.enable_authority_assessment
             else True
         )
 
         capturable = (
             authority_ok
+            and wall_margin >= self.surface_clearance_target_m
             and wall_fraction >= self.min_wall_safety_fraction
             and recoverability >= self.recovery_threshold
             and route_alignment > -0.25
@@ -777,26 +839,198 @@ class ACBCController:
     # Hybrid state machine
     # ------------------------------------------------------------------
 
-    def _transition(self, new_state: str):
+    def _state_age(self) -> int:
+        """Return elapsed steps in the current dwell-tracked state."""
+        if self.state == ACBC_COMMIT and self.commit_start_step is not None:
+            return self.step_count - self.commit_start_step
+
+        if self.state == ACBC_RECOVER and self.last_recovery_step is not None:
+            return self.step_count - self.last_recovery_step
+
+        return 0
+
+    def _cooldown_active(self) -> bool:
+        if self.last_transition_step is None:
+            return False
+
+        return bool(
+            self.step_count - self.last_transition_step
+            < self.transition_cooldown_steps
+        )
+
+    def _dwell_blocks_exit(self, new_state: str) -> bool:
+        """
+        Prevent rapid state oscillation by requiring a short minimum residence
+        time in commitment and recovery. Hard safety transitions pass
+        hard_override=True and bypass this check.
+        """
+        if new_state == self.state:
+            return False
+
+        age = self._state_age()
+
+        if self.state == ACBC_COMMIT and new_state != ACBC_COMMIT:
+            if age < self.min_commitment_steps:
+                logger.debug(
+                    "ACBC transition blocked: commitment dwell time active "
+                    "(%s/%s)",
+                    age,
+                    self.min_commitment_steps,
+                )
+                return True
+
+        if self.state == ACBC_RECOVER and new_state != ACBC_RECOVER:
+            if age < self.min_recovery_steps:
+                logger.debug(
+                    "ACBC transition blocked: recovery dwell time active "
+                    "(%s/%s)",
+                    age,
+                    self.min_recovery_steps,
+                )
+                return True
+
+        return False
+
+    def _acquire_branch_lock(self, selected: BranchCandidate, navigator):
+        self.selected_branch = selected
+        self.selected_branch_id = selected.branch_seg_id
+        self.commit_start_step = self.step_count
+        self.commit_target_idx = self._nearest_route_index(
+            selected.target_point, navigator,
+        )
+        logger.debug(
+            "ACBC branch lock acquired: branch=%s target_idx=%s step=%s",
+            self.selected_branch_id,
+            self.commit_target_idx,
+            self.step_count,
+        )
+
+    def _release_branch_lock(self, reason: str):
+        if self.selected_branch is not None or self.selected_branch_id is not None:
+            logger.debug(
+                "ACBC branch lock released: branch=%s reason=%s step=%s",
+                self.selected_branch_id,
+                reason,
+                self.step_count,
+            )
+
+        self.selected_branch = None
+        self.selected_branch_id = None
+        self.commit_start_step = None
+        self.commit_target_idx = None
+
+    def _enter_recovery_for_wall_safety(self, reason: str) -> bool:
+        self._release_branch_lock(reason)
+        self.recovery_count += 1
+        return self._transition(
+            ACBC_RECOVER,
+            hard_override=True,
+            reason=reason,
+        )
+
+    def _refresh_locked_branch(
+        self,
+        particle,
+        particle_pos,
+        nominal_target,
+        flow,
+        sim_time,
+    ) -> Optional[BranchCandidate]:
+        """
+        Re-evaluate only the currently locked branch after dwell expires.
+        This preserves branch commitment while still allowing release if
+        authority collapses below the hysteretic exit threshold.
+        """
+        if self.selected_branch is None:
+            return None
+
+        seg_by_id = {s.seg_id: s for s in self.network.segments}
+        seg = seg_by_id.get(self.selected_branch.branch_seg_id)
+
+        if seg is None:
+            return self.selected_branch
+
+        refreshed = self._evaluate_branch(
+            particle=particle,
+            particle_pos=particle_pos,
+            nominal_target=nominal_target,
+            bif_point=self.selected_branch.bifurcation_point,
+            seg=seg,
+            direction=self.selected_branch.direction,
+            flow=flow,
+            sim_time=sim_time,
+        )
+        self.selected_branch = refreshed
+        self.selected_branch_id = refreshed.branch_seg_id
+        return refreshed
+
+    def _transition(
+        self,
+        new_state: str,
+        *,
+        hard_override: bool = False,
+        reason: str = "",
+    ):
         if new_state != self.state:
             old_state = self.state
+
+            if not hard_override:
+                if self._cooldown_active():
+                    age = self.step_count - self.last_transition_step
+                    logger.debug(
+                        "ACBC transition blocked: cooldown active "
+                        "(%s/%s) %s -> %s",
+                        age,
+                        self.transition_cooldown_steps,
+                        old_state,
+                        new_state,
+                    )
+                    self.prev_state = self.state
+                    return False
+
+                if self._dwell_blocks_exit(new_state):
+                    self.prev_state = self.state
+                    return False
 
             self.prev_state = self.state
             self.state = new_state
             self.transition_count += 1
+            self.last_transition_step = self.step_count
 
             if new_state == ACBC_COMMIT:
                 self.commit_start_step = self.step_count
+                logger.debug(
+                    "ACBC entering BRANCH_COMMITMENT at step=%s reason=%s",
+                    self.step_count,
+                    reason,
+                )
 
             if new_state == ACBC_RECOVER:
                 self.last_recovery_step = self.step_count
+                logger.debug(
+                    "ACBC entering RECOVERY_MODE at step=%s reason=%s",
+                    self.step_count,
+                    reason,
+                )
 
             if new_state == ACBC_ESCAPE:
                 self.escape_start_step = self.step_count
                 self.escape_start_route_idx = self.best_route_idx
 
             if old_state == ACBC_COMMIT and new_state != ACBC_COMMIT:
-                self.commit_start_step = None
+                logger.debug(
+                    "ACBC exiting BRANCH_COMMITMENT at step=%s reason=%s",
+                    self.step_count,
+                    reason,
+                )
+                self._release_branch_lock(reason or f"transition_to_{new_state}")
+
+            if old_state == ACBC_RECOVER and new_state != ACBC_RECOVER:
+                logger.debug(
+                    "ACBC exiting RECOVERY_MODE at step=%s reason=%s",
+                    self.step_count,
+                    reason,
+                )
 
             if old_state == ACBC_ESCAPE and new_state != ACBC_ESCAPE:
                 self.escape_start_step = None
@@ -827,6 +1061,7 @@ class ACBCController:
         route_tangent: Optional[np.ndarray] = None,
     ):
         self.step_count += 1
+        step_initial_state = self.state
 
         particle_pos = particle.pos.copy()
         nominal_target = navigator(particle_pos)
@@ -846,9 +1081,10 @@ class ACBCController:
         )
 
         # --- Wall danger classification ---
-        wall_unsafe = (
-            wall_clearance < self.absolute_wall_clearance_threshold
-            or wall_fraction < self.min_wall_safety_fraction
+        wall_unsafe = self._hard_wall_unsafe(
+            wall_clearance,
+            wall_fraction,
+            particle,
         )
 
         safe_for_escape = (
@@ -879,9 +1115,10 @@ class ACBCController:
         # This overrides everything except existing recovery.
         # ==============================================================
         if self.enable_recovery and wall_unsafe and self.state != ACBC_RECOVER:
-            self.selected_branch = None
-            self.recovery_count += 1
-            transitioned = self._transition(ACBC_RECOVER) or transitioned
+            transitioned = (
+                self._enter_recovery_for_wall_safety("hard_wall_safety")
+                or transitioned
+            )
 
         # ==============================================================
         # PRIORITY 2: Stall escape (only when safe AND not recovering)
@@ -891,9 +1128,12 @@ class ACBCController:
             and stall_escape_allowed
             and self.state not in (ACBC_ESCAPE, ACBC_RECOVER)
         ):
-            self.selected_branch = None
+            self._release_branch_lock("stall_escape")
             self.stall_escape_count += 1
-            transitioned = self._transition(ACBC_ESCAPE) or transitioned
+            transitioned = self._transition(
+                ACBC_ESCAPE,
+                reason="stall_escape",
+            ) or transitioned
 
         # ==============================================================
         # Stalled but near wall → recovery (not escape)
@@ -905,9 +1145,12 @@ class ACBCController:
             and self.enable_recovery
             and self.state not in (ACBC_RECOVER, ACBC_ESCAPE)
         ):
-            self.selected_branch = None
+            self._release_branch_lock("stalled_near_wall")
             self.recovery_count += 1
-            transitioned = self._transition(ACBC_RECOVER) or transitioned
+            transitioned = self._transition(
+                ACBC_RECOVER,
+                reason="stalled_near_wall",
+            ) or transitioned
 
         # ==============================================================
         # State-specific logic
@@ -915,14 +1158,20 @@ class ACBCController:
 
         if self.state == ACBC_FREE:
             if near_bifurcation:
-                transitioned = self._transition(ACBC_ASSESS) or transitioned
+                transitioned = self._transition(
+                    ACBC_ASSESS,
+                    reason="near_bifurcation",
+                ) or transitioned
             else:
                 transitioned = self._transition(ACBC_FREE) or transitioned
 
         if self.state == ACBC_ASSESS:
             if not near_bifurcation:
-                self.selected_branch = None
-                transitioned = self._transition(ACBC_FREE) or transitioned
+                self._release_branch_lock("left_bifurcation_region")
+                transitioned = self._transition(
+                    ACBC_FREE,
+                    reason="left_bifurcation_region",
+                ) or transitioned
             else:
                 branches = self._candidate_branches(
                     bif_point, bif_ids, particle_pos=particle_pos,
@@ -944,28 +1193,51 @@ class ACBCController:
                 if candidates:
                     candidates.sort(key=lambda c: c.score, reverse=True)
                     selected = candidates[0]
-                    self.selected_branch = selected
                     self.last_bifurcation_point = bif_point
 
                     if selected.capturable and self.enable_branch_commitment:
-                        self.commitment_count += 1
-                        transitioned = self._transition(ACBC_COMMIT) or transitioned
+                        committed = self._transition(
+                            ACBC_COMMIT,
+                            reason=(
+                                "authority_margin="
+                                f"{selected.authority_margin:.3f}"
+                            ),
+                        )
+                        transitioned = committed or transitioned
+                        if committed:
+                            self.commitment_count += 1
+                            self._acquire_branch_lock(selected, navigator)
+                        else:
+                            self.selected_branch = selected
                     else:
                         if self.enable_recovery and wall_unsafe:
-                            self.recovery_count += 1
-                            transitioned = self._transition(ACBC_RECOVER) or transitioned
+                            transitioned = (
+                                self._enter_recovery_for_wall_safety(
+                                    "assessment_wall_safety",
+                                )
+                                or transitioned
+                            )
                         else:
-                            self.selected_branch = None
-                            transitioned = self._transition(ACBC_FREE) or transitioned
+                            self._release_branch_lock("branch_not_capturable")
+                            transitioned = self._transition(
+                                ACBC_FREE,
+                                reason="branch_not_capturable",
+                            ) or transitioned
                 else:
-                    self.selected_branch = None
-                    transitioned = self._transition(ACBC_FREE) or transitioned
+                    self._release_branch_lock("no_branch_candidates")
+                    transitioned = self._transition(
+                        ACBC_FREE,
+                        reason="no_branch_candidates",
+                    ) or transitioned
 
         elif self.state == ACBC_COMMIT:
             selected = self.selected_branch
 
             if selected is None:
-                transitioned = self._transition(ACBC_FREE) or transitioned
+                transitioned = self._transition(
+                    ACBC_FREE,
+                    reason="missing_branch_lock",
+                ) or transitioned
             else:
                 dist_from_bif = float(
                     np.linalg.norm(particle_pos - selected.bifurcation_point)
@@ -980,24 +1252,54 @@ class ACBCController:
 
                 commit_age = self.step_count - self.commit_start_step
 
+                if commit_age >= self.min_commitment_steps:
+                    selected = self._refresh_locked_branch(
+                        particle=particle,
+                        particle_pos=particle_pos,
+                        nominal_target=nominal_target,
+                        flow=flow,
+                        sim_time=sim_time,
+                    )
+
+                authority_lost = bool(
+                    selected is not None
+                    and self.enable_authority_assessment
+                    and selected.authority_margin < self.commit_exit_authority
+                )
+
                 commitment_complete = (
                     dist_to_commit_target < self.commit_target_reach_radius
                     or dist_from_bif > 0.75 * self.branch_detection_radius
                     or commit_age >= self.max_commitment_steps
                 )
 
-                if commitment_complete:
-                    self.selected_branch = None
-                    transitioned = self._transition(ACBC_FREE) or transitioned
+                if authority_lost:
+                    transitioned = self._transition(
+                        ACBC_FREE,
+                        reason=(
+                            "authority_below_exit_threshold="
+                            f"{selected.authority_margin:.3f}"
+                        ),
+                    ) or transitioned
+                elif commitment_complete:
+                    transitioned = self._transition(
+                        ACBC_FREE,
+                        reason="commitment_complete",
+                    ) or transitioned
 
         elif self.state == ACBC_ESCAPE:
             if self.enable_recovery and wall_unsafe:
                 # Hard wall danger overrides escape
-                self.recovery_count += 1
-                transitioned = self._transition(ACBC_RECOVER) or transitioned
+                transitioned = (
+                    self._enter_recovery_for_wall_safety("escape_wall_safety")
+                    or transitioned
+                )
             elif self._escape_release_ready(self.best_route_idx):
                 # Use best_route_idx for release check, not navigator's route_idx
-                transitioned = self._transition(ACBC_FREE) or transitioned
+                transitioned = self._transition(
+                    ACBC_FREE,
+                    reason="escape_release_ready",
+                ) or transitioned
 
         elif self.state == ACBC_RECOVER:
             recovery_target = self._route_conditioned_recovery_target(
@@ -1009,7 +1311,7 @@ class ACBCController:
             )
 
             wall_safe_again = (
-                wall_clearance >= self.recovery_release_clearance
+                wall_clearance > self.recovery_exit_wall_clearance
                 and wall_fraction >= self.min_wall_safety_fraction
             )
 
@@ -1020,7 +1322,7 @@ class ACBCController:
 
             recovery_timed_out_safely = bool(
                 recovery_age >= self.max_recovery_steps
-                and wall_clearance >= self.absolute_wall_clearance_threshold
+                and wall_clearance >= self.recovery_enter_wall_clearance
                 and wall_fraction >= self.min_wall_safety_fraction
             )
 
@@ -1028,13 +1330,22 @@ class ACBCController:
 
             if can_leave_recovery:
                 if near_bifurcation:
-                    transitioned = self._transition(ACBC_ASSESS) or transitioned
+                    transitioned = self._transition(
+                        ACBC_ASSESS,
+                        reason="recovery_clear_near_bifurcation",
+                    ) or transitioned
                 else:
-                    transitioned = self._transition(ACBC_FREE) or transitioned
+                    transitioned = self._transition(
+                        ACBC_FREE,
+                        reason="recovery_clear",
+                    ) or transitioned
 
         if self.state == ACBC_ASSESS and len(candidates) == 0:
-            self.selected_branch = None
-            transitioned = self._transition(ACBC_FREE) or transitioned
+            self._release_branch_lock("assessment_no_candidates")
+            transitioned = self._transition(
+                ACBC_FREE,
+                reason="assessment_no_candidates",
+            ) or transitioned
 
         # ==============================================================
         # Choose control target
@@ -1103,6 +1414,13 @@ class ACBCController:
             w_overshoot_eff = w_overshoot
             w_route_eff = w_route
 
+        w_edge_eff = self._edge_weight_with_near_wall_boost(
+            base_w_edge=w_edge,
+            current_w_edge=w_edge_eff,
+            wall_clearance=wall_clearance,
+            particle=particle,
+        )
+
         # Build route tangent for MPC if not provided externally
         if route_tangent is None:
             waypoints = getattr(navigator, "waypoints", None)
@@ -1135,6 +1453,7 @@ class ACBCController:
             w_overshoot=w_overshoot_eff,
             w_route=w_route_eff,
             route_tangent=route_tangent,
+            wall_buffer_m=self._required_wall_clearance(particle),
             flow=flow,
             sim_time=sim_time,
         )
@@ -1152,7 +1471,7 @@ class ACBCController:
 
         info = ACBCStepInfo(
             state=self.state,
-            previous_state=self.prev_state,
+            previous_state=step_initial_state if transitioned else self.state,
             transition=transitioned,
             control_target=np.asarray(control_target, dtype=float),
             nominal_target=np.asarray(nominal_target, dtype=float),
@@ -1191,11 +1510,22 @@ class ACBCController:
             "acbc_branch_lookahead_m": self.branch_lookahead,
             "acbc_route_corridor_radius_m": self.route_corridor_radius,
             "acbc_authority_threshold": self.authority_threshold,
+            "acbc_commit_enter_authority": self.commit_enter_authority,
+            "acbc_commit_exit_authority": self.commit_exit_authority,
             "acbc_recovery_threshold": self.recovery_threshold,
             "acbc_min_wall_safety_fraction": self.min_wall_safety_fraction,
             "acbc_absolute_wall_clearance_threshold_m": (
                 self.absolute_wall_clearance_threshold
             ),
+            "acbc_surface_clearance_target_m": self.surface_clearance_target_m,
+            "acbc_recovery_enter_wall_clearance_m": (
+                self.recovery_enter_wall_clearance
+            ),
+            "acbc_recovery_exit_wall_clearance_m": (
+                self.recovery_exit_wall_clearance
+            ),
+            "acbc_near_wall_edge_multiplier": self.near_wall_edge_multiplier,
+            "acbc_min_commitment_steps": self.min_commitment_steps,
             "acbc_max_commitment_steps": self.max_commitment_steps,
             "acbc_commit_target_reach_radius_m": self.commit_target_reach_radius,
             "acbc_recovery_center_fraction": self.recovery_center_fraction,
@@ -1213,8 +1543,10 @@ class ACBCController:
             "acbc_recovery_escape_lockout_steps": (
                 self.recovery_escape_lockout_steps
             ),
+            "acbc_min_recovery_steps": self.min_recovery_steps,
             "acbc_max_recovery_steps": self.max_recovery_steps,
             "acbc_recovery_release_clearance_m": self.recovery_release_clearance,
+            "acbc_transition_cooldown_steps": self.transition_cooldown_steps,
             "acbc_enable_branch_commitment": self.enable_branch_commitment,
             "acbc_enable_authority_assessment": self.enable_authority_assessment,
             "acbc_enable_recovery": self.enable_recovery,

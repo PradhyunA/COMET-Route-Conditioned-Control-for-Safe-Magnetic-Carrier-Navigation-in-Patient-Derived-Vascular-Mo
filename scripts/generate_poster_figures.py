@@ -166,7 +166,7 @@ q75 = np.nanpercentile(all_dist, 75, axis=0)
 ax.plot(t_axis, median_d, lw=2.2, color="navy", label="Median")
 ax.fill_between(t_axis, q25, q75, alpha=0.25, color="steelblue", label="IQR (25th–75th)")
 
-ax.axhline(3.0, color="red", ls="--", lw=1.2, label="Tolerance (3 mm)")
+ax.axhline(0.5, color="red", ls="--", lw=1.2, label="Tolerance (0.5 mm)")
 ax.set_xlabel("Simulation time (s)", fontsize=11)
 ax.set_ylabel("Distance to target (mm)", fontsize=11)
 ax.set_title("Distance-to-Target Across 100 Trials", fontsize=12, fontweight="bold")

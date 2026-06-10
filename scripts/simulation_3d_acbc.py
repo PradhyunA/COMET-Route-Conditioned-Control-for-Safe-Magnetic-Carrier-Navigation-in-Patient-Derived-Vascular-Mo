@@ -42,6 +42,7 @@ from dynamag_simulation.core.profiles import (
     PhysicalProfile,
     SPION_CARRIER_1MM,
 )
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
 from dynamag_simulation.core.integrator import adaptive_step
@@ -434,7 +435,7 @@ def simulate_trial_acbc(
     trial_name: str = "trial",
     dt: float = 0.02,
     steps: int = 4000,
-    tolerance: float = 0.003,
+    tolerance: float = DEFAULT_TARGET_TOLERANCE,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
     core_radius: float = FIXED_CORE_RADIUS,
@@ -519,7 +520,7 @@ def simulate_trial_acbc(
     navigator = network.waypoint_navigator(
         start,
         target,
-        arrival_tol=0.003,
+        arrival_tol=DEFAULT_TARGET_TOLERANCE,
         waypoint_spacing=0.0015,
         lookahead=5,
         forward_search_points=50,
@@ -538,11 +539,15 @@ def simulate_trial_acbc(
 
         min_wall_safety_fraction=0.015,
         absolute_wall_clearance_threshold=0.00045,
+        surface_clearance_target_m=0.00050,
+        recovery_enter_wall_clearance=0.00100,
+        recovery_exit_wall_clearance=0.00150,
+        near_wall_edge_multiplier=6.0,
         stall_escape_min_wall_clearance=0.00090,
         stall_escape_min_wall_fraction_multiplier=1.00,
 
-        recovery_center_fraction=0.30,
-        recovery_route_fraction=0.25,
+        recovery_center_fraction=0.55,
+        recovery_route_fraction=0.10,
         recovery_route_tangent_steps=3,
         max_recovery_steps=40,
         recovery_release_clearance=0.00090,
