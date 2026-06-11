@@ -37,7 +37,10 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
+from dynamag_simulation.core.real_vessel_network import (
+    RealVesselNetwork,
+    RoutePlanningOptions,
+)
 from dynamag_simulation.core.profiles import SPION_CARRIER_1MM, SPION_CARRIER_500UM
 from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.reporting import save_results_csv
@@ -294,7 +297,15 @@ def _software_metadata():
     }
 
 
-def _trial_pairs(network, rng, n_random, vessel_file=""):
+def _trial_pairs(
+    network,
+    rng,
+    n_random,
+    vessel_file="",
+    profile=SPION_CARRIER_500UM,
+    wall_clearance_threshold_m=0.0007,
+    magnetic_authority_m_s=0.180,
+):
     """
     Generate paired start/target trials.
 
@@ -363,8 +374,72 @@ def _trial_pairs(network, rng, n_random, vessel_file=""):
             }
         )
 
-    print("Generated trial pairs:", flush=True)
+    particle_radius = 0.5 * profile.diameter
+    planning_options = RoutePlanningOptions(
+        wall_clearance_m=wall_clearance_threshold_m,
+        particle_radius_m=particle_radius,
+        minimum_surface_clearance_m=max(
+            wall_clearance_threshold_m - particle_radius, 0.0,
+        ),
+        magnetic_authority_m_s=magnetic_authority_m_s,
+        minimum_authority_reserve_m_s=0.0,
+    )
+
+    feasible_pairs = []
     for pair in pairs:
+        plan = network.plan_route(
+            pair["start"], pair["target"], planning_options,
+        )
+        if not plan.feasible:
+            print(
+                f"Skipping infeasible pair {pair['pair_id']}: {plan.reason}",
+                flush=True,
+            )
+            continue
+        pair["route_length_m"] = plan.route_length_m
+        pair["route_min_clearance_m"] = plan.min_center_clearance_m
+        pair["route_min_authority_reserve_m_s"] = plan.min_authority_reserve_m_s
+        feasible_pairs.append(pair)
+
+    random_count = sum(
+        pair["trial_kind"] == "random" for pair in feasible_pairs
+    )
+    attempts = 0
+    while random_count < int(n_random) and attempts < max(100, 50 * int(n_random)):
+        attempts += 1
+        start = network.random_point_in_vessel(
+            rng, min_radius=planning_options.required_center_clearance_m,
+        )
+        target = network.random_point_in_vessel(
+            rng, min_radius=planning_options.required_center_clearance_m,
+        )
+        plan = network.plan_route(start, target, planning_options)
+        if not plan.feasible:
+            continue
+        random_count += 1
+        feasible_pairs.append({
+            "pair_id": f"random_{random_count:04d}",
+            "trial_kind": "random",
+            "start": start,
+            "target": target,
+            "route_length_m": plan.route_length_m,
+            "route_min_clearance_m": plan.min_center_clearance_m,
+            "route_min_authority_reserve_m_s": plan.min_authority_reserve_m_s,
+        })
+
+    if random_count < int(n_random):
+        raise RuntimeError(
+            f"Could only generate {random_count}/{n_random} feasible random pairs"
+        )
+
+    for index, pair in enumerate(
+        (p for p in feasible_pairs if p["trial_kind"] == "random"),
+        start=1,
+    ):
+        pair["pair_id"] = f"random_{index:04d}"
+
+    print("Generated route-feasible trial pairs:", flush=True)
+    for pair in feasible_pairs:
         s_mm = np.asarray(pair["start"], dtype=float) * 1000.0
         t_mm = np.asarray(pair["target"], dtype=float) * 1000.0
         dist_mm = float(np.linalg.norm(t_mm - s_mm))
@@ -375,7 +450,7 @@ def _trial_pairs(network, rng, n_random, vessel_file=""):
             flush=True,
         )
 
-    return pairs
+    return feasible_pairs
 
 def _path_efficiency_metrics(network, start, target, trajectory):
     trajectory = np.asarray(trajectory, dtype=float)
@@ -484,44 +559,15 @@ def _wall_clearance_stats(network, trajectory):
     if traj.ndim != 2 or traj.shape[0] == 0:
         return float("nan")
 
-    if not hasattr(network, "segments") or len(network.segments) == 0:
+    if not hasattr(network, "find_segment"):
         return float("nan")
 
-    starts = []
-    ends = []
-    radii = []
-
-    for seg in network.segments:
-        if isinstance(seg, dict):
-            starts.append(np.asarray(seg["start"], dtype=float))
-            ends.append(np.asarray(seg["end"], dtype=float))
-            radii.append(float(seg["radius"]))
-        else:
-            starts.append(np.asarray(seg.start, dtype=float))
-            ends.append(np.asarray(seg.end, dtype=float))
-            radii.append(float(seg.radius))
-
-    starts = np.asarray(starts, dtype=float)
-    ends = np.asarray(ends, dtype=float)
-    radii = np.asarray(radii, dtype=float)
-
-    vec = ends - starts
-    denom = np.sum(vec * vec, axis=1)
-    denom = np.where(denom <= 1e-18, 1e-18, denom)
-
     min_clearance = float("inf")
-
-    # Chunk trajectory points so this stays memory-safe on large networks.
     for p in traj:
-        rel = p[None, :] - starts
-        t = np.sum(rel * vec, axis=1) / denom
-        t = np.clip(t, 0.0, 1.0)
-        closest = starts + t[:, None] * vec
-        d_centerline = np.linalg.norm(closest - p[None, :], axis=1)
-        clearance = radii - d_centerline
-        local_min = float(np.min(clearance))
-        if local_min < min_clearance:
-            min_clearance = local_min
+        seg, radial = network.find_segment(p)
+        if seg is None:
+            return float("-inf")
+        min_clearance = min(min_clearance, float(seg.radius - radial))
 
     return min_clearance
 
@@ -1001,7 +1047,14 @@ def run_benchmark(
     for flow_scale in flow_scales:
         rng = np.random.default_rng(seed + int(round(flow_scale * 1000)))
         network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
-        pairs = _trial_pairs(network, rng, n_random_trials, vessel_file=vessel_file)
+        pairs = _trial_pairs(
+            network,
+            rng,
+            n_random_trials,
+            vessel_file=vessel_file,
+            profile=profile,
+            wall_clearance_threshold_m=wall_clearance_threshold_m,
+        )
         results_by_controller = defaultdict(list)
 
         tasks = []
@@ -1013,6 +1066,11 @@ def run_benchmark(
                 "seed": trial_seed,
                 "start": np.asarray(pair["start"], dtype=float).tolist(),
                 "target": np.asarray(pair["target"], dtype=float).tolist(),
+                "route_length_m": pair.get("route_length_m"),
+                "route_min_clearance_m": pair.get("route_min_clearance_m"),
+                "route_min_authority_reserve_m_s": pair.get(
+                    "route_min_authority_reserve_m_s"
+                ),
             })
 
             for controller_key, variant in selected.items():

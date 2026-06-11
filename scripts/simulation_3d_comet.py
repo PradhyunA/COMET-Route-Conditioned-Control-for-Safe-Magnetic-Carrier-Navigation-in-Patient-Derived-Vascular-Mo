@@ -40,7 +40,10 @@ from dynamag_simulation.core.integrator import adaptive_step
 from dynamag_simulation.core.comet_controller import COMETConfig, COMETController
 from dynamag_simulation.core.validation import compute_reynolds, check_low_re_validity
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
-from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
+from dynamag_simulation.core.real_vessel_network import (
+   RealVesselNetwork,
+   RoutePlanningOptions,
+)
 from dynamag_simulation.core.workspace import WorkspaceVessel
 
 
@@ -211,6 +214,22 @@ def simulate_trial_comet(
    )
 
 
+   config = comet_config or COMETConfig()
+   for key, value in comet_overrides.items():
+       if not hasattr(config, key):
+           raise TypeError(f"Unknown COMET config field: {key}")
+       setattr(config, key, value)
+
+   particle_radius = 0.5 * profile.diameter
+   planning_options = RoutePlanningOptions(
+       wall_clearance_m=wall_clearance_threshold_m,
+       particle_radius_m=particle_radius,
+       minimum_surface_clearance_m=max(
+           wall_clearance_threshold_m - particle_radius, 0.0,
+       ),
+       magnetic_authority_m_s=config.cruise_speed,
+       minimum_authority_reserve_m_s=0.0,
+   )
    navigator = network.waypoint_navigator(
        start,
        target,
@@ -218,14 +237,12 @@ def simulate_trial_comet(
        waypoint_spacing=0.0015,
        lookahead=3,
        forward_search_points=50,
+       planning_options=planning_options,
    )
-
-
-   config = comet_config or COMETConfig()
-   for key, value in comet_overrides.items():
-       if not hasattr(config, key):
-           raise TypeError(f"Unknown COMET config field: {key}")
-       setattr(config, key, value)
+   if not navigator.route_plan.feasible:
+       raise ValueError(
+           f"No feasible COMET route: {navigator.route_plan.reason}"
+       )
 
 
    comet = COMETController(
@@ -587,5 +604,3 @@ if __name__ == "__main__":
        only_trial=args.only_trial,
        flow_scale=args.flow_scale,
    )
-
-

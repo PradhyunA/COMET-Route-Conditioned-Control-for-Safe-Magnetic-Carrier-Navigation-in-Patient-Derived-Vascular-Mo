@@ -136,6 +136,10 @@ class COMETConfig:
     damping_gain: float = 0.30
     #: Arc lookahead for the tracking aim point.
     lookahead_distance: float = 0.0080
+    #: Radius used as the reference for geometry-scaled distances.
+    geometry_reference_radius: float = 0.0030
+    geometry_scale_min: float = 0.30
+    geometry_scale_max: float = 2.00
     #: Max fraction of the aim distance covered in one step (overshoot guard).
     max_step_fraction: float = 0.70
     #: Adverse-flow wall-riding: when the route opposes the centerline flow
@@ -196,6 +200,11 @@ class COMETConfig:
     boost_speed_multiplier: float = 1.6
     #: Effort weight multiplier in BOOST mode (cheap current).
     boost_effort_multiplier: float = 0.05
+    #: BOOST is a bounded attempt, followed by route backtracking/replanning.
+    boost_max_steps: int = 45
+    recovery_backtrack_steps: int = 60
+    recovery_backtrack_radii: float = 4.0
+    max_route_replans: int = 3
 
     # --- emergency branch rescue ----------------------------------------
     rescue_capture_floor: float = 0.30
@@ -216,8 +225,9 @@ class COMETConfig:
     # --- safety -----------------------------------------------------------
     #: Required center-to-wall clearance (benchmark criterion).
     wall_clearance_threshold: float = 0.0007
-    #: Extra clearance margin targeted by the predictive safety filter.
-    safety_filter_margin: float = 0.00025
+    #: Deprecated compatibility field. Hard feasibility uses the single
+    #: center-to-wall threshold above; soft wall repulsion has its own margin.
+    safety_filter_margin: float = 0.0
 
     #: Verbose per-step debug logging.
     debug: bool = False
@@ -487,6 +497,10 @@ class COMETController:
         self._arc_now = 0.0
         self._arc_best = 0.0
         self.stagnant_steps = 0
+        self._boost_until = 0
+        self._recovery_until = 0
+        self._recovery_target_arc = 0.0
+        self._route_replans = 0
 
         # Control memory.
         self._v_des_prev = np.zeros(3, dtype=float)
@@ -655,10 +669,12 @@ class COMETController:
     # Route polyline utilities
     # ------------------------------------------------------------------
 
-    def _ensure_route(self, navigator, start_pos: np.ndarray):
+    def _ensure_route(self, navigator, start_pos: np.ndarray, force: bool = False):
         key = id(navigator)
-        if key == self._route_key:
+        if key == self._route_key and not force:
             return
+
+        new_navigator = key != self._route_key
 
         waypoints = getattr(navigator, "waypoints", None)
         if waypoints is None or len(waypoints) == 0:
@@ -675,9 +691,7 @@ class COMETController:
         self._route_key = key
         self._route_pts = pts
         self._route_cum = cum
-        self._flow_branch_adaptation_route_enabled = bool(
-            cum[-1] <= self.cfg.flow_branch_adaptation_route_horizon
-        )
+        self._flow_branch_adaptation_route_enabled = True
         self._route_vertex_idx = 0
         self._arc_now = 0.0
         self._arc_best = 0.0
@@ -695,35 +709,39 @@ class COMETController:
         self._terminal_overshoot_count = 0
         self._terminal_prev_distance = np.inf
         self._mode_enter_step = self.step_count
+        self._boost_until = 0
+        self._recovery_until = 0
+        self._recovery_target_arc = 0.0
+        if new_navigator:
+            self._route_replans = 0
 
-        # Project every bifurcation node onto the route once, keep nodes
-        # lying inside a lateral corridor around the route.
+        # Build route junctions from consecutive selected-route segments.
+        # Spatial proximity is insufficient in dense/tessellated networks:
+        # nearby unrelated branches otherwise collapse into one mega-node.
         self._route_nodes = []
-        if len(pts) >= 2:
-            corridor = 0.006
-            for node_point, seg_ids in self._bifurcation_nodes:
-                arc, lateral = self._project_point_on_route(node_point)
-                if lateral <= corridor:
-                    self._route_nodes.append((arc, node_point, seg_ids))
+        route_ids = list(getattr(navigator, "route_segment_ids", []))
+        if len(pts) >= 2 and len(route_ids) >= 2:
+            for first_id, second_id in zip(route_ids, route_ids[1:]):
+                node_point = self.network.shared_endpoint(first_id, second_id)
+                if node_point is None:
+                    continue
+                seg_ids = self.network.endpoint_segment_ids(node_point)
+                if len(seg_ids) < 3:
+                    continue
+                arc, _ = self._project_point_on_route(node_point)
+                self._route_nodes.append((arc, node_point, seg_ids))
             self._route_nodes.sort(key=lambda item: item[0])
 
-            # Merge stacked nodes (micro-tessellated junctions project to
-            # nearly the same arc). Without clustering, the "next node"
-            # alternates as the arc estimate jitters, resetting commitment
-            # memory every step and causing chatter.
-            merged: List[Tuple[float, np.ndarray, List[int]]] = []
-            cluster_arc = 0.004
-            for arc, point, seg_ids in self._route_nodes:
-                if merged and arc - merged[-1][0] < cluster_arc:
-                    prev_arc, prev_point, prev_ids = merged[-1]
-                    merged[-1] = (
-                        prev_arc,
-                        prev_point,
-                        sorted(set(prev_ids) | set(seg_ids)),
-                    )
-                else:
-                    merged.append((arc, point, list(seg_ids)))
-            self._route_nodes = merged
+    def _local_radius(self, pos: np.ndarray) -> float:
+        seg, _ = self.network.find_segment(pos)
+        return float(seg.radius) if seg is not None else self.cfg.geometry_reference_radius
+
+    def _geometry_scale(self, pos: np.ndarray) -> float:
+        return float(np.clip(
+            self._local_radius(pos) / max(self.cfg.geometry_reference_radius, EPS),
+            self.cfg.geometry_scale_min,
+            self.cfg.geometry_scale_max,
+        ))
 
     def _project_point_on_route(self, point) -> Tuple[float, float]:
         pts = self._route_pts
@@ -821,12 +839,13 @@ class COMETController:
         n = np.linalg.norm(v)
         return v / n if n > EPS else np.array([0.0, 0.0, 1.0])
 
-    def _next_bifurcation(self, arc_now: float):
+    def _next_bifurcation(self, arc_now: float, window: Optional[float] = None):
         """First route bifurcation ahead of arc_now within the window."""
+        window = self.cfg.bifurcation_window if window is None else float(window)
         for arc_node, point, seg_ids in self._route_nodes:
             if arc_node < arc_now - 0.002:
                 continue
-            if arc_node - arc_now > self.cfg.bifurcation_window:
+            if arc_node - arc_now > window:
                 return None
             return arc_node, point, seg_ids
         return None
@@ -929,16 +948,21 @@ class COMETController:
         v_mag_prev: np.ndarray,
         downstream: Dict[int, float],
         flow_adaptation_active: bool = False,
+        capture_point_offset: Optional[float] = None,
     ) -> List[BranchHypothesis]:
         cfg = self.cfg
         node_point = np.asarray(node_point, dtype=float)
         high_flow = flow_adaptation_active
+        capture_offset = (
+            cfg.capture_point_offset
+            if capture_point_offset is None else float(capture_point_offset)
+        )
 
         probes = []
         for sid in seg_ids:
             seg = self._seg_by_id[sid]
             direction, reached, last_sid, min_radius = self._walk_branch(
-                node_point, seg, probe_length=max(cfg.capture_point_offset, 0.003),
+                node_point, seg, probe_length=max(capture_offset, 0.001),
             )
             if direction is None:
                 continue
@@ -1002,7 +1026,7 @@ class COMETController:
             candidates, finite,
         )):
             capture_point = node_point + direction * min(
-                cfg.capture_point_offset,
+                capture_offset,
                 float(np.linalg.norm(reached - node_point)),
             )
 
@@ -1057,9 +1081,7 @@ class COMETController:
             )
             p_capture = float(1.0 / (1.0 + np.exp(-z)))
 
-            min_safe_radius = (
-                particle.radius + cfg.wall_clearance_threshold
-            )
+            min_safe_radius = cfg.wall_clearance_threshold
             wall_risk = float(
                 max(0.0, (min_safe_radius - min_radius) / min_safe_radius)
             )
@@ -1316,7 +1338,7 @@ class COMETController:
             v_des_mag / np.sqrt(v_norm_sq)
             if v_norm_sq > 1e-12 else np.array([0.0, 0.0, 1.0])
         )
-        required_clear = cfg.wall_clearance_threshold + cfg.safety_filter_margin
+        required_clear = cfg.wall_clearance_threshold
 
         # Only segments whose axis can plausibly become the closest one
         # within the prediction horizon matter for the clearance terms.
@@ -1489,6 +1511,12 @@ class COMETController:
 
         arc_now, route_pt, tangent, perp = self._route_state(pos)
         self._arc_now = arc_now
+        geometry_scale = self._geometry_scale(pos)
+        bifurcation_window = cfg.bifurcation_window * geometry_scale
+        commitment_distance = cfg.commitment_distance_threshold * geometry_scale
+        lookahead_distance = cfg.lookahead_distance * geometry_scale
+        capture_point_offset = cfg.capture_point_offset * geometry_scale
+        terminal_capture_distance = cfg.terminal_capture_distance * geometry_scale
 
         # --- stall accounting -----------------------------------------
         if arc_now > self._arc_best + cfg.stall_progress_epsilon:
@@ -1503,10 +1531,50 @@ class COMETController:
             and dist_to_final > 0.002
         )
 
+        # Bounded recovery sequence: boost, backtrack, then replan around the
+        # next route segment. Progress immediately cancels the sequence.
+        if not stalled:
+            self._boost_until = 0
+            self._recovery_until = 0
+        elif self._recovery_until and self.step_count >= self._recovery_until:
+            route_ids = list(getattr(navigator, "route_segment_ids", []))
+            current_seg, _ = self.network.find_segment(pos)
+            blocked = []
+            if current_seg is not None and current_seg.seg_id in route_ids:
+                index = route_ids.index(current_seg.seg_id)
+                if index + 1 < len(route_ids) - 1:
+                    blocked = [route_ids[index + 1]]
+            if (
+                hasattr(navigator, "replan")
+                and self._route_replans < cfg.max_route_replans
+            ):
+                plan = navigator.replan(pos, blocked_segment_ids=blocked)
+                if plan.feasible:
+                    self._route_replans += 1
+                    self._ensure_route(navigator, pos, force=True)
+                    arc_now, route_pt, tangent, perp = self._route_state(pos)
+                    self._arc_now = arc_now
+            self._boost_until = 0
+            self._recovery_until = 0
+            self.stagnant_steps = 0
+            stalled = False
+        elif self._boost_until and self.step_count >= self._boost_until:
+            self._boost_until = 0
+            self._recovery_until = self.step_count + cfg.recovery_backtrack_steps
+            self._recovery_target_arc = max(
+                0.0,
+                arc_now - cfg.recovery_backtrack_radii * self._local_radius(pos),
+            )
+        elif self._boost_until == 0 and self._recovery_until == 0:
+            self._boost_until = self.step_count + cfg.boost_max_steps
+
+        boost_active = self.step_count < self._boost_until
+        recovery_active = self.step_count < self._recovery_until
+
         # Terminal capture: the target is close and directly reachable
         # inside the lumen, so route/branch shaping only gets in the way
         # (e.g. a route that folds back along the vessel axis).
-        terminal_radius = (
+        terminal_radius = geometry_scale * (
             cfg.terminal_capture_exit_distance
             if prev_mode in (COMET_TERMINAL, COMET_TERMINAL_PRECISION)
             else cfg.terminal_capture_distance
@@ -1517,13 +1585,17 @@ class COMETController:
         terminal_hysteresis_active = (
             terminal_was_active
         )
-        terminal_candidate = (
+        terminal_line_of_sight = self._line_of_sight(pos, final_target)
+        remaining_route_arc = max(float(self._route_cum[-1] - arc_now), 0.0)
+        route_terminal_candidate = remaining_route_arc < terminal_capture_distance
+        direct_terminal_candidate = (
             dist_to_final < terminal_radius
             and (
                 terminal_was_active
-                or self._line_of_sight(pos, final_target)
+                or terminal_line_of_sight
             )
         )
+        terminal_candidate = direct_terminal_candidate or route_terminal_candidate
 
         # --- flow / local field model ----------------------------------
         v_flow = (
@@ -1545,7 +1617,7 @@ class COMETController:
         target_direction = np.zeros(3)
         if dist_to_final > EPS:
             target_direction = (final_target - pos) / dist_to_final
-        if terminal_candidate and dist_to_final > EPS:
+        if direct_terminal_candidate and dist_to_final > EPS:
             target_authority = self._authority_speed_along(
                 model, particle, target_direction,
             )
@@ -1568,12 +1640,12 @@ class COMETController:
                 )
                 or dist_to_final <= cfg.terminal_precision_distance
             )
-        terminal = (
-            terminal_candidate
-            and direct_terminal_feasible
+        terminal = route_terminal_candidate or (
+            direct_terminal_candidate and direct_terminal_feasible
         )
+        direct_terminal = terminal and terminal_line_of_sight
         terminal_precision = (
-            terminal
+            direct_terminal
             and dist_to_final <= cfg.terminal_precision_distance
         )
         terminal_stage = (
@@ -1585,7 +1657,7 @@ class COMETController:
         )
 
         # --- branch hypotheses + measure transport ----------------------
-        nxt = self._next_bifurcation(arc_now)
+        nxt = self._next_bifurcation(arc_now, bifurcation_window)
         hypotheses: List[BranchHypothesis] = []
         q: Dict[int, float] = {}
         temperature = cfg.entropy_temperature_far
@@ -1595,9 +1667,8 @@ class COMETController:
         high_flow = (
             float(getattr(self.network, "flow_scale", 1.0))
             >= cfg.flow_branch_adaptation_min_scale
-            and self._flow_branch_adaptation_route_enabled
         )
-        dynamic_commitment_distance = cfg.commitment_distance_threshold
+        dynamic_commitment_distance = commitment_distance
         if high_flow:
             dynamic_commitment_distance += min(
                 cfg.max_flow_commitment_extension,
@@ -1625,6 +1696,7 @@ class COMETController:
                 v_mag_prev=v_mag_prev,
                 downstream=downstream,
                 flow_adaptation_active=high_flow,
+                capture_point_offset=capture_point_offset,
             )
 
             if hypotheses:
@@ -1687,8 +1759,10 @@ class COMETController:
         if rescue:
             self.mode = COMET_RESCUE
 
-        if stalled:
+        if boost_active:
             self.mode = COMET_BOOST
+        elif recovery_active:
+            self.mode = COMET_RESCUE
         if terminal:
             self.mode = (
                 COMET_TERMINAL_PRECISION
@@ -1697,10 +1771,10 @@ class COMETController:
 
         # --- capture-basin shaping: desired velocity ---------------------
         prox = float(np.clip(
-            1.0 - dist_to_bif / max(cfg.bifurcation_window, EPS), 0.0, 1.0,
+            1.0 - dist_to_bif / max(bifurcation_window, EPS), 0.0, 1.0,
         )) if np.isfinite(dist_to_bif) else 0.0
 
-        lookahead = cfg.lookahead_distance
+        lookahead = lookahead_distance
         effort_weight = cfg.current_effort_weight
         boost_factor = 1.0
 
@@ -1717,8 +1791,9 @@ class COMETController:
             # relax the effort penalty so the allocator uses full authority.
             effort_weight *= cfg.boost_effort_multiplier
 
-        aim_route = self._route_point_at_arc(arc_now + lookahead)
-        aim_tangent = self._route_tangent_at_arc(arc_now + lookahead)
+        aim_arc = self._recovery_target_arc if recovery_active else arc_now + lookahead
+        aim_route = self._route_point_at_arc(aim_arc)
+        aim_tangent = self._route_tangent_at_arc(aim_arc)
 
         # Capture-basin shaping: shift the (always-forward) route aim point
         # laterally toward the q-weighted capture corridor. With a soft q the
@@ -1726,8 +1801,14 @@ class COMETController:
         # optionality; as q hardens it converges to the selected branch's
         # entry corridor. The offset is purely lateral so it can never stall
         # forward progress, and it is capped by the local safe clearance.
-        if terminal:
-            aim = final_target.copy()
+        if recovery_active and not terminal:
+            aim = aim_route
+        elif terminal:
+            aim = (
+                final_target.copy()
+                if terminal_line_of_sight
+                else self._route_point_at_arc(arc_now + lookahead)
+            )
 
             if (
                 terminal_precision
@@ -1761,6 +1842,7 @@ class COMETController:
 
             if (
                 not terminal_precision
+                and terminal_line_of_sight
                 and self.step_count < self._dash_until
                 and flow is not None
             ):
@@ -1814,7 +1896,7 @@ class COMETController:
         # fighting the fastest part of the profile on the axis.
         seg_here, _ = self.network.find_segment(pos)
         ride_offset = np.zeros(3)
-        if terminal:
+        if direct_terminal:
             self._ride_dir = None
         elif flow is not None and seg_here is not None:
             v_flow_center = np.asarray(
@@ -1858,9 +1940,14 @@ class COMETController:
                             s_a, _ = self.network.find_segment(p_ahead)
                             if s_a is not None:
                                 r_ride = min(r_ride, s_a.radius)
-                        r_off = lam * max(
-                            r_ride - cfg.wall_ride_clearance, 0.0,
+                        ride_clearance = max(
+                            cfg.wall_clearance_threshold,
+                            min(
+                                0.75 * r_ride,
+                                cfg.wall_ride_clearance * geometry_scale,
+                            ),
                         )
+                        r_off = lam * max(r_ride - ride_clearance, 0.0)
                         ride_offset = r_off * ride_dir
                 else:
                     self._ride_dir = None
@@ -1889,7 +1976,7 @@ class COMETController:
         # full multi-coil optimization can produce, so it is not used to
         # throttle progress). Overshoot is guarded relative to aim distance.
         speed = cfg.cruise_speed * cfg.progress_gain * boost_factor
-        if terminal and not terminal_precision:
+        if direct_terminal and not terminal_precision:
             # Keep the request modest so the allocator spends its authority
             # on flow compensation first (a near-feasible v_des tracks the
             # target line instead of being sheared downstream).
@@ -1924,7 +2011,7 @@ class COMETController:
         # Corridor pull: toward the centerline normally, toward the offset
         # boundary-layer corridor while wall-riding, and off entirely in
         # terminal capture (the aim point IS the target).
-        if terminal:
+        if direct_terminal:
             v_center = np.zeros(3)
         else:
             corridor_error = perp + ride_offset
@@ -2128,5 +2215,3 @@ class COMETController:
             "comet_max_control_norm_A": self.max_current,
             "comet_wall_clearance_threshold_m": cfg.wall_clearance_threshold,
         }
-
-

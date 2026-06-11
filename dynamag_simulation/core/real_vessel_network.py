@@ -13,7 +13,7 @@ Navigator fix (v2):
 import pickle
 import heapq
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Tuple, List
 
 from .constants import DEFAULT_TARGET_TOLERANCE, EPS, PI
@@ -71,6 +71,40 @@ class RealVesselSegment:
         t = float(np.dot(d, self._axis)) / (self._length + EPS)
         t = float(np.clip(t, inset, 1.0 - inset))
         return self.start + t * self._length * self._axis
+
+
+@dataclass(frozen=True)
+class RoutePlanningOptions:
+    """Physical constraints and costs used by network route planning."""
+
+    wall_clearance_m: float = 0.0
+    particle_radius_m: float = 0.0
+    minimum_surface_clearance_m: float = 0.0
+    magnetic_authority_m_s: float = float("inf")
+    minimum_authority_reserve_m_s: float = float("-inf")
+    clearance_cost_weight: float = 1.0
+    flow_cost_weight: float = 2.0
+    authority_cost_weight: float = 3.0
+    blocked_segment_ids: frozenset = field(default_factory=frozenset)
+
+    @property
+    def required_center_clearance_m(self):
+        return max(
+            float(self.wall_clearance_m),
+            float(self.particle_radius_m) + float(self.minimum_surface_clearance_m),
+        )
+
+
+@dataclass
+class RoutePlan:
+    feasible: bool
+    reason: str
+    segment_ids: List[int]
+    waypoints: List[np.ndarray]
+    route_length_m: float = float("inf")
+    min_radius_m: float = 0.0
+    min_center_clearance_m: float = 0.0
+    min_authority_reserve_m_s: float = float("-inf")
 
 
 class RealVesselNetwork:
@@ -134,6 +168,8 @@ class RealVesselNetwork:
         self.connection_tol = float(connection_tol)
 
         self._build_spatial_index()
+        self._seg_by_id = {seg.seg_id: seg for seg in self.segments}
+        self._endpoint_segments = self._build_endpoint_segments()
         self._graph = self._build_graph()
 
     @property
@@ -256,18 +292,31 @@ class RealVesselNetwork:
     def _node_key(self, p):
         return tuple(np.round(np.asarray(p) / self.connection_tol).astype(int))
 
+    def _build_endpoint_segments(self):
+        endpoints = {}
+        for seg in self.segments:
+            for point in (seg.start, seg.end):
+                endpoints.setdefault(self._node_key(point), []).append(seg.seg_id)
+        return {key: sorted(set(ids)) for key, ids in endpoints.items()}
+
+    def shared_endpoint(self, first_id, second_id):
+        first = self._seg_by_id[int(first_id)]
+        second = self._seg_by_id[int(second_id)]
+        second_keys = {
+            self._node_key(second.start): second.start,
+            self._node_key(second.end): second.end,
+        }
+        for point in (first.start, first.end):
+            if self._node_key(point) in second_keys:
+                return np.asarray(point, dtype=float).copy()
+        return None
+
+    def endpoint_segment_ids(self, point):
+        return list(self._endpoint_segments.get(self._node_key(point), []))
+
     def _build_graph(self):
         graph = {seg.seg_id: [] for seg in self.segments}
-        endpoints = {}
-
-        for seg in self.segments:
-            for p in (seg.start, seg.end):
-                key = self._node_key(p)
-                endpoints.setdefault(key, []).append(seg.seg_id)
-
-        seg_by_id = {s.seg_id: s for s in self.segments}
-
-        for ids in endpoints.values():
+        for ids in self._endpoint_segments.values():
             unique_ids = sorted(set(ids))
 
             for a in unique_ids:
@@ -275,7 +324,7 @@ class RealVesselNetwork:
                     if a == b:
                         continue
 
-                    graph[a].append((b, seg_by_id[b].start))
+                    graph[a].append((b, self._seg_by_id[b].start))
 
         return graph
 
@@ -289,11 +338,25 @@ class RealVesselNetwork:
         idx = np.argmax(all_ends[:, 2])
         return all_ends[idx].copy()
 
-    def random_point_in_vessel(self, rng=None):
+    def random_point_in_vessel(self, rng=None, min_radius=0.0):
         if rng is None:
             rng = np.random.default_rng()
 
-        seg = rng.choice(self.segments)
+        candidates = [seg for seg in self.segments if seg.radius >= min_radius]
+        if not candidates:
+            raise ValueError("No vessel segment satisfies min_radius")
+        if min_radius <= 0.0:
+            seg = rng.choice(candidates)
+        else:
+            weights = np.asarray(
+                [
+                    seg._length * max(seg.radius - min_radius, EPS) ** 2
+                    for seg in candidates
+                ],
+                dtype=float,
+            )
+            weights /= np.sum(weights)
+            seg = candidates[int(rng.choice(len(candidates), p=weights))]
         t = rng.uniform(0.05, 0.95)
 
         return seg.start + t * (seg.end - seg.start)
@@ -317,63 +380,184 @@ class RealVesselNetwork:
             f"radius={min(radii):.2f}–{max(radii):.2f} mm"
         )
 
-    def plan_waypoints(self, start_pos, target_pos) -> List[np.ndarray]:
+    def _route_edge_metrics(self, seg, direction, options):
+        required = options.required_center_clearance_m
+        if seg.radius + EPS < required:
+            return None
+
+        flow_speed = 2.0 * abs(seg.v_mean)
+        if required > 0.0:
+            ride_fraction = np.clip(
+                (seg.radius - required) / max(seg.radius, EPS), 0.0, 1.0,
+            )
+            flow_speed *= 1.0 - ride_fraction ** 2
+        accessible_flow = flow_speed * seg._axis
+        adverse_flow = max(0.0, -float(np.dot(accessible_flow, direction)))
+        authority = float(options.magnetic_authority_m_s)
+        reserve = authority - adverse_flow
+        if reserve + EPS < options.minimum_authority_reserve_m_s:
+            return None
+
+        clearance_headroom = max(seg.radius - required, EPS)
+        clearance_penalty = required / clearance_headroom if required > 0.0 else 0.0
+        flow_penalty = adverse_flow / max(authority, EPS) if np.isfinite(authority) else 0.0
+        authority_penalty = max(0.0, -reserve) / max(authority, EPS) if np.isfinite(authority) else 0.0
+        multiplier = 1.0 + (
+            options.clearance_cost_weight * clearance_penalty
+            + options.flow_cost_weight * flow_penalty
+            + options.authority_cost_weight * authority_penalty
+        )
+        return seg._length * multiplier, adverse_flow, reserve
+
+    def plan_route(self, start_pos, target_pos, planning_options=None):
+        options = planning_options or RoutePlanningOptions()
         start_seg, _ = self.find_segment(start_pos)
         target_seg, _ = self.find_segment(target_pos)
 
         if start_seg is None or target_seg is None:
-            return [np.asarray(target_pos, dtype=float)]
+            return RoutePlan(False, "endpoint_outside_network", [], [])
+
+        blocked = set(options.blocked_segment_ids)
+        if start_seg.seg_id in blocked or target_seg.seg_id in blocked:
+            return RoutePlan(False, "endpoint_segment_blocked", [], [])
+
+        required = options.required_center_clearance_m
+        if start_seg.radius + EPS < required or target_seg.radius + EPS < required:
+            return RoutePlan(False, "endpoint_clearance", [], [])
 
         if start_seg.seg_id == target_seg.seg_id:
-            return [np.asarray(target_pos, dtype=float)]
+            length = float(np.linalg.norm(np.asarray(target_pos) - np.asarray(start_pos)))
+            direction = np.asarray(target_pos, dtype=float) - np.asarray(start_pos, dtype=float)
+            direction /= max(float(np.linalg.norm(direction)), EPS)
+            metrics = self._route_edge_metrics(start_seg, direction, options)
+            if metrics is None:
+                return RoutePlan(False, "endpoint_authority", [], [])
+            return RoutePlan(
+                True, "ok", [start_seg.seg_id], [np.asarray(target_pos, dtype=float)],
+                length, start_seg.radius, start_seg.radius,
+                metrics[2],
+            )
 
-        dist = {seg.seg_id: np.inf for seg in self.segments}
-        prev = {seg.seg_id: None for seg in self.segments}
+        start_pos = np.asarray(start_pos, dtype=float)
+        target_pos = np.asarray(target_pos, dtype=float)
+        dist = {}
+        prev = {}
+        heap = []
 
-        dist[start_seg.seg_id] = 0.0
-        heap = [(0.0, start_seg.seg_id)]
+        for exit_point in (start_seg.start, start_seg.end):
+            direction = np.asarray(exit_point) - start_pos
+            partial_length = float(np.linalg.norm(direction))
+            direction /= max(partial_length, EPS)
+            metrics = self._route_edge_metrics(start_seg, direction, options)
+            if metrics is None:
+                continue
+            state = (start_seg.seg_id, self._node_key(exit_point))
+            cost = metrics[0] * partial_length / max(start_seg._length, EPS)
+            dist[state] = cost
+            prev[state] = None
+            heapq.heappush(heap, (cost, state))
 
-        seg_by_id = {seg.seg_id: seg for seg in self.segments}
+        best_goal_cost = np.inf
+        best_goal_state = None
 
         while heap:
-            d, uid = heapq.heappop(heap)
+            d, state = heapq.heappop(heap)
 
-            if d > dist[uid]:
+            if d > dist.get(state, np.inf) or d >= best_goal_cost:
                 continue
 
-            if uid == target_seg.seg_id:
-                break
+            uid, endpoint_key = state
+            current_seg = self._seg_by_id[uid]
+            endpoint = (
+                current_seg.start
+                if self._node_key(current_seg.start) == endpoint_key
+                else current_seg.end
+            )
 
-            for vid, _ in self._graph.get(uid, []):
-                seg_v = seg_by_id[vid]
-                nd = d + seg_v._length
+            if target_seg.seg_id in self._endpoint_segments.get(endpoint_key, []):
+                direction = target_pos - endpoint
+                partial_length = float(np.linalg.norm(direction))
+                direction /= max(partial_length, EPS)
+                metrics = self._route_edge_metrics(target_seg, direction, options)
+                if metrics is not None:
+                    goal_cost = d + (
+                        metrics[0] * partial_length / max(target_seg._length, EPS)
+                    )
+                    if goal_cost < best_goal_cost:
+                        best_goal_cost = goal_cost
+                        best_goal_state = state
 
-                if nd < dist[vid]:
-                    dist[vid] = nd
-                    prev[vid] = uid
-                    heapq.heappush(heap, (nd, vid))
+            for vid in self._endpoint_segments.get(endpoint_key, []):
+                if vid == uid or vid == target_seg.seg_id or vid in blocked:
+                    continue
+                seg_v = self._seg_by_id[vid]
+                if self._node_key(seg_v.start) == endpoint_key:
+                    exit_point = seg_v.end
+                else:
+                    exit_point = seg_v.start
+                direction = np.asarray(exit_point) - np.asarray(endpoint)
+                direction /= max(float(np.linalg.norm(direction)), EPS)
+                metrics = self._route_edge_metrics(seg_v, direction, options)
+                if metrics is None:
+                    continue
+                nd = d + metrics[0]
+                next_state = (vid, self._node_key(exit_point))
 
-        if dist[target_seg.seg_id] == np.inf:
-            return [np.asarray(target_pos, dtype=float)]
+                if nd < dist.get(next_state, np.inf):
+                    dist[next_state] = nd
+                    prev[next_state] = state
+                    heapq.heappush(heap, (nd, next_state))
 
-        path_ids = []
-        cur = target_seg.seg_id
+        if best_goal_state is None:
+            return RoutePlan(False, "no_feasible_route", [], [])
+
+        path_states = []
+        cur = best_goal_state
 
         while cur is not None:
-            path_ids.append(cur)
+            path_states.append(cur)
             cur = prev[cur]
 
-        path_ids.reverse()
+        path_states.reverse()
+        path_ids = [state[0] for state in path_states]
+        if path_ids[-1] != target_seg.seg_id:
+            path_ids.append(target_seg.seg_id)
 
         waypoints = []
+        for sid, endpoint_key in path_states:
+            seg = self._seg_by_id[sid]
+            point = seg.start if self._node_key(seg.start) == endpoint_key else seg.end
+            waypoints.append(np.asarray(point, dtype=float).copy())
+        waypoints.append(target_pos)
 
-        for sid in path_ids[1:]:
-            seg = seg_by_id[sid]
-            waypoints.append(seg.start.copy())
+        radii = [self._seg_by_id[sid].radius for sid in path_ids]
+        reserves = []
+        route_length = 0.0
+        route_points = [np.asarray(start_pos, dtype=float), *waypoints]
+        for first, second in zip(route_points, route_points[1:]):
+            route_length += float(np.linalg.norm(second - first))
+        for index, sid in enumerate(path_ids):
+            seg = self._seg_by_id[sid]
+            if index + 1 < len(path_ids):
+                exit_point = self.shared_endpoint(sid, path_ids[index + 1])
+            else:
+                exit_point = target_pos
+            entry_point = start_pos if index == 0 else self.shared_endpoint(path_ids[index - 1], sid)
+            direction = np.asarray(exit_point) - np.asarray(entry_point)
+            direction /= max(float(np.linalg.norm(direction)), EPS)
+            metrics = self._route_edge_metrics(seg, direction, options)
+            reserves.append(metrics[2] if metrics is not None else float("-inf"))
 
-        waypoints.append(np.asarray(target_pos, dtype=float))
+        return RoutePlan(
+            True, "ok", path_ids, waypoints, route_length,
+            min(radii), min(radii), min(reserves),
+        )
 
-        return waypoints
+    def plan_waypoints(self, start_pos, target_pos, planning_options=None) -> List[np.ndarray]:
+        plan = self.plan_route(start_pos, target_pos, planning_options)
+        if plan.feasible:
+            return plan.waypoints
+        return [np.asarray(target_pos, dtype=float)]
 
     def _sparsify_waypoints(self, points, min_spacing=0.0015):
         if points is None or len(points) == 0:
@@ -407,6 +591,7 @@ class RealVesselNetwork:
         waypoint_spacing=0.0015,
         lookahead=3,
         forward_search_points=50,
+        planning_options=None,
     ):
         """
         Build a waypoint navigator for MPC — v2.
@@ -423,7 +608,13 @@ class RealVesselNetwork:
         start_pos = np.asarray(start_pos, dtype=float)
         target_pos = np.asarray(target_pos, dtype=float)
 
-        raw_waypoints = self.plan_waypoints(start_pos, target_pos)
+        options = planning_options or RoutePlanningOptions()
+        route_plan = self.plan_route(start_pos, target_pos, options)
+        raw_waypoints = (
+            route_plan.waypoints
+            if route_plan.feasible
+            else [np.asarray(target_pos, dtype=float)]
+        )
 
         full_path = [
             start_pos,
@@ -514,6 +705,37 @@ class RealVesselNetwork:
 
             return waypoints[look_idx]
 
+        def replan(current_pos, blocked_segment_ids=()):
+            replanning_options = RoutePlanningOptions(
+                wall_clearance_m=options.wall_clearance_m,
+                particle_radius_m=options.particle_radius_m,
+                minimum_surface_clearance_m=options.minimum_surface_clearance_m,
+                magnetic_authority_m_s=options.magnetic_authority_m_s,
+                minimum_authority_reserve_m_s=options.minimum_authority_reserve_m_s,
+                clearance_cost_weight=options.clearance_cost_weight,
+                flow_cost_weight=options.flow_cost_weight,
+                authority_cost_weight=options.authority_cost_weight,
+                blocked_segment_ids=frozenset(blocked_segment_ids),
+            )
+            plan = self.plan_route(current_pos, target_pos, replanning_options)
+            if not plan.feasible:
+                return plan
+            replanned_path = self._sparsify_waypoints(
+                [np.asarray(current_pos, dtype=float), *plan.waypoints],
+                min_spacing=waypoint_spacing,
+            )
+            state["waypoints"] = replanned_path[1:] or [target_pos]
+            state["idx"] = 0
+            state["best_idx"] = 0
+            state["raw_count"] = len(plan.waypoints)
+            next_waypoint.waypoints = state["waypoints"]
+            next_waypoint.route_plan = plan
+            next_waypoint.route_segment_ids = list(plan.segment_ids)
+            next_waypoint.total_hops = len(state["waypoints"])
+            next_waypoint.current_idx = 0
+            next_waypoint.best_idx = 0
+            return plan
+
         next_waypoint.waypoints = active_waypoints
         next_waypoint.raw_waypoint_count = len(raw_waypoints)
         next_waypoint.total_hops = len(active_waypoints)
@@ -527,5 +749,9 @@ class RealVesselNetwork:
         next_waypoint.lookahead = lookahead
         next_waypoint.forward_search_points = forward_search_points
         next_waypoint.arrival_tol = arrival_tol
+        next_waypoint.route_plan = route_plan
+        next_waypoint.route_segment_ids = list(route_plan.segment_ids)
+        next_waypoint.planning_options = options
+        next_waypoint.replan = replan
 
         return next_waypoint
