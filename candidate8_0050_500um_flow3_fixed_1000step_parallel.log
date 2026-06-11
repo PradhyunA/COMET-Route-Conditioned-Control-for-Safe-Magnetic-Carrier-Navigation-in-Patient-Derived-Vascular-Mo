@@ -1,0 +1,349 @@
+================================================================================
+Parallel Candidate 8 single-route smoke test
+================================================================================
+Run ID: candidate8_0050_500um_flow3_fixed_1000step_parallel
+Output root: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/outputs/candidate8_0050_smoke/candidate8_0050_500um_flow3_fixed_1000step_parallel
+Vessel file: data/0050_H_CERE_H/real_vessel_segments.pkl
+Flow scale: 3.0x
+Device mode: fixed_enclosing_stress_test
+Profile: spion_carrier_500um_blood
+Steps: 1000
+dt: 0.02
+Workers: 4
+Start m: [-0.01678  0.01367 -0.01668]
+Target m: [-0.0104  -0.01594  0.0698 ]
+Start mm: [-16.78  13.67 -16.68]
+Target mm: [-10.4  -15.94  69.8 ]
+Chord distance cm: 9.16
+================================================================================
+RealVesselNetwork: 21467 segments, flow_scale=3.00, v_mean=9.9–60.0 mm/s, radius=0.40–2.44 mm
+
+Submitting 4 controller tasks on 4 workers...
+[worker] starting controller=mpc_default pair=candidate8_adversarial_branch_trap flow=3.0x
+[worker] starting controller=acbc_tuned pair=candidate8_adversarial_branch_trap flow=3.0x
+[worker] starting controller=mpc_tuned pair=candidate8_adversarial_branch_trap flow=3.0x
+[worker] starting controller=acbc_same_weights pair=candidate8_adversarial_branch_trap flow=3.0x
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1703, sparse waypoints: 151
+      wp1: [-16.5  14.5 -16. ] mm
+      wp2: [-16.2  15.4 -15.4] mm
+      wp3: [-15.8  16.3 -14.9] mm
+      wp4: [-15.3  17.3 -14.4] mm
+      wp5: [-14.8  18.2 -13.9] mm
+      wp6: [-14.2  19.  -13.3] mm
+      wp7: [-13.6  19.7 -12.8] mm
+      wp8: [-12.9  20.4 -12.4] mm
+      wp9: [-12.3  21.1 -11.8] mm
+      wp10: [-11.6  21.6 -11.2] mm
+      ...
+      wp151: [-10.4 -15.9  69.8] mm
+    Baseline MPC navigator: arrival_tol=0.50 mm, spacing=1.00 mm, lookahead=1, forward_search_points=50
+    Device motion: mode=fixed_enclosing_stress_test, placement_radius=300.0 mm, initial_center=[-6.9 -8.1 11. ] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1703, sparse waypoints: 151
+      wp1: [-16.5  14.5 -16. ] mm
+      wp2: [-16.2  15.4 -15.4] mm
+      wp3: [-15.8  16.3 -14.9] mm
+      wp4: [-15.3  17.3 -14.4] mm
+      wp5: [-14.8  18.2 -13.9] mm
+      wp6: [-14.2  19.  -13.3] mm
+      wp7: [-13.6  19.7 -12.8] mm
+      wp8: [-12.9  20.4 -12.4] mm
+      wp9: [-12.3  21.1 -11.8] mm
+      wp10: [-11.6  21.6 -11.2] mm
+      ...
+      wp151: [-10.4 -15.9  69.8] mm
+    Baseline MPC navigator: arrival_tol=0.50 mm, spacing=1.00 mm, lookahead=1, forward_search_points=50
+    Device motion: mode=fixed_enclosing_stress_test, placement_radius=300.0 mm, initial_center=[-6.9 -8.1 11. ] mm
+  step   10/1000  final_dist=82.5mm  wp=19/151  best_wp=19/151  lookahead=20/151  wp_dist=0.51mm  wall=1.73mm  |F|=8.68e-11N  |B|=1.26e-02T  |I|=14.2A  v=113.10mm/s  flow=108.20mm/s  Re=5.49e-04  lat=0.0mm
+  step   10/1000  final_dist=82.3mm  wp=19/151  best_wp=19/151  lookahead=20/151  wp_dist=0.55mm  wall=1.81mm  |F|=7.55e-11N  |B|=9.86e-06T  |I|=16.0A  v=113.43mm/s  flow=109.04mm/s  Re=4.78e-04  lat=0.0mm
+  step   20/1000  final_dist=73.4mm  wp=39/151  best_wp=38/151  lookahead=40/151  wp_dist=1.00mm  wall=1.16mm  |F|=1.19e-06N  |B|=2.24e-02T  |I|=6.2A  v=103.32mm/s  flow=72.52mm/s  Re=5.15e+00  lat=0.0mm
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_mpc.py:594: RuntimeWarning: Step 16: no SLSQP start converged; using best-so-far
+  warnings.warn(
+  step   20/1000  final_dist=73.7mm  wp=38/151  best_wp=37/151  lookahead=39/151  wp_dist=1.04mm  wall=1.34mm  |F|=8.40e-07N  |B|=2.57e-02T  |I|=5.5A  v=102.54mm/s  flow=76.51mm/s  Re=3.86e+00  lat=0.0mm
+  step   30/1000  final_dist=57.4mm  wp=59/151  best_wp=58/151  lookahead=60/151  wp_dist=1.08mm  wall=1.36mm  |F|=1.37e-06N  |B|=2.74e-02T  |I|=7.1A  v=103.25mm/s  flow=63.16mm/s  Re=5.78e+00  lat=0.0mm
+  step   30/1000  final_dist=58.1mm  wp=58/151  best_wp=57/151  lookahead=59/151  wp_dist=1.20mm  wall=1.33mm  |F|=1.87e-06N  |B|=3.34e-02T  |I|=6.7A  v=116.33mm/s  flow=66.51mm/s  Re=7.41e+00  lat=0.0mm
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_acbc.py:680: RuntimeWarning: Step 48: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+  step   40/1000  final_dist=42.5mm  wp=79/151  best_wp=78/151  lookahead=80/151  wp_dist=1.01mm  wall=1.09mm  |F|=2.27e-06N  |B|=3.58e-02T  |I|=7.5A  v=106.25mm/s  flow=49.71mm/s  Re=8.66e+00  lat=0.0mm
+  step   40/1000  final_dist=42.5mm  wp=78/151  best_wp=77/151  lookahead=79/151  wp_dist=0.98mm  wall=1.05mm  |F|=2.00e-06N  |B|=3.86e-02T  |I|=14.5A  v=100.64mm/s  flow=49.27mm/s  Re=7.84e+00  lat=0.0mm
+  step   50/1000  final_dist=37.0mm  wp=99/151  best_wp=98/151  lookahead=100/151  wp_dist=1.01mm  wall=0.84mm  |F|=1.92e-06N  |B|=3.42e-02T  |I|=16.0A  v=99.66mm/s  flow=43.79mm/s  Re=7.58e+00  lat=0.0mm
+  step   50/1000  final_dist=37.4mm  wp=98/151  best_wp=97/151  lookahead=99/151  wp_dist=1.07mm  wall=0.87mm  |F|=2.13e-06N  |B|=3.68e-02T  |I|=13.6A  v=105.96mm/s  flow=47.17mm/s  Re=8.22e+00  lat=0.0mm
+  step   60/1000  final_dist=23.5mm  wp=119/151  best_wp=118/151  lookahead=120/151  wp_dist=0.99mm  wall=0.53mm  |F|=2.26e-06N  |B|=3.60e-02T  |I|=16.0A  v=101.09mm/s  flow=39.40mm/s  Re=8.61e+00  lat=0.0mm
+  step   60/1000  final_dist=24.2mm  wp=118/151  best_wp=117/151  lookahead=119/151  wp_dist=1.04mm  wall=0.62mm  |F|=2.40e-06N  |B|=2.50e-02T  |I|=14.5A  v=102.39mm/s  flow=44.09mm/s  Re=9.03e+00  lat=0.0mm
+  step   70/1000  final_dist=8.1mm  wp=139/151  best_wp=138/151  lookahead=140/151  wp_dist=1.03mm  wall=0.55mm  |F|=2.95e-06N  |B|=2.76e-02T  |I|=16.0A  v=106.01mm/s  flow=36.23mm/s  Re=1.06e+01  lat=0.0mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.1C
+  Gantry: mean_particle_dist=33.3mm, max_lateral=0.0mm
+[worker] finished controller=mpc_tuned reached=True steps=75 final_error_mm=0.041
+[main] saved controller=mpc_tuned reached=True steps=75 final_error_mm=0.041
+  step   70/1000  final_dist=8.9mm  wp=138/151  best_wp=137/151  lookahead=139/151  wp_dist=1.06mm  wall=0.67mm  |F|=3.02e-06N  |B|=3.79e-02T  |I|=16.0A  v=106.59mm/s  flow=37.69mm/s  Re=1.08e+01  lat=0.0mm
+  Baseline MPC summary: low-level convergence=98.68%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.2C
+  Gantry: mean_particle_dist=33.5mm, max_lateral=0.0mm
+[worker] finished controller=mpc_default reached=True steps=76 final_error_mm=0.134
+[main] saved controller=mpc_default reached=True steps=76 final_error_mm=0.134
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/simulation_3d_acbc.py:680: RuntimeWarning: Step 740: low-level current allocator did not converge; using best-so-far
+  warnings.warn(
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1703, sparse waypoints: 103
+      wp1: [-16.4  15.  -15.7] mm
+      wp2: [-15.8  16.3 -14.9] mm
+      wp3: [-15.1  17.7 -14.2] mm
+      wp4: [-14.3  18.8 -13.4] mm
+      wp5: [-13.3  20.  -12.6] mm
+      wp6: [-12.3  21.1 -11.8] mm
+      wp7: [-11.2  22.1 -10.8] mm
+      wp8: [-10.1  23.1  -9.7] mm
+      wp9: [-9.3 23.9 -8.7] mm
+      wp10: [-8.6 24.7 -7.3] mm
+      ...
+      wp103: [-10.4 -15.9  69.8] mm
+    ACBC: detection_radius=9.5 mm, branch_lookahead=5.9 mm
+    Device motion: mode=fixed_enclosing_stress_test, placement_radius=300.0 mm, initial_center=[-6.9 -8.1 11. ] mm
+  step   10/1000  state=RECOVERY_MODE         dist=83.1mm  wp=13/103  best_wp=13/103  acbc_best=13/103  stag=0  wall=1.52mm  wall_frac=0.689  |F|=6.45e-09N  |B|=1.45e-02T  |I|=7.4A  v=110.44mm/s  flow=105.83mm/s  Re=4.02e-02  lat=0.0mm
+  step   20/1000  state=RECOVERY_MODE         dist=78.3mm  wp=25/103  best_wp=25/103  acbc_best=25/103  stag=0  wall=0.71mm  wall_frac=0.570  |F|=2.92e-08N  |B|=7.15e-03T  |I|=12.2A  v=42.89mm/s  flow=42.66mm/s  Re=1.77e-01  lat=0.0mm
+  step   30/1000  state=RECOVERY_MODE         dist=79.2mm  wp=30/103  best_wp=30/103  acbc_best=30/103  stag=0  wall=0.74mm  wall_frac=0.582  |F|=1.08e-07N  |B|=1.30e-02T  |I|=5.7A  v=36.97mm/s  flow=35.46mm/s  Re=6.17e-01  lat=0.0mm
+  step   40/1000  state=RECOVERY_MODE         dist=74.3mm  wp=32/103  best_wp=32/103  acbc_best=32/103  stag=3  wall=0.68mm  wall_frac=0.596  |F|=1.81e-07N  |B|=9.84e-03T  |I|=3.2A  v=36.18mm/s  flow=31.39mm/s  Re=9.98e-01  lat=0.0mm
+  step   50/1000  state=RECOVERY_MODE         dist=68.2mm  wp=34/103  best_wp=34/103  acbc_best=34/103  stag=3  wall=0.70mm  wall_frac=0.604  |F|=7.80e-07N  |B|=2.06e-02T  |I|=13.1A  v=59.90mm/s  flow=36.11mm/s  Re=3.62e+00  lat=0.0mm
+  step   60/1000  state=RECOVERY_MODE         dist=61.7mm  wp=43/103  best_wp=43/103  acbc_best=43/103  stag=0  wall=0.68mm  wall_frac=0.629  |F|=1.87e-09N  |B|=6.76e-03T  |I|=14.4A  v=40.55mm/s  flow=40.06mm/s  Re=1.17e-02  lat=0.0mm
+  step   70/1000  state=RECOVERY_MODE         dist=54.3mm  wp=45/103  best_wp=45/103  acbc_best=45/103  stag=1  wall=0.70mm  wall_frac=0.593  |F|=1.21e-08N  |B|=1.18e-02T  |I|=13.0A  v=40.85mm/s  flow=40.25mm/s  Re=7.46e-02  lat=0.0mm
+  step   80/1000  state=RECOVERY_MODE         dist=47.5mm  wp=54/103  best_wp=54/103  acbc_best=54/103  stag=1  wall=0.73mm  wall_frac=0.628  |F|=6.41e-08N  |B|=3.45e-03T  |I|=11.8A  v=34.69mm/s  flow=34.13mm/s  Re=3.77e-01  lat=0.0mm
+  step   90/1000  state=RECOVERY_MODE         dist=43.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=1  wall=0.61mm  wall_frac=0.626  |F|=1.94e-09N  |B|=1.15e-02T  |I|=11.5A  v=30.21mm/s  flow=29.14mm/s  Re=1.22e-02  lat=0.0mm
+  step  100/1000  state=RECOVERY_MODE         dist=45.0mm  wp=60/103  best_wp=60/103  acbc_best=60/103  stag=0  wall=0.72mm  wall_frac=0.605  |F|=2.20e-10N  |B|=2.59e-03T  |I|=6.6A  v=35.83mm/s  flow=35.60mm/s  Re=1.39e-03  lat=0.0mm
+  step  110/1000  state=RECOVERY_MODE         dist=47.7mm  wp=62/103  best_wp=62/103  acbc_best=62/103  stag=2  wall=0.59mm  wall_frac=0.546  |F|=4.58e-08N  |B|=1.64e-02T  |I|=14.2A  v=36.56mm/s  flow=35.64mm/s  Re=2.73e-01  lat=0.0mm
+  step  120/1000  state=RECOVERY_MODE         dist=50.2mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=2  wall=0.61mm  wall_frac=0.419  |F|=2.73e-07N  |B|=1.95e-02T  |I|=11.7A  v=33.37mm/s  flow=33.63mm/s  Re=1.45e+00  lat=0.0mm
+  step  130/1000  state=RECOVERY_MODE         dist=55.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=12  wall=0.60mm  wall_frac=0.581  |F|=1.31e-08N  |B|=1.85e-02T  |I|=15.9A  v=29.33mm/s  flow=29.14mm/s  Re=8.10e-02  lat=0.0mm
+  step  140/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=22  wall=0.46mm  wall_frac=0.528  |F|=8.86e-07N  |B|=2.54e-02T  |I|=6.7A  v=7.31mm/s  flow=24.24mm/s  Re=4.03e+00  lat=0.0mm
+  step  150/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=32  wall=0.44mm  wall_frac=0.355  |F|=1.10e-06N  |B|=2.88e-02T  |I|=6.3A  v=12.96mm/s  flow=27.19mm/s  Re=4.84e+00  lat=0.0mm
+  step  160/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=42  wall=0.27mm  wall_frac=0.450  |F|=1.07e-06N  |B|=2.69e-02T  |I|=14.1A  v=19.93mm/s  flow=23.41mm/s  Re=4.72e+00  lat=0.0mm
+  step  170/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=52  wall=0.25mm  wall_frac=0.593  |F|=8.31e-07N  |B|=2.08e-02T  |I|=16.0A  v=19.99mm/s  flow=21.39mm/s  Re=3.82e+00  lat=0.0mm
+  step  180/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=62  wall=0.56mm  wall_frac=0.530  |F|=9.83e-07N  |B|=2.60e-02T  |I|=9.2A  v=1.40mm/s  flow=27.87mm/s  Re=4.40e+00  lat=0.0mm
+  step  190/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=72  wall=0.26mm  wall_frac=0.589  |F|=5.77e-07N  |B|=2.02e-02T  |I|=9.8A  v=17.88mm/s  flow=17.04mm/s  Re=2.80e+00  lat=0.0mm
+  step  200/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=82  wall=0.58mm  wall_frac=0.469  |F|=1.13e-06N  |B|=2.86e-02T  |I|=13.1A  v=3.52mm/s  flow=29.56mm/s  Re=4.93e+00  lat=0.0mm
+  step  210/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=92  wall=0.60mm  wall_frac=0.516  |F|=1.27e-06N  |B|=2.54e-02T  |I|=13.2A  v=2.32mm/s  flow=34.33mm/s  Re=5.44e+00  lat=0.0mm
+  step  220/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=102  wall=0.44mm  wall_frac=0.559  |F|=1.15e-06N  |B|=2.35e-02T  |I|=15.7A  v=7.63mm/s  flow=30.77mm/s  Re=5.02e+00  lat=0.0mm
+  step  230/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=112  wall=0.53mm  wall_frac=-0.060  |F|=1.16e-06N  |B|=2.48e-02T  |I|=15.6A  v=17.34mm/s  flow=27.50mm/s  Re=5.05e+00  lat=0.0mm
+  step  240/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=122  wall=0.54mm  wall_frac=0.491  |F|=9.46e-07N  |B|=2.66e-02T  |I|=13.1A  v=4.30mm/s  flow=25.42mm/s  Re=4.26e+00  lat=0.0mm
+  step  250/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=132  wall=0.60mm  wall_frac=0.517  |F|=1.08e-06N  |B|=2.30e-02T  |I|=14.0A  v=2.36mm/s  flow=29.66mm/s  Re=4.77e+00  lat=0.0mm
+  step  260/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=142  wall=0.51mm  wall_frac=-0.029  |F|=1.24e-06N  |B|=2.52e-02T  |I|=15.6A  v=17.02mm/s  flow=33.43mm/s  Re=5.33e+00  lat=0.0mm
+  step  270/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=152  wall=0.31mm  wall_frac=0.569  |F|=9.53e-07N  |B|=2.14e-02T  |I|=15.6A  v=15.13mm/s  flow=25.36mm/s  Re=4.29e+00  lat=0.0mm
+  step  280/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=162  wall=0.60mm  wall_frac=0.345  |F|=1.11e-06N  |B|=2.61e-02T  |I|=6.7A  v=7.28mm/s  flow=28.06mm/s  Re=4.86e+00  lat=0.0mm
+  step  290/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=172  wall=0.59mm  wall_frac=0.263  |F|=1.02e-06N  |B|=2.29e-02T  |I|=15.6A  v=9.60mm/s  flow=25.76mm/s  Re=4.53e+00  lat=0.0mm
+  step  300/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=182  wall=0.58mm  wall_frac=0.212  |F|=1.14e-06N  |B|=2.39e-02T  |I|=15.4A  v=10.98mm/s  flow=29.59mm/s  Re=4.96e+00  lat=0.0mm
+  step  310/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=192  wall=0.43mm  wall_frac=0.384  |F|=1.16e-06N  |B|=2.48e-02T  |I|=14.1A  v=14.66mm/s  flow=31.38mm/s  Re=5.04e+00  lat=0.0mm
+  step  320/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=202  wall=0.37mm  wall_frac=0.612  |F|=9.35e-07N  |B|=2.39e-02T  |I|=11.4A  v=15.33mm/s  flow=28.20mm/s  Re=4.22e+00  lat=0.0mm
+  step  330/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=212  wall=0.57mm  wall_frac=0.476  |F|=1.06e-06N  |B|=2.66e-02T  |I|=9.1A  v=3.76mm/s  flow=27.94mm/s  Re=4.68e+00  lat=0.0mm
+  step  340/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=222  wall=0.61mm  wall_frac=0.475  |F|=8.71e-07N  |B|=2.14e-02T  |I|=15.9A  v=3.63mm/s  flow=25.79mm/s  Re=3.97e+00  lat=0.0mm
+  step  350/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=232  wall=0.28mm  wall_frac=0.581  |F|=7.10e-07N  |B|=2.13e-02T  |I|=12.6A  v=17.76mm/s  flow=21.01mm/s  Re=3.35e+00  lat=0.0mm
+  step  360/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=242  wall=0.22mm  wall_frac=0.590  |F|=9.07e-07N  |B|=2.55e-02T  |I|=7.3A  v=20.23mm/s  flow=20.11mm/s  Re=4.11e+00  lat=0.0mm
+  step  370/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=252  wall=0.59mm  wall_frac=-0.001  |F|=1.47e-06N  |B|=2.88e-02T  |I|=8.1A  v=20.11mm/s  flow=33.28mm/s  Re=6.11e+00  lat=0.0mm
+  step  380/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=262  wall=0.53mm  wall_frac=-0.057  |F|=1.18e-06N  |B|=2.49e-02T  |I|=15.7A  v=17.05mm/s  flow=27.50mm/s  Re=5.12e+00  lat=0.0mm
+  step  390/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=272  wall=0.37mm  wall_frac=0.561  |F|=7.89e-07N  |B|=2.23e-02T  |I|=14.0A  v=11.74mm/s  flow=21.78mm/s  Re=3.66e+00  lat=0.0mm
+  step  400/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=282  wall=0.43mm  wall_frac=0.547  |F|=1.01e-06N  |B|=2.29e-02T  |I|=14.0A  v=9.11mm/s  flow=26.91mm/s  Re=4.49e+00  lat=0.0mm
+  step  410/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=292  wall=0.52mm  wall_frac=0.358  |F|=1.35e-06N  |B|=3.11e-02T  |I|=7.0A  v=9.53mm/s  flow=33.47mm/s  Re=5.72e+00  lat=0.0mm
+  step  420/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=302  wall=0.52mm  wall_frac=-0.014  |F|=1.21e-06N  |B|=2.61e-02T  |I|=8.0A  v=16.80mm/s  flow=32.64mm/s  Re=5.24e+00  lat=0.0mm
+  step  430/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=312  wall=0.61mm  wall_frac=0.379  |F|=1.03e-06N  |B|=2.35e-02T  |I|=10.9A  v=6.49mm/s  flow=28.06mm/s  Re=4.56e+00  lat=0.0mm
+  step  440/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=322  wall=0.55mm  wall_frac=0.010  |F|=1.11e-06N  |B|=2.42e-02T  |I|=15.9A  v=15.86mm/s  flow=25.49mm/s  Re=4.86e+00  lat=0.0mm
+  step  450/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=332  wall=0.61mm  wall_frac=0.516  |F|=1.10e-06N  |B|=2.66e-02T  |I|=7.3A  v=3.10mm/s  flow=29.68mm/s  Re=4.83e+00  lat=0.0mm
+  step  460/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=342  wall=0.61mm  wall_frac=0.426  |F|=1.39e-06N  |B|=2.62e-02T  |I|=15.3A  v=4.77mm/s  flow=34.35mm/s  Re=5.84e+00  lat=0.0mm
+  step  470/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=352  wall=0.58mm  wall_frac=0.460  |F|=1.30e-06N  |B|=2.97e-02T  |I|=7.1A  v=4.02mm/s  flow=33.28mm/s  Re=5.54e+00  lat=0.0mm
+  step  480/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=362  wall=0.57mm  wall_frac=0.529  |F|=1.00e-06N  |B|=2.26e-02T  |I|=12.9A  v=1.83mm/s  flow=27.90mm/s  Re=4.46e+00  lat=0.0mm
+  step  490/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=372  wall=0.33mm  wall_frac=0.430  |F|=8.12e-07N  |B|=2.07e-02T  |I|=15.9A  v=17.07mm/s  flow=20.32mm/s  Re=3.75e+00  lat=0.0mm
+  step  500/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=382  wall=0.45mm  wall_frac=0.541  |F|=1.03e-06N  |B|=2.31e-02T  |I|=14.0A  v=8.12mm/s  flow=27.48mm/s  Re=4.56e+00  lat=0.0mm
+  step  510/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=392  wall=0.55mm  wall_frac=0.218  |F|=1.39e-06N  |B|=2.61e-02T  |I|=15.7A  v=11.48mm/s  flow=33.92mm/s  Re=5.84e+00  lat=0.0mm
+  step  520/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=402  wall=0.54mm  wall_frac=0.033  |F|=1.19e-06N  |B|=2.60e-02T  |I|=7.5A  v=16.07mm/s  flow=32.82mm/s  Re=5.15e+00  lat=0.0mm
+  step  530/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=412  wall=0.58mm  wall_frac=0.447  |F|=1.09e-06N  |B|=2.28e-02T  |I|=14.1A  v=4.27mm/s  flow=27.98mm/s  Re=4.78e+00  lat=0.0mm
+  step  540/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=422  wall=0.58mm  wall_frac=0.203  |F|=1.03e-06N  |B|=2.31e-02T  |I|=15.6A  v=11.26mm/s  flow=25.73mm/s  Re=4.56e+00  lat=0.0mm
+  step  550/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=432  wall=0.56mm  wall_frac=0.252  |F|=1.12e-06N  |B|=2.32e-02T  |I|=15.8A  v=11.06mm/s  flow=29.48mm/s  Re=4.90e+00  lat=0.0mm
+  step  560/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=442  wall=0.57mm  wall_frac=0.180  |F|=1.30e-06N  |B|=2.48e-02T  |I|=15.8A  v=11.76mm/s  flow=34.17mm/s  Re=5.54e+00  lat=0.0mm
+  step  570/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=452  wall=0.51mm  wall_frac=0.532  |F|=1.22e-06N  |B|=2.38e-02T  |I|=14.6A  v=5.61mm/s  flow=32.29mm/s  Re=5.26e+00  lat=0.0mm
+  step  580/1000  state=RECOVERY_MODE         dist=56.8mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=462  wall=0.66mm  wall_frac=0.527  |F|=1.20e-06N  |B|=2.55e-02T  |I|=15.8A  v=6.67mm/s  flow=30.18mm/s  Re=5.20e+00  lat=0.0mm
+  step  590/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=472  wall=0.58mm  wall_frac=0.191  |F|=1.05e-06N  |B|=2.34e-02T  |I|=15.6A  v=11.46mm/s  flow=25.72mm/s  Re=4.66e+00  lat=0.0mm
+  step  600/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=482  wall=0.46mm  wall_frac=0.260  |F|=1.02e-06N  |B|=2.39e-02T  |I|=8.1A  v=15.57mm/s  flow=27.81mm/s  Re=4.55e+00  lat=0.0mm
+  step  610/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=492  wall=0.61mm  wall_frac=0.451  |F|=1.28e-06N  |B|=2.54e-02T  |I|=13.3A  v=4.22mm/s  flow=34.35mm/s  Re=5.48e+00  lat=0.0mm
+  step  620/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=502  wall=0.53mm  wall_frac=0.019  |F|=1.19e-06N  |B|=2.60e-02T  |I|=7.6A  v=16.29mm/s  flow=32.78mm/s  Re=5.16e+00  lat=0.0mm
+  step  630/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=512  wall=0.27mm  wall_frac=0.594  |F|=6.14e-07N  |B|=2.09e-02T  |I|=6.4A  v=19.41mm/s  flow=19.04mm/s  Re=2.95e+00  lat=0.0mm
+  step  640/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=522  wall=0.54mm  wall_frac=0.496  |F|=9.51e-07N  |B|=2.28e-02T  |I|=14.3A  v=4.48mm/s  flow=25.39mm/s  Re=4.28e+00  lat=0.0mm
+  step  650/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=532  wall=0.56mm  wall_frac=0.126  |F|=1.24e-06N  |B|=2.51e-02T  |I|=15.8A  v=12.63mm/s  flow=29.47mm/s  Re=5.31e+00  lat=0.0mm
+  step  660/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=542  wall=0.36mm  wall_frac=0.573  |F|=1.14e-06N  |B|=2.36e-02T  |I|=15.7A  v=12.32mm/s  flow=28.41mm/s  Re=4.97e+00  lat=0.0mm
+  step  670/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=552  wall=0.25mm  wall_frac=0.593  |F|=8.31e-07N  |B|=2.08e-02T  |I|=16.0A  v=20.01mm/s  flow=21.30mm/s  Re=3.82e+00  lat=0.0mm
+  step  680/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=562  wall=0.62mm  wall_frac=0.489  |F|=9.98e-07N  |B|=2.22e-02T  |I|=16.0A  v=3.47mm/s  flow=28.06mm/s  Re=4.45e+00  lat=0.0mm
+  step  690/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=572  wall=0.55mm  wall_frac=0.006  |F|=1.13e-06N  |B|=2.42e-02T  |I|=15.8A  v=15.79mm/s  flow=25.48mm/s  Re=4.92e+00  lat=0.0mm
+  step  700/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=582  wall=0.60mm  wall_frac=0.521  |F|=1.09e-06N  |B|=2.66e-02T  |I|=7.3A  v=2.52mm/s  flow=29.67mm/s  Re=4.81e+00  lat=0.0mm
+  step  710/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=592  wall=0.51mm  wall_frac=0.206  |F|=1.35e-06N  |B|=2.58e-02T  |I|=15.7A  v=13.23mm/s  flow=33.40mm/s  Re=5.72e+00  lat=0.0mm
+  step  720/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=602  wall=0.59mm  wall_frac=0.475  |F|=1.29e-06N  |B|=2.48e-02T  |I|=15.8A  v=3.44mm/s  flow=33.32mm/s  Re=5.51e+00  lat=0.0mm
+  step  730/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=612  wall=0.47mm  wall_frac=0.434  |F|=1.05e-06N  |B|=2.27e-02T  |I|=15.7A  v=9.72mm/s  flow=26.53mm/s  Re=4.66e+00  lat=0.0mm
+  step  740/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=622  wall=0.40mm  wall_frac=0.450  |F|=8.70e-07N  |B|=2.58e-02T  |I|=6.8A  v=12.76mm/s  flow=22.51mm/s  Re=3.97e+00  lat=0.0mm
+  step  750/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=632  wall=0.39mm  wall_frac=0.361  |F|=1.05e-06N  |B|=2.85e-02T  |I|=6.3A  v=15.04mm/s  flow=25.80mm/s  Re=4.66e+00  lat=0.0mm
+  step  760/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=642  wall=0.37mm  wall_frac=0.568  |F|=1.18e-06N  |B|=2.42e-02T  |I|=15.3A  v=11.88mm/s  flow=29.10mm/s  Re=5.12e+00  lat=0.0mm
+  step  770/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=652  wall=0.62mm  wall_frac=0.518  |F|=1.32e-06N  |B|=2.77e-02T  |I|=7.1A  v=4.54mm/s  flow=33.36mm/s  Re=5.62e+00  lat=0.0mm
+  step  780/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=662  wall=0.47mm  wall_frac=0.466  |F|=1.03e-06N  |B|=2.78e-02T  |I|=6.2A  v=8.92mm/s  flow=26.45mm/s  Re=4.56e+00  lat=0.0mm
+  step  790/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=672  wall=0.40mm  wall_frac=0.470  |F|=8.67e-07N  |B|=2.57e-02T  |I|=6.9A  v=12.18mm/s  flow=22.61mm/s  Re=3.96e+00  lat=0.0mm
+  step  800/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=682  wall=0.39mm  wall_frac=0.417  |F|=1.04e-06N  |B|=2.82e-02T  |I|=6.6A  v=13.89mm/s  flow=25.75mm/s  Re=4.62e+00  lat=0.0mm
+  step  810/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=692  wall=0.37mm  wall_frac=0.563  |F|=1.12e-06N  |B|=2.46e-02T  |I|=13.1A  v=11.74mm/s  flow=29.10mm/s  Re=4.90e+00  lat=0.0mm
+  step  820/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=702  wall=0.57mm  wall_frac=0.437  |F|=1.31e-06N  |B|=3.01e-02T  |I|=7.3A  v=5.31mm/s  flow=33.20mm/s  Re=5.57e+00  lat=0.0mm
+  step  830/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=712  wall=0.46mm  wall_frac=0.286  |F|=9.54e-07N  |B|=2.29e-02T  |I|=8.2A  v=15.26mm/s  flow=26.23mm/s  Re=4.29e+00  lat=0.0mm
+  step  840/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=722  wall=0.46mm  wall_frac=0.331  |F|=8.64e-07N  |B|=2.20e-02T  |I|=8.0A  v=14.00mm/s  flow=24.21mm/s  Re=3.95e+00  lat=0.0mm
+  step  850/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=732  wall=0.54mm  wall_frac=0.213  |F|=1.10e-06N  |B|=2.38e-02T  |I|=15.8A  v=12.99mm/s  flow=29.24mm/s  Re=4.82e+00  lat=0.0mm
+  step  860/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=742  wall=0.60mm  wall_frac=0.446  |F|=1.21e-06N  |B|=2.41e-02T  |I|=15.8A  v=5.23mm/s  flow=34.33mm/s  Re=5.22e+00  lat=0.0mm
+  step  870/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=752  wall=0.62mm  wall_frac=0.484  |F|=1.24e-06N  |B|=2.43e-02T  |I|=15.7A  v=3.58mm/s  flow=33.36mm/s  Re=5.33e+00  lat=0.0mm
+  step  880/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=762  wall=0.54mm  wall_frac=0.441  |F|=9.47e-07N  |B|=2.54e-02T  |I|=10.4A  v=7.99mm/s  flow=27.70mm/s  Re=4.26e+00  lat=0.0mm
+  step  890/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=772  wall=0.58mm  wall_frac=0.170  |F|=1.08e-06N  |B|=2.33e-02T  |I|=15.8A  v=11.93mm/s  flow=25.71mm/s  Re=4.75e+00  lat=0.0mm
+  step  900/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=782  wall=0.50mm  wall_frac=0.204  |F|=1.06e-06N  |B|=2.44e-02T  |I|=8.3A  v=15.04mm/s  flow=28.58mm/s  Re=4.69e+00  lat=0.0mm
+  step  910/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=792  wall=0.53mm  wall_frac=0.546  |F|=1.23e-06N  |B|=2.92e-02T  |I|=7.6A  v=2.73mm/s  flow=33.77mm/s  Re=5.28e+00  lat=0.0mm
+  step  920/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=802  wall=0.25mm  wall_frac=0.593  |F|=8.26e-07N  |B|=2.08e-02T  |I|=16.0A  v=20.03mm/s  flow=21.38mm/s  Re=3.80e+00  lat=0.0mm
+  step  930/1000  state=RECOVERY_MODE         dist=56.8mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=812  wall=0.61mm  wall_frac=0.522  |F|=1.19e-06N  |B|=2.62e-02T  |I|=7.6A  v=6.25mm/s  flow=29.96mm/s  Re=5.15e+00  lat=0.0mm
+  step  940/1000  state=RECOVERY_MODE         dist=57.1mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=822  wall=0.29mm  wall_frac=0.462  |F|=6.96e-07N  |B|=2.44e-02T  |I|=13.0A  v=18.25mm/s  flow=18.41mm/s  Re=3.29e+00  lat=0.0mm
+  step  950/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=832  wall=0.57mm  wall_frac=0.459  |F|=1.14e-06N  |B|=3.14e-02T  |I|=13.2A  v=4.02mm/s  flow=29.52mm/s  Re=4.98e+00  lat=0.0mm
+  step  960/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=842  wall=0.61mm  wall_frac=0.438  |F|=1.29e-06N  |B|=2.58e-02T  |I|=8.9A  v=4.60mm/s  flow=34.35mm/s  Re=5.51e+00  lat=0.0mm
+  step  970/1000  state=RECOVERY_MODE         dist=57.0mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=852  wall=0.52mm  wall_frac=-0.013  |F|=1.22e-06N  |B|=2.61e-02T  |I|=8.0A  v=16.78mm/s  flow=32.64mm/s  Re=5.24e+00  lat=0.0mm
+  step  980/1000  state=RECOVERY_MODE         dist=56.7mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=862  wall=0.63mm  wall_frac=0.493  |F|=1.52e-06N  |B|=2.78e-02T  |I|=12.0A  v=14.81mm/s  flow=31.42mm/s  Re=6.29e+00  lat=0.0mm
+  step  990/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=872  wall=0.48mm  wall_frac=0.387  |F|=8.52e-07N  |B|=2.20e-02T  |I|=14.1A  v=12.31mm/s  flow=24.49mm/s  Re=3.90e+00  lat=0.0mm
+  step 1000/1000  state=RECOVERY_MODE         dist=56.9mm  wp=68/103  best_wp=68/103  acbc_best=68/103  stag=882  wall=0.59mm  wall_frac=0.285  |F|=1.13e-06N  |B|=2.38e-02T  |I|=15.4A  v=8.97mm/s  flow=29.64mm/s  Re=4.95e+00  lat=0.0mm
+  ACBC summary: transitions=8, commitments=0, recoveries=4, escapes=0, low-level convergence=99.80%
+  Hardware: max_actual_I=13.04A, max_V=19.2V, max_P=250.0W, max_temp=24.4C
+  Gantry: mean_particle_dist=26.9mm, max_lateral=0.0mm
+[worker] finished controller=acbc_same_weights reached=False steps=1000 final_error_mm=56.935
+ACBC diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/outputs/candidate8_0050_smoke/candidate8_0050_500um_flow3_fixed_1000step_parallel/flow_3x/acbc_same_weights/acbc_diagnostics.csv
+[main] saved controller=acbc_same_weights reached=False steps=1000 final_error_mm=56.935
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1703, sparse waypoints: 103
+      wp1: [-16.4  15.  -15.7] mm
+      wp2: [-15.8  16.3 -14.9] mm
+      wp3: [-15.1  17.7 -14.2] mm
+      wp4: [-14.3  18.8 -13.4] mm
+      wp5: [-13.3  20.  -12.6] mm
+      wp6: [-12.3  21.1 -11.8] mm
+      wp7: [-11.2  22.1 -10.8] mm
+      wp8: [-10.1  23.1  -9.7] mm
+      wp9: [-9.3 23.9 -8.7] mm
+      wp10: [-8.6 24.7 -7.3] mm
+      ...
+      wp103: [-10.4 -15.9  69.8] mm
+    ACBC: detection_radius=9.5 mm, branch_lookahead=5.9 mm
+    Device motion: mode=fixed_enclosing_stress_test, placement_radius=300.0 mm, initial_center=[-6.9 -8.1 11. ] mm
+  step   10/1000  state=RECOVERY_MODE         dist=78.3mm  wp=18/103  best_wp=18/103  acbc_best=18/103  stag=0  wall=1.43mm  wall_frac=0.288  |F|=1.73e-06N  |B|=1.63e-02T  |I|=9.5A  v=76.95mm/s  flow=90.24mm/s  Re=6.98e+00  lat=0.0mm
+  step   20/1000  state=RECOVERY_MODE         dist=76.0mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=4  wall=0.76mm  wall_frac=0.726  |F|=2.63e-06N  |B|=3.99e-02T  |I|=16.0A  v=46.64mm/s  flow=60.22mm/s  Re=9.72e+00  lat=0.0mm
+  step   30/1000  state=RECOVERY_MODE         dist=76.4mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=14  wall=0.90mm  wall_frac=0.593  |F|=2.32e-06N  |B|=3.60e-02T  |I|=8.6A  v=40.15mm/s  flow=55.12mm/s  Re=8.79e+00  lat=0.0mm
+  step   40/1000  state=RECOVERY_MODE         dist=76.8mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=24  wall=0.91mm  wall_frac=0.542  |F|=1.82e-06N  |B|=3.28e-02T  |I|=16.0A  v=38.07mm/s  flow=48.99mm/s  Re=7.27e+00  lat=0.0mm
+  step   50/1000  state=RECOVERY_MODE         dist=76.8mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=34  wall=0.76mm  wall_frac=0.540  |F|=2.14e-06N  |B|=3.44e-02T  |I|=8.7A  v=47.99mm/s  flow=51.33mm/s  Re=8.27e+00  lat=0.0mm
+  step   60/1000  state=RECOVERY_MODE         dist=77.6mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=44  wall=1.22mm  wall_frac=0.301  |F|=1.45e-06N  |B|=2.58e-02T  |I|=16.0A  v=53.50mm/s  flow=72.16mm/s  Re=6.06e+00  lat=0.0mm
+  step   70/1000  state=VIABILITY_ASSESSMENT  dist=77.1mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=54  wall=0.03mm  wall_frac=0.697  |F|=1.15e-05N  |B|=1.02e-01T  |I|=16.0A  v=142.10mm/s  flow=2.85mm/s  Re=2.89e+01  lat=0.0mm
+  step   80/1000  state=RECOVERY_MODE         dist=76.6mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=64  wall=0.90mm  wall_frac=-0.038  |F|=1.29e-06N  |B|=2.69e-02T  |I|=16.0A  v=35.50mm/s  flow=56.28mm/s  Re=5.49e+00  lat=0.0mm
+  step   90/1000  state=RECOVERY_MODE         dist=71.2mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=74  wall=1.32mm  wall_frac=0.371  |F|=9.68e-07N  |B|=2.14e-02T  |I|=12.1A  v=51.69mm/s  flow=57.13mm/s  Re=4.34e+00  lat=0.0mm
+  step  100/1000  state=RECOVERY_MODE         dist=63.9mm  wp=20/103  best_wp=20/103  acbc_best=20/103  stag=84  wall=0.83mm  wall_frac=0.736  |F|=5.93e-07N  |B|=1.54e-02T  |I|=16.0A  v=53.86mm/s  flow=51.55mm/s  Re=2.87e+00  lat=0.0mm
+  step  110/1000  state=RECOVERY_MODE         dist=62.1mm  wp=45/103  best_wp=45/103  acbc_best=45/103  stag=3  wall=0.71mm  wall_frac=0.504  |F|=4.26e-07N  |B|=1.28e-02T  |I|=16.0A  v=45.67mm/s  flow=45.86mm/s  Re=2.15e+00  lat=0.0mm
+  step  120/1000  state=RECOVERY_MODE         dist=56.6mm  wp=53/103  best_wp=53/103  acbc_best=53/103  stag=0  wall=0.72mm  wall_frac=0.552  |F|=4.78e-07N  |B|=1.44e-02T  |I|=11.6A  v=36.62mm/s  flow=44.80mm/s  Re=2.38e+00  lat=0.0mm
+  step  130/1000  state=RECOVERY_MODE         dist=52.1mm  wp=54/103  best_wp=54/103  acbc_best=54/103  stag=7  wall=0.74mm  wall_frac=0.529  |F|=4.53e-08N  |B|=4.56e-03T  |I|=1.1A  v=37.77mm/s  flow=37.75mm/s  Re=2.70e-01  lat=0.0mm
+  step  140/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=1  wall=0.52mm  wall_frac=0.521  |F|=7.03e-07N  |B|=1.00e-02T  |I|=14.1A  v=0.03mm/s  flow=21.88mm/s  Re=3.32e+00  lat=0.0mm
+  step  150/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=11  wall=0.49mm  wall_frac=0.521  |F|=1.02e-06N  |B|=2.28e-02T  |I|=11.6A  v=5.71mm/s  flow=26.37mm/s  Re=4.54e+00  lat=0.0mm
+  step  160/1000  state=RECOVERY_MODE         dist=54.1mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=21  wall=0.63mm  wall_frac=0.607  |F|=1.48e-06N  |B|=3.64e-02T  |I|=12.5A  v=2.20mm/s  flow=35.26mm/s  Re=6.17e+00  lat=0.0mm
+  step  170/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=31  wall=0.48mm  wall_frac=0.244  |F|=1.52e-06N  |B|=2.88e-02T  |I|=16.0A  v=16.86mm/s  flow=32.36mm/s  Re=6.29e+00  lat=0.0mm
+  step  180/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=41  wall=0.52mm  wall_frac=0.521  |F|=7.93e-07N  |B|=1.80e-02T  |I|=16.0A  v=0.45mm/s  flow=23.81mm/s  Re=3.67e+00  lat=0.0mm
+  step  190/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=51  wall=0.52mm  wall_frac=0.521  |F|=7.02e-07N  |B|=1.86e-02T  |I|=16.0A  v=0.00mm/s  flow=21.88mm/s  Re=3.31e+00  lat=0.0mm
+  step  200/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=61  wall=0.53mm  wall_frac=0.521  |F|=1.37e-06N  |B|=2.67e-02T  |I|=11.7A  v=11.70mm/s  flow=29.62mm/s  Re=5.78e+00  lat=0.0mm
+  step  210/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=71  wall=0.55mm  wall_frac=0.549  |F|=1.06e-06N  |B|=2.33e-02T  |I|=11.0A  v=0.01mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  220/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=81  wall=0.52mm  wall_frac=0.492  |F|=9.83e-07N  |B|=2.53e-02T  |I|=16.0A  v=0.85mm/s  flow=28.30mm/s  Re=4.40e+00  lat=0.0mm
+  step  230/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=91  wall=0.63mm  wall_frac=0.604  |F|=9.83e-07N  |B|=2.30e-02T  |I|=11.0A  v=0.38mm/s  flow=28.81mm/s  Re=4.40e+00  lat=0.0mm
+  step  240/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=101  wall=0.63mm  wall_frac=0.604  |F|=9.09e-07N  |B|=2.26e-02T  |I|=10.9A  v=0.71mm/s  flow=26.48mm/s  Re=4.12e+00  lat=0.0mm
+  step  250/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=111  wall=0.55mm  wall_frac=0.604  |F|=9.83e-07N  |B|=2.30e-02T  |I|=11.0A  v=1.57mm/s  flow=26.76mm/s  Re=4.40e+00  lat=0.0mm
+  step  260/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=121  wall=0.55mm  wall_frac=0.546  |F|=1.07e-06N  |B|=2.32e-02T  |I|=11.0A  v=0.04mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  270/1000  state=RECOVERY_MODE         dist=54.1mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=131  wall=0.70mm  wall_frac=0.588  |F|=1.77e-06N  |B|=2.87e-02T  |I|=12.4A  v=12.97mm/s  flow=40.08mm/s  Re=7.10e+00  lat=0.0mm
+  step  280/1000  state=RECOVERY_MODE         dist=54.5mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=141  wall=0.12mm  wall_frac=0.607  |F|=2.77e-10N  |B|=3.26e-04T  |I|=0.1A  v=33.73mm/s  flow=9.75mm/s  Re=1.75e-03  lat=0.0mm
+  step  290/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=151  wall=0.52mm  wall_frac=0.521  |F|=7.02e-07N  |B|=1.07e-02T  |I|=14.0A  v=0.00mm/s  flow=21.88mm/s  Re=3.31e+00  lat=0.0mm
+  step  300/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=161  wall=0.53mm  wall_frac=0.521  |F|=1.37e-06N  |B|=2.78e-02T  |I|=10.9A  v=11.70mm/s  flow=29.62mm/s  Re=5.78e+00  lat=0.0mm
+  step  310/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=171  wall=0.55mm  wall_frac=0.549  |F|=1.07e-06N  |B|=2.33e-02T  |I|=10.8A  v=0.05mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  320/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=181  wall=0.63mm  wall_frac=0.545  |F|=1.22e-06N  |B|=2.64e-02T  |I|=11.6A  v=1.99mm/s  flow=34.24mm/s  Re=5.27e+00  lat=0.0mm
+  step  330/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=191  wall=0.63mm  wall_frac=0.604  |F|=9.82e-07N  |B|=2.31e-02T  |I|=10.9A  v=0.35mm/s  flow=28.81mm/s  Re=4.40e+00  lat=0.0mm
+  step  340/1000  state=RECOVERY_MODE         dist=54.1mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=201  wall=0.63mm  wall_frac=0.604  |F|=8.92e-07N  |B|=2.27e-02T  |I|=10.9A  v=0.27mm/s  flow=26.48mm/s  Re=4.06e+00  lat=0.0mm
+  step  350/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=211  wall=0.63mm  wall_frac=0.604  |F|=1.03e-06N  |B|=2.33e-02T  |I|=11.0A  v=0.37mm/s  flow=30.47mm/s  Re=4.58e+00  lat=0.0mm
+  step  360/1000  state=RECOVERY_MODE         dist=54.5mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=221  wall=0.34mm  wall_frac=0.262  |F|=9.41e-07N  |B|=2.71e-02T  |I|=16.0A  v=31.57mm/s  flow=25.79mm/s  Re=4.24e+00  lat=0.0mm
+  step  370/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=231  wall=0.63mm  wall_frac=0.604  |F|=1.24e-06N  |B|=2.54e-02T  |I|=11.5A  v=1.03mm/s  flow=34.24mm/s  Re=5.32e+00  lat=0.0mm
+  step  380/1000  state=RECOVERY_MODE         dist=53.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=241  wall=0.74mm  wall_frac=0.400  |F|=4.36e-07N  |B|=1.60e-02T  |I|=16.0A  v=37.85mm/s  flow=38.09mm/s  Re=2.20e+00  lat=0.0mm
+  step  390/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=251  wall=0.52mm  wall_frac=0.521  |F|=7.01e-07N  |B|=1.01e-02T  |I|=14.1A  v=0.03mm/s  flow=21.88mm/s  Re=3.31e+00  lat=0.0mm
+  step  400/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=261  wall=0.52mm  wall_frac=0.227  |F|=7.23e-07N  |B|=6.99e-03T  |I|=16.0A  v=7.91mm/s  flow=25.18mm/s  Re=3.40e+00  lat=0.0mm
+  step  410/1000  state=RECOVERY_MODE         dist=54.0mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=271  wall=0.60mm  wall_frac=0.413  |F|=1.73e-06N  |B|=2.36e-02T  |I|=12.4A  v=14.68mm/s  flow=38.32mm/s  Re=6.97e+00  lat=0.0mm
+  step  420/1000  state=VIABILITY_ASSESSMENT  dist=53.9mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=281  wall=0.50mm  wall_frac=0.607  |F|=1.51e-06N  |B|=1.56e-02T  |I|=16.0A  v=10.69mm/s  flow=36.03mm/s  Re=6.27e+00  lat=0.0mm
+  step  430/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=291  wall=0.52mm  wall_frac=0.520  |F|=7.76e-07N  |B|=1.73e-02T  |I|=16.0A  v=0.01mm/s  flow=23.81mm/s  Re=3.61e+00  lat=0.0mm
+  step  440/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=301  wall=0.63mm  wall_frac=0.521  |F|=9.86e-07N  |B|=1.08e-02T  |I|=16.0A  v=7.31mm/s  flow=26.48mm/s  Re=4.41e+00  lat=0.0mm
+  step  450/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=311  wall=0.55mm  wall_frac=0.239  |F|=8.95e-07N  |B|=1.60e-02T  |I|=11.0A  v=8.60mm/s  flow=26.76mm/s  Re=4.07e+00  lat=0.0mm
+  step  460/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=321  wall=0.52mm  wall_frac=0.519  |F|=9.89e-07N  |B|=2.68e-02T  |I|=10.6A  v=0.01mm/s  flow=29.15mm/s  Re=4.42e+00  lat=0.0mm
+  step  470/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=331  wall=0.52mm  wall_frac=0.477  |F|=9.97e-07N  |B|=2.22e-02T  |I|=13.3A  v=1.21mm/s  flow=28.30mm/s  Re=4.45e+00  lat=0.0mm
+  step  480/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=341  wall=0.63mm  wall_frac=0.604  |F|=9.65e-07N  |B|=2.29e-02T  |I|=10.9A  v=0.08mm/s  flow=28.81mm/s  Re=4.33e+00  lat=0.0mm
+  step  490/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=351  wall=0.63mm  wall_frac=0.604  |F|=8.95e-07N  |B|=2.25e-02T  |I|=10.8A  v=0.35mm/s  flow=26.48mm/s  Re=4.07e+00  lat=0.0mm
+  step  500/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=361  wall=0.63mm  wall_frac=0.551  |F|=1.03e-06N  |B|=2.34e-02T  |I|=11.1A  v=1.72mm/s  flow=30.47mm/s  Re=4.58e+00  lat=0.0mm
+  step  510/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=371  wall=0.55mm  wall_frac=0.548  |F|=1.07e-06N  |B|=2.30e-02T  |I|=10.9A  v=0.03mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  520/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=381  wall=0.63mm  wall_frac=0.539  |F|=1.05e-06N  |B|=2.34e-02T  |I|=11.0A  v=0.83mm/s  flow=34.24mm/s  Re=4.66e+00  lat=0.0mm
+  step  530/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=391  wall=0.63mm  wall_frac=0.604  |F|=9.66e-07N  |B|=2.27e-02T  |I|=10.9A  v=0.05mm/s  flow=28.81mm/s  Re=4.34e+00  lat=0.0mm
+  step  540/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=401  wall=0.63mm  wall_frac=0.604  |F|=8.80e-07N  |B|=2.23e-02T  |I|=10.8A  v=0.03mm/s  flow=26.48mm/s  Re=4.01e+00  lat=0.0mm
+  step  550/1000  state=VIABILITY_ASSESSMENT  dist=53.8mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=411  wall=0.42mm  wall_frac=0.559  |F|=1.37e-06N  |B|=1.94e-02T  |I|=13.1A  v=19.97mm/s  flow=28.99mm/s  Re=5.79e+00  lat=0.0mm
+  step  560/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=421  wall=0.55mm  wall_frac=0.547  |F|=1.07e-06N  |B|=2.30e-02T  |I|=10.8A  v=0.12mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  570/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=431  wall=0.53mm  wall_frac=0.548  |F|=1.05e-06N  |B|=1.39e-02T  |I|=10.7A  v=5.28mm/s  flow=33.29mm/s  Re=4.66e+00  lat=0.0mm
+  step  580/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=441  wall=0.63mm  wall_frac=0.604  |F|=9.60e-07N  |B|=2.31e-02T  |I|=11.0A  v=0.19mm/s  flow=28.81mm/s  Re=4.31e+00  lat=0.0mm
+  step  590/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=451  wall=0.63mm  wall_frac=0.604  |F|=8.66e-07N  |B|=2.26e-02T  |I|=10.9A  v=0.38mm/s  flow=26.48mm/s  Re=3.96e+00  lat=0.0mm
+  step  600/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=461  wall=0.53mm  wall_frac=0.521  |F|=1.37e-06N  |B|=2.68e-02T  |I|=11.5A  v=11.63mm/s  flow=29.62mm/s  Re=5.77e+00  lat=0.0mm
+  step  610/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=471  wall=0.38mm  wall_frac=0.284  |F|=1.17e-06N  |B|=3.10e-02T  |I|=10.3A  v=26.98mm/s  flow=27.75mm/s  Re=5.08e+00  lat=0.0mm
+  step  620/1000  state=RECOVERY_MODE         dist=54.0mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=481  wall=0.70mm  wall_frac=0.415  |F|=1.66e-06N  |B|=2.28e-02T  |I|=11.9A  v=12.22mm/s  flow=40.08mm/s  Re=6.74e+00  lat=0.0mm
+  step  630/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=491  wall=0.63mm  wall_frac=0.604  |F|=9.63e-07N  |B|=1.53e-02T  |I|=16.0A  v=0.14mm/s  flow=28.81mm/s  Re=4.33e+00  lat=0.0mm
+  step  640/1000  state=RECOVERY_MODE         dist=54.1mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=501  wall=0.63mm  wall_frac=0.604  |F|=8.82e-07N  |B|=1.42e-02T  |I|=16.0A  v=0.04mm/s  flow=26.48mm/s  Re=4.02e+00  lat=0.0mm
+  step  650/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=511  wall=0.55mm  wall_frac=0.549  |F|=9.11e-07N  |B|=2.26e-02T  |I|=10.7A  v=0.37mm/s  flow=26.76mm/s  Re=4.13e+00  lat=0.0mm
+  step  660/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=521  wall=0.55mm  wall_frac=0.549  |F|=1.07e-06N  |B|=2.33e-02T  |I|=11.0A  v=0.11mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  670/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=531  wall=0.51mm  wall_frac=0.518  |F|=1.31e-06N  |B|=1.60e-02T  |I|=14.7A  v=7.84mm/s  flow=33.04mm/s  Re=5.59e+00  lat=0.0mm
+  step  680/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=541  wall=0.60mm  wall_frac=0.100  |F|=9.28e-07N  |B|=2.29e-02T  |I|=15.8A  v=22.72mm/s  flow=28.72mm/s  Re=4.19e+00  lat=0.0mm
+  step  690/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=551  wall=0.52mm  wall_frac=0.521  |F|=7.03e-07N  |B|=1.09e-02T  |I|=14.5A  v=0.02mm/s  flow=21.88mm/s  Re=3.32e+00  lat=0.0mm
+  step  700/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=561  wall=0.52mm  wall_frac=0.228  |F|=7.26e-07N  |B|=6.97e-03T  |I|=16.0A  v=7.87mm/s  flow=25.18mm/s  Re=3.41e+00  lat=0.0mm
+  step  710/1000  state=RECOVERY_MODE         dist=54.6mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=571  wall=0.02mm  wall_frac=0.607  |F|=1.23e-10N  |B|=3.88e-06T  |I|=8.5A  v=41.28mm/s  flow=1.89mm/s  Re=7.79e-04  lat=0.0mm
+  step  720/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=581  wall=0.63mm  wall_frac=0.604  |F|=1.19e-06N  |B|=2.51e-02T  |I|=11.5A  v=0.22mm/s  flow=34.24mm/s  Re=5.14e+00  lat=0.0mm
+  step  730/1000  state=RECOVERY_MODE         dist=53.9mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=591  wall=0.65mm  wall_frac=0.539  |F|=1.42e-06N  |B|=3.30e-02T  |I|=8.3A  v=14.34mm/s  flow=35.39mm/s  Re=5.94e+00  lat=0.0mm
+  step  740/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=601  wall=0.58mm  wall_frac=0.521  |F|=9.11e-07N  |B|=9.64e-03T  |I|=15.9A  v=5.83mm/s  flow=26.31mm/s  Re=4.13e+00  lat=0.0mm
+  step  750/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=611  wall=0.52mm  wall_frac=0.367  |F|=7.32e-07N  |B|=1.35e-02T  |I|=10.1A  v=7.79mm/s  flow=25.18mm/s  Re=3.43e+00  lat=0.0mm
+  step  760/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=621  wall=0.55mm  wall_frac=0.493  |F|=1.08e-06N  |B|=2.15e-02T  |I|=10.9A  v=1.62mm/s  flow=30.98mm/s  Re=4.74e+00  lat=0.0mm
+  step  770/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=631  wall=0.63mm  wall_frac=0.604  |F|=1.23e-06N  |B|=2.53e-02T  |I|=11.5A  v=0.84mm/s  flow=34.24mm/s  Re=5.30e+00  lat=0.0mm
+  step  780/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=641  wall=0.63mm  wall_frac=0.604  |F|=9.56e-07N  |B|=2.29e-02T  |I|=10.9A  v=0.30mm/s  flow=28.81mm/s  Re=4.30e+00  lat=0.0mm
+  step  790/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=651  wall=0.63mm  wall_frac=0.604  |F|=8.84e-07N  |B|=2.26e-02T  |I|=10.8A  v=0.07mm/s  flow=26.48mm/s  Re=4.02e+00  lat=0.0mm
+  step  800/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=661  wall=0.52mm  wall_frac=0.521  |F|=1.54e-06N  |B|=2.88e-02T  |I|=11.4A  v=15.12mm/s  flow=29.58mm/s  Re=6.36e+00  lat=0.0mm
+  step  810/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=671  wall=0.55mm  wall_frac=0.543  |F|=1.06e-06N  |B|=2.32e-02T  |I|=11.0A  v=0.20mm/s  flow=30.98mm/s  Re=4.68e+00  lat=0.0mm
+  step  820/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=681  wall=0.63mm  wall_frac=0.507  |F|=1.19e-06N  |B|=2.36e-02T  |I|=11.1A  v=3.06mm/s  flow=34.24mm/s  Re=5.14e+00  lat=0.0mm
+  step  830/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=691  wall=0.63mm  wall_frac=0.604  |F|=1.03e-06N  |B|=2.19e-02T  |I|=11.0A  v=1.48mm/s  flow=28.81mm/s  Re=4.57e+00  lat=0.0mm
+  step  840/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=701  wall=0.63mm  wall_frac=0.604  |F|=8.67e-07N  |B|=2.10e-02T  |I|=10.8A  v=0.36mm/s  flow=26.48mm/s  Re=3.96e+00  lat=0.0mm
+  step  850/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=711  wall=0.55mm  wall_frac=0.548  |F|=8.96e-07N  |B|=2.13e-02T  |I|=10.8A  v=0.04mm/s  flow=26.76mm/s  Re=4.07e+00  lat=0.0mm
+  step  860/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=721  wall=0.55mm  wall_frac=0.549  |F|=1.06e-06N  |B|=2.33e-02T  |I|=11.0A  v=0.01mm/s  flow=30.98mm/s  Re=4.70e+00  lat=0.0mm
+  step  870/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=731  wall=0.41mm  wall_frac=0.543  |F|=8.35e-07N  |B|=2.07e-02T  |I|=10.5A  v=7.24mm/s  flow=27.02mm/s  Re=3.84e+00  lat=0.0mm
+  step  880/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=741  wall=0.52mm  wall_frac=0.521  |F|=7.75e-07N  |B|=1.72e-02T  |I|=16.0A  v=0.00mm/s  flow=23.81mm/s  Re=3.60e+00  lat=0.0mm
+  step  890/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=751  wall=0.52mm  wall_frac=0.521  |F|=7.02e-07N  |B|=1.08e-02T  |I|=14.4A  v=0.00mm/s  flow=21.88mm/s  Re=3.31e+00  lat=0.0mm
+  step  900/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=761  wall=0.44mm  wall_frac=0.030  |F|=9.92e-07N  |B|=1.43e-02T  |I|=10.2A  v=22.40mm/s  flow=24.50mm/s  Re=4.43e+00  lat=0.0mm
+  step  910/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=771  wall=0.41mm  wall_frac=0.542  |F|=8.86e-07N  |B|=1.99e-02T  |I|=10.4A  v=7.23mm/s  flow=27.74mm/s  Re=4.03e+00  lat=0.0mm
+  step  920/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=781  wall=0.52mm  wall_frac=0.521  |F|=9.49e-07N  |B|=2.60e-02T  |I|=10.5A  v=0.01mm/s  flow=28.30mm/s  Re=4.27e+00  lat=0.0mm
+  step  930/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=791  wall=0.63mm  wall_frac=0.604  |F|=9.82e-07N  |B|=2.29e-02T  |I|=10.9A  v=0.33mm/s  flow=28.81mm/s  Re=4.39e+00  lat=0.0mm
+  step  940/1000  state=RECOVERY_MODE         dist=54.2mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=801  wall=0.63mm  wall_frac=0.604  |F|=8.62e-07N  |B|=2.23e-02T  |I|=10.8A  v=0.49mm/s  flow=26.48mm/s  Re=3.94e+00  lat=0.0mm
+  step  950/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=811  wall=0.52mm  wall_frac=0.543  |F|=7.34e-07N  |B|=1.57e-02T  |I|=9.6A  v=4.39mm/s  flow=25.18mm/s  Re=3.44e+00  lat=0.0mm
+  step  960/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=821  wall=0.56mm  wall_frac=0.519  |F|=1.17e-06N  |B|=2.86e-02T  |I|=11.2A  v=5.54mm/s  flow=34.86mm/s  Re=5.09e+00  lat=0.0mm
+  step  970/1000  state=VIABILITY_ASSESSMENT  dist=53.9mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=831  wall=0.70mm  wall_frac=0.612  |F|=1.60e-06N  |B|=2.30e-02T  |I|=15.7A  v=5.51mm/s  flow=42.91mm/s  Re=6.54e+00  lat=0.0mm
+  step  980/1000  state=RECOVERY_MODE         dist=54.3mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=841  wall=0.63mm  wall_frac=0.604  |F|=9.65e-07N  |B|=2.27e-02T  |I|=11.0A  v=0.09mm/s  flow=28.81mm/s  Re=4.33e+00  lat=0.0mm
+  step  990/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=851  wall=0.52mm  wall_frac=0.387  |F|=8.21e-07N  |B|=1.75e-02T  |I|=16.0A  v=3.50mm/s  flow=21.88mm/s  Re=3.78e+00  lat=0.0mm
+  step 1000/1000  state=RECOVERY_MODE         dist=54.4mm  wp=56/103  best_wp=56/103  acbc_best=56/103  stag=861  wall=0.52mm  wall_frac=0.521  |F|=8.29e-07N  |B|=1.76e-02T  |I|=16.0A  v=0.12mm/s  flow=25.18mm/s  Re=3.81e+00  lat=0.0mm
+  ACBC summary: transitions=45, commitments=0, recoveries=22, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.08A, max_V=19.1V, max_P=250.0W, max_temp=24.6C
+  Gantry: mean_particle_dist=16.0mm, max_lateral=0.0mm
+[worker] finished controller=acbc_tuned reached=False steps=1000 final_error_mm=54.380
+ACBC diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/outputs/candidate8_0050_smoke/candidate8_0050_500um_flow3_fixed_1000step_parallel/flow_3x/acbc_tuned/acbc_diagnostics.csv
+[main] saved controller=acbc_tuned reached=False steps=1000 final_error_mm=54.380
+
+========================================================================================================================
+Candidate 8 smoke-test summary
+========================================================================================================================
+controller             reached     steps     final_mm   path_eff   energy_A2s  wall_time    mean_Re     max_Re
+------------------------------------------------------------------------------------------------------------------------
+mpc_default            True           76        0.134      1.000      408.336     143.97      6.672     17.960
+mpc_tuned              True           75        0.041      1.000      384.352     135.54      7.091     17.730
+acbc_same_weights      False        1000       56.935      0.502     3468.285    1302.06      4.219     26.871
+acbc_tuned             False        1000       54.380      0.641    10767.283    1366.16      4.772     29.870
+========================================================================================================================
+
+================================================================================
+Done.
+Elapsed wall time: 1368.98 s
+Outputs saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/outputs/candidate8_0050_smoke/candidate8_0050_500um_flow3_fixed_1000step_parallel
+Paired results: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/outputs/candidate8_0050_smoke/candidate8_0050_500um_flow3_fixed_1000step_parallel/paired_results.csv
+================================================================================

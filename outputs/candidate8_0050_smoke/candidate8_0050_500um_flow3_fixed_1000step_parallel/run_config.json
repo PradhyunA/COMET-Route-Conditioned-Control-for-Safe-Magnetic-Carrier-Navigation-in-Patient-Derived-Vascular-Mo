@@ -1,0 +1,38 @@
+{
+  "run_id": "candidate8_0050_500um_flow3_fixed_1000step_parallel",
+  "vessel_file": "data/0050_H_CERE_H/real_vessel_segments.pkl",
+  "flow_scale": 3.0,
+  "steps": 1000,
+  "dt": 0.02,
+  "device_mode": "fixed_enclosing_stress_test",
+  "profile": "spion_carrier_500um_blood",
+  "start_m": [
+    -0.01678,
+    0.01367,
+    -0.01668
+  ],
+  "target_m": [
+    -0.0104,
+    -0.01594,
+    0.0698
+  ],
+  "start_mm": [
+    -16.78,
+    13.67,
+    -16.68
+  ],
+  "target_mm": [
+    -10.4,
+    -15.94,
+    69.8
+  ],
+  "controllers": [
+    "mpc_default",
+    "mpc_tuned",
+    "acbc_same_weights",
+    "acbc_tuned"
+  ],
+  "workers": 4,
+  "route_name": "candidate8_adversarial_branch_trap",
+  "wall_clearance_threshold_m": 0.0007
+}
