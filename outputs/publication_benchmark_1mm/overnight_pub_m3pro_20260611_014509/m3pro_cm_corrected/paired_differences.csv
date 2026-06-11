@@ -1,0 +1,11 @@
+flow_scale,pair_id,trial_kind,baseline,comparator,metric,baseline_value,comparator_value,paired_difference
+1.0,random_0001,random,mpc_tuned,acbc_tuned,reached_target,1.0,1.0,0.0
+1.0,random_0001,random,mpc_tuned,acbc_tuned,steps_taken,42.0,50.0,8.0
+1.0,random_0001,random,mpc_tuned,acbc_tuned,sim_time_s,0.84,1.0,0.16000000000000003
+1.0,random_0001,random,mpc_tuned,acbc_tuned,wall_time_s,96.83844529103953,132.27630387502722,35.43785858398769
+1.0,random_0001,random,mpc_tuned,acbc_tuned,avg_control_step_time_s,2.2956276727657365,2.632849922562018,0.33722224979628157
+1.0,random_0001,random,mpc_tuned,acbc_tuned,path_efficiency,1.0,1.0,0.0
+1.0,random_0001,random,mpc_tuned,acbc_tuned,current_rms_A,7.872094965636956,9.598614547579714,1.7265195819427586
+1.0,random_0001,random,mpc_tuned,acbc_tuned,energy_proxy_A2s,468.49228635893076,829.2006110970805,360.7083247381497
+1.0,random_0001,random,mpc_tuned,acbc_tuned,min_wall_clearance_mm,1.1870222467911453,1.0746322100746972,-0.1123900367164481
+1.0,random_0001,random,mpc_tuned,acbc_tuned,min_surface_clearance_mm,0.6870222467911453,0.5746322100746972,-0.1123900367164481
