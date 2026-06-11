@@ -56,8 +56,10 @@ logger = logging.getLogger(__name__)
 COMET_CRUISE = "COMET_CRUISE"        # no bifurcation in horizon
 COMET_APPROACH = "COMET_APPROACH"    # soft intent transport upstream of node
 COMET_COMMIT = "COMET_COMMIT"        # hardened commitment near/through node
+COMET_RESCUE = "COMET_RESCUE"        # high-authority capture-basin recovery
 COMET_BOOST = "COMET_BOOST"          # stall recovery boost
-COMET_TERMINAL = "COMET_TERMINAL"    # direct line-of-sight target capture
+COMET_TERMINAL = "COMET_TERMINAL_CAPTURE"
+COMET_TERMINAL_PRECISION = "COMET_TERMINAL_PRECISION"
 
 
 # ----------------------------------------------------------------------
@@ -79,6 +81,10 @@ class COMETConfig:
     bifurcation_window: float = 0.045
     #: Reserve (m) below which the controller must hard-commit early.
     hard_commit_reserve_threshold: float = 0.0
+    #: Extend the commitment horizon by local flow speed times this reaction
+    #: time, capped by ``max_flow_commitment_extension``.
+    flow_commitment_reaction_time: float = 0.080
+    max_flow_commitment_extension: float = 0.012
     #: Minimum steps to hold a hard commitment before reconsidering.
     min_commitment_dwell_steps: int = 15
     #: Additive score penalty for branches other than the incumbent.
@@ -104,6 +110,11 @@ class COMETConfig:
     capture_reserve_gain: float = 3.0
     #: Logistic gain on velocity/branch alignment.
     capture_alignment_gain: float = 1.0
+    #: Extra reserve demand when flow preferentially carries the particle
+    #: toward a competing branch.
+    wrong_branch_flow_penalty_gain: float = 0.35
+    #: Additional loss of confidence for negative reserve close to a node.
+    capture_urgency_gain: float = 0.75
     #: Offset (m) past the node where the capture point sits.
     capture_point_offset: float = 0.004
     #: Floor on the along-route approach speed used for time-to-bifurcation.
@@ -136,6 +147,22 @@ class COMETConfig:
     #: Within this distance of the final target (with line-of-sight inside
     #: the vessel), aim straight at the target and drop corridor shaping.
     terminal_capture_distance: float = 0.012
+    terminal_capture_exit_distance: float = 0.020
+    #: Radius for the local high-precision magnetic servo.
+    terminal_precision_distance: float = 0.0030
+    #: Required positive closing-speed reserve before direct terminal capture
+    #: may replace route following. Infeasible adverse-flow approaches retain
+    #: COMET's boundary-layer wall-riding strategy.
+    terminal_direct_authority_margin: float = -0.002
+    terminal_precision_kp: float = 55.0
+    terminal_precision_kv: float = 0.0
+    terminal_precision_max_speed: float = 0.120
+    terminal_effort_multiplier: float = 0.01
+    terminal_smoothness_multiplier: float = 0.20
+    terminal_hold_radius: float = 0.00020
+    terminal_cem_iterations: int = 5
+    terminal_cem_population: int = 48
+    terminal_cem_elites: int = 10
     #: Wall repulsion activates below threshold + this margin.
     wall_repulsion_margin: float = 0.0004
     #: Wall repulsion speed at zero clearance.
@@ -170,6 +197,22 @@ class COMETConfig:
     #: Effort weight multiplier in BOOST mode (cheap current).
     boost_effort_multiplier: float = 0.05
 
+    # --- emergency branch rescue ----------------------------------------
+    rescue_capture_floor: float = 0.30
+    rescue_reserve_threshold: float = -0.0010
+    rescue_min_flow_scale: float = 4.0
+    rescue_target_horizon: float = 0.025
+    flow_branch_adaptation_min_scale: float = 4.0
+    flow_branch_adaptation_route_horizon: float = 0.120
+    terminal_feasibility_min_flow_scale: float = 4.0
+    rescue_exit_capture: float = 0.60
+    rescue_exit_reserve: float = 0.0010
+    rescue_min_dwell_steps: int = 10
+    rescue_distance_multiplier: float = 1.5
+    rescue_lateral_gain_multiplier: float = 1.8
+    rescue_max_lateral_speed: float = 0.070
+    rescue_effort_multiplier: float = 0.03
+
     # --- safety -----------------------------------------------------------
     #: Required center-to-wall clearance (benchmark criterion).
     wall_clearance_threshold: float = 0.0007
@@ -200,6 +243,8 @@ class BranchHypothesis:
     wall_risk: float
     effort: float
     score: float
+    time_to_bifurcation: float = np.inf
+    wrong_branch_flow_penalty: float = 0.0
     q: float = 0.0
 
 
@@ -223,6 +268,15 @@ class COMETStepInfo:
     route_arc_m: float
     num_candidates: int
     safety_filter_active: bool
+    terminal_mode_active: bool
+    terminal_stage: str
+    target_distance_m: float
+    predicted_flow_at_target: np.ndarray
+    terminal_correction: np.ndarray
+    current_saturation: bool
+    final_hold_steps: int
+    overshoot_count: int
+    direct_terminal_feasible: bool
 
 
 # ----------------------------------------------------------------------
@@ -443,6 +497,11 @@ class COMETController:
         self._terminal_best = np.inf
         self._terminal_stuck = 0
         self._dash_until = 0
+        self._terminal_hold_steps = 0
+        self._terminal_overshoot_count = 0
+        self._terminal_prev_distance = np.inf
+        self._mode_enter_step = 0
+        self._flow_branch_adaptation_route_enabled = False
 
         self.step_count = 0
         self._rng = np.random.default_rng(7)
@@ -616,6 +675,9 @@ class COMETController:
         self._route_key = key
         self._route_pts = pts
         self._route_cum = cum
+        self._flow_branch_adaptation_route_enabled = bool(
+            cum[-1] <= self.cfg.flow_branch_adaptation_route_horizon
+        )
         self._route_vertex_idx = 0
         self._arc_now = 0.0
         self._arc_best = 0.0
@@ -629,6 +691,10 @@ class COMETController:
         self._terminal_best = np.inf
         self._terminal_stuck = 0
         self._dash_until = 0
+        self._terminal_hold_steps = 0
+        self._terminal_overshoot_count = 0
+        self._terminal_prev_distance = np.inf
+        self._mode_enter_step = self.step_count
 
         # Project every bifurcation node onto the route once, keep nodes
         # lying inside a lateral corridor around the route.
@@ -862,9 +928,11 @@ class COMETController:
         v_flow: np.ndarray,
         v_mag_prev: np.ndarray,
         downstream: Dict[int, float],
+        flow_adaptation_active: bool = False,
     ) -> List[BranchHypothesis]:
         cfg = self.cfg
         node_point = np.asarray(node_point, dtype=float)
+        high_flow = flow_adaptation_active
 
         probes = []
         for sid in seg_ids:
@@ -915,6 +983,11 @@ class COMETController:
 
         # Flow-carried arrival prediction.
         p_arrival = pos + v_flow * tau
+        flow_branch_alignment = [
+            float(np.dot(v_flow, direction))
+            for _, direction, _, _, _ in candidates
+        ]
+        best_flow_alignment = max(flow_branch_alignment)
 
         finite = [
             min(downstream.get(seg.seg_id, np.inf), downstream.get(last_sid, np.inf))
@@ -923,9 +996,11 @@ class COMETController:
         d_min = min(finite) if finite else np.inf
 
         hypotheses = []
-        for (seg, direction, reached, last_sid, min_radius), d_target in zip(
+        for candidate_idx, (
+            (seg, direction, reached, last_sid, min_radius), d_target,
+        ) in enumerate(zip(
             candidates, finite,
-        ):
+        )):
             capture_point = node_point + direction * min(
                 cfg.capture_point_offset,
                 float(np.linalg.norm(reached - node_point)),
@@ -933,10 +1008,27 @@ class COMETController:
 
             err = capture_point - p_arrival
             err_lat = err - np.dot(err, approach_tangent) * approach_tangent
-            required = float(np.linalg.norm(err_lat))
+            required_geometric = float(np.linalg.norm(err_lat))
 
-            if required > EPS:
-                lat_dir = err_lat / required
+            # Constant local-flow prediction already appears in ``err_lat``.
+            # Add a smaller uncertainty reserve when the stream aligns more
+            # strongly with a competing branch; this prevents optimistic
+            # capture estimates near fast bifurcations without double-counting
+            # the full drift.
+            wrong_flow_advantage = max(
+                0.0,
+                best_flow_alignment - flow_branch_alignment[candidate_idx],
+            )
+            wrong_flow_penalty = (
+                cfg.wrong_branch_flow_penalty_gain
+                * wrong_flow_advantage
+                * tau
+                if high_flow else 0.0
+            )
+            required = required_geometric + wrong_flow_penalty
+
+            if required_geometric > EPS:
+                lat_dir = err_lat / required_geometric
                 v_lat_max = self._authority_speed_along(
                     model, particle, lat_dir,
                 )
@@ -959,6 +1051,9 @@ class COMETController:
             z = (
                 cfg.capture_reserve_gain * np.tanh(reserve / seg_scale)
                 + cfg.capture_alignment_gain * alignment
+                - (cfg.capture_urgency_gain if high_flow else 0.0)
+                * np.clip(1.0 - tau / 0.25, 0.0, 1.0)
+                * max(0.0, -reserve / seg_scale)
             )
             p_capture = float(1.0 / (1.0 + np.exp(-z)))
 
@@ -1006,6 +1101,8 @@ class COMETController:
                 wall_risk=wall_risk,
                 effort=effort,
                 score=float(score),
+                time_to_bifurcation=float(tau),
+                wrong_branch_flow_penalty=float(wrong_flow_penalty),
             ))
 
         return hypotheses
@@ -1030,6 +1127,7 @@ class COMETController:
         hypotheses: List[BranchHypothesis],
         node_key,
         arc_to_node: float,
+        commitment_distance: float,
     ) -> Tuple[Dict[int, float], float, str]:
         cfg = self.cfg
 
@@ -1065,9 +1163,9 @@ class COMETController:
         lead = hypotheses[lead_idx]
 
         hard_commit = False
-        if arc_to_node < cfg.commitment_distance_threshold:
+        if arc_to_node < commitment_distance:
             hard_commit = True
-            reason = f"distance<{cfg.commitment_distance_threshold * 1000:.0f}mm"
+            reason = f"distance<{commitment_distance * 1000:.1f}mm"
         elif lead.reserve < cfg.hard_commit_reserve_threshold:
             hard_commit = True
             reason = f"reserve={lead.reserve * 1000:.1f}mm"
@@ -1191,11 +1289,27 @@ class COMETController:
         initial_guess=None,
         flow=None,
         sim_time: float = 0.0,
+        smoothness_weight: Optional[float] = None,
+        cem_iterations: Optional[int] = None,
+        cem_population: Optional[int] = None,
+        cem_elites: Optional[int] = None,
+        terminal_target: Optional[np.ndarray] = None,
     ) -> Tuple[np.ndarray, float, bool]:
         cfg = self.cfg
         n = self.magnet_array.n_magnets
         i_lim = self._i_lim
         i_max = max(float(np.mean(i_lim)), EPS)
+        smoothness_weight = (
+            cfg.current_smoothness_weight
+            if smoothness_weight is None else float(smoothness_weight)
+        )
+        cem_iterations = (
+            cfg.cem_iterations if cem_iterations is None else int(cem_iterations)
+        )
+        cem_population = (
+            cfg.cem_population if cem_population is None else int(cem_population)
+        )
+        cem_elites = cfg.cem_elites if cem_elites is None else int(cem_elites)
 
         v_norm_sq = max(float(np.dot(v_des_mag, v_des_mag)), 1e-8)
         des_dir = (
@@ -1237,8 +1351,26 @@ class COMETController:
             v_mag, _ = _magnetic_velocity_batch(particle, b, grad)
 
             track = np.sum((v_mag - v_des_mag[None, :]) ** 2, axis=1) / v_norm_sq
+            if terminal_target is not None:
+                p_half = pos[None, :] + (
+                    v_mag + v_flow[None, :]
+                ) * (0.5 * dt)
+                # The precision servo is deliberately quasi-static. Reuse
+                # the measured local drift inside CEM; querying the network
+                # for every candidate made terminal-only cases hundreds of
+                # milliseconds slower without adding useful horizon fidelity.
+                p_end = p_half + (
+                    v_mag + v_flow[None, :]
+                ) * (0.5 * dt)
+                target_scale_sq = max(
+                    float(np.sum((terminal_target - pos) ** 2)), 1e-8,
+                )
+                endpoint = np.sum(
+                    (p_end - terminal_target[None, :]) ** 2, axis=1,
+                ) / target_scale_sq
+                track = 0.20 * track + 4.0 * endpoint
             effort = effort_weight * np.sum(currents ** 2, axis=1) / (n * i_max ** 2)
-            smooth = cfg.current_smoothness_weight * np.sum(
+            smooth = smoothness_weight * np.sum(
                 (currents - self._prev_currents[None, :]) ** 2, axis=1,
             ) / (n * i_max ** 2)
 
@@ -1268,16 +1400,16 @@ class COMETController:
         mean = best_currents.copy()
         sigma = np.full(n, cfg.cem_initial_sigma_fraction * i_max)
 
-        for _ in range(cfg.cem_iterations):
+        for _ in range(cem_iterations):
             samples = mean[None, :] + sigma[None, :] * self._rng.standard_normal(
-                (cfg.cem_population, n),
+                (cem_population, n),
             )
             samples = np.clip(samples, -i_lim, i_lim)
             samples[0] = mean  # keep the running mean in the pool
             costs = cost_batch(samples)
 
             order = np.argsort(costs)
-            elites = samples[order[: cfg.cem_elites]]
+            elites = samples[order[:cem_elites]]
             mean = np.mean(elites, axis=0)
             sigma = np.std(elites, axis=0) + 0.02 * i_max
 
@@ -1374,9 +1506,23 @@ class COMETController:
         # Terminal capture: the target is close and directly reachable
         # inside the lumen, so route/branch shaping only gets in the way
         # (e.g. a route that folds back along the vessel axis).
-        terminal = (
-            dist_to_final < cfg.terminal_capture_distance
-            and self._line_of_sight(pos, final_target)
+        terminal_radius = (
+            cfg.terminal_capture_exit_distance
+            if prev_mode in (COMET_TERMINAL, COMET_TERMINAL_PRECISION)
+            else cfg.terminal_capture_distance
+        )
+        terminal_was_active = prev_mode in (
+            COMET_TERMINAL, COMET_TERMINAL_PRECISION,
+        )
+        terminal_hysteresis_active = (
+            terminal_was_active
+        )
+        terminal_candidate = (
+            dist_to_final < terminal_radius
+            and (
+                terminal_was_active
+                or self._line_of_sight(pos, final_target)
+            )
         )
 
         # --- flow / local field model ----------------------------------
@@ -1389,6 +1535,55 @@ class COMETController:
 
         v_mag_prev = np.asarray(particle.vel, dtype=float)
 
+        # Geometric line of sight is not sufficient under adverse flow. Keep
+        # route following and boundary-layer wall riding until direct target
+        # closure has positive magnetic-authority reserve. Very close states
+        # always enter the precision servo so it can cancel local drift.
+        direct_terminal_feasible = False
+        terminal_closing_reserve = -np.inf
+        target_authority = 0.0
+        target_direction = np.zeros(3)
+        if dist_to_final > EPS:
+            target_direction = (final_target - pos) / dist_to_final
+        if terminal_candidate and dist_to_final > EPS:
+            target_authority = self._authority_speed_along(
+                model, particle, target_direction,
+            )
+            terminal_closing_reserve = (
+                target_authority + float(np.dot(v_flow, target_direction))
+            )
+            high_flow_terminal_gate = (
+                float(getattr(self.network, "flow_scale", 1.0))
+                >= cfg.terminal_feasibility_min_flow_scale
+            )
+            direct_terminal_feasible = (
+                not high_flow_terminal_gate
+                or terminal_hysteresis_active
+                or
+                terminal_closing_reserve
+                >= (
+                    -0.004
+                    if prev_mode in (COMET_TERMINAL, COMET_TERMINAL_PRECISION)
+                    else cfg.terminal_direct_authority_margin
+                )
+                or dist_to_final <= cfg.terminal_precision_distance
+            )
+        terminal = (
+            terminal_candidate
+            and direct_terminal_feasible
+        )
+        terminal_precision = (
+            terminal
+            and dist_to_final <= cfg.terminal_precision_distance
+        )
+        terminal_stage = (
+            "precision" if terminal_precision else "capture" if terminal else ""
+        )
+        v_flow_target = (
+            np.asarray(flow.velocity_at(final_target, sim_time), dtype=float)
+            if flow is not None and terminal_candidate else np.zeros(3)
+        )
+
         # --- branch hypotheses + measure transport ----------------------
         nxt = self._next_bifurcation(arc_now)
         hypotheses: List[BranchHypothesis] = []
@@ -1397,6 +1592,17 @@ class COMETController:
         commit_reason = ""
         dist_to_bif = np.inf
         selected: Optional[BranchHypothesis] = None
+        high_flow = (
+            float(getattr(self.network, "flow_scale", 1.0))
+            >= cfg.flow_branch_adaptation_min_scale
+            and self._flow_branch_adaptation_route_enabled
+        )
+        dynamic_commitment_distance = cfg.commitment_distance_threshold
+        if high_flow:
+            dynamic_commitment_distance += min(
+                cfg.max_flow_commitment_extension,
+                cfg.flow_commitment_reaction_time * float(np.linalg.norm(v_flow)),
+            )
 
         downstream = self._downstream_distances(final_target)
 
@@ -1418,18 +1624,24 @@ class COMETController:
                 v_flow=v_flow,
                 v_mag_prev=v_mag_prev,
                 downstream=downstream,
+                flow_adaptation_active=high_flow,
             )
 
             if hypotheses:
                 node_key = self.network._node_key(node_point)
                 q, temperature, commit_reason = self._update_measure(
-                    hypotheses, node_key, dist_to_bif,
+                    hypotheses,
+                    node_key,
+                    dist_to_bif,
+                    dynamic_commitment_distance,
                 )
                 for h in hypotheses:
                     h.q = q.get(h.seg_id, 0.0)
                 selected = max(hypotheses, key=lambda h: h.q)
 
-                if dist_to_bif < cfg.commitment_distance_threshold or (
+                if self.commit_step is not None or (
+                    dist_to_bif < dynamic_commitment_distance
+                ) or (
                     selected.reserve < cfg.hard_commit_reserve_threshold
                 ):
                     self.mode = COMET_COMMIT
@@ -1444,10 +1656,44 @@ class COMETController:
             self.incumbent_seg_id = None
             self.commit_step = None
 
+        rescue_entry = bool(
+            selected is not None
+            and float(getattr(self.network, "flow_scale", 1.0))
+            >= cfg.rescue_min_flow_scale
+            and dist_to_final < cfg.rescue_target_horizon
+            and dist_to_bif
+            < cfg.rescue_distance_multiplier * dynamic_commitment_distance
+            and (
+                selected.reserve < cfg.rescue_reserve_threshold
+                or selected.capture_probability < cfg.rescue_capture_floor
+            )
+        )
+        rescue_hold = bool(
+            prev_mode == COMET_RESCUE
+            and selected is not None
+            and float(getattr(self.network, "flow_scale", 1.0))
+            >= cfg.rescue_min_flow_scale
+            and dist_to_final < cfg.rescue_target_horizon
+            and dist_to_bif
+            < cfg.rescue_distance_multiplier * dynamic_commitment_distance
+            and (
+                self.step_count - self._mode_enter_step
+                < cfg.rescue_min_dwell_steps
+                or selected.reserve < cfg.rescue_exit_reserve
+                or selected.capture_probability < cfg.rescue_exit_capture
+            )
+        )
+        rescue = rescue_entry or rescue_hold
+        if rescue:
+            self.mode = COMET_RESCUE
+
         if stalled:
             self.mode = COMET_BOOST
         if terminal:
-            self.mode = COMET_TERMINAL
+            self.mode = (
+                COMET_TERMINAL_PRECISION
+                if terminal_precision else COMET_TERMINAL
+            )
 
         # --- capture-basin shaping: desired velocity ---------------------
         prox = float(np.clip(
@@ -1462,7 +1708,11 @@ class COMETController:
             lookahead *= 2.0
             boost_factor = cfg.boost_speed_multiplier
             effort_weight *= cfg.boost_effort_multiplier
-        elif self.mode == COMET_TERMINAL and stalled:
+        elif self.mode == COMET_RESCUE:
+            effort_weight *= cfg.rescue_effort_multiplier
+        elif terminal_precision:
+            effort_weight *= cfg.terminal_effort_multiplier
+        elif terminal and stalled:
             # Stalled in the endgame (e.g. fighting peak pulsatile flow):
             # relax the effort penalty so the allocator uses full authority.
             effort_weight *= cfg.boost_effort_multiplier
@@ -1478,6 +1728,18 @@ class COMETController:
         # forward progress, and it is capped by the local safe clearance.
         if terminal:
             aim = final_target.copy()
+
+            if (
+                terminal_precision
+                and np.isfinite(self._terminal_prev_distance)
+                and dist_to_final > self._terminal_prev_distance + 2e-5
+            ):
+                self._terminal_overshoot_count += 1
+            self._terminal_prev_distance = dist_to_final
+            if dist_to_final <= cfg.terminal_hold_radius:
+                self._terminal_hold_steps += 1
+            else:
+                self._terminal_hold_steps = 0
 
             # Track terminal progress. If the direct pursuit has stalled
             # (the particle hovers at the standoff where authority equals
@@ -1497,10 +1759,12 @@ class COMETController:
                 self._dash_until = self.step_count + 30
                 self._terminal_stuck = 0
 
-            if self.step_count < self._dash_until and flow is not None:
-                v_flow_tgt = np.asarray(
-                    flow.velocity_at(final_target, sim_time), dtype=float,
-                )
+            if (
+                not terminal_precision
+                and self.step_count < self._dash_until
+                and flow is not None
+            ):
+                v_flow_tgt = v_flow_target
                 to_tgt = final_target - pos
                 tgt_dist = float(np.linalg.norm(to_tgt))
                 if tgt_dist > EPS and float(np.linalg.norm(v_flow_tgt)) > 0.01:
@@ -1516,9 +1780,12 @@ class COMETController:
                         lead *= 0.010 / lead_norm
                     aim = final_target + lead
         elif hypotheses and selected is not None:
-            aim_capture = np.zeros(3)
-            for h in hypotheses:
-                aim_capture += h.q * h.capture_point
+            if rescue:
+                aim_capture = selected.capture_point.copy()
+            else:
+                aim_capture = np.zeros(3)
+                for h in hypotheses:
+                    aim_capture += h.q * h.capture_point
 
             offset = aim_capture - aim_route
             offset_lat = offset - np.dot(offset, aim_tangent) * aim_tangent
@@ -1534,7 +1801,8 @@ class COMETController:
             if off_norm > max_offset and off_norm > EPS:
                 offset_lat *= max_offset / off_norm
 
-            aim = aim_route + prox * offset_lat
+            capture_blend = 1.0 if rescue else prox
+            aim = aim_route + capture_blend * offset_lat
         else:
             aim = aim_route
 
@@ -1605,13 +1873,23 @@ class COMETController:
         aim_dist = float(np.linalg.norm(to_aim))
         aim_dir = to_aim / aim_dist if aim_dist > EPS else tangent
 
+        if (
+            self.mode == COMET_BOOST
+            and not terminal
+            and high_flow
+        ):
+            boost_dir = 0.65 * tangent + 0.35 * aim_dir
+            boost_norm = float(np.linalg.norm(boost_dir))
+            if boost_norm > EPS:
+                aim_dir = boost_dir / boost_norm
+
         # Tracking speed: request the cruise cap and let the allocator
         # deliver its best achievable velocity along the aim direction
         # (the canonical-pattern authority probe underestimates what the
         # full multi-coil optimization can produce, so it is not used to
         # throttle progress). Overshoot is guarded relative to aim distance.
         speed = cfg.cruise_speed * cfg.progress_gain * boost_factor
-        if terminal:
+        if terminal and not terminal_precision:
             # Keep the request modest so the allocator spends its authority
             # on flow compensation first (a near-feasible v_des tracks the
             # target line instead of being sheared downstream).
@@ -1622,7 +1900,26 @@ class COMETController:
         if dist_to_final < 4.0 * speed * dt:
             speed = min(speed, 0.55 * dist_to_final / dt + 1e-4)
 
-        v_track = speed * aim_dir
+        if terminal_precision:
+            terminal_correction = (
+                cfg.terminal_precision_kp * (final_target - pos)
+                - cfg.terminal_precision_kv
+                * np.asarray(particle.realized_vel, dtype=float)
+            )
+            correction_norm = float(np.linalg.norm(terminal_correction))
+            if correction_norm > cfg.terminal_precision_max_speed:
+                terminal_correction *= (
+                    cfg.terminal_precision_max_speed / correction_norm
+                )
+            if self._terminal_hold_steps > 0:
+                terminal_correction = (
+                    -cfg.terminal_precision_kv
+                    * np.asarray(particle.realized_vel, dtype=float)
+                )
+            v_track = terminal_correction
+        else:
+            v_track = speed * aim_dir
+            terminal_correction = v_track.copy() if terminal else np.zeros(3)
 
         # Corridor pull: toward the centerline normally, toward the offset
         # boundary-layer corridor while wall-riding, and off entirely in
@@ -1634,10 +1931,15 @@ class COMETController:
             corridor_error = (
                 corridor_error - np.dot(corridor_error, tangent) * tangent
             )
-            v_center = cfg.lateral_capture_gain * corridor_error
+            lateral_gain = cfg.lateral_capture_gain
+            max_lateral_speed = cfg.max_lateral_speed
+            if rescue:
+                lateral_gain *= cfg.rescue_lateral_gain_multiplier
+                max_lateral_speed = cfg.rescue_max_lateral_speed
+            v_center = lateral_gain * corridor_error
             c_norm = float(np.linalg.norm(v_center))
-            if c_norm > cfg.max_lateral_speed:
-                v_center *= cfg.max_lateral_speed / c_norm
+            if c_norm > max_lateral_speed:
+                v_center *= max_lateral_speed / c_norm
 
         # Wall repulsion.
         v_wall = np.zeros(3)
@@ -1656,14 +1958,20 @@ class COMETController:
         v_des_total = v_track + v_center + v_wall
 
         # First-order damping of the desired velocity (anti-oscillation).
+        damping_gain = 0.0 if terminal_precision else cfg.damping_gain
         v_des_total = (
-            cfg.damping_gain * self._v_des_prev
-            + (1.0 - cfg.damping_gain) * v_des_total
+            damping_gain * self._v_des_prev
+            + (1.0 - damping_gain) * v_des_total
         )
         self._v_des_prev = v_des_total.copy()
 
         # Flow compensation: the allocator matches the *magnetic* component.
-        v_des_mag = v_des_total - cfg.flow_compensation_gain * v_flow
+        flow_estimate = v_flow
+        if terminal_precision:
+            flow_estimate = 0.65 * v_flow + 0.35 * v_flow_target
+        v_des_mag = (
+            v_des_total - cfg.flow_compensation_gain * flow_estimate
+        )
 
         # --- allocation ---------------------------------------------------
         extra_ids = [h.seg_id for h in hypotheses]
@@ -1687,8 +1995,26 @@ class COMETController:
             initial_guess=initial_guess,
             flow=flow,
             sim_time=sim_time,
+            smoothness_weight=(
+                cfg.current_smoothness_weight
+                * cfg.terminal_smoothness_multiplier
+                if terminal_precision else None
+            ),
+            cem_iterations=(
+                cfg.terminal_cem_iterations if terminal_precision else None
+            ),
+            cem_population=(
+                cfg.terminal_cem_population if terminal_precision else None
+            ),
+            cem_elites=(
+                cfg.terminal_cem_elites if terminal_precision else None
+            ),
+            terminal_target=final_target if terminal_precision else None,
         )
         self._prev_currents = currents.copy()
+        current_saturation = bool(np.any(
+            np.abs(currents) >= 0.98 * np.maximum(self._i_lim, EPS)
+        ))
 
         # Exact force from the true magnet model for the simulator.
         previous_currents = self.magnet_array.currents.copy()
@@ -1701,6 +2027,7 @@ class COMETController:
         transition = self.mode != prev_mode
         if transition:
             self.transition_count += 1
+            self._mode_enter_step = self.step_count
 
         if cfg.debug:
             q_str = {sid: round(val, 3) for sid, val in q.items()}
@@ -1740,6 +2067,17 @@ class COMETController:
             route_arc_m=float(arc_now),
             num_candidates=len(hypotheses),
             safety_filter_active=bool(safety_active),
+            terminal_mode_active=bool(terminal),
+            terminal_stage=terminal_stage,
+            target_distance_m=float(dist_to_final),
+            predicted_flow_at_target=v_flow_target.copy(),
+            terminal_correction=np.asarray(
+                terminal_correction, dtype=float,
+            ).copy(),
+            current_saturation=current_saturation,
+            final_hold_steps=int(self._terminal_hold_steps),
+            overshoot_count=int(self._terminal_overshoot_count),
+            direct_terminal_feasible=bool(direct_terminal_feasible),
         )
 
         return currents, force, float(cost), True, info
@@ -1758,6 +2096,12 @@ class COMETController:
             "comet_commitment_distance_threshold_m": (
                 cfg.commitment_distance_threshold
             ),
+            "comet_flow_commitment_reaction_time_s": (
+                cfg.flow_commitment_reaction_time
+            ),
+            "comet_max_flow_commitment_extension_m": (
+                cfg.max_flow_commitment_extension
+            ),
             "comet_hard_commit_reserve_threshold_m": (
                 cfg.hard_commit_reserve_threshold
             ),
@@ -1774,6 +2118,15 @@ class COMETController:
             "comet_progress_gain": cfg.progress_gain,
             "comet_damping_gain": cfg.damping_gain,
             "comet_cruise_speed_m_s": cfg.cruise_speed,
+            "comet_terminal_capture_distance_m": cfg.terminal_capture_distance,
+            "comet_terminal_precision_distance_m": (
+                cfg.terminal_precision_distance
+            ),
+            "comet_terminal_precision_kp": cfg.terminal_precision_kp,
+            "comet_terminal_precision_kv": cfg.terminal_precision_kv,
+            "comet_terminal_overshoots": self._terminal_overshoot_count,
             "comet_max_control_norm_A": self.max_current,
             "comet_wall_clearance_threshold_m": cfg.wall_clearance_threshold,
         }
+
+

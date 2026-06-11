@@ -23,14 +23,19 @@ Important:
         - same final-target tolerance
 
 Baseline behavior:
-    MPC tracks dense local waypoints using continuous_mpc_controller().
+    MPC tracks local route waypoints using continuous_mpc_controller().
+    Route-resolution arguments are exposed so MPC and COMET can be
+    compared under the same waypoint discretization.
     ACBC should be compared against this under the same physics.
 
 Recommended run:
     python -u scripts/simulation_3d_mpc.py \
       --only-trial trial_2_mid_to_outlet \
       --flow-scale 5 \
-      2>&1 | tee saved_runs/MPC_trial2_1mm_reasonable_magnets_flow5x.log
+      --waypoint-spacing 0.002 \
+      --waypoint-arrival-tol 0.0015 \
+      --forward-search-points 25 \
+      2>&1 | tee saved_runs/MPC_route_resolution_2mm_flow5x.log
 """
 
 import os
@@ -79,6 +84,14 @@ DEFAULT_MAGNET_CLEARANCE = 0.04
 
 # flow_scale=5 makes baseline max v_mean 20 mm/s become ~100 mm/s.
 DEFAULT_FLOW_SCALE = 5.0
+
+# Fair route-resolution defaults used for route-discretization sensitivity.
+# These are intentionally coarser than the old 1.0 mm / 50-search setting,
+# but still give every controller the same planned centerline route.
+DEFAULT_WAYPOINT_SPACING = 0.002          # 2.0 mm
+DEFAULT_WAYPOINT_ARRIVAL_TOL = 0.0015    # 1.5 mm
+DEFAULT_MPC_WAYPOINT_LOOKAHEAD = 1
+DEFAULT_FORWARD_SEARCH_POINTS = 25
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -405,10 +418,10 @@ def simulate_trial_mpc(
     w_overshoot: float = 2.0,
     w_route: float = 0.0,
     # Dense local waypoint baseline.
-    waypoint_arrival_tol: float = DEFAULT_TARGET_TOLERANCE,
-    waypoint_spacing: float = 0.001,
-    waypoint_lookahead: int = 1,
-    forward_search_points: int = 50,
+    waypoint_arrival_tol: float = DEFAULT_WAYPOINT_ARRIVAL_TOL,
+    waypoint_spacing: float = DEFAULT_WAYPOINT_SPACING,
+    waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
+    forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -834,10 +847,10 @@ def run_all_trials(
     lateral_gain: float = LATERAL_GAIN,
     only_trial: str | None = None,
     flow_scale: float = DEFAULT_FLOW_SCALE,
-    waypoint_spacing: float = 0.001,
-    waypoint_arrival_tol: float = 0.001,
-    waypoint_lookahead: int = 1,
-    forward_search_points: int = 50,
+    waypoint_spacing: float = DEFAULT_WAYPOINT_SPACING,
+    waypoint_arrival_tol: float = DEFAULT_WAYPOINT_ARRIVAL_TOL,
+    waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
+    forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
 ):
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -990,10 +1003,10 @@ if __name__ == "__main__":
     parser.add_argument("--max-lateral-shift", type=float, default=MAX_LATERAL_SHIFT)
     parser.add_argument("--lateral-gain", type=float, default=LATERAL_GAIN)
     parser.add_argument("--flow-scale", type=float, default=DEFAULT_FLOW_SCALE)
-    parser.add_argument("--waypoint-spacing", type=float, default=0.001)
-    parser.add_argument("--waypoint-arrival-tol", type=float, default=0.001)
-    parser.add_argument("--waypoint-lookahead", type=int, default=1)
-    parser.add_argument("--forward-search-points", type=int, default=50)
+    parser.add_argument("--waypoint-spacing", type=float, default=DEFAULT_WAYPOINT_SPACING)
+    parser.add_argument("--waypoint-arrival-tol", type=float, default=DEFAULT_WAYPOINT_ARRIVAL_TOL)
+    parser.add_argument("--waypoint-lookahead", type=int, default=DEFAULT_MPC_WAYPOINT_LOOKAHEAD)
+    parser.add_argument("--forward-search-points", type=int, default=DEFAULT_FORWARD_SEARCH_POINTS)
     parser.add_argument(
         "--only-trial",
         default=None,

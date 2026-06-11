@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DynaMag 3D Phantom + Gantry Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #0b1020;
+      color: #e8ecf1;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #panel {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 340px;
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      background: rgba(10, 14, 28, 0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px;
+      z-index: 10;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    }
+
+    #panel h2, #panel h3 {
+      margin: 0 0 10px 0;
+    }
+
+    #panel h2 {
+      font-size: 18px;
+      color: #8bd3ff;
+    }
+
+    #panel h3 {
+      font-size: 14px;
+      margin-top: 14px;
+      color: #ffd166;
+    }
+
+    .row {
+      margin: 10px 0;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      color: #c9d4df;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.15);
+      margin-right: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: none;
+      background: #1f6feb;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #388bfd;
+    }
+
+    .small-btn {
+      width: auto;
+      display: inline-block;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+
+    .value {
+      font-size: 12px;
+      color: #9fb3c8;
+      margin-top: 2px;
+    }
+
+    #stats {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    #footer-note {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #9aa7b4;
+      line-height: 1.4;
+    }
+
+    #dropZone {
+      margin-top: 8px;
+      padding: 10px;
+      border: 1px dashed rgba(255,255,255,0.25);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: #b6c5d4;
+    }
+
+    #canvasHint {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      background: rgba(10, 14, 28, 0.85);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #d5deea;
+      z-index: 10;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    code {
+      color: #9cdcfe;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="panel">
+      <h2>DynaMag 3D Setup Viewer</h2>
+
+      <div class="row">
+        <button id="loadDefaultBtn">Load vessel_setup.json</button>
+        <input id="fileInput" type="file" accept=".json" style="margin-top:8px; width:100%;" />
+        <div id="dropZone">Or drag a JSON file here</div>
+      </div>
+
+      <h3>Display</h3>
+
+      <div class="row">
+        <label><input type="checkbox" id="showVessels" checked /> Show vessels</label>
+        <label><input type="checkbox" id="showMagnets" checked /> Show gantry magnets</label>
+        <label><input type="checkbox" id="showEnvelope" checked /> Show placement sphere</label>
+        <label><input type="checkbox" id="showBBox" checked /> Show phantom bounding box</label>
+        <label><input type="checkbox" id="showAxes" checked /> Show axes</label>
+        <label><input type="checkbox" id="showCenter" checked /> Show phantom center</label>
+      </div>
+
+      <h3>Gantry geometry</h3>
+
+      <div class="row">
+        <span class="label">Placement radius (mm)</span>
+        <input id="placementRadius" type="range" min="100" max="500" step="5" value="300" />
+        <div class="value" id="placementRadiusValue">300 mm</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Front / back z-offset (mm)</span>
+        <input id="zOffset" type="range" min="50" max="300" step="5" value="180" />
+        <div class="value" id="zOffsetValue">180 mm</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Magnet length (mm)</span>
+        <input id="magnetLength" type="range" min="40" max="220" step="5" value="160" />
+        <div class="value" id="magnetLengthValue">160 mm</div>
+      </div>
+
+      <div class="row">
+        <span class="label">Magnet radius (mm)</span>
+        <input id="magnetRadius" type="range" min="8" max="80" step="1" value="35" />
+        <div class="value" id="magnetRadiusValue">35 mm</div>
+      </div>
+
+      <div class="row">
+        <button class="small-btn" id="resetViewBtn">Reset view</button>
+        <button class="small-btn" id="rebuildBtn">Rebuild gantry</button>
+      </div>
+
+      <div id="stats">No vessel JSON loaded yet.</div>
+
+      <div id="footer-note">
+        Use mouse to rotate, zoom, and pan.<br/>
+        Best workflow: export <code>real_vessel_segments.pkl</code> to JSON, then serve this folder with:<br/>
+        <code>python -m http.server 8000</code>
+      </div>
+    </div>
+
+    <div id="canvasHint">
+      Left drag = rotate<br/>
+      Scroll = zoom<br/>
+      Right drag = pan
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const app = document.getElementById("app");
+    const statsEl = document.getElementById("stats");
+
+    const loadDefaultBtn = document.getElementById("loadDefaultBtn");
+    const fileInput = document.getElementById("fileInput");
+    const dropZone = document.getElementById("dropZone");
+
+    const showVessels = document.getElementById("showVessels");
+    const showMagnets = document.getElementById("showMagnets");
+    const showEnvelope = document.getElementById("showEnvelope");
+    const showBBox = document.getElementById("showBBox");
+    const showAxes = document.getElementById("showAxes");
+    const showCenter = document.getElementById("showCenter");
+
+    const placementRadiusSlider = document.getElementById("placementRadius");
+    const zOffsetSlider = document.getElementById("zOffset");
+    const magnetLengthSlider = document.getElementById("magnetLength");
+    const magnetRadiusSlider = document.getElementById("magnetRadius");
+
+    const placementRadiusValue = document.getElementById("placementRadiusValue");
+    const zOffsetValue = document.getElementById("zOffsetValue");
+    const magnetLengthValue = document.getElementById("magnetLengthValue");
+    const magnetRadiusValue = document.getElementById("magnetRadiusValue");
+
+    const resetViewBtn = document.getElementById("resetViewBtn");
+    const rebuildBtn = document.getElementById("rebuildBtn");
+
+    let vesselData = null;
+    let vesselObject = null;
+    let magnetGroup = null;
+    let bboxGroup = null;
+    let envelopeObject = null;
+    let centerObject = null;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0b1020);
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      5000
+    );
+    camera.position.set(450, 300, 450);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    app.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.target.set(0, 0, 0);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+    scene.add(ambient);
+
+    const dir1 = new THREE.DirectionalLight(0xffffff, 0.55);
+    dir1.position.set(300, 300, 300);
+    scene.add(dir1);
+
+    const dir2 = new THREE.DirectionalLight(0x88aaff, 0.35);
+    dir2.position.set(-300, -150, -200);
+    scene.add(dir2);
+
+    const axesHelper = new THREE.AxesHelper(120);
+    scene.add(axesHelper);
+
+    const grid = new THREE.GridHelper(800, 16, 0x334155, 0x1f2937);
+    grid.rotation.x = Math.PI / 2;
+    scene.add(grid);
+
+    function updateSliderLabels() {
+      placementRadiusValue.textContent = `${placementRadiusSlider.value} mm`;
+      zOffsetValue.textContent = `${zOffsetSlider.value} mm`;
+      magnetLengthValue.textContent = `${magnetLengthSlider.value} mm`;
+      magnetRadiusValue.textContent = `${magnetRadiusSlider.value} mm`;
+    }
+
+    function clearObject(obj) {
+      if (!obj) return;
+      scene.remove(obj);
+      obj.traverse?.((child) => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => m.dispose());
+          } else {
+            child.material.dispose();
+          }
+        }
+      });
+    }
+
+    function vectorFromArray(arr) {
+      return new THREE.Vector3(arr[0], arr[1], arr[2]);
+    }
+
+    function createVesselObject(data) {
+      const positions = [];
+
+      for (const seg of data.segments) {
+        positions.push(...seg.start_mm);
+        positions.push(...seg.end_mm);
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3)
+      );
+
+      const material = new THREE.LineBasicMaterial({
+        color: 0x4cc9f0,
+        transparent: true,
+        opacity: 0.95,
+      });
+
+      return new THREE.LineSegments(geometry, material);
+    }
+
+    function createBBoxGroup(bbox) {
+      const min = vectorFromArray(bbox.min);
+      const max = vectorFromArray(bbox.max);
+
+      const box = new THREE.Box3(min, max);
+      const helper = new THREE.Box3Helper(box, 0xffcc66);
+
+      const g = new THREE.Group();
+      g.add(helper);
+      return g;
+    }
+
+    function createCenterMarker(centerArr) {
+      const center = vectorFromArray(centerArr);
+      const group = new THREE.Group();
+
+      const sphereGeom = new THREE.SphereGeometry(4, 20, 20);
+      const sphereMat = new THREE.MeshStandardMaterial({
+        color: 0xff6699,
+        emissive: 0x330011,
+      });
+      const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+      sphere.position.copy(center);
+      group.add(sphere);
+
+      const crossMaterial = new THREE.LineBasicMaterial({ color: 0xff99bb });
+      const crossSize = 18;
+
+      const crossPts = [
+        [center.x - crossSize, center.y, center.z, center.x + crossSize, center.y, center.z],
+        [center.x, center.y - crossSize, center.z, center.x, center.y + crossSize, center.z],
+        [center.x, center.y, center.z - crossSize, center.x, center.y, center.z + crossSize],
+      ];
+
+      for (const p of crossPts) {
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute("position", new THREE.Float32BufferAttribute(p, 3));
+        const line = new THREE.Line(geom, crossMaterial);
+        group.add(line);
+      }
+
+      return group;
+    }
+
+    function createPlacementEnvelope(centerArr, radiusMm) {
+      const center = vectorFromArray(centerArr);
+
+      const geometry = new THREE.SphereGeometry(radiusMm, 40, 30);
+      const material = new THREE.MeshBasicMaterial({
+        color: 0x3a86ff,
+        transparent: true,
+        opacity: 0.08,
+        wireframe: true,
+      });
+
+      const sphere = new THREE.Mesh(geometry, material);
+      sphere.position.copy(center);
+      return sphere;
+    }
+
+    function createMagnetCylinder(position, target, radius, length, color) {
+      const geometry = new THREE.CylinderGeometry(radius, radius, length, 28, 1, false);
+      const material = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.45,
+        metalness: 0.15,
+      });
+
+      const cylinder = new THREE.Mesh(geometry, material);
+
+      const pos = position.clone();
+      const tgt = target.clone();
+
+      cylinder.position.copy(pos);
+
+      const direction = tgt.clone().sub(pos).normalize();
+      const up = new THREE.Vector3(0, 1, 0);
+      const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
+      cylinder.quaternion.copy(quaternion);
+
+      return cylinder;
+    }
+
+    function createMagnetLabelSprite(text, color = "#ffffff") {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = 256;
+      canvas.height = 64;
+
+      ctx.fillStyle = "rgba(0,0,0,0.6)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = color;
+      ctx.font = "28px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.set(40, 10, 1);
+      return sprite;
+    }
+
+    function buildMagnetPositions(centerArr, placementRadius, zOffset) {
+      const c = vectorFromArray(centerArr);
+
+      const anglesFront = [0, 120, 240];
+      const anglesMid = [60, 180, 300];
+      const anglesBack = [0, 120, 240];
+
+      const positions = [];
+
+      anglesFront.forEach((deg, idx) => {
+        const rad = THREE.MathUtils.degToRad(deg);
+        positions.push({
+          name: String.fromCharCode(65 + idx), // A B C
+          pos: new THREE.Vector3(
+            c.x + placementRadius * Math.cos(rad),
+            c.y + placementRadius * Math.sin(rad),
+            c.z - zOffset
+          ),
+          color: 0xff6b6b,
+        });
+      });
+
+      anglesBack.forEach((deg, idx) => {
+        const rad = THREE.MathUtils.degToRad(deg);
+        positions.push({
+          name: String.fromCharCode(68 + idx), // D E F
+          pos: new THREE.Vector3(
+            c.x + placementRadius * Math.cos(rad),
+            c.y + placementRadius * Math.sin(rad),
+            c.z + zOffset
+          ),
+          color: 0x6bcB77,
+        });
+      });
+
+      anglesMid.forEach((deg, idx) => {
+        const rad = THREE.MathUtils.degToRad(deg);
+        positions.push({
+          name: String.fromCharCode(71 + idx), // G H I
+          pos: new THREE.Vector3(
+            c.x + placementRadius * Math.cos(rad),
+            c.y + placementRadius * Math.sin(rad),
+            c.z
+          ),
+          color: 0x4dabf7,
+        });
+      });
+
+      return positions;
+    }
+
+    function createMagnetGroup(centerArr) {
+      const group = new THREE.Group();
+
+      const placementRadius = Number(placementRadiusSlider.value);
+      const zOffset = Number(zOffsetSlider.value);
+      const magnetLength = Number(magnetLengthSlider.value);
+      const magnetRadius = Number(magnetRadiusSlider.value);
+
+      const center = vectorFromArray(centerArr);
+
+      const positions = buildMagnetPositions(centerArr, placementRadius, zOffset);
+
+      for (const item of positions) {
+        const magnet = createMagnetCylinder(
+          item.pos,
+          center,
+          magnetRadius,
+          magnetLength,
+          item.color
+        );
+        group.add(magnet);
+
+        const markerGeom = new THREE.SphereGeometry(5, 16, 16);
+        const markerMat = new THREE.MeshStandardMaterial({ color: item.color });
+        const marker = new THREE.Mesh(markerGeom, markerMat);
+        marker.position.copy(item.pos);
+        group.add(marker);
+
+        const label = createMagnetLabelSprite(item.name);
+        label.position.copy(item.pos.clone().add(new THREE.Vector3(0, 0, 28)));
+        group.add(label);
+
+        const lineGeom = new THREE.BufferGeometry().setFromPoints([item.pos, center]);
+        const lineMat = new THREE.LineDashedMaterial({
+          color: item.color,
+          dashSize: 8,
+          gapSize: 5,
+          transparent: true,
+          opacity: 0.4,
+        });
+        const line = new THREE.Line(lineGeom, lineMat);
+        line.computeLineDistances();
+        group.add(line);
+      }
+
+      return group;
+    }
+
+    function updateVisibility() {
+      if (vesselObject) vesselObject.visible = showVessels.checked;
+      if (magnetGroup) magnetGroup.visible = showMagnets.checked;
+      if (bboxGroup) bboxGroup.visible = showBBox.checked;
+      if (envelopeObject) envelopeObject.visible = showEnvelope.checked;
+      if (centerObject) centerObject.visible = showCenter.checked;
+      axesHelper.visible = showAxes.checked;
+      grid.visible = showAxes.checked;
+    }
+
+    function updateStats() {
+      if (!vesselData) {
+        statsEl.textContent = "No vessel JSON loaded yet.";
+        return;
+      }
+
+      const bbox = vesselData.bbox_mm;
+      const meta = vesselData.metadata;
+      const placementRadius = Number(placementRadiusSlider.value);
+      const zOffset = Number(zOffsetSlider.value);
+      const magnetLength = Number(magnetLengthSlider.value);
+      const magnetRadius = Number(magnetRadiusSlider.value);
+
+      statsEl.textContent =
+`Source: ${meta.source_pkl}
+Segments: ${meta.n_segments}
+Units: ${meta.units}
+
+BBox min (mm): [${bbox.min.map(v => v.toFixed(1)).join(", ")}]
+BBox max (mm): [${bbox.max.map(v => v.toFixed(1)).join(", ")}]
+BBox size (mm): [${bbox.size.map(v => v.toFixed(1)).join(", ")}]
+Center (mm): [${bbox.center.map(v => v.toFixed(1)).join(", ")}]
+
+Gantry mode visualized: fixed enclosing stress-test style
+Placement radius: ${placementRadius.toFixed(1)} mm
+Front/back z-offset: ${zOffset.toFixed(1)} mm
+Magnet length: ${magnetLength.toFixed(1)} mm
+Magnet radius: ${magnetRadius.toFixed(1)} mm
+
+Magnet labels:
+A B C = front triangle
+D E F = back triangle
+G H I = mid ring`;
+    }
+
+    function rebuildSceneFromData() {
+      if (!vesselData) return;
+
+      clearObject(vesselObject);
+      clearObject(magnetGroup);
+      clearObject(bboxGroup);
+      clearObject(envelopeObject);
+      clearObject(centerObject);
+
+      vesselObject = createVesselObject(vesselData);
+      scene.add(vesselObject);
+
+      bboxGroup = createBBoxGroup(vesselData.bbox_mm);
+      scene.add(bboxGroup);
+
+      centerObject = createCenterMarker(vesselData.bbox_mm.center);
+      scene.add(centerObject);
+
+      envelopeObject = createPlacementEnvelope(
+        vesselData.bbox_mm.center,
+        Number(placementRadiusSlider.value)
+      );
+      scene.add(envelopeObject);
+
+      magnetGroup = createMagnetGroup(vesselData.bbox_mm.center);
+      scene.add(magnetGroup);
+
+      updateVisibility();
+      updateStats();
+      fitCameraToVessel();
+    }
+
+    function fitCameraToVessel() {
+      if (!vesselData) return;
+
+      const center = vectorFromArray(vesselData.bbox_mm.center);
+      const size = vectorFromArray(vesselData.bbox_mm.size);
+      const maxDim = Math.max(size.x, size.y, size.z);
+
+      const dist = Math.max(250, maxDim * 4.0);
+
+      camera.position.set(center.x + dist, center.y + dist * 0.7, center.z + dist);
+      controls.target.copy(center);
+      controls.update();
+    }
+
+    async function loadDefaultJson() {
+      try {
+        const response = await fetch("./vessel_setup.json");
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        vesselData = data;
+        rebuildSceneFromData();
+      } catch (err) {
+        statsEl.textContent =
+          "Could not load ./vessel_setup.json\n\n" +
+          "Make sure this HTML file and vessel_setup.json are in the same folder,\n" +
+          "and serve the folder with:\npython -m http.server 8000\n\n" +
+          `Error: ${err.message}`;
+      }
+    }
+
+    function loadJsonFromFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          vesselData = data;
+          rebuildSceneFromData();
+        } catch (err) {
+          alert("Invalid JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    loadDefaultBtn.addEventListener("click", loadDefaultJson);
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) loadJsonFromFile(file);
+    });
+
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.style.background = "rgba(255,255,255,0.08)";
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.style.background = "transparent";
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.style.background = "transparent";
+      const file = e.dataTransfer.files[0];
+      if (file) loadJsonFromFile(file);
+    });
+
+    [showVessels, showMagnets, showEnvelope, showBBox, showAxes, showCenter].forEach(el => {
+      el.addEventListener("change", updateVisibility);
+    });
+
+    [placementRadiusSlider, zOffsetSlider, magnetLengthSlider, magnetRadiusSlider].forEach(el => {
+      el.addEventListener("input", () => {
+        updateSliderLabels();
+        updateStats();
+      });
+    });
+
+    rebuildBtn.addEventListener("click", () => {
+      if (vesselData) rebuildSceneFromData();
+    });
+
+    resetViewBtn.addEventListener("click", fitCameraToVessel);
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    updateSliderLabels();
+    updateVisibility();
+    animate();
+  </script>
+</body>
+</html>

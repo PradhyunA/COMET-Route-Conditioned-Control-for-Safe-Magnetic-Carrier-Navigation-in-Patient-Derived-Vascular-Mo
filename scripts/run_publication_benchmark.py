@@ -42,7 +42,7 @@ from dynamag_simulation.core.profiles import SPION_CARRIER_1MM, SPION_CARRIER_50
 from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.reporting import save_results_csv
 
-from simulation_3d_acbc import (
+from simulation_3d_pid import (
     DEFAULT_VESSEL_FILE,
     DEVICE_MODE,
     FIXED_COIL_LENGTH,
@@ -53,11 +53,9 @@ from simulation_3d_acbc import (
     FIXED_MAX_CURRENT,
     FIXED_PLACEMENT_RADIUS,
     FIXED_TURNS,
-    save_acbc_diagnostics,
-    simulate_trial_acbc,
+    save_pid_diagnostics,
+    simulate_trial_pid,
 )
-from simulation_3d_mpc import simulate_trial_mpc
-from simulation_3d_naive_mpc import simulate_trial_naive_mpc
 from simulation_3d_comet import save_comet_diagnostics, simulate_trial_comet
 
 
@@ -125,6 +123,60 @@ CONTROLLER_VARIANTS = {
     "comet": ControllerVariant(
         label="COMET",
         kind="comet",
+        kwargs={},
+    ),
+    "comet_no_authority_reserve": ControllerVariant(
+        label="COMET-no-authority-reserve",
+        kind="comet",
+        kwargs={
+            "authority_reserve_weight": 0.0,
+            "capture_reserve_gain": 0.0,
+            "capture_urgency_gain": 0.0,
+            "hard_commit_reserve_threshold": -1e9,
+            "rescue_reserve_threshold": -1e9,
+            "rescue_exit_reserve": -1e9,
+        },
+    ),
+    "comet_no_commitment_memory": ControllerVariant(
+        label="COMET-no-commitment-memory",
+        kind="comet",
+        kwargs={
+            "intent_smoothing": 0.0,
+            "min_commitment_dwell_steps": 0,
+            "branch_switch_penalty": 0.0,
+        },
+    ),
+    "comet_no_downstream_value": ControllerVariant(
+        label="COMET-no-downstream-value",
+        kind="comet",
+        kwargs={
+            "downstream_value_weight": 0.0,
+        },
+    ),
+    "comet_no_terminal_precision": ControllerVariant(
+        label="COMET-no-terminal-precision-servo",
+        kind="comet",
+        kwargs={
+            "terminal_precision_distance": 0.0,
+            "terminal_precision_kp": 0.0,
+            "terminal_precision_kv": 0.0,
+        },
+    ),
+    "comet_no_flow_scaled_reserve": ControllerVariant(
+        label="COMET-no-flow-scaled-reserve",
+        kind="comet",
+        kwargs={
+            "wrong_branch_flow_penalty_gain": 0.0,
+            "flow_commitment_reaction_time": 0.0,
+            "max_flow_commitment_extension": 0.0,
+            "flow_branch_adaptation_min_scale": 1e9,
+            "terminal_feasibility_min_flow_scale": 1e9,
+            "rescue_min_flow_scale": 1e9,
+        },
+    ),
+    "pid": ControllerVariant(
+        label="PID-route-aware",
+        kind="pid",
         kwargs={},
     ),
 }
@@ -662,6 +714,8 @@ def _write_benchmark_summary(root, run_id, seed_records, paired_rows):
 
 def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     if variant.kind == "mpc":
+        from simulation_3d_mpc import simulate_trial_mpc
+
         return simulate_trial_mpc(
             start=pair["start"],
             target=pair["target"],
@@ -673,6 +727,8 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
         )
 
     if variant.kind == "naive_mpc":
+        from simulation_3d_naive_mpc import simulate_trial_naive_mpc
+
         return simulate_trial_naive_mpc(
             start=pair["start"],
             target=pair["target"],
@@ -684,6 +740,8 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
         )
 
     if variant.kind == "acbc":
+        from simulation_3d_acbc import simulate_trial_acbc
+
         return simulate_trial_acbc(
             start=pair["start"],
             target=pair["target"],
@@ -696,6 +754,17 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
 
     if variant.kind == "comet":
         return simulate_trial_comet(
+            start=pair["start"],
+            target=pair["target"],
+            network=network,
+            trial_name=pair["pair_id"],
+            rng_seed=trial_seed,
+            **common_kwargs,
+            **variant.kwargs,
+        )
+
+    if variant.kind == "pid":
+        return simulate_trial_pid(
             start=pair["start"],
             target=pair["target"],
             network=network,
@@ -925,9 +994,13 @@ def run_benchmark(
             out_dir = os.path.join(root, f"flow_{flow_scale:g}x", controller_key)
             save_results_csv(results_by_controller[controller_key], out_dir)
             if variant.kind == "acbc":
+                from simulation_3d_acbc import save_acbc_diagnostics
+
                 save_acbc_diagnostics(results_by_controller[controller_key], out_dir)
             if variant.kind == "comet":
                 save_comet_diagnostics(results_by_controller[controller_key], out_dir)
+            if variant.kind == "pid":
+                save_pid_diagnostics(results_by_controller[controller_key], out_dir)
 
     paired_csv = os.path.join(root, "paired_results.csv")
     _write_paired_csv(paired_rows, paired_csv)

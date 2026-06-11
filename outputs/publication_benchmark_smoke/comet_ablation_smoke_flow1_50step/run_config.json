@@ -1,0 +1,112 @@
+{
+  "run_id": "comet_ablation_smoke_flow1_50step",
+  "vessel_file": "real_vessel_segments_cm_corrected.pkl",
+  "flow_scales": [
+    1.0
+  ],
+  "n_random_trials": 0,
+  "seed": 20260609,
+  "controller_keys": [
+    "comet",
+    "comet_no_authority_reserve",
+    "comet_no_commitment_memory",
+    "comet_no_downstream_value",
+    "comet_no_terminal_precision",
+    "comet_no_flow_scaled_reserve"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 1,
+  "software": {
+    "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:14:06) [Clang 20.1.8 ]",
+    "platform": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 8,
+    "numpy": "2.4.6"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 50,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet": {
+      "label": "COMET",
+      "kind": "comet",
+      "kwargs": {}
+    },
+    "comet_no_authority_reserve": {
+      "label": "COMET-no-authority-reserve",
+      "kind": "comet",
+      "kwargs": {
+        "authority_reserve_weight": 0.0,
+        "capture_reserve_gain": 0.0,
+        "capture_urgency_gain": 0.0,
+        "hard_commit_reserve_threshold": -1000000000.0,
+        "rescue_reserve_threshold": -1000000000.0,
+        "rescue_exit_reserve": -1000000000.0
+      }
+    },
+    "comet_no_commitment_memory": {
+      "label": "COMET-no-commitment-memory",
+      "kind": "comet",
+      "kwargs": {
+        "intent_smoothing": 0.0,
+        "min_commitment_dwell_steps": 0,
+        "branch_switch_penalty": 0.0
+      }
+    },
+    "comet_no_downstream_value": {
+      "label": "COMET-no-downstream-value",
+      "kind": "comet",
+      "kwargs": {
+        "downstream_value_weight": 0.0
+      }
+    },
+    "comet_no_terminal_precision": {
+      "label": "COMET-no-terminal-precision-servo",
+      "kind": "comet",
+      "kwargs": {
+        "terminal_precision_distance": 0.0,
+        "terminal_precision_kp": 0.0,
+        "terminal_precision_kv": 0.0
+      }
+    },
+    "comet_no_flow_scaled_reserve": {
+      "label": "COMET-no-flow-scaled-reserve",
+      "kind": "comet",
+      "kwargs": {
+        "wrong_branch_flow_penalty_gain": 0.0,
+        "flow_commitment_reaction_time": 0.0,
+        "max_flow_commitment_extension": 0.0,
+        "flow_branch_adaptation_min_scale": 1000000000.0,
+        "terminal_feasibility_min_flow_scale": 1000000000.0,
+        "rescue_min_flow_scale": 1000000000.0
+      }
+    }
+  },
+  "git": {
+    "commit": "49cb042217613303af071e5fac023b0e19f9b897",
+    "branch": "fair-mpc-baseline-v1",
+    "status_short": "M dynamag_simulation/core/__init__.py\n M dynamag_simulation/core/comet_controller.py\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_current_heatmap.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_currents.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_distance.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_fieldmap_z0.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_physics.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_speed.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_trajectory_3d.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_vessel_tree_path_trajectory.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_wall_clearance.png\n M outputs/simulation_outputs_3d_mpc/trial_2_mid_to_outlet_xyz_error.png\n M outputs/simulation_outputs_3d_mpc/trial_summary.csv\n M scripts/run_flow3_5_efficiency_benchmark.py\n M scripts/run_overnight_efficiency_benchmark.py\n M scripts/run_publication_benchmark.py\n M scripts/simulation_3d_comet.py\n M scripts/simulation_3d_mpc.py\n?? candidate8_0050_500um_flow3_fixed_1000step.log\n?? data/0050_H_CERE_H/\n?? dynamag_simulation/core/pid_controller.py\n?? efficiency_0050_500um_flow3_only_fixed_gantry.log\n?? outputs/candidate8_0050_smoke/\n?? outputs/pid_abdominal_aorta_flow1x_single/\n?? outputs/pid_baseline_smoke_codex/\n?? outputs/pid_baseline_smoke_codex_v2/\n?? outputs/publication_benchmark_0050_flow3/\n?? outputs/publication_benchmark_500um/\n?? outputs/visualization_0050/\n?? overnight_1mm_pilot_results.zip\n?? saved_runs/ACBC_trial2_500um_no_lateral_shift.log\n?? saved_runs/COMET_0050_cerebral_endpoint08_flow3.log\n?? saved_runs/COMET_0050_cerebral_hard_endpoint10_flow3.log\n?? saved_runs/COMET_0050_cerebral_trial1_flow3.log\n?? saved_runs/COMET_40Left85Right_medium_endpoint03_flow3.log\n?? saved_runs/COMET_40Left85Right_trial1_flow3.log\n?? saved_runs/COMET_abdominal_trial1_flow3.log\n?? saved_runs/MPC_trial2_flow1_route2mm.log\n?? saved_runs/acbc_direct_trial2_500um_linear_enclosing_flow1.log\n?? saved_runs/acbc_tuned_trial2_500um_adaptive_enclosing_flow1.log\n?? saved_runs/acbc_tuned_trial2_500um_linear_enclosing_flow1.log\n?? scripts/convert_0050_centerlines_to_segments.py\n?? scripts/export_vessel_segments_to_json.py\n?? scripts/simulation_3d_pid.py\n?? tests/test_pid_controller.py"
+  }
+}

@@ -34,8 +34,8 @@ CONTROLLERS = [
     "acbc_tuned",
 ]
 
-# COMET is run from the same harness via --controllers comet so the stored
-# MPC/ACBC baseline results never need to be regenerated.
+# COMET and PID can be run from the same harness via --controllers comet or
+# --controllers pid so stored MPC/ACBC baseline results never need regeneration.
 
 
 def main():
@@ -72,7 +72,8 @@ def main():
         help=(
             "Comma-separated controller keys "
             "(default: the five paired baselines). "
-            "Use 'comet' to benchmark COMET against stored baselines."
+            "Use 'comet' or 'pid' to benchmark additional controllers against "
+            "stored baselines."
         ),
     )
     args = parser.parse_args()

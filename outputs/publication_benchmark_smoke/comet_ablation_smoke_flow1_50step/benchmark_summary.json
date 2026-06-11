@@ -1,0 +1,166 @@
+{
+  "run_id": "comet_ablation_smoke_flow1_50step",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 18,
+  "n_pairs": 3,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 21260609,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 21260610,
+      "start": [
+        -0.055085677707460194,
+        -0.04125857063974653,
+        -0.34702631252697536
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_003_inlet_to_mid",
+      "seed": 21260611,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        0.0065425029705397245,
+        0.028975075234756915,
+        -0.1364019113159107
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 279.604506091622,
+      "median_sim_time_s": 1.0,
+      "median_steps_to_target": 50.0,
+      "median_wall_time_s": 0.767653374990914,
+      "median_avg_control_step_time_s": 0.013627702558296732,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.852360101893954,
+      "median_energy_proxy_A2s": 705.2785143624352,
+      "median_min_wall_clearance_mm": 1.458127611124107,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet_no_authority_reserve",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 279.6045060926304,
+      "median_sim_time_s": 1.0,
+      "median_steps_to_target": 50.0,
+      "median_wall_time_s": 0.7594165840127971,
+      "median_avg_control_step_time_s": 0.013505053282133304,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.856373757062098,
+      "median_energy_proxy_A2s": 705.9182051230039,
+      "median_min_wall_clearance_mm": 1.458127611124107,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 7.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet_no_commitment_memory",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 279.6045061279497,
+      "median_sim_time_s": 1.0,
+      "median_steps_to_target": 50.0,
+      "median_wall_time_s": 0.7238027080020402,
+      "median_avg_control_step_time_s": 0.012401220118044875,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.852360101893954,
+      "median_energy_proxy_A2s": 705.2785143624352,
+      "median_min_wall_clearance_mm": 1.458127611124107,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet_no_downstream_value",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 279.604506128012,
+      "median_sim_time_s": 1.0,
+      "median_steps_to_target": 50.0,
+      "median_wall_time_s": 0.7483312499825843,
+      "median_avg_control_step_time_s": 0.0131383867590921,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.852360101893954,
+      "median_energy_proxy_A2s": 705.2785143624352,
+      "median_min_wall_clearance_mm": 1.458127611124107,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet_no_flow_scaled_reserve",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 279.604506091622,
+      "median_sim_time_s": 1.0,
+      "median_steps_to_target": 50.0,
+      "median_wall_time_s": 0.7357692499936093,
+      "median_avg_control_step_time_s": 0.012620942438370548,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.852360101893954,
+      "median_energy_proxy_A2s": 705.2785143624352,
+      "median_min_wall_clearance_mm": 1.458127611124107,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet_no_terminal_precision",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 279.604506091622,
+      "median_sim_time_s": 1.0,
+      "median_steps_to_target": 50.0,
+      "median_wall_time_s": 0.7347054580168333,
+      "median_avg_control_step_time_s": 0.012551418282091617,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.852360101893954,
+      "median_energy_proxy_A2s": 705.2785143624352,
+      "median_min_wall_clearance_mm": 1.458127611124107,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.0
+    }
+  ],
+  "paired_statistics": []
+}

@@ -1,0 +1,42 @@
+RealVesselNetwork: 13975 segments, flow_scale=3.00, v_mean=3.7–60.0 mm/s, radius=1.06–17.39 mm
+Flow scale: 3.00x
+
+>>> Running trial_1_inlet_to_outlet
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/4000  mode=COMET_COMMIT    dist=367.9mm  bif=2.8mm  H=-0.00  res=11.1mm  wall=1.48mm  |I|=13.1A  v=81.37mm/s
+  step   50/4000  mode=COMET_APPROACH  dist=321.8mm  bif=33.3mm  H=0.20  res=41.7mm  wall=1.76mm  |I|=13.1A  v=157.69mm/s
+  step   75/4000  mode=COMET_COMMIT    dist=284.2mm  bif=0.6mm  H=-0.00  res=6.8mm  wall=2.81mm  |I|=9.3A  v=60.60mm/s
+  step  100/4000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=3.1mm  wall=1.48mm  |I|=10.6A  v=57.54mm/s
+  step  125/4000  mode=COMET_COMMIT    dist=234.3mm  bif=0.0mm  H=0.10  res=8.1mm  wall=3.39mm  |I|=12.1A  v=143.88mm/s
+  step  150/4000  mode=COMET_COMMIT    dist=167.1mm  bif=0.6mm  H=-0.00  res=2.1mm  wall=2.13mm  |I|=12.6A  v=156.35mm/s
+  step  175/4000  mode=COMET_COMMIT    dist=90.2mm  bif=0.7mm  H=0.13  res=0.9mm  wall=4.33mm  |I|=13.1A  v=163.89mm/s
+  step  200/4000  mode=COMET_COMMIT    dist=16.8mm  bif=0.8mm  H=-0.00  res=-1.9mm  wall=6.35mm  |I|=13.1A  v=168.00mm/s
+  COMET summary: hard_commits=88, transitions=11, emergency_switches=0, avg_ctrl=25.9ms
+
+============================================================
+  trial_1_inlet_to_outlet
+============================================================
+  Profile         : spion_carrier_1mm_blood
+  Start           : [ 0.07029893  0.0182373  -0.43109387]
+  Target          : [-0.04681534 -0.05247942 -0.04449917]
+  Final position  : [-0.04701545 -0.05251824 -0.04449383]
+  Steps taken     : 212
+  Final error (m) : 0.000204
+  Final error (mm): 0.204
+  Reached target  : True
+  Max current (A) : 13.104
+  Avg ctrl time(s): 0.0259
+  Wall time (s)   : 7.94
+  Mean Re         : 4.748e+01
+  Max  Re         : 7.885e+01
+  Stokes regime   : False
+  Drag model      : schiller_naumann
+  Drag regime     : finite_re_schiller_naumann
+  Finite-Re valid : True
+  Peak |F|  (N)   : 5.172e-05
+  Peak |v|  (m/s) : 2.065e-01
+  Peak |B|  (T)   : 6.307e-02
+COMET diagnostics saved to: outputs/simulation_outputs_3d_comet/comet_diagnostics.csv
+
+Results saved to: outputs/simulation_outputs_3d_comet/
