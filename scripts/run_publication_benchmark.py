@@ -294,62 +294,88 @@ def _software_metadata():
     }
 
 
-def _trial_pairs(network, rng, n_random):
+def _trial_pairs(network, rng, n_random, vessel_file=""):
+    """
+    Generate paired start/target trials.
+
+    Network-specific canonical_001 routes are used for the publication
+    easy/medium/hard benchmark so we do not accidentally choose bad generic
+    outlet_end() targets on the 40Left85Right or 0050 cerebral networks.
+    """
+    vessel_file_str = str(vessel_file)
+
+    def mm_to_m(values):
+        return np.asarray(values, dtype=float) / 1000.0
+
     inlet = network.inlet_start()
     outlet = network.outlet_end()
 
-    pairs = [
+    pairs = []
+
+    if "40Left85Right" in vessel_file_str:
+        canonical_start = mm_to_m([-104.88859564, 39.14727271, -376.76280737])
+        canonical_target = mm_to_m([-76.45376772, 123.07464331, -166.75929725])
+        canonical_id = "canonical_001_medium_40Left85Right_endpoint03"
+    elif "0050_H_CERE_H" in vessel_file_str:
+        canonical_start = mm_to_m([-30.80946207, 2.76482804, -47.19573259])
+        canonical_target = mm_to_m([-21.23204619, -38.94729167, 48.83672297])
+        canonical_id = "canonical_001_hard_0050_endpoint08"
+    else:
+        canonical_start = inlet
+        canonical_target = outlet
+        canonical_id = "canonical_001_inlet_to_outlet"
+
+    pairs.append(
         {
-            "pair_id": "canonical_001_inlet_to_outlet",
+            "pair_id": canonical_id,
             "trial_kind": "canonical",
-            "start": inlet,
-            "target": outlet,
-        },
+            "start": canonical_start,
+            "target": canonical_target,
+        }
+    )
+
+    # Keep three canonical routes total, but avoid bad outlet_end() on the
+    # medium/hard networks by anchoring canonical_002/003 around the good route.
+    pairs.append(
         {
-            "pair_id": "canonical_002_mid_to_outlet",
+            "pair_id": "canonical_002_random_to_publication_target",
             "trial_kind": "canonical",
             "start": network.random_point_in_vessel(rng),
-            "target": outlet,
-        },
+            "target": canonical_target,
+        }
+    )
+    pairs.append(
         {
-            "pair_id": "canonical_003_inlet_to_mid",
+            "pair_id": "canonical_003_publication_start_to_random",
             "trial_kind": "canonical",
-            "start": inlet,
+            "start": canonical_start,
             "target": network.random_point_in_vessel(rng),
-        },
-    ]
+        }
+    )
 
     for i in range(int(n_random)):
-        pairs.append({
-            "pair_id": f"random_{i + 1:04d}",
-            "trial_kind": "random",
-            "start": network.random_point_in_vessel(rng),
-            "target": network.random_point_in_vessel(rng),
-        })
+        pairs.append(
+            {
+                "pair_id": f"random_{i + 1:04d}",
+                "trial_kind": "random",
+                "start": network.random_point_in_vessel(rng),
+                "target": network.random_point_in_vessel(rng),
+            }
+        )
+
+    print("Generated trial pairs:", flush=True)
+    for pair in pairs:
+        s_mm = np.asarray(pair["start"], dtype=float) * 1000.0
+        t_mm = np.asarray(pair["target"], dtype=float) * 1000.0
+        dist_mm = float(np.linalg.norm(t_mm - s_mm))
+        print(
+            f"  {pair['pair_id']} kind={pair['trial_kind']} "
+            f"start_mm={s_mm.tolist()} target_mm={t_mm.tolist()} "
+            f"straight_mm={dist_mm:.3f}",
+            flush=True,
+        )
 
     return pairs
-
-
-def _safe_float(value, default=np.nan):
-    try:
-        return float(value)
-    except Exception:
-        return float(default)
-
-
-def _wall_clearance_stats(network, trajectory):
-    clearances = []
-    for pos in np.asarray(trajectory, dtype=float):
-        seg, radial_dist = network.find_segment(pos)
-        if seg is None:
-            continue
-        clearances.append(float(seg.radius - radial_dist))
-
-    if not clearances:
-        return np.nan
-
-    return float(np.min(clearances))
-
 
 def _path_efficiency_metrics(network, start, target, trajectory):
     trajectory = np.asarray(trajectory, dtype=float)
@@ -408,6 +434,96 @@ def _state_fractions(result):
         "acbc_escape_fraction": counts["STALL_ESCAPE"] / total,
     }
 
+
+
+
+def _safe_float(value, default=float("nan")):
+    """
+    Convert a value to float safely for benchmark metrics.
+
+    Handles None, arrays/lists, NaN, inf, and nonnumeric values.
+    """
+    try:
+        if value is None:
+            return default
+
+        if isinstance(value, (list, tuple)):
+            if len(value) == 0:
+                return default
+            value = value[0]
+
+        # Handles numpy arrays without requiring this helper to import numpy locally.
+        if hasattr(value, "size") and hasattr(value, "ravel"):
+            if value.size == 0:
+                return default
+            value = value.ravel()[0]
+
+        out = float(value)
+
+        # np is already imported in this benchmark file.
+        if not np.isfinite(out):
+            return default
+
+        return out
+    except Exception:
+        return default
+
+def _wall_clearance_stats(network, trajectory):
+    """
+    Return minimum vessel wall clearance over a trajectory.
+
+    Clearance = nearest centerline distance - local vessel radius.
+    Positive means inside the vessel with remaining wall clearance.
+    Negative means outside/through wall by that amount.
+
+    This helper is intentionally self-contained so publication metrics do
+    not fail if the network class does not expose a dedicated clearance API.
+    """
+    traj = np.asarray(trajectory, dtype=float)
+
+    if traj.ndim != 2 or traj.shape[0] == 0:
+        return float("nan")
+
+    if not hasattr(network, "segments") or len(network.segments) == 0:
+        return float("nan")
+
+    starts = []
+    ends = []
+    radii = []
+
+    for seg in network.segments:
+        if isinstance(seg, dict):
+            starts.append(np.asarray(seg["start"], dtype=float))
+            ends.append(np.asarray(seg["end"], dtype=float))
+            radii.append(float(seg["radius"]))
+        else:
+            starts.append(np.asarray(seg.start, dtype=float))
+            ends.append(np.asarray(seg.end, dtype=float))
+            radii.append(float(seg.radius))
+
+    starts = np.asarray(starts, dtype=float)
+    ends = np.asarray(ends, dtype=float)
+    radii = np.asarray(radii, dtype=float)
+
+    vec = ends - starts
+    denom = np.sum(vec * vec, axis=1)
+    denom = np.where(denom <= 1e-18, 1e-18, denom)
+
+    min_clearance = float("inf")
+
+    # Chunk trajectory points so this stays memory-safe on large networks.
+    for p in traj:
+        rel = p[None, :] - starts
+        t = np.sum(rel * vec, axis=1) / denom
+        t = np.clip(t, 0.0, 1.0)
+        closest = starts + t[:, None] * vec
+        d_centerline = np.linalg.norm(closest - p[None, :], axis=1)
+        clearance = radii - d_centerline
+        local_min = float(np.min(clearance))
+        if local_min < min_clearance:
+            min_clearance = local_min
+
+    return min_clearance
 
 def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, network):
     traj = np.asarray(result.trajectory, dtype=float)
@@ -885,7 +1001,7 @@ def run_benchmark(
     for flow_scale in flow_scales:
         rng = np.random.default_rng(seed + int(round(flow_scale * 1000)))
         network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
-        pairs = _trial_pairs(network, rng, n_random_trials)
+        pairs = _trial_pairs(network, rng, n_random_trials, vessel_file=vessel_file)
         results_by_controller = defaultdict(list)
 
         tasks = []
