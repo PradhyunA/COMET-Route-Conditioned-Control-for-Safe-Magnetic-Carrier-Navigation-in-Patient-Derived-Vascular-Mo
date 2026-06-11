@@ -58,6 +58,7 @@ from simulation_3d_acbc import (
 )
 from simulation_3d_mpc import simulate_trial_mpc
 from simulation_3d_naive_mpc import simulate_trial_naive_mpc
+from simulation_3d_comet import save_comet_diagnostics, simulate_trial_comet
 
 
 MPC_DEFAULT_WEIGHTS = {
@@ -120,6 +121,11 @@ CONTROLLER_VARIANTS = {
         label="ACBC-tuned",
         kind="acbc",
         kwargs=dict(ACBC_TUNED_WEIGHTS),
+    ),
+    "comet": ControllerVariant(
+        label="COMET",
+        kind="comet",
+        kwargs={},
     ),
 }
 
@@ -688,6 +694,17 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
             **variant.kwargs,
         )
 
+    if variant.kind == "comet":
+        return simulate_trial_comet(
+            start=pair["start"],
+            target=pair["target"],
+            network=network,
+            trial_name=pair["pair_id"],
+            rng_seed=trial_seed,
+            **common_kwargs,
+            **variant.kwargs,
+        )
+
     raise ValueError(f"Unknown controller kind: {variant.kind}")
 
 
@@ -909,6 +926,8 @@ def run_benchmark(
             save_results_csv(results_by_controller[controller_key], out_dir)
             if variant.kind == "acbc":
                 save_acbc_diagnostics(results_by_controller[controller_key], out_dir)
+            if variant.kind == "comet":
+                save_comet_diagnostics(results_by_controller[controller_key], out_dir)
 
     paired_csv = os.path.join(root, "paired_results.csv")
     _write_paired_csv(paired_rows, paired_csv)

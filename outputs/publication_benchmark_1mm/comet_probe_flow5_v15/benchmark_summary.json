@@ -1,0 +1,76 @@
+{
+  "run_id": "comet_probe_flow5_v15",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 3,
+  "n_pairs": 3,
+  "seed_records": [
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 25260610,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 25260611,
+      "start": [
+        -0.02768140697363718,
+        0.05374882244718649,
+        -0.13886434966628652
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_003_inlet_to_mid",
+      "seed": 25260612,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.06424603248107562,
+        -0.01640664990121127,
+        -0.3452077884229351
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.25121555453007177,
+      "median_sim_time_s": 4.92,
+      "median_steps_to_target": 246.0,
+      "median_wall_time_s": 7.979418374947272,
+      "median_avg_control_step_time_s": 0.029325593120418488,
+      "median_path_efficiency": 0.9520198534698413,
+      "median_current_rms_A": 9.784395410654428,
+      "median_energy_proxy_A2s": 3204.991482627073,
+      "median_min_wall_clearance_mm": 1.1114986116549583,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 11.0
+    }
+  ],
+  "paired_statistics": []
+}

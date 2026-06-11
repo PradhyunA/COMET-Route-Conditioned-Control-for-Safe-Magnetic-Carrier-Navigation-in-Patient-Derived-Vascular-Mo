@@ -34,6 +34,9 @@ CONTROLLERS = [
     "acbc_tuned",
 ]
 
+# COMET is run from the same harness via --controllers comet so the stored
+# MPC/ACBC baseline results never need to be regenerated.
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -63,7 +66,18 @@ def main():
     parser.add_argument("--wall-clearance-threshold-mm", type=float, default=0.7)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--device-mode", default=DEVICE_MODE)
+    parser.add_argument(
+        "--controllers",
+        default=",".join(CONTROLLERS),
+        help=(
+            "Comma-separated controller keys "
+            "(default: the five paired baselines). "
+            "Use 'comet' to benchmark COMET against stored baselines."
+        ),
+    )
     args = parser.parse_args()
+
+    controllers = [c.strip() for c in args.controllers.split(",") if c.strip()]
 
     flow_scales = [
         float(value.strip())
@@ -71,11 +85,11 @@ def main():
         if value.strip()
     ]
     pairs_per_flow = args.n_random_trials + 3
-    total_trials = pairs_per_flow * len(flow_scales) * len(CONTROLLERS)
+    total_trials = pairs_per_flow * len(flow_scales) * len(controllers)
     print(
         f"Starting {total_trials} controller trials: "
         f"{pairs_per_flow} matched pairs/flow x {len(flow_scales)} flows x "
-        f"{len(CONTROLLERS)} controllers on {args.workers} workers.",
+        f"{len(controllers)} controllers on {args.workers} workers.",
         flush=True,
     )
 
@@ -86,7 +100,7 @@ def main():
         flow_scales=flow_scales,
         n_random_trials=args.n_random_trials,
         seed=args.seed,
-        controller_keys=CONTROLLERS,
+        controller_keys=controllers,
         include_ablations=False,
         dt=args.dt,
         steps=args.steps,
