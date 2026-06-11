@@ -1,0 +1,61 @@
+{
+  "run_id": "comet_flow5_rescue_v2_flicker_replay",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 2,
+  "n_pairs": 2,
+  "seed_records": [
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0017",
+      "seed": 25260628,
+      "start": [
+        0.008800306861581618,
+        -0.029913289986005932,
+        -0.34488737401103237
+      ],
+      "target": [
+        -0.005311830514786035,
+        0.013605622913501677,
+        -0.1934924559974928
+      ]
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0021",
+      "seed": 25260632,
+      "start": [
+        -0.00436247822318226,
+        0.017009112012379063,
+        -0.22459550776534518
+      ],
+      "target": [
+        -0.03351419113643847,
+        0.020905459428727766,
+        -0.136031843807274
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet",
+      "n": 2,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.10924707173575389,
+      "median_sim_time_s": 3.46,
+      "median_steps_to_target": 173.0,
+      "median_wall_time_s": 5.683215437515173,
+      "median_avg_control_step_time_s": 0.02398056885108344,
+      "median_path_efficiency": 0.8702071013545487,
+      "median_current_rms_A": 9.792260334309736,
+      "median_energy_proxy_A2s": 2985.291376462448,
+      "median_min_wall_clearance_mm": 1.0391318775131273,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 16.0
+    }
+  ],
+  "paired_statistics": []
+}

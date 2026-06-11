@@ -1,0 +1,139 @@
+{
+  "run_id": "comet_terminal_precision_v4_flow13_probe3",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 6,
+  "n_pairs": 6,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0004",
+      "seed": 21260615,
+      "start": [
+        -0.011773723102388408,
+        -0.0065630474740905765,
+        -0.31852481396485205
+      ],
+      "target": [
+        -0.03230074896705251,
+        0.02712008546314982,
+        -0.13526993857960365
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0010",
+      "seed": 21260621,
+      "start": [
+        -0.046122940002439376,
+        -0.05117051319539597,
+        -0.04922456496966606
+      ],
+      "target": [
+        0.023554062595006486,
+        -0.021814523035398197,
+        -0.33843857538448735
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0017",
+      "seed": 21260628,
+      "start": [
+        0.01545606150809948,
+        -0.01761771334995028,
+        -0.31103476614299397
+      ],
+      "target": [
+        0.045296644391736286,
+        0.042141442136583475,
+        -0.12800762391518794
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0004",
+      "seed": 23260615,
+      "start": [
+        -0.004981664201586623,
+        0.019183486371844926,
+        -0.23362474189221516
+      ],
+      "target": [
+        0.017435721797579146,
+        0.035487533212922175,
+        -0.13884214322381727
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0010",
+      "seed": 23260621,
+      "start": [
+        0.02643381168446214,
+        -0.004404563545241914,
+        -0.29662774372458534
+      ],
+      "target": [
+        -0.03667252263634518,
+        0.046652464409390394,
+        -0.1397799844038713
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0017",
+      "seed": 23260628,
+      "start": [
+        0.047524930640410155,
+        -0.004387887965277928,
+        -0.17373933722066925
+      ],
+      "target": [
+        -0.046033391771267716,
+        0.013210396920263467,
+        -0.18186970800980148
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.21737507716252039,
+      "median_sim_time_s": 2.82,
+      "median_steps_to_target": 141.0,
+      "median_wall_time_s": 4.639159124926664,
+      "median_avg_control_step_time_s": 0.023296359635836688,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.688281993903752,
+      "median_energy_proxy_A2s": 2382.2380668724836,
+      "median_min_wall_clearance_mm": 0.9144337207708019,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 4.0
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.08620316739842689,
+      "median_sim_time_s": 2.14,
+      "median_steps_to_target": 107.0,
+      "median_wall_time_s": 5.111683374969289,
+      "median_avg_control_step_time_s": 0.02756182071596883,
+      "median_path_efficiency": 0.9074663239280117,
+      "median_current_rms_A": 9.026520627033559,
+      "median_energy_proxy_A2s": 1734.263904807953,
+      "median_min_wall_clearance_mm": 0.9785678062503173,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 3.6666666666666665
+    }
+  ],
+  "paired_statistics": []
+}

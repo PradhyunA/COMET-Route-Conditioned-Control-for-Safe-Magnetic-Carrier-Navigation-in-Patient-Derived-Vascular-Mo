@@ -1,0 +1,199 @@
+{
+  "run_id": "comet_terminal_precision_v2_flow13_smoke5",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 10,
+  "n_pairs": 10,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0002",
+      "seed": 21260613,
+      "start": [
+        -0.0213507563180653,
+        -0.024631205005996144,
+        -0.09365757917781788
+      ],
+      "target": [
+        -0.022226983869187814,
+        0.004447668696751771,
+        -0.29672121983430577
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0004",
+      "seed": 21260615,
+      "start": [
+        -0.011773723102388408,
+        -0.0065630474740905765,
+        -0.31852481396485205
+      ],
+      "target": [
+        -0.03230074896705251,
+        0.02712008546314982,
+        -0.13526993857960365
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0010",
+      "seed": 21260621,
+      "start": [
+        -0.046122940002439376,
+        -0.05117051319539597,
+        -0.04922456496966606
+      ],
+      "target": [
+        0.023554062595006486,
+        -0.021814523035398197,
+        -0.33843857538448735
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0012",
+      "seed": 21260623,
+      "start": [
+        -0.006391130154887593,
+        -0.009248680680250353,
+        -0.12583767924119935
+      ],
+      "target": [
+        -0.04576433612638718,
+        -0.050425113517314976,
+        -0.05104112088162429
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0017",
+      "seed": 21260628,
+      "start": [
+        0.01545606150809948,
+        -0.01761771334995028,
+        -0.31103476614299397
+      ],
+      "target": [
+        0.045296644391736286,
+        0.042141442136583475,
+        -0.12800762391518794
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0002",
+      "seed": 23260613,
+      "start": [
+        -0.05906993475151997,
+        0.016165869965302487,
+        -0.3822081050484042
+      ],
+      "target": [
+        -0.015445529988445523,
+        0.019525924463598767,
+        -0.26798809411120406
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0004",
+      "seed": 23260615,
+      "start": [
+        -0.004981664201586623,
+        0.019183486371844926,
+        -0.23362474189221516
+      ],
+      "target": [
+        0.017435721797579146,
+        0.035487533212922175,
+        -0.13884214322381727
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0010",
+      "seed": 23260621,
+      "start": [
+        0.02643381168446214,
+        -0.004404563545241914,
+        -0.29662774372458534
+      ],
+      "target": [
+        -0.03667252263634518,
+        0.046652464409390394,
+        -0.1397799844038713
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0012",
+      "seed": 23260623,
+      "start": [
+        -0.04416455134629707,
+        -0.02668731743235064,
+        -0.33340053171522754
+      ],
+      "target": [
+        0.022310446630610752,
+        0.0069415452511464686,
+        -0.2969006920221943
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0017",
+      "seed": 23260628,
+      "start": [
+        0.047524930640410155,
+        -0.004387887965277928,
+        -0.17373933722066925
+      ],
+      "target": [
+        -0.046033391771267716,
+        0.013210396920263467,
+        -0.18186970800980148
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet",
+      "n": 5,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.08404047495459377,
+      "median_sim_time_s": 2.64,
+      "median_steps_to_target": 132.0,
+      "median_wall_time_s": 4.6986480839550495,
+      "median_avg_control_step_time_s": 0.02647336332434365,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.901289833330015,
+      "median_energy_proxy_A2s": 2329.3244390392388,
+      "median_min_wall_clearance_mm": 0.9232345245892782,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 3.6
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet",
+      "n": 5,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.08620316739842689,
+      "median_sim_time_s": 2.14,
+      "median_steps_to_target": 107.0,
+      "median_wall_time_s": 2.6755195829318836,
+      "median_avg_control_step_time_s": 0.01845013196580112,
+      "median_path_efficiency": 0.9865838097601096,
+      "median_current_rms_A": 8.047212708612495,
+      "median_energy_proxy_A2s": 1622.4284103034076,
+      "median_min_wall_clearance_mm": 0.9596609645929886,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 3.2
+    }
+  ],
+  "paired_statistics": []
+}

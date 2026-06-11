@@ -745,6 +745,7 @@ def run_benchmark(
     profile_key,
     wall_clearance_threshold_m=0.0007,
     workers=1,
+    pair_ids=None,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -785,6 +786,7 @@ def run_benchmark(
         "profile_key": profile_key,
         "wall_clearance_threshold_m": wall_clearance_threshold_m,
         "workers": int(max(1, workers)),
+        "pair_ids": sorted(pair_ids) if pair_ids else None,
         "software": _software_metadata(),
         "profile": {
             "name": profile.name,
@@ -817,10 +819,15 @@ def run_benchmark(
         rng = np.random.default_rng(seed + int(round(flow_scale * 1000)))
         network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
         pairs = _trial_pairs(network, rng, n_random_trials)
+        indexed_pairs = [
+            (pair_idx, pair)
+            for pair_idx, pair in enumerate(pairs)
+            if pair_ids is None or pair["pair_id"] in pair_ids
+        ]
         results_by_controller = defaultdict(list)
 
         tasks = []
-        for pair_idx, pair in enumerate(pairs):
+        for pair_idx, pair in indexed_pairs:
             trial_seed = seed + 100000 * int(round(flow_scale * 10)) + pair_idx
             all_seed_records.append({
                 "flow_scale": flow_scale,
@@ -978,6 +985,14 @@ def main():
         default=1,
         help="Number of parallel trial/controller workers to run.",
     )
+    parser.add_argument(
+        "--pair-ids",
+        default=None,
+        help=(
+            "Optional comma-separated pair IDs to run after deterministic "
+            "pair generation."
+        ),
+    )
     parser.add_argument("--device-mode", default=DEVICE_MODE)
     parser.add_argument(
         "--profile",
@@ -1001,6 +1016,10 @@ def main():
     flow_scales = _parse_flow_scales(args.flow_scales)
     n_random_trials = args.n_random_trials
     controllers = [c.strip() for c in args.controllers.split(",") if c.strip()]
+    pair_ids = (
+        {value.strip() for value in args.pair_ids.split(",") if value.strip()}
+        if args.pair_ids else None
+    )
 
     if args.smoke_test:
         flow_scales = [1.0]
@@ -1031,6 +1050,7 @@ def main():
         profile_key=args.profile,
         wall_clearance_threshold_m=args.wall_clearance_threshold_mm / 1000.0,
         workers=args.workers,
+        pair_ids=pair_ids,
     )
 
 

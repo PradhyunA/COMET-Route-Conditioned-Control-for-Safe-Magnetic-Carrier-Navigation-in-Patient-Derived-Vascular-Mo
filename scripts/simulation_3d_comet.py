@@ -69,7 +69,12 @@ def save_comet_diagnostics(results, output_dir, filename="comet_diagnostics.csv"
         "selected_capture_probability", "temperature", "intent_entropy",
         "num_candidates", "stagnant_steps", "wall_clearance_m",
         "route_arc_m", "control_norm_A", "commit_reason",
-        "safety_filter_active", "q_json",
+        "safety_filter_active", "q_json", "terminal_mode_active",
+        "terminal_stage", "target_distance_m", "target_flow_x_m_s",
+        "target_flow_y_m_s", "target_flow_z_m_s",
+        "terminal_correction_x_m_s", "terminal_correction_y_m_s",
+        "terminal_correction_z_m_s", "current_saturation",
+        "final_hold_steps", "overshoot_count", "direct_terminal_feasible",
     ]
 
     with open(path, "w", newline="") as f:
@@ -289,6 +294,11 @@ def simulate_trial_comet(
             info.control_norm, info.commit_reason,
             info.safety_filter_active,
             json.dumps({str(k): round(v, 4) for k, v in info.q.items()}),
+            info.terminal_mode_active, info.terminal_stage,
+            info.target_distance_m, *info.predicted_flow_at_target,
+            *info.terminal_correction, info.current_saturation,
+            info.final_hold_steps, info.overshoot_count,
+            info.direct_terminal_feasible,
         ])
         # Compatibility log so the shared benchmark CSV can count
         # mode transitions for COMET like it does for ACBC.

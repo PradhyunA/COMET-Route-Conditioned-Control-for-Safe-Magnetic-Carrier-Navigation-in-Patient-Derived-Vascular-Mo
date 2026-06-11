@@ -130,6 +130,13 @@ def test_comet_step_produces_bounded_currents_and_intent(network, magnets):
         assert np.all(np.isfinite(force))
         assert converged
         assert info.mode.startswith("COMET_")
+        assert info.terminal_stage in ("", "capture", "precision")
+        assert np.isfinite(info.target_distance_m)
+        assert info.target_distance_m >= 0.0
+        assert info.predicted_flow_at_target.shape == (3,)
+        assert info.terminal_correction.shape == (3,)
+        assert info.final_hold_steps >= 0
+        assert info.overshoot_count >= 0
 
         if info.q:
             total = sum(info.q.values())

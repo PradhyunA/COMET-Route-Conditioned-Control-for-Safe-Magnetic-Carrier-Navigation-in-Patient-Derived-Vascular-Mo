@@ -1,0 +1,76 @@
+{
+  "run_id": "comet_efficiency_500um_v3_targeted_rescue_confirm",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 3,
+  "n_pairs": 3,
+  "seed_records": [
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0004",
+      "seed": 25260616,
+      "start": [
+        -0.026909724344212363,
+        0.013765719079255424,
+        -0.28194102959736883
+      ],
+      "target": [
+        -0.025125498907426404,
+        -0.028275338497727575,
+        -0.08689488559246947
+      ]
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0010",
+      "seed": 25260622,
+      "start": [
+        -0.04620067366238265,
+        -0.05127664350424496,
+        -0.04893129492794934
+      ],
+      "target": [
+        -0.046864616715638824,
+        -0.052256250158561175,
+        -0.04562976244251374
+      ]
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0017",
+      "seed": 25260629,
+      "start": [
+        -0.0027751383714234123,
+        0.019953370005556772,
+        -0.29262861911294036
+      ],
+      "target": [
+        -0.005492545658927349,
+        0.02117711055419703,
+        -0.22346184596359564
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.6666666666666666,
+      "median_final_error_mm": 0.3193593044960648,
+      "median_sim_time_s": 3.72,
+      "median_steps_to_target": 186.0,
+      "median_wall_time_s": 14.249385416973382,
+      "median_avg_control_step_time_s": 0.06296558667259712,
+      "median_path_efficiency": 0.178981656885219,
+      "median_current_rms_A": 10.315082818271774,
+      "median_energy_proxy_A2s": 3492.7054712072727,
+      "median_min_wall_clearance_mm": 1.6055257786496049,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 13.666666666666666
+    }
+  ],
+  "paired_statistics": []
+}
