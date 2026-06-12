@@ -221,6 +221,12 @@ PAIRED_HEADER = [
     "flow_scale",
     "pair_id",
     "trial_kind",
+    "start_x_m",
+    "start_y_m",
+    "start_z_m",
+    "target_x_m",
+    "target_y_m",
+    "target_z_m",
     "controller_key",
     "controller_label",
     "controller_kind",
@@ -462,6 +468,295 @@ def _trial_pairs(
 
     return feasible_pairs
 
+
+def _requested_values(value, label):
+    values = [item.strip() for item in str(value or "").split(",") if item.strip()]
+    if not values:
+        raise ValueError(f"{label} must contain at least one value")
+    return values
+
+
+def _format_flow_pair_combos(combos, limit=30):
+    formatted = [
+        f"(flow_scale={flow:g}, pair_id={pair_id})"
+        for flow, pair_id in sorted(combos)
+    ]
+    if len(formatted) > limit:
+        return formatted[:limit] + [f"... {len(formatted) - limit} more"]
+    return formatted
+
+
+def _trial_pairs_from_csv(
+    csv_path,
+    requested_pair_ids,
+    requested_flow_scales=None,
+    default_trial_kind="rerun",
+    network_factory=None,
+    profile=SPION_CARRIER_500UM,
+    wall_clearance_threshold_m=0.0007,
+    magnetic_authority_m_s=0.180,
+):
+    """
+    Load exact saved start/target pairs from a previous paired_results.csv.
+
+    One paired_results.csv row exists per controller. This helper deduplicates
+    to one route pair for each unique (flow_scale, pair_id), then validates the
+    route is still feasible in the current network before returning it.
+    """
+    requested_pair_ids = set(requested_pair_ids)
+    requested_flow_scale_set = (
+        {float(flow) for flow in requested_flow_scales}
+        if requested_flow_scales is not None
+        else None
+    )
+
+    coordinate_columns = {
+        "start_x_m",
+        "start_y_m",
+        "start_z_m",
+        "target_x_m",
+        "target_y_m",
+        "target_z_m",
+    }
+    required_non_coordinate_columns = {"flow_scale", "pair_id"}
+
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        available_columns = list(reader.fieldnames or [])
+        missing_non_coordinate_columns = sorted(
+            required_non_coordinate_columns - set(available_columns)
+        )
+        if missing_non_coordinate_columns:
+            raise ValueError(
+                "Cannot use --rerun-from-csv because the CSV is missing "
+                f"required columns: {missing_non_coordinate_columns}. "
+                f"Available columns: {available_columns}."
+            )
+        rows = list(reader)
+
+    found_pair_ids = {row["pair_id"] for row in rows if row["pair_id"] in requested_pair_ids}
+    missing_pair_ids = sorted(requested_pair_ids - found_pair_ids)
+    if missing_pair_ids:
+        raise ValueError(
+            f"Requested pair_id values not found in {csv_path}: {missing_pair_ids}"
+        )
+
+    filtered_rows = [row for row in rows if row["pair_id"] in requested_pair_ids]
+    if requested_flow_scale_set is not None:
+        filtered_rows = [
+            row
+            for row in filtered_rows
+            if float(row["flow_scale"]) in requested_flow_scale_set
+        ]
+        found_flow_scales = {float(row["flow_scale"]) for row in filtered_rows}
+        missing_flow_scales = sorted(requested_flow_scale_set - found_flow_scales)
+        if missing_flow_scales:
+            raise ValueError(
+                "Requested flow scale values not found for the requested "
+                f"pair IDs in {csv_path}: {missing_flow_scales}"
+            )
+
+    if not filtered_rows:
+        raise ValueError(
+            f"No rerun rows matched pair IDs {sorted(requested_pair_ids)}"
+        )
+
+    coordinate_source = (
+        "paired_results_csv"
+        if coordinate_columns.issubset(set(available_columns))
+        else "benchmark_summary_seed_records"
+    )
+
+    def vector_from_values(values, pair_id, flow_scale, prefix):
+        try:
+            return np.asarray(
+                [
+                    float(values[0]),
+                    float(values[1]),
+                    float(values[2]),
+                ],
+                dtype=float,
+            )
+        except Exception as exc:
+            raise ValueError(
+                f"Invalid {prefix} coordinate values for pair_id="
+                f"{pair_id} flow_scale={flow_scale}"
+            ) from exc
+
+    def vector_from_row(row, prefix):
+        return vector_from_values(
+            [
+                row[f"{prefix}_x_m"],
+                row[f"{prefix}_y_m"],
+                row[f"{prefix}_z_m"],
+            ],
+            row.get("pair_id"),
+            row.get("flow_scale"),
+            prefix,
+        )
+
+    selected_rows_by_key = {}
+    for row in filtered_rows:
+        key = (float(row["flow_scale"]), row["pair_id"])
+        selected_rows_by_key.setdefault(key, row)
+
+    seed_records_by_key = {}
+    if coordinate_source == "benchmark_summary_seed_records":
+        summary_path = os.path.join(
+            os.path.dirname(os.path.abspath(csv_path)),
+            "benchmark_summary.json",
+        )
+        if not os.path.exists(summary_path):
+            missing_columns = sorted(coordinate_columns - set(available_columns))
+            raise ValueError(
+                "Cannot use --rerun-from-csv with this paired_results.csv "
+                f"because it lacks coordinate columns {missing_columns}, and "
+                f"no benchmark_summary.json fallback was found at {summary_path}. "
+                "Targeted rerun requires either coordinate columns in "
+                "paired_results.csv or benchmark_summary.json seed_records."
+            )
+
+        with open(summary_path) as f:
+            summary = json.load(f)
+        seed_records = summary.get("seed_records")
+        if not isinstance(seed_records, list) or not seed_records:
+            raise ValueError(
+                f"benchmark_summary.json fallback at {summary_path} does not "
+                "contain usable seed_records. Targeted rerun requires either "
+                "coordinate columns in paired_results.csv or benchmark_summary.json "
+                "seed_records with flow_scale, pair_id, start, and target."
+            )
+
+        for record in seed_records:
+            try:
+                flow_scale = float(record["flow_scale"])
+                pair_id = record["pair_id"]
+            except Exception:
+                continue
+            seed_records_by_key[(flow_scale, pair_id)] = record
+
+        available_seed_combos = set(seed_records_by_key)
+        missing_seed_combos = sorted(
+            set(selected_rows_by_key) - available_seed_combos
+        )
+        if missing_seed_combos:
+            raise ValueError(
+                "Requested pair/flow combinations were present in "
+                "paired_results.csv but could not be found in "
+                f"benchmark_summary.json seed_records: "
+                f"{_format_flow_pair_combos(missing_seed_combos)}. "
+                "Available seed_records combinations: "
+                f"{_format_flow_pair_combos(available_seed_combos)}"
+            )
+
+    unique_pairs = {}
+    for row in filtered_rows:
+        flow_scale = float(row["flow_scale"])
+        pair_id = row["pair_id"]
+        key = (flow_scale, pair_id)
+        trial_kind = row.get("trial_kind") or default_trial_kind
+        route_metadata = {}
+
+        if coordinate_source == "paired_results_csv":
+            start = vector_from_row(row, "start")
+            target = vector_from_row(row, "target")
+        else:
+            record = seed_records_by_key[key]
+            start = vector_from_values(
+                record.get("start"),
+                pair_id,
+                flow_scale,
+                "start",
+            )
+            target = vector_from_values(
+                record.get("target"),
+                pair_id,
+                flow_scale,
+                "target",
+            )
+            for field in (
+                "route_length_m",
+                "route_min_clearance_m",
+                "route_min_authority_reserve_m_s",
+            ):
+                if field in record and record[field] is not None:
+                    route_metadata[field] = record[field]
+
+        if key in unique_pairs:
+            existing = unique_pairs[key]
+            if (
+                not np.allclose(existing["start"], start, rtol=0.0, atol=1e-12)
+                or not np.allclose(existing["target"], target, rtol=0.0, atol=1e-12)
+            ):
+                raise ValueError(
+                    f"Conflicting coordinates for pair_id={pair_id} "
+                    f"flow_scale={flow_scale:g} in {csv_path}"
+                )
+            if existing["trial_kind"] != trial_kind and not existing["trial_kind"]:
+                existing["trial_kind"] = trial_kind
+            continue
+
+        unique_pairs[key] = {
+            "flow_scale": flow_scale,
+            "pair_id": pair_id,
+            "trial_kind": trial_kind,
+            "start": start,
+            "target": target,
+            **route_metadata,
+        }
+
+    particle_radius = 0.5 * profile.diameter
+    planning_options = RoutePlanningOptions(
+        wall_clearance_m=wall_clearance_threshold_m,
+        particle_radius_m=particle_radius,
+        minimum_surface_clearance_m=max(
+            wall_clearance_threshold_m - particle_radius, 0.0,
+        ),
+        magnetic_authority_m_s=magnetic_authority_m_s,
+        minimum_authority_reserve_m_s=0.0,
+    )
+
+    pairs_by_flow = defaultdict(list)
+    for (flow_scale, pair_id), pair in sorted(unique_pairs.items()):
+        if network_factory is None:
+            raise ValueError("network_factory is required for rerun route validation")
+        network = network_factory(flow_scale)
+        plan = network.plan_route(pair["start"], pair["target"], planning_options)
+        if not plan.feasible:
+            raise RuntimeError(
+                f"Rerun pair is infeasible and cannot be reproduced safely: "
+                f"flow_scale={flow_scale:g} pair_id={pair_id}: {plan.reason}"
+            )
+        pair["route_length_m"] = pair.get("route_length_m", plan.route_length_m)
+        pair["route_min_clearance_m"] = pair.get(
+            "route_min_clearance_m",
+            plan.min_center_clearance_m,
+        )
+        pair["route_min_authority_reserve_m_s"] = pair.get(
+            "route_min_authority_reserve_m_s",
+            plan.min_authority_reserve_m_s,
+        )
+        pairs_by_flow[flow_scale].append(pair)
+
+    print(
+        "Loaded route-feasible rerun pairs from "
+        f"{coordinate_source}:",
+        flush=True,
+    )
+    for flow_scale in sorted(pairs_by_flow):
+        for pair in pairs_by_flow[flow_scale]:
+            s_mm = np.asarray(pair["start"], dtype=float) * 1000.0
+            t_mm = np.asarray(pair["target"], dtype=float) * 1000.0
+            dist_mm = float(np.linalg.norm(t_mm - s_mm))
+            print(
+                f"  flow={flow_scale:g} pair={pair['pair_id']} "
+                f"kind={pair['trial_kind']} start_mm={s_mm.tolist()} "
+                f"target_mm={t_mm.tolist()} straight_mm={dist_mm:.3f}",
+                flush=True,
+            )
+
+    return dict(pairs_by_flow), coordinate_source
+
 def _path_efficiency_metrics(network, start, target, trajectory):
     trajectory = np.asarray(trajectory, dtype=float)
     segments = np.diff(trajectory, axis=0)
@@ -583,6 +878,8 @@ def _wall_clearance_stats(network, trajectory):
 
 def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, network):
     traj = np.asarray(result.trajectory, dtype=float)
+    pair_start = np.asarray(pair["start"], dtype=float)
+    pair_target = np.asarray(pair["target"], dtype=float)
     path_metrics = _path_efficiency_metrics(
         network=network,
         start=result.start,
@@ -620,6 +917,12 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         "flow_scale": flow_scale,
         "pair_id": pair["pair_id"],
         "trial_kind": pair["trial_kind"],
+        "start_x_m": float(pair_start[0]),
+        "start_y_m": float(pair_start[1]),
+        "start_z_m": float(pair_start[2]),
+        "target_x_m": float(pair_target[0]),
+        "target_y_m": float(pair_target[1]),
+        "target_z_m": float(pair_target[2]),
         "controller_key": controller_key,
         "controller_label": variant.label,
         "controller_kind": variant.kind,
@@ -1056,6 +1359,10 @@ def run_benchmark(
     profile_key,
     wall_clearance_threshold_m=0.0007,
     workers=1,
+    rerun_from_csv=None,
+    rerun_pair_ids=None,
+    rerun_flow_scales=None,
+    rerun_trial_kind="rerun",
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1085,10 +1392,30 @@ def run_benchmark(
         "wall_clearance_threshold_m": wall_clearance_threshold_m,
     }
 
+    rerun_mode_enabled = rerun_from_csv is not None
+    rerun_pairs_by_flow = None
+    rerun_coordinate_source = None
+    active_flow_scales = list(flow_scales)
+    if rerun_mode_enabled:
+        if not rerun_pair_ids:
+            raise ValueError("--rerun-pair-ids is required with --rerun-from-csv")
+        rerun_pairs_by_flow, rerun_coordinate_source = _trial_pairs_from_csv(
+            csv_path=rerun_from_csv,
+            requested_pair_ids=rerun_pair_ids,
+            requested_flow_scales=rerun_flow_scales,
+            default_trial_kind=rerun_trial_kind,
+            network_factory=lambda flow: RealVesselNetwork(
+                vessel_file, flow_scale=flow,
+            ),
+            profile=profile,
+            wall_clearance_threshold_m=wall_clearance_threshold_m,
+        )
+        active_flow_scales = sorted(rerun_pairs_by_flow)
+
     config = {
         "run_id": run_id,
         "vessel_file": vessel_file,
-        "flow_scales": flow_scales,
+        "flow_scales": active_flow_scales,
         "n_random_trials": n_random_trials,
         "seed": seed,
         "controller_keys": list(selected),
@@ -1096,6 +1423,13 @@ def run_benchmark(
         "profile_key": profile_key,
         "wall_clearance_threshold_m": wall_clearance_threshold_m,
         "workers": int(max(1, workers)),
+        "rerun_mode_enabled": rerun_mode_enabled,
+        "rerun_from_csv": rerun_from_csv,
+        "rerun_pair_ids": list(rerun_pair_ids or []),
+        "rerun_flow_scales": (
+            list(rerun_flow_scales) if rerun_flow_scales is not None else None
+        ),
+        "rerun_coordinate_source": rerun_coordinate_source,
         "early_stopping": {
             "enabled_controller_kinds": ["mpc", "acbc"],
             "excluded_controller_kinds": ["comet"],
@@ -1133,17 +1467,20 @@ def run_benchmark(
     all_seed_records = []
     workers = int(max(1, workers))
 
-    for flow_scale in flow_scales:
-        rng = np.random.default_rng(seed + int(round(flow_scale * 1000)))
+    for flow_scale in active_flow_scales:
         network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
-        pairs = _trial_pairs(
-            network,
-            rng,
-            n_random_trials,
-            vessel_file=vessel_file,
-            profile=profile,
-            wall_clearance_threshold_m=wall_clearance_threshold_m,
-        )
+        if rerun_mode_enabled:
+            pairs = rerun_pairs_by_flow[flow_scale]
+        else:
+            rng = np.random.default_rng(seed + int(round(flow_scale * 1000)))
+            pairs = _trial_pairs(
+                network,
+                rng,
+                n_random_trials,
+                vessel_file=vessel_file,
+                profile=profile,
+                wall_clearance_threshold_m=wall_clearance_threshold_m,
+            )
         results_by_controller = defaultdict(list)
 
         tasks = []
@@ -1293,6 +1630,32 @@ def main():
     parser.add_argument("--n-random-trials", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20260609)
     parser.add_argument(
+        "--rerun-from-csv",
+        default=None,
+        help=(
+            "Existing paired_results.csv to load exact start/target coordinates "
+            "from for targeted reruns."
+        ),
+    )
+    parser.add_argument(
+        "--rerun-pair-ids",
+        default=None,
+        help="Comma-separated pair_id values to rerun from --rerun-from-csv.",
+    )
+    parser.add_argument(
+        "--rerun-flow-scales",
+        default=None,
+        help=(
+            "Optional comma-separated flow scales to rerun from "
+            "--rerun-from-csv."
+        ),
+    )
+    parser.add_argument(
+        "--rerun-trial-kind",
+        default="rerun",
+        help="Fallback trial_kind for rerun CSVs that do not include trial_kind.",
+    )
+    parser.add_argument(
         "--controllers",
         default="mpc_default,mpc_tuned,acbc_same_weights,acbc_tuned",
         help="Comma-separated controller keys. Use --list-controllers to inspect.",
@@ -1337,6 +1700,15 @@ def main():
     flow_scales = _parse_flow_scales(args.flow_scales)
     n_random_trials = args.n_random_trials
     controllers = [c.strip() for c in args.controllers.split(",") if c.strip()]
+    rerun_pair_ids = None
+    rerun_flow_scales = None
+
+    if args.rerun_from_csv:
+        if not args.rerun_pair_ids:
+            raise ValueError("--rerun-pair-ids is required with --rerun-from-csv")
+        rerun_pair_ids = _requested_values(args.rerun_pair_ids, "--rerun-pair-ids")
+        if args.rerun_flow_scales:
+            rerun_flow_scales = _parse_flow_scales(args.rerun_flow_scales)
 
     if args.smoke_test:
         flow_scales = [1.0]
@@ -1367,6 +1739,10 @@ def main():
         profile_key=args.profile,
         wall_clearance_threshold_m=args.wall_clearance_threshold_mm / 1000.0,
         workers=args.workers,
+        rerun_from_csv=args.rerun_from_csv,
+        rerun_pair_ids=rerun_pair_ids,
+        rerun_flow_scales=rerun_flow_scales,
+        rerun_trial_kind=args.rerun_trial_kind,
     )
 
 

@@ -1,0 +1,12 @@
+===== M1 PRO COMET/ABLATIONS FINAL RUN STARTED at Thu Jun 11 18:21:45 PDT 2026 =====
+Output root: finaloutputs/m1pro_comet_ablations_500um_20260611_182145
+Profile: spion_carrier_500um
+Routes: 3 canonical + 2 random
+Workers: 6
+===== STARTING m1pro_cm_corrected_flows1_3_5_comet_ablations at Thu Jun 11 18:21:45 PDT 2026 =====
+===== BENCHMARK m1pro_cm_corrected_flows1_3_5_comet_ablations FINISHED at Thu Jun 11 18:28:02 PDT 2026 =====
+===== STARTING m1pro_40Left85Right_flows1_3_5_comet_ablations at Thu Jun 11 18:28:05 PDT 2026 =====
+===== BENCHMARK m1pro_40Left85Right_flows1_3_5_comet_ablations FINISHED at Thu Jun 11 18:41:43 PDT 2026 =====
+===== STARTING m1pro_pulmonary_0082_H_PULM_H_flows1_3_5_comet_ablations at Thu Jun 11 18:41:44 PDT 2026 =====
+===== BENCHMARK m1pro_pulmonary_0082_H_PULM_H_flows1_3_5_comet_ablations FINISHED at Thu Jun 11 19:12:25 PDT 2026 =====
+===== M1 PRO COMET/ABLATIONS FINAL RUN FINISHED at Thu Jun 11 19:12:26 PDT 2026. OUT=finaloutputs/m1pro_comet_ablations_500um_20260611_182145 =====

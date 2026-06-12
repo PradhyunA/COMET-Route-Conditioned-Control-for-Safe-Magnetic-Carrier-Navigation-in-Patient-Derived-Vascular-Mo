@@ -1,0 +1,1471 @@
+===== STARTING m1pro_cm_corrected_flows1_3_5_comet_ablations at Thu Jun 11 18:21:45 PDT 2026 =====
+Generated route-feasible trial pairs:
+  canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  canonical_002_random_to_publication_target kind=canonical start_mm=[39.696066130849374, -2.559612817625204, -176.1665153500169] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=165.265
+  canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[16.828754723605883, -17.112693699283565, -308.7731888542895] straight_mm=138.098
+  random_0001 kind=random start_mm=[-33.216786981557256, 50.423613636618, -140.292264646555] target_mm=[-21.3356741199925, 16.33164068124498, -274.3962494360202] straight_mm=138.879
+  random_0002 kind=random start_mm=[37.25635223445767, -2.438665044877356, -176.36229001761535] target_mm=[-5.062606340121786, -7.278801507140701, -130.24300683859403] straight_mm=62.780
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0001 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0001 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0001 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0001 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0001 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0001 controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0002 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0002 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0002 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0002 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0002 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=1 pair=random_0002 controller=comet_no_flow_scaled_reserve
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=367.7mm  bif=3.0mm  H=-0.00  res=4.9mm  wall=1.25mm  |I|=13.1A  v=133.76mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=367.7mm  bif=3.0mm  H=-0.00  res=4.9mm  wall=1.25mm  |I|=13.1A  v=133.76mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=367.7mm  bif=3.0mm  H=-0.00  res=4.9mm  wall=1.25mm  |I|=13.1A  v=133.76mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=367.7mm  bif=3.0mm  H=-0.00  res=4.9mm  wall=1.25mm  |I|=13.1A  v=133.76mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=367.7mm  bif=3.0mm  H=-0.00  res=4.9mm  wall=1.25mm  |I|=13.1A  v=133.76mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=367.7mm  bif=3.0mm  H=-0.00  res=4.9mm  wall=1.25mm  |I|=13.1A  v=133.76mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=320.2mm  bif=30.7mm  H=-0.00  res=19.9mm  wall=1.81mm  |I|=13.1A  v=110.17mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=320.2mm  bif=30.7mm  H=-0.00  res=19.9mm  wall=1.81mm  |I|=13.1A  v=110.17mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=320.2mm  bif=30.7mm  H=-0.00  res=19.9mm  wall=1.81mm  |I|=13.1A  v=110.17mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=320.2mm  bif=30.7mm  H=-0.00  res=19.9mm  wall=1.81mm  |I|=13.1A  v=110.17mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=320.2mm  bif=30.7mm  H=-0.00  res=19.9mm  wall=1.81mm  |I|=13.1A  v=110.17mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=320.2mm  bif=30.7mm  H=-0.00  res=19.9mm  wall=1.81mm  |I|=13.1A  v=110.17mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=270.9mm  bif=0.0mm  H=-0.00  res=-0.2mm  wall=2.44mm  |I|=13.1A  v=129.94mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=270.9mm  bif=0.0mm  H=-0.00  res=-0.2mm  wall=2.44mm  |I|=13.1A  v=129.94mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=270.9mm  bif=0.0mm  H=-0.00  res=-0.2mm  wall=2.44mm  |I|=13.1A  v=129.94mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=270.9mm  bif=0.0mm  H=-0.00  res=-0.2mm  wall=2.44mm  |I|=13.1A  v=129.94mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=270.9mm  bif=0.0mm  H=-0.00  res=-0.2mm  wall=2.44mm  |I|=13.1A  v=129.94mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=270.9mm  bif=0.0mm  H=-0.00  res=-0.2mm  wall=2.44mm  |I|=13.1A  v=129.94mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=257.1mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=3.16mm  |I|=13.1A  v=121.08mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=257.1mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=3.16mm  |I|=13.1A  v=121.08mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=257.1mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=3.16mm  |I|=13.1A  v=121.08mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=257.1mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=3.16mm  |I|=13.1A  v=121.08mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=257.1mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=3.16mm  |I|=13.1A  v=121.08mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=257.1mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=3.16mm  |I|=13.1A  v=121.08mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=203.4mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=7.06mm  |I|=13.1A  v=112.98mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=203.4mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=7.06mm  |I|=13.1A  v=112.98mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=203.4mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=7.06mm  |I|=13.1A  v=112.98mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=203.4mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=7.06mm  |I|=13.1A  v=112.98mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=203.4mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=7.06mm  |I|=13.1A  v=112.98mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=203.4mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=7.06mm  |I|=13.1A  v=112.98mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=152.3mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=5.40mm  |I|=13.1A  v=137.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=152.3mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=5.40mm  |I|=13.1A  v=137.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=152.3mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=5.40mm  |I|=13.1A  v=137.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=152.3mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=5.40mm  |I|=13.1A  v=137.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=152.3mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=5.40mm  |I|=13.1A  v=137.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=152.3mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=5.40mm  |I|=13.1A  v=137.12mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=93.5mm  bif=0.0mm  H=-0.00  res=-0.1mm  wall=8.18mm  |I|=13.1A  v=124.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=93.5mm  bif=0.0mm  H=-0.00  res=-0.1mm  wall=8.18mm  |I|=13.1A  v=124.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=93.5mm  bif=0.0mm  H=-0.00  res=-0.1mm  wall=8.18mm  |I|=13.1A  v=124.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=93.5mm  bif=0.0mm  H=-0.00  res=-0.1mm  wall=8.18mm  |I|=13.1A  v=124.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=93.5mm  bif=0.0mm  H=-0.00  res=-0.1mm  wall=8.18mm  |I|=13.1A  v=124.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=93.5mm  bif=0.0mm  H=-0.00  res=-0.1mm  wall=8.18mm  |I|=13.1A  v=124.45mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=40.5mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.16mm  |I|=13.1A  v=111.50mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=40.5mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.16mm  |I|=13.1A  v=111.50mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=40.5mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.16mm  |I|=13.1A  v=111.50mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=40.5mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.16mm  |I|=13.1A  v=111.50mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=40.5mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.16mm  |I|=13.1A  v=111.50mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=40.5mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.16mm  |I|=13.1A  v=111.50mm/s
+  COMET summary: hard_commits=155, transitions=7, emergency_switches=0, avg_ctrl=75.7ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_downstream_value
+  COMET summary: hard_commits=155, transitions=7, emergency_switches=0, avg_ctrl=76.3ms
+  COMET summary: hard_commits=155, transitions=7, emergency_switches=0, avg_ctrl=76.2ms
+  COMET summary: hard_commits=155, transitions=7, emergency_switches=0, avg_ctrl=76.8ms
+  COMET summary: hard_commits=156, transitions=6, emergency_switches=0, avg_ctrl=76.4ms
+  COMET summary: hard_commits=154, transitions=9, emergency_switches=0, avg_ctrl=79.1ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_commitment_memory
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_flow_scaled_reserve
+  step   25/2000  mode=COMET_COMMIT    dist=128.8mm  bif=13.9mm  H=-0.00  res=5.7mm  wall=6.17mm  |I|=13.1A  v=124.70mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=128.8mm  bif=13.9mm  H=-0.00  res=5.7mm  wall=6.17mm  |I|=13.1A  v=124.70mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=128.8mm  bif=13.9mm  H=-0.00  res=5.7mm  wall=6.17mm  |I|=13.1A  v=124.70mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=128.8mm  bif=13.9mm  H=-0.00  res=5.7mm  wall=6.17mm  |I|=13.1A  v=124.70mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=128.8mm  bif=13.9mm  H=-0.00  res=5.7mm  wall=6.17mm  |I|=13.1A  v=124.70mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=128.8mm  bif=13.9mm  H=-0.00  res=5.7mm  wall=6.17mm  |I|=13.1A  v=124.70mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+  step   50/2000  mode=COMET_COMMIT    dist=76.2mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=4.80mm  |I|=13.1A  v=130.01mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=76.2mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=4.80mm  |I|=13.1A  v=130.01mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=76.2mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=4.80mm  |I|=13.1A  v=130.01mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=76.2mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=4.80mm  |I|=13.1A  v=130.01mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=76.2mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=4.80mm  |I|=13.1A  v=130.01mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_terminal_precision
+  step   50/2000  mode=COMET_COMMIT    dist=76.2mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=4.80mm  |I|=13.1A  v=130.01mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet_no_authority_reserve
+  step   75/2000  mode=COMET_COMMIT    dist=23.3mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=10.69mm  |I|=13.1A  v=107.29mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=23.3mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=10.69mm  |I|=13.1A  v=107.29mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=23.3mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=10.69mm  |I|=13.1A  v=107.29mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=23.3mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=10.69mm  |I|=13.1A  v=107.29mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=23.3mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=10.69mm  |I|=13.1A  v=107.29mm/s
+  COMET summary: hard_commits=66, transitions=5, emergency_switches=0, avg_ctrl=110.8ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_commitment_memory
+  COMET summary: hard_commits=66, transitions=5, emergency_switches=0, avg_ctrl=112.0ms
+  step   75/2000  mode=COMET_COMMIT    dist=23.3mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=10.69mm  |I|=13.1A  v=107.29mm/s
+  COMET summary: hard_commits=66, transitions=5, emergency_switches=0, avg_ctrl=113.2ms
+  COMET summary: hard_commits=66, transitions=4, emergency_switches=0, avg_ctrl=110.0ms
+  COMET summary: hard_commits=66, transitions=5, emergency_switches=0, avg_ctrl=111.2ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=104.3mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.55mm  |I|=11.4A  v=65.80mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=104.3mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.55mm  |I|=11.4A  v=65.80mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=104.3mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.55mm  |I|=11.4A  v=65.80mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=104.3mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.55mm  |I|=11.4A  v=65.80mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=104.3mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.55mm  |I|=11.4A  v=65.80mm/s
+  COMET summary: hard_commits=66, transitions=5, emergency_switches=0, avg_ctrl=117.7ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_002_random_to_publication_target controller=comet
+  step   50/2000  mode=COMET_APPROACH  dist=57.4mm  bif=40.8mm  H=-0.00  res=4.6mm  wall=2.26mm  |I|=13.1A  v=133.70mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=57.4mm  bif=40.8mm  H=-0.00  res=4.6mm  wall=2.26mm  |I|=13.1A  v=133.70mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=57.4mm  bif=40.8mm  H=-0.00  res=4.6mm  wall=2.26mm  |I|=13.1A  v=133.70mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=57.4mm  bif=40.8mm  H=-0.00  res=4.6mm  wall=2.26mm  |I|=13.1A  v=133.70mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=24.0mm  bif=1.1mm  H=-0.00  res=0.6mm  wall=2.53mm  |I|=12.6A  v=144.52mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=24.0mm  bif=1.1mm  H=-0.00  res=0.6mm  wall=2.53mm  |I|=12.6A  v=144.52mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=57.4mm  bif=40.8mm  H=-0.00  res=4.6mm  wall=2.26mm  |I|=13.1A  v=133.70mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=24.0mm  bif=1.1mm  H=-0.00  res=0.6mm  wall=2.53mm  |I|=12.6A  v=144.52mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=24.0mm  bif=1.1mm  H=-0.00  res=0.6mm  wall=2.53mm  |I|=12.6A  v=144.52mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   75/2000  mode=COMET_COMMIT    dist=24.0mm  bif=1.1mm  H=-0.00  res=0.6mm  wall=2.53mm  |I|=12.6A  v=144.52mm/s
+  COMET summary: hard_commits=15, transitions=9, emergency_switches=0, avg_ctrl=20.0ms
+  COMET summary: hard_commits=15, transitions=9, emergency_switches=0, avg_ctrl=20.5ms
+  COMET summary: hard_commits=15, transitions=9, emergency_switches=0, avg_ctrl=19.8ms
+  COMET summary: hard_commits=15, transitions=9, emergency_switches=0, avg_ctrl=20.1ms
+  COMET summary: hard_commits=15, transitions=8, emergency_switches=0, avg_ctrl=20.4ms
+  step   25/2000  mode=COMET_COMMIT    dist=104.3mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.55mm  |I|=11.4A  v=65.80mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_authority_reserve
+  step   50/2000  mode=COMET_APPROACH  dist=57.4mm  bif=40.8mm  H=-0.00  res=4.6mm  wall=2.26mm  |I|=13.1A  v=133.70mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=24.0mm  bif=1.1mm  H=-0.00  res=0.6mm  wall=2.53mm  |I|=12.6A  v=144.52mm/s
+  COMET summary: hard_commits=15, transitions=9, emergency_switches=0, avg_ctrl=20.0ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_terminal_precision
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_downstream_value
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=137.1mm  bif=3.0mm  H=-0.00  res=-0.0mm  wall=2.51mm  |I|=7.0A  v=59.81mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=137.1mm  bif=3.0mm  H=-0.00  res=-0.0mm  wall=2.51mm  |I|=7.0A  v=59.81mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=137.1mm  bif=3.0mm  H=-0.00  res=-0.0mm  wall=2.51mm  |I|=7.0A  v=59.81mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=137.1mm  bif=3.0mm  H=-0.00  res=-0.0mm  wall=2.51mm  |I|=7.0A  v=59.81mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=137.1mm  bif=3.0mm  H=-0.00  res=-0.0mm  wall=2.51mm  |I|=7.0A  v=59.81mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_002_random_to_publication_target controller=comet_no_flow_scaled_reserve
+  step   50/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=5.75mm  |I|=12.3A  v=16.73mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=5.75mm  |I|=12.3A  v=16.73mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=5.75mm  |I|=12.3A  v=16.73mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=5.75mm  |I|=12.3A  v=16.73mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=137.1mm  bif=3.0mm  H=-0.00  res=-0.0mm  wall=2.51mm  |I|=7.0A  v=59.81mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=5.75mm  |I|=12.3A  v=16.73mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=canonical_003_publication_start_to_random controller=comet_no_flow_scaled_reserve
+  step   50/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=5.75mm  |I|=12.3A  v=16.73mm/s
+  step   75/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.27mm  |I|=5.1A  v=12.58mm/s
+  step   75/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.27mm  |I|=5.1A  v=12.58mm/s
+  step   75/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.27mm  |I|=5.1A  v=12.58mm/s
+  step   75/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.27mm  |I|=5.1A  v=12.58mm/s
+  step   75/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.27mm  |I|=5.1A  v=12.58mm/s
+  step  100/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=1.73mm  |I|=8.9A  v=9.20mm/s
+  step  100/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=1.73mm  |I|=8.9A  v=9.20mm/s
+  step   75/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.27mm  |I|=5.1A  v=12.58mm/s
+  step  100/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=1.73mm  |I|=8.9A  v=9.20mm/s
+  step  100/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=1.73mm  |I|=8.9A  v=9.20mm/s
+  step  100/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=1.73mm  |I|=8.9A  v=9.20mm/s
+  step  125/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.05mm  |I|=4.2A  v=4.44mm/s
+  step  125/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.05mm  |I|=4.2A  v=4.44mm/s
+  step  125/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.05mm  |I|=4.2A  v=4.44mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.88mm  |I|=13.0A  v=6.53mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.88mm  |I|=13.0A  v=6.53mm/s
+  step  125/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.05mm  |I|=4.2A  v=4.44mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.88mm  |I|=13.0A  v=6.53mm/s
+  step  125/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.05mm  |I|=4.2A  v=4.44mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.88mm  |I|=13.0A  v=6.53mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.88mm  |I|=13.0A  v=6.53mm/s
+  step  100/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=1.73mm  |I|=8.9A  v=9.20mm/s
+  step  125/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.05mm  |I|=4.2A  v=4.44mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=147.1mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.88mm  |I|=13.0A  v=6.53mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.4mm  wall=2.48mm  |I|=13.1A  v=120.55mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.4mm  wall=2.48mm  |I|=13.1A  v=120.55mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.4mm  wall=2.48mm  |I|=13.1A  v=120.55mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.4mm  wall=2.48mm  |I|=13.1A  v=120.55mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.4mm  wall=2.48mm  |I|=13.1A  v=120.55mm/s
+  step  200/2000  mode=COMET_BOOST     dist=150.8mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=4.12mm  |I|=8.1A  v=51.72mm/s
+  step  200/2000  mode=COMET_BOOST     dist=150.8mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=4.12mm  |I|=8.1A  v=51.72mm/s
+  step  200/2000  mode=COMET_BOOST     dist=150.8mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=4.12mm  |I|=8.1A  v=51.72mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.4mm  wall=2.48mm  |I|=13.1A  v=120.55mm/s
+  step  200/2000  mode=COMET_BOOST     dist=150.8mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=4.12mm  |I|=8.1A  v=51.72mm/s
+  step  200/2000  mode=COMET_BOOST     dist=150.8mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=4.12mm  |I|=8.1A  v=51.72mm/s
+  step  225/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.90mm  |I|=11.0A  v=8.94mm/s
+  step  225/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.90mm  |I|=11.0A  v=8.94mm/s
+  step  225/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.90mm  |I|=11.0A  v=8.94mm/s
+  step  225/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.90mm  |I|=11.0A  v=8.94mm/s
+  step  200/2000  mode=COMET_BOOST     dist=150.8mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=4.12mm  |I|=8.1A  v=51.72mm/s
+  step  225/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.90mm  |I|=11.0A  v=8.94mm/s
+  step  250/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.32mm  |I|=8.1A  v=18.70mm/s
+  step  250/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.32mm  |I|=8.1A  v=18.70mm/s
+  step  250/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.32mm  |I|=8.1A  v=18.70mm/s
+  step  275/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=2.53mm  |I|=13.1A  v=2.01mm/s
+  step  275/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=2.53mm  |I|=13.1A  v=2.01mm/s
+  step  275/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=2.53mm  |I|=13.1A  v=2.01mm/s
+  step  250/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.32mm  |I|=8.1A  v=18.70mm/s
+  step  250/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.32mm  |I|=8.1A  v=18.70mm/s
+  step  300/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.47mm  |I|=12.0A  v=2.42mm/s
+  step  300/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.47mm  |I|=12.0A  v=2.42mm/s
+  step  300/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.47mm  |I|=12.0A  v=2.42mm/s
+  step  225/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.90mm  |I|=11.0A  v=8.94mm/s
+  step  275/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=2.53mm  |I|=13.1A  v=2.01mm/s
+  step  275/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=2.53mm  |I|=13.1A  v=2.01mm/s
+  step  300/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.47mm  |I|=12.0A  v=2.42mm/s
+  step  300/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.47mm  |I|=12.0A  v=2.42mm/s
+  step  250/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.6mm  wall=2.32mm  |I|=8.1A  v=18.70mm/s
+  step  275/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=2.53mm  |I|=13.1A  v=2.01mm/s
+  step  300/2000  mode=COMET_RESCUE    dist=147.8mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.47mm  |I|=12.0A  v=2.42mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=154.5mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.25mm  |I|=6.7A  v=3.24mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=154.5mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.25mm  |I|=6.7A  v=3.24mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=154.5mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.25mm  |I|=6.7A  v=3.24mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=154.5mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.25mm  |I|=6.7A  v=3.24mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=154.5mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.25mm  |I|=6.7A  v=3.24mm/s
+  step  350/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.72mm  |I|=5.2A  v=6.23mm/s
+  step  350/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.72mm  |I|=5.2A  v=6.23mm/s
+  step  350/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.72mm  |I|=5.2A  v=6.23mm/s
+  step  350/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.72mm  |I|=5.2A  v=6.23mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=154.5mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.25mm  |I|=6.7A  v=3.24mm/s
+  step  350/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.72mm  |I|=5.2A  v=6.23mm/s
+  step  375/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.66mm  |I|=8.1A  v=10.45mm/s
+  step  375/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.66mm  |I|=8.1A  v=10.45mm/s
+  step  375/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.66mm  |I|=8.1A  v=10.45mm/s
+  step  375/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.66mm  |I|=8.1A  v=10.45mm/s
+  step  400/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.01mm  |I|=10.2A  v=1.08mm/s
+  step  400/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.01mm  |I|=10.2A  v=1.08mm/s
+  step  400/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.01mm  |I|=10.2A  v=1.08mm/s
+  step  375/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.66mm  |I|=8.1A  v=10.45mm/s
+  step  350/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.72mm  |I|=5.2A  v=6.23mm/s
+  step  425/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.4mm  wall=2.09mm  |I|=9.7A  v=3.77mm/s
+  step  425/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.4mm  wall=2.09mm  |I|=9.7A  v=3.77mm/s
+  step  425/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.4mm  wall=2.09mm  |I|=9.7A  v=3.77mm/s
+  step  400/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.01mm  |I|=10.2A  v=1.08mm/s
+  step  400/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.01mm  |I|=10.2A  v=1.08mm/s
+  step  425/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.4mm  wall=2.09mm  |I|=9.7A  v=3.77mm/s
+  step  425/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.4mm  wall=2.09mm  |I|=9.7A  v=3.77mm/s
+  step  375/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.66mm  |I|=8.1A  v=10.45mm/s
+  step  400/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.01mm  |I|=10.2A  v=1.08mm/s
+  step  450/2000  mode=COMET_COMMIT    dist=154.1mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=6.24mm  |I|=8.7A  v=14.92mm/s
+  step  425/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.4mm  wall=2.09mm  |I|=9.7A  v=3.77mm/s
+  step  450/2000  mode=COMET_COMMIT    dist=154.1mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=6.24mm  |I|=8.7A  v=14.92mm/s
+  step  450/2000  mode=COMET_COMMIT    dist=154.1mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=6.24mm  |I|=8.7A  v=14.92mm/s
+  step  450/2000  mode=COMET_COMMIT    dist=154.1mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=6.24mm  |I|=8.7A  v=14.92mm/s
+  step  450/2000  mode=COMET_COMMIT    dist=154.1mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=6.24mm  |I|=8.7A  v=14.92mm/s
+  step  475/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=2.39mm  |I|=9.2A  v=17.08mm/s
+  step  475/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=2.39mm  |I|=9.2A  v=17.08mm/s
+  step  475/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=2.39mm  |I|=9.2A  v=17.08mm/s
+  step  475/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=2.39mm  |I|=9.2A  v=17.08mm/s
+  step  475/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=2.39mm  |I|=9.2A  v=17.08mm/s
+  step  450/2000  mode=COMET_COMMIT    dist=154.1mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=6.24mm  |I|=8.7A  v=14.92mm/s
+  step  500/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.69mm  |I|=7.2A  v=8.57mm/s
+  step  500/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.69mm  |I|=7.2A  v=8.57mm/s
+  step  500/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.69mm  |I|=7.2A  v=8.57mm/s
+  step  500/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.69mm  |I|=7.2A  v=8.57mm/s
+  step  500/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.69mm  |I|=7.2A  v=8.57mm/s
+  step  475/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=2.39mm  |I|=9.2A  v=17.08mm/s
+  step  525/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.42mm  |I|=9.4A  v=3.20mm/s
+  step  525/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.42mm  |I|=9.4A  v=3.20mm/s
+  step  525/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.42mm  |I|=9.4A  v=3.20mm/s
+  step  550/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.46mm  |I|=12.3A  v=5.67mm/s
+  step  550/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.46mm  |I|=12.3A  v=5.67mm/s
+  step  550/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.46mm  |I|=12.3A  v=5.67mm/s
+  step  525/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.42mm  |I|=9.4A  v=3.20mm/s
+  step  575/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.53mm  |I|=13.1A  v=156.85mm/s
+  step  575/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.53mm  |I|=13.1A  v=156.85mm/s
+  step  525/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.42mm  |I|=9.4A  v=3.20mm/s
+  step  550/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.46mm  |I|=12.3A  v=5.67mm/s
+  step  575/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.53mm  |I|=13.1A  v=156.85mm/s
+  step  550/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.46mm  |I|=12.3A  v=5.67mm/s
+  step  575/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.53mm  |I|=13.1A  v=156.85mm/s
+  step  575/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.53mm  |I|=13.1A  v=156.85mm/s
+  step  500/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.69mm  |I|=7.2A  v=8.57mm/s
+  step  600/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=7.05mm  |I|=13.1A  v=142.09mm/s
+  step  600/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=7.05mm  |I|=13.1A  v=142.09mm/s
+  step  600/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=7.05mm  |I|=13.1A  v=142.09mm/s
+  step  525/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.42mm  |I|=9.4A  v=3.20mm/s
+  step  550/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=2.46mm  |I|=12.3A  v=5.67mm/s
+  step  600/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=7.05mm  |I|=13.1A  v=142.09mm/s
+  step  600/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=7.05mm  |I|=13.1A  v=142.09mm/s
+  step  575/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.53mm  |I|=13.1A  v=156.85mm/s
+  step  625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.0A  v=7.00mm/s
+  step  625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.0A  v=7.00mm/s
+  step  625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.0A  v=7.00mm/s
+  step  625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.0A  v=7.00mm/s
+  step  625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.0A  v=7.00mm/s
+  step  600/2000  mode=COMET_BOOST     dist=153.4mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=7.05mm  |I|=13.1A  v=142.09mm/s
+  step  650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=4.03mm  |I|=11.8A  v=141.01mm/s
+  step  650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=4.03mm  |I|=11.8A  v=141.01mm/s
+  step  650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=4.03mm  |I|=11.8A  v=141.01mm/s
+  step  675/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=2.46mm  |I|=11.1A  v=2.23mm/s
+  step  675/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=2.46mm  |I|=11.1A  v=2.23mm/s
+  step  675/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=2.46mm  |I|=11.1A  v=2.23mm/s
+  step  650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=4.03mm  |I|=11.8A  v=141.01mm/s
+  step  700/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.52mm  |I|=12.8A  v=2.34mm/s
+  step  700/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.52mm  |I|=12.8A  v=2.34mm/s
+  step  700/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.52mm  |I|=12.8A  v=2.34mm/s
+  step  650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=4.03mm  |I|=11.8A  v=141.01mm/s
+  step  675/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=2.46mm  |I|=11.1A  v=2.23mm/s
+  step  675/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=2.46mm  |I|=11.1A  v=2.23mm/s
+  step  700/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.52mm  |I|=12.8A  v=2.34mm/s
+  step  625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.0A  v=7.00mm/s
+  step  700/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.52mm  |I|=12.8A  v=2.34mm/s
+  step  725/2000  mode=COMET_BOOST     dist=149.7mm  bif=0.0mm  H=-0.00  res=3.5mm  wall=5.73mm  |I|=13.1A  v=111.17mm/s
+  step  725/2000  mode=COMET_BOOST     dist=149.7mm  bif=0.0mm  H=-0.00  res=3.5mm  wall=5.73mm  |I|=13.1A  v=111.17mm/s
+  step  725/2000  mode=COMET_BOOST     dist=149.7mm  bif=0.0mm  H=-0.00  res=3.5mm  wall=5.73mm  |I|=13.1A  v=111.17mm/s
+  step  725/2000  mode=COMET_BOOST     dist=149.7mm  bif=0.0mm  H=-0.00  res=3.5mm  wall=5.73mm  |I|=13.1A  v=111.17mm/s
+  step  725/2000  mode=COMET_BOOST     dist=149.7mm  bif=0.0mm  H=-0.00  res=3.5mm  wall=5.73mm  |I|=13.1A  v=111.17mm/s
+  step  650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=4.03mm  |I|=11.8A  v=141.01mm/s
+  step  675/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=2.46mm  |I|=11.1A  v=2.23mm/s
+  step  700/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.52mm  |I|=12.8A  v=2.34mm/s
+  step  750/2000  mode=COMET_BOOST     dist=152.8mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.55mm  |I|=5.7A  v=7.32mm/s
+  step  750/2000  mode=COMET_BOOST     dist=152.8mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.55mm  |I|=5.7A  v=7.32mm/s
+  step  750/2000  mode=COMET_BOOST     dist=152.8mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.55mm  |I|=5.7A  v=7.32mm/s
+  step  750/2000  mode=COMET_BOOST     dist=152.8mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.55mm  |I|=5.7A  v=7.32mm/s
+  step  750/2000  mode=COMET_BOOST     dist=152.8mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.55mm  |I|=5.7A  v=7.32mm/s
+  step  725/2000  mode=COMET_BOOST     dist=149.7mm  bif=0.0mm  H=-0.00  res=3.5mm  wall=5.73mm  |I|=13.1A  v=111.17mm/s
+  step  775/2000  mode=COMET_RESCUE    dist=147.7mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=2.64mm  |I|=11.3A  v=10.43mm/s
+  step  775/2000  mode=COMET_RESCUE    dist=147.7mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=2.64mm  |I|=11.3A  v=10.43mm/s
+  step  775/2000  mode=COMET_RESCUE    dist=147.7mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=2.64mm  |I|=11.3A  v=10.43mm/s
+  step  800/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.47mm  |I|=13.1A  v=2.47mm/s
+  step  800/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.47mm  |I|=13.1A  v=2.47mm/s
+  step  800/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.47mm  |I|=13.1A  v=2.47mm/s
+  step  775/2000  mode=COMET_RESCUE    dist=147.7mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=2.64mm  |I|=11.3A  v=10.43mm/s
+  step  825/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=2.47mm  |I|=8.1A  v=2.75mm/s
+  step  825/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=2.47mm  |I|=8.1A  v=2.75mm/s
+  step  825/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=2.47mm  |I|=8.1A  v=2.75mm/s
+  step  775/2000  mode=COMET_RESCUE    dist=147.7mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=2.64mm  |I|=11.3A  v=10.43mm/s
+  step  800/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.47mm  |I|=13.1A  v=2.47mm/s
+  step  800/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.47mm  |I|=13.1A  v=2.47mm/s
+  step  825/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=2.47mm  |I|=8.1A  v=2.75mm/s
+  step  825/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=2.47mm  |I|=8.1A  v=2.75mm/s
+  step  750/2000  mode=COMET_BOOST     dist=152.8mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.55mm  |I|=5.7A  v=7.32mm/s
+  step  850/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=3.27mm  |I|=13.1A  v=45.81mm/s
+  step  850/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=3.27mm  |I|=13.1A  v=45.81mm/s
+  step  850/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=3.27mm  |I|=13.1A  v=45.81mm/s
+  step  850/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=3.27mm  |I|=13.1A  v=45.81mm/s
+  step  850/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=3.27mm  |I|=13.1A  v=45.81mm/s
+  step  775/2000  mode=COMET_RESCUE    dist=147.7mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=2.64mm  |I|=11.3A  v=10.43mm/s
+  step  800/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=2.47mm  |I|=13.1A  v=2.47mm/s
+  step  875/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=13.1A  v=2.34mm/s
+  step  875/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=13.1A  v=2.34mm/s
+  step  825/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=2.47mm  |I|=8.1A  v=2.75mm/s
+  step  875/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=13.1A  v=2.34mm/s
+  step  875/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=13.1A  v=2.34mm/s
+  step  875/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=13.1A  v=2.34mm/s
+  step  900/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.3mm  wall=2.03mm  |I|=11.7A  v=15.32mm/s
+  step  900/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.3mm  wall=2.03mm  |I|=11.7A  v=15.32mm/s
+  step  900/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.3mm  wall=2.03mm  |I|=11.7A  v=15.32mm/s
+  step  925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.18mm  |I|=13.1A  v=4.52mm/s
+  step  850/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=3.27mm  |I|=13.1A  v=45.81mm/s
+  step  925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.18mm  |I|=13.1A  v=4.52mm/s
+  step  925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.18mm  |I|=13.1A  v=4.52mm/s
+  step  900/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.3mm  wall=2.03mm  |I|=11.7A  v=15.32mm/s
+  step  950/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.19mm  |I|=4.0A  v=4.76mm/s
+  step  950/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.19mm  |I|=4.0A  v=4.76mm/s
+  step  950/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.19mm  |I|=4.0A  v=4.76mm/s
+  step  925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.18mm  |I|=13.1A  v=4.52mm/s
+  step  900/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.3mm  wall=2.03mm  |I|=11.7A  v=15.32mm/s
+  step  950/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.19mm  |I|=4.0A  v=4.76mm/s
+  step  925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.18mm  |I|=13.1A  v=4.52mm/s
+  step  950/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.19mm  |I|=4.0A  v=4.76mm/s
+  step  875/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=13.1A  v=2.34mm/s
+  step  975/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.25mm  |I|=13.1A  v=26.58mm/s
+  step  975/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.25mm  |I|=13.1A  v=26.58mm/s
+  step  975/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.25mm  |I|=13.1A  v=26.58mm/s
+  step  975/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.25mm  |I|=13.1A  v=26.58mm/s
+  step  975/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.25mm  |I|=13.1A  v=26.58mm/s
+  step  900/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.3mm  wall=2.03mm  |I|=11.7A  v=15.32mm/s
+  step  925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.18mm  |I|=13.1A  v=4.52mm/s
+  step 1000/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.0mm  wall=2.57mm  |I|=13.1A  v=17.56mm/s
+  step 1000/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.0mm  wall=2.57mm  |I|=13.1A  v=17.56mm/s
+  step 1000/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.0mm  wall=2.57mm  |I|=13.1A  v=17.56mm/s
+  step  950/2000  mode=COMET_RESCUE    dist=148.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.19mm  |I|=4.0A  v=4.76mm/s
+  step 1000/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.0mm  wall=2.57mm  |I|=13.1A  v=17.56mm/s
+  step 1000/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.0mm  wall=2.57mm  |I|=13.1A  v=17.56mm/s
+  step 1025/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=2.35mm  |I|=9.9A  v=5.32mm/s
+  step 1025/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=2.35mm  |I|=9.9A  v=5.32mm/s
+  step 1025/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=2.35mm  |I|=9.9A  v=5.32mm/s
+  step 1050/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.19mm  |I|=5.0A  v=7.88mm/s
+  step 1050/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.19mm  |I|=5.0A  v=7.88mm/s
+  step 1050/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.19mm  |I|=5.0A  v=7.88mm/s
+  step 1025/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=2.35mm  |I|=9.9A  v=5.32mm/s
+  step  975/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.25mm  |I|=13.1A  v=26.58mm/s
+  step 1075/2000  mode=COMET_COMMIT    dist=149.5mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.23mm  |I|=11.3A  v=137.09mm/s
+  step 1075/2000  mode=COMET_COMMIT    dist=149.5mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.23mm  |I|=11.3A  v=137.09mm/s
+  step 1075/2000  mode=COMET_COMMIT    dist=149.5mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.23mm  |I|=11.3A  v=137.09mm/s
+  step 1050/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.19mm  |I|=5.0A  v=7.88mm/s
+  step 1025/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=2.35mm  |I|=9.9A  v=5.32mm/s
+  step 1075/2000  mode=COMET_COMMIT    dist=149.5mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.23mm  |I|=11.3A  v=137.09mm/s
+  step 1050/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.19mm  |I|=5.0A  v=7.88mm/s
+  step 1075/2000  mode=COMET_COMMIT    dist=149.5mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.23mm  |I|=11.3A  v=137.09mm/s
+  step 1000/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-2.0mm  wall=2.57mm  |I|=13.1A  v=17.56mm/s
+  step 1100/2000  mode=COMET_BOOST     dist=153.0mm  bif=0.0mm  H=-0.00  res=-1.5mm  wall=2.38mm  |I|=12.4A  v=29.03mm/s
+  step 1100/2000  mode=COMET_BOOST     dist=153.0mm  bif=0.0mm  H=-0.00  res=-1.5mm  wall=2.38mm  |I|=12.4A  v=29.03mm/s
+  step 1100/2000  mode=COMET_BOOST     dist=153.0mm  bif=0.0mm  H=-0.00  res=-1.5mm  wall=2.38mm  |I|=12.4A  v=29.03mm/s
+  step 1100/2000  mode=COMET_BOOST     dist=153.0mm  bif=0.0mm  H=-0.00  res=-1.5mm  wall=2.38mm  |I|=12.4A  v=29.03mm/s
+  step 1100/2000  mode=COMET_BOOST     dist=153.0mm  bif=0.0mm  H=-0.00  res=-1.5mm  wall=2.38mm  |I|=12.4A  v=29.03mm/s
+  step 1025/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=2.35mm  |I|=9.9A  v=5.32mm/s
+  step 1050/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.19mm  |I|=5.0A  v=7.88mm/s
+  step 1125/2000  mode=COMET_BOOST     dist=153.8mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.08mm  |I|=11.4A  v=17.06mm/s
+  step 1125/2000  mode=COMET_BOOST     dist=153.8mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.08mm  |I|=11.4A  v=17.06mm/s
+  step 1125/2000  mode=COMET_BOOST     dist=153.8mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.08mm  |I|=11.4A  v=17.06mm/s
+  step 1075/2000  mode=COMET_COMMIT    dist=149.5mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.23mm  |I|=11.3A  v=137.09mm/s
+  step 1125/2000  mode=COMET_BOOST     dist=153.8mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.08mm  |I|=11.4A  v=17.06mm/s
+  step 1150/2000  mode=COMET_RESCUE    dist=148.4mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.00mm  |I|=10.1A  v=6.69mm/s
+  step 1150/2000  mode=COMET_RESCUE    dist=148.4mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.00mm  |I|=10.1A  v=6.69mm/s
+  step 1125/2000  mode=COMET_BOOST     dist=153.8mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.08mm  |I|=11.4A  v=17.06mm/s
+  step 1150/2000  mode=COMET_RESCUE    dist=148.4mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.00mm  |I|=10.1A  v=6.69mm/s
+  step 1175/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=2.04mm  |I|=12.7A  v=10.45mm/s
+  step 1175/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=2.04mm  |I|=12.7A  v=10.45mm/s
+  step 1175/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=2.04mm  |I|=12.7A  v=10.45mm/s
+  step 1150/2000  mode=COMET_RESCUE    dist=148.4mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.00mm  |I|=10.1A  v=6.69mm/s
+  step 1200/2000  mode=COMET_COMMIT    dist=150.9mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.29mm  |I|=13.1A  v=161.96mm/s
+  step 1200/2000  mode=COMET_COMMIT    dist=150.9mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.29mm  |I|=13.1A  v=161.96mm/s
+  step 1200/2000  mode=COMET_COMMIT    dist=150.9mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.29mm  |I|=13.1A  v=161.96mm/s
+  step 1175/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=2.04mm  |I|=12.7A  v=10.45mm/s
+  step 1100/2000  mode=COMET_BOOST     dist=153.0mm  bif=0.0mm  H=-0.00  res=-1.5mm  wall=2.38mm  |I|=12.4A  v=29.03mm/s
+  step 1150/2000  mode=COMET_RESCUE    dist=148.4mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.00mm  |I|=10.1A  v=6.69mm/s
+  step 1200/2000  mode=COMET_COMMIT    dist=150.9mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.29mm  |I|=13.1A  v=161.96mm/s
+  step 1175/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=2.04mm  |I|=12.7A  v=10.45mm/s
+  step 1200/2000  mode=COMET_COMMIT    dist=150.9mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.29mm  |I|=13.1A  v=161.96mm/s
+  step 1225/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.31mm  |I|=12.7A  v=16.23mm/s
+  step 1225/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.31mm  |I|=12.7A  v=16.23mm/s
+  step 1225/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.31mm  |I|=12.7A  v=16.23mm/s
+  step 1125/2000  mode=COMET_BOOST     dist=153.8mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.08mm  |I|=11.4A  v=17.06mm/s
+  step 1225/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.31mm  |I|=12.7A  v=16.23mm/s
+  step 1225/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.31mm  |I|=12.7A  v=16.23mm/s
+  step 1150/2000  mode=COMET_RESCUE    dist=148.4mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.00mm  |I|=10.1A  v=6.69mm/s
+  step 1250/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.75mm  |I|=5.5A  v=12.91mm/s
+  step 1250/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.75mm  |I|=5.5A  v=12.91mm/s
+  step 1175/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=2.04mm  |I|=12.7A  v=10.45mm/s
+  step 1250/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.75mm  |I|=5.5A  v=12.91mm/s
+  step 1200/2000  mode=COMET_COMMIT    dist=150.9mm  bif=0.0mm  H=-0.00  res=0.6mm  wall=3.29mm  |I|=13.1A  v=161.96mm/s
+  step 1250/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.75mm  |I|=5.5A  v=12.91mm/s
+  step 1275/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=2.15mm  |I|=7.2A  v=6.09mm/s
+  step 1275/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=2.15mm  |I|=7.2A  v=6.09mm/s
+  step 1275/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=2.15mm  |I|=7.2A  v=6.09mm/s
+  step 1250/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.75mm  |I|=5.5A  v=12.91mm/s
+  step 1300/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.21mm  |I|=12.3A  v=1.64mm/s
+  step 1300/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.21mm  |I|=12.3A  v=1.64mm/s
+  step 1300/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.21mm  |I|=12.3A  v=1.64mm/s
+  step 1275/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=2.15mm  |I|=7.2A  v=6.09mm/s
+  step 1325/2000  mode=COMET_COMMIT    dist=152.8mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.44mm  |I|=13.1A  v=147.54mm/s
+  step 1325/2000  mode=COMET_COMMIT    dist=152.8mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.44mm  |I|=13.1A  v=147.54mm/s
+  step 1325/2000  mode=COMET_COMMIT    dist=152.8mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.44mm  |I|=13.1A  v=147.54mm/s
+  step 1300/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.21mm  |I|=12.3A  v=1.64mm/s
+  step 1275/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=2.15mm  |I|=7.2A  v=6.09mm/s
+  step 1225/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=2.31mm  |I|=12.7A  v=16.23mm/s
+  step 1325/2000  mode=COMET_COMMIT    dist=152.8mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.44mm  |I|=13.1A  v=147.54mm/s
+  step 1300/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.21mm  |I|=12.3A  v=1.64mm/s
+  step 1325/2000  mode=COMET_COMMIT    dist=152.8mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.44mm  |I|=13.1A  v=147.54mm/s
+  step 1350/2000  mode=COMET_BOOST     dist=153.2mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=4.9A  v=10.01mm/s
+  step 1350/2000  mode=COMET_BOOST     dist=153.2mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=4.9A  v=10.01mm/s
+  step 1350/2000  mode=COMET_BOOST     dist=153.2mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=4.9A  v=10.01mm/s
+  step 1250/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.75mm  |I|=5.5A  v=12.91mm/s
+  step 1350/2000  mode=COMET_BOOST     dist=153.2mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=4.9A  v=10.01mm/s
+  step 1350/2000  mode=COMET_BOOST     dist=153.2mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=4.9A  v=10.01mm/s
+  step 1275/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=2.15mm  |I|=7.2A  v=6.09mm/s
+  step 1375/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.63mm  |I|=3.7A  v=8.88mm/s
+  step 1375/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.63mm  |I|=3.7A  v=8.88mm/s
+  step 1375/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.63mm  |I|=3.7A  v=8.88mm/s
+  step 1300/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.21mm  |I|=12.3A  v=1.64mm/s
+  step 1325/2000  mode=COMET_COMMIT    dist=152.8mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=2.44mm  |I|=13.1A  v=147.54mm/s
+  step 1375/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.63mm  |I|=3.7A  v=8.88mm/s
+  step 1400/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.04mm  |I|=8.7A  v=1.79mm/s
+  step 1400/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.04mm  |I|=8.7A  v=1.79mm/s
+  step 1400/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.04mm  |I|=8.7A  v=1.79mm/s
+  step 1425/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.08mm  |I|=12.9A  v=0.86mm/s
+  step 1425/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.08mm  |I|=12.9A  v=0.86mm/s
+  step 1425/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.08mm  |I|=12.9A  v=0.86mm/s
+  step 1375/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.63mm  |I|=3.7A  v=8.88mm/s
+  step 1400/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.04mm  |I|=8.7A  v=1.79mm/s
+  step 1450/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=1.70mm  |I|=13.1A  v=125.42mm/s
+  step 1450/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=1.70mm  |I|=13.1A  v=125.42mm/s
+  step 1450/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=1.70mm  |I|=13.1A  v=125.42mm/s
+  step 1425/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.08mm  |I|=12.9A  v=0.86mm/s
+  step 1400/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.04mm  |I|=8.7A  v=1.79mm/s
+  step 1450/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=1.70mm  |I|=13.1A  v=125.42mm/s
+  step 1350/2000  mode=COMET_BOOST     dist=153.2mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.61mm  |I|=4.9A  v=10.01mm/s
+  step 1425/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.08mm  |I|=12.9A  v=0.86mm/s
+  step 1450/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=1.70mm  |I|=13.1A  v=125.42mm/s
+  step 1475/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.81mm  |I|=13.1A  v=4.54mm/s
+  step 1475/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.81mm  |I|=13.1A  v=4.54mm/s
+  step 1475/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.81mm  |I|=13.1A  v=4.54mm/s
+  step 1375/2000  mode=COMET_BOOST     dist=153.3mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.63mm  |I|=3.7A  v=8.88mm/s
+  step 1475/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.81mm  |I|=13.1A  v=4.54mm/s
+  step 1475/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.81mm  |I|=13.1A  v=4.54mm/s
+  step 1500/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=1.25mm  |I|=5.5A  v=10.22mm/s
+  step 1400/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.04mm  |I|=8.7A  v=1.79mm/s
+  step 1500/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=1.25mm  |I|=5.5A  v=10.22mm/s
+  step 1500/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=1.25mm  |I|=5.5A  v=10.22mm/s
+  step 1425/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.08mm  |I|=12.9A  v=0.86mm/s
+  step 1525/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=8.6A  v=0.47mm/s
+  step 1500/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=1.25mm  |I|=5.5A  v=10.22mm/s
+  step 1525/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=8.6A  v=0.47mm/s
+  step 1525/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=8.6A  v=0.47mm/s
+  step 1450/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=1.70mm  |I|=13.1A  v=125.42mm/s
+  step 1550/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.10mm  |I|=7.1A  v=1.08mm/s
+  step 1550/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.10mm  |I|=7.1A  v=1.08mm/s
+  step 1550/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.10mm  |I|=7.1A  v=1.08mm/s
+  step 1500/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=1.25mm  |I|=5.5A  v=10.22mm/s
+  step 1525/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=8.6A  v=0.47mm/s
+  step 1575/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.27mm  |I|=9.1A  v=49.45mm/s
+  step 1575/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.27mm  |I|=9.1A  v=49.45mm/s
+  step 1550/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.10mm  |I|=7.1A  v=1.08mm/s
+  step 1575/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.27mm  |I|=9.1A  v=49.45mm/s
+  step 1525/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=8.6A  v=0.47mm/s
+  step 1550/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.10mm  |I|=7.1A  v=1.08mm/s
+  step 1575/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.27mm  |I|=9.1A  v=49.45mm/s
+  step 1475/2000  mode=COMET_BOOST     dist=153.1mm  bif=0.0mm  H=-0.00  res=-2.5mm  wall=1.81mm  |I|=13.1A  v=4.54mm/s
+  step 1575/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.27mm  |I|=9.1A  v=49.45mm/s
+  step 1600/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.2A  v=9.19mm/s
+  step 1600/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.2A  v=9.19mm/s
+  step 1600/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.2A  v=9.19mm/s
+  step 1600/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.2A  v=9.19mm/s
+  step 1500/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=1.25mm  |I|=5.5A  v=10.22mm/s
+  step 1600/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.2A  v=9.19mm/s
+  step 1625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.74mm  |I|=6.9A  v=12.23mm/s
+  step 1625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.74mm  |I|=6.9A  v=12.23mm/s
+  step 1525/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=8.6A  v=0.47mm/s
+  step 1625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.74mm  |I|=6.9A  v=12.23mm/s
+  step 1550/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.10mm  |I|=7.1A  v=1.08mm/s
+  step 1650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.57mm  |I|=9.7A  v=3.99mm/s
+  step 1650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.57mm  |I|=9.7A  v=3.99mm/s
+  step 1625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.74mm  |I|=6.9A  v=12.23mm/s
+  step 1650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.57mm  |I|=9.7A  v=3.99mm/s
+  step 1675/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.56mm  |I|=11.6A  v=3.57mm/s
+  step 1675/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.56mm  |I|=11.6A  v=3.57mm/s
+  step 1575/2000  mode=COMET_COMMIT    dist=154.8mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.27mm  |I|=9.1A  v=49.45mm/s
+  step 1675/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.56mm  |I|=11.6A  v=3.57mm/s
+  step 1625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.74mm  |I|=6.9A  v=12.23mm/s
+  step 1650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.57mm  |I|=9.7A  v=3.99mm/s
+  step 1675/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.56mm  |I|=11.6A  v=3.57mm/s
+  step 1700/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=4.69mm  |I|=12.9A  v=53.94mm/s
+  step 1700/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=4.69mm  |I|=12.9A  v=53.94mm/s
+  step 1700/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=4.69mm  |I|=12.9A  v=53.94mm/s
+  step 1650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.57mm  |I|=9.7A  v=3.99mm/s
+  step 1675/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.56mm  |I|=11.6A  v=3.57mm/s
+  step 1700/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=4.69mm  |I|=12.9A  v=53.94mm/s
+  step 1600/2000  mode=COMET_BOOST     dist=152.5mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.84mm  |I|=5.2A  v=9.19mm/s
+  step 1700/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=4.69mm  |I|=12.9A  v=53.94mm/s
+  step 1725/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.45mm  |I|=7.3A  v=3.13mm/s
+  step 1725/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.45mm  |I|=7.3A  v=3.13mm/s
+  step 1725/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.45mm  |I|=7.3A  v=3.13mm/s
+  step 1725/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.45mm  |I|=7.3A  v=3.13mm/s
+  step 1625/2000  mode=COMET_BOOST     dist=152.4mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=2.74mm  |I|=6.9A  v=12.23mm/s
+  step 1725/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.45mm  |I|=7.3A  v=3.13mm/s
+  step 1750/2000  mode=COMET_BOOST     dist=152.6mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.66mm  |I|=13.0A  v=9.13mm/s
+  step 1750/2000  mode=COMET_BOOST     dist=152.6mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.66mm  |I|=13.0A  v=9.13mm/s
+  step 1750/2000  mode=COMET_BOOST     dist=152.6mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.66mm  |I|=13.0A  v=9.13mm/s
+  step 1650/2000  mode=COMET_RESCUE    dist=148.0mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.57mm  |I|=9.7A  v=3.99mm/s
+  step 1675/2000  mode=COMET_RESCUE    dist=147.9mm  bif=0.0mm  H=-0.00  res=0.5mm  wall=2.56mm  |I|=11.6A  v=3.57mm/s
+  step 1775/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.22mm  |I|=12.6A  v=2.77mm/s
+  step 1775/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.22mm  |I|=12.6A  v=2.77mm/s
+  step 1775/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.22mm  |I|=12.6A  v=2.77mm/s
+  step 1750/2000  mode=COMET_BOOST     dist=152.6mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.66mm  |I|=13.0A  v=9.13mm/s
+  step 1800/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.25mm  |I|=4.5A  v=3.27mm/s
+  step 1800/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.25mm  |I|=4.5A  v=3.27mm/s
+  step 1800/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.25mm  |I|=4.5A  v=3.27mm/s
+  step 1775/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.22mm  |I|=12.6A  v=2.77mm/s
+  step 1700/2000  mode=COMET_COMMIT    dist=154.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=4.69mm  |I|=12.9A  v=53.94mm/s
+  step 1750/2000  mode=COMET_BOOST     dist=152.6mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.66mm  |I|=13.0A  v=9.13mm/s
+  step 1800/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.25mm  |I|=4.5A  v=3.27mm/s
+  step 1825/2000  mode=COMET_COMMIT    dist=154.2mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=4.83mm  |I|=11.8A  v=51.29mm/s
+  step 1825/2000  mode=COMET_COMMIT    dist=154.2mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=4.83mm  |I|=11.8A  v=51.29mm/s
+  step 1825/2000  mode=COMET_COMMIT    dist=154.2mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=4.83mm  |I|=11.8A  v=51.29mm/s
+  step 1775/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.22mm  |I|=12.6A  v=2.77mm/s
+  step 1800/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.25mm  |I|=4.5A  v=3.27mm/s
+  step 1825/2000  mode=COMET_COMMIT    dist=154.2mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=4.83mm  |I|=11.8A  v=51.29mm/s
+  step 1725/2000  mode=COMET_BOOST     dist=153.5mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=1.45mm  |I|=7.3A  v=3.13mm/s
+  step 1825/2000  mode=COMET_COMMIT    dist=154.2mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=4.83mm  |I|=11.8A  v=51.29mm/s
+  step 1850/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.59mm  |I|=12.8A  v=7.17mm/s
+  step 1850/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.59mm  |I|=12.8A  v=7.17mm/s
+  step 1850/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.59mm  |I|=12.8A  v=7.17mm/s
+  step 1850/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.59mm  |I|=12.8A  v=7.17mm/s
+  step 1750/2000  mode=COMET_BOOST     dist=152.6mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.66mm  |I|=13.0A  v=9.13mm/s
+  step 1850/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.59mm  |I|=12.8A  v=7.17mm/s
+  step 1875/2000  mode=COMET_RESCUE    dist=151.6mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.83mm  |I|=9.6A  v=130.52mm/s
+  step 1875/2000  mode=COMET_RESCUE    dist=151.6mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.83mm  |I|=9.6A  v=130.52mm/s
+  step 1875/2000  mode=COMET_RESCUE    dist=151.6mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.83mm  |I|=9.6A  v=130.52mm/s
+  step 1775/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.22mm  |I|=12.6A  v=2.77mm/s
+  step 1900/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=10.3A  v=2.76mm/s
+  step 1900/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=10.3A  v=2.76mm/s
+  step 1800/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.25mm  |I|=4.5A  v=3.27mm/s
+  step 1900/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=10.3A  v=2.76mm/s
+  step 1925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=13.0A  v=1.34mm/s
+  step 1925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=13.0A  v=1.34mm/s
+  step 1875/2000  mode=COMET_RESCUE    dist=151.6mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.83mm  |I|=9.6A  v=130.52mm/s
+  step 1925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=13.0A  v=1.34mm/s
+  step 1900/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=10.3A  v=2.76mm/s
+  step 1875/2000  mode=COMET_RESCUE    dist=151.6mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.83mm  |I|=9.6A  v=130.52mm/s
+  step 1925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=13.0A  v=1.34mm/s
+  step 1825/2000  mode=COMET_COMMIT    dist=154.2mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=4.83mm  |I|=11.8A  v=51.29mm/s
+  step 1950/2000  mode=COMET_COMMIT    dist=154.3mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=5.75mm  |I|=11.0A  v=10.64mm/s
+  step 1950/2000  mode=COMET_COMMIT    dist=154.3mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=5.75mm  |I|=11.0A  v=10.64mm/s
+  step 1950/2000  mode=COMET_COMMIT    dist=154.3mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=5.75mm  |I|=11.0A  v=10.64mm/s
+  step 1900/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=10.3A  v=2.76mm/s
+  step 1925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=13.0A  v=1.34mm/s
+  step 1950/2000  mode=COMET_COMMIT    dist=154.3mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=5.75mm  |I|=11.0A  v=10.64mm/s
+  step 1850/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.7mm  wall=2.59mm  |I|=12.8A  v=7.17mm/s
+  step 1950/2000  mode=COMET_COMMIT    dist=154.3mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=5.75mm  |I|=11.0A  v=10.64mm/s
+  step 1975/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.58mm  |I|=7.0A  v=11.73mm/s
+  step 1975/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.58mm  |I|=7.0A  v=11.73mm/s
+  step 1975/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.58mm  |I|=7.0A  v=11.73mm/s
+  step 1975/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.58mm  |I|=7.0A  v=11.73mm/s
+  step 2000/2000  mode=COMET_RESCUE    dist=149.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=3.13mm  |I|=13.0A  v=145.74mm/s
+  COMET summary: hard_commits=447, transitions=49, emergency_switches=0, avg_ctrl=45.5ms
+  step 2000/2000  mode=COMET_RESCUE    dist=149.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=3.13mm  |I|=13.0A  v=145.74mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0001 controller=comet_no_commitment_memory
+  step 1875/2000  mode=COMET_RESCUE    dist=151.6mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=2.83mm  |I|=9.6A  v=130.52mm/s
+  COMET summary: hard_commits=447, transitions=49, emergency_switches=0, avg_ctrl=45.5ms
+  step 1975/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.58mm  |I|=7.0A  v=11.73mm/s
+  step 2000/2000  mode=COMET_RESCUE    dist=149.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=3.13mm  |I|=13.0A  v=145.74mm/s
+  COMET summary: hard_commits=447, transitions=49, emergency_switches=0, avg_ctrl=45.7ms
+  step 1900/2000  mode=COMET_RESCUE    dist=148.3mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=10.3A  v=2.76mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step 1925/2000  mode=COMET_RESCUE    dist=148.2mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=2.17mm  |I|=13.0A  v=1.34mm/s
+  step 2000/2000  mode=COMET_RESCUE    dist=149.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=3.13mm  |I|=13.0A  v=145.74mm/s
+  COMET summary: hard_commits=447, transitions=49, emergency_switches=0, avg_ctrl=45.9ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=33.1mm  bif=1.3mm  H=-0.00  res=1.1mm  wall=1.29mm  |I|=13.1A  v=142.73mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=33.1mm  bif=1.3mm  H=-0.00  res=1.1mm  wall=1.29mm  |I|=13.1A  v=142.73mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=33.1mm  bif=1.3mm  H=-0.00  res=1.1mm  wall=1.29mm  |I|=13.1A  v=142.73mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step 2000/2000  mode=COMET_RESCUE    dist=149.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=3.13mm  |I|=13.0A  v=145.74mm/s
+  COMET summary: hard_commits=447, transitions=49, emergency_switches=0, avg_ctrl=46.2ms
+  step 1950/2000  mode=COMET_COMMIT    dist=154.3mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=5.75mm  |I|=11.0A  v=10.64mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=33.1mm  bif=1.3mm  H=-0.00  res=1.1mm  wall=1.29mm  |I|=13.1A  v=142.73mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=33.1mm  bif=1.3mm  H=-0.00  res=1.1mm  wall=1.29mm  |I|=13.1A  v=142.73mm/s
+  COMET summary: hard_commits=14, transitions=5, emergency_switches=0, avg_ctrl=59.4ms
+  COMET summary: hard_commits=14, transitions=5, emergency_switches=0, avg_ctrl=61.7ms
+  COMET summary: hard_commits=14, transitions=5, emergency_switches=0, avg_ctrl=62.3ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step 1975/2000  mode=COMET_BOOST     dist=152.7mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=2.58mm  |I|=7.0A  v=11.73mm/s
+  COMET summary: hard_commits=14, transitions=5, emergency_switches=0, avg_ctrl=62.9ms
+  step   25/2000  mode=COMET_COMMIT    dist=33.1mm  bif=1.3mm  H=-0.00  res=1.1mm  wall=1.29mm  |I|=13.1A  v=142.73mm/s
+  COMET summary: hard_commits=15, transitions=4, emergency_switches=0, avg_ctrl=59.2ms
+  step 2000/2000  mode=COMET_RESCUE    dist=149.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=3.13mm  |I|=13.0A  v=145.74mm/s
+  COMET summary: hard_commits=447, transitions=49, emergency_switches=0, avg_ctrl=47.3ms
+  COMET summary: hard_commits=14, transitions=5, emergency_switches=0, avg_ctrl=52.1ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0001 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0001 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0001 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0001 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0002 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0002 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0002 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0002 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0002 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0001 controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=1 pair=random_0002 controller=comet_no_flow_scaled_reserve
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_1x/comet/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_1x/comet_no_authority_reserve/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_1x/comet_no_commitment_memory/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_1x/comet_no_downstream_value/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_1x/comet_no_terminal_precision/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_1x/comet_no_flow_scaled_reserve/comet_diagnostics.csv
+Generated route-feasible trial pairs:
+  canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  canonical_002_random_to_publication_target kind=canonical start_mm=[-62.835609359183834, -20.8890754695203, -336.38111126432204] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=294.023
+  canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-12.7896692307386, 19.429022858055855, -274.8697912519962] straight_mm=176.949
+  random_0001 kind=random start_mm=[26.945830908796115, 0.5604649645978347, -172.01717078916414] target_mm=[0.6702891352264368, 7.965358433098546, -170.3241360304887] straight_mm=27.351
+  random_0002 kind=random start_mm=[11.64473671167588, -19.245799374653323, -320.64888625087764] target_mm=[0.3088162751806764, 16.792511260133008, -129.40033257082558] straight_mm=194.944
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0001 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0001 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0001 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0001 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0001 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0001 controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0002 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0002 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0002 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0002 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0002 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=3 pair=random_0002 controller=comet_no_flow_scaled_reserve
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=368.7mm  bif=5.2mm  H=-0.00  res=4.8mm  wall=2.09mm  |I|=13.1A  v=115.48mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=368.7mm  bif=5.2mm  H=-0.00  res=4.8mm  wall=2.09mm  |I|=13.1A  v=115.48mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=368.7mm  bif=5.2mm  H=-0.00  res=4.8mm  wall=2.09mm  |I|=13.1A  v=115.48mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=368.7mm  bif=5.2mm  H=-0.00  res=4.8mm  wall=2.09mm  |I|=13.1A  v=115.48mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=368.7mm  bif=5.2mm  H=-0.00  res=4.8mm  wall=2.09mm  |I|=13.1A  v=115.48mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=368.7mm  bif=5.2mm  H=-0.00  res=4.8mm  wall=2.09mm  |I|=13.1A  v=115.48mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=331.4mm  bif=42.0mm  H=-0.00  res=14.0mm  wall=2.52mm  |I|=13.1A  v=101.68mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=331.4mm  bif=42.0mm  H=-0.00  res=14.0mm  wall=2.52mm  |I|=13.1A  v=101.68mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=331.4mm  bif=42.0mm  H=-0.00  res=14.0mm  wall=2.52mm  |I|=13.1A  v=101.68mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=331.4mm  bif=42.0mm  H=-0.00  res=14.0mm  wall=2.52mm  |I|=13.1A  v=101.68mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=331.4mm  bif=42.0mm  H=-0.00  res=14.0mm  wall=2.52mm  |I|=13.1A  v=101.68mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=331.4mm  bif=42.0mm  H=-0.00  res=14.0mm  wall=2.52mm  |I|=13.1A  v=101.68mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=302.1mm  bif=9.3mm  H=-0.00  res=13.5mm  wall=1.29mm  |I|=13.1A  v=136.26mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=302.1mm  bif=9.3mm  H=-0.00  res=13.5mm  wall=1.29mm  |I|=13.1A  v=136.26mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=302.1mm  bif=9.3mm  H=-0.00  res=13.5mm  wall=1.29mm  |I|=13.1A  v=136.26mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=302.1mm  bif=9.3mm  H=-0.00  res=13.5mm  wall=1.29mm  |I|=13.1A  v=136.26mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=302.1mm  bif=9.3mm  H=-0.00  res=13.5mm  wall=1.29mm  |I|=13.1A  v=136.26mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=302.1mm  bif=9.3mm  H=-0.00  res=13.5mm  wall=1.29mm  |I|=13.1A  v=136.26mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=268.1mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.12mm  |I|=13.1A  v=143.97mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=268.1mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.12mm  |I|=13.1A  v=143.97mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=268.1mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.12mm  |I|=13.1A  v=143.97mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=268.1mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.12mm  |I|=13.1A  v=143.97mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=268.1mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.12mm  |I|=13.1A  v=143.97mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=268.1mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.12mm  |I|=13.1A  v=143.97mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=254.7mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.29mm  |I|=13.1A  v=87.41mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=254.7mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.29mm  |I|=13.1A  v=87.41mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=254.7mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.29mm  |I|=13.1A  v=87.41mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=254.7mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.29mm  |I|=13.1A  v=87.41mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=254.7mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.29mm  |I|=13.1A  v=87.41mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=254.7mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.29mm  |I|=13.1A  v=87.41mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=208.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.33mm  |I|=13.1A  v=123.39mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=208.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.33mm  |I|=13.1A  v=123.39mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=208.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.33mm  |I|=13.1A  v=123.39mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=208.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.33mm  |I|=13.1A  v=123.39mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=208.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.33mm  |I|=13.1A  v=123.39mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=208.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.33mm  |I|=13.1A  v=123.39mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=162.3mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=3.81mm  |I|=13.1A  v=128.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=162.3mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=3.81mm  |I|=13.1A  v=128.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=162.3mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=3.81mm  |I|=13.1A  v=128.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=162.3mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=3.81mm  |I|=13.1A  v=128.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=162.3mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=3.81mm  |I|=13.1A  v=128.45mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=162.3mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=3.81mm  |I|=13.1A  v=128.45mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=118.8mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.33mm  |I|=13.1A  v=94.25mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=118.8mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.33mm  |I|=13.1A  v=94.25mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=118.8mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.33mm  |I|=13.1A  v=94.25mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=118.8mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.33mm  |I|=13.1A  v=94.25mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=118.8mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.33mm  |I|=13.1A  v=94.25mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=118.8mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.33mm  |I|=13.1A  v=94.25mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=76.0mm  bif=0.0mm  H=-0.00  res=-3.2mm  wall=3.36mm  |I|=13.1A  v=104.67mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=76.0mm  bif=0.0mm  H=-0.00  res=-3.2mm  wall=3.36mm  |I|=13.1A  v=104.67mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=76.0mm  bif=0.0mm  H=-0.00  res=-3.2mm  wall=3.36mm  |I|=13.1A  v=104.67mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=76.0mm  bif=0.0mm  H=-0.00  res=-3.2mm  wall=3.36mm  |I|=13.1A  v=104.67mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=76.0mm  bif=0.0mm  H=-0.00  res=-3.2mm  wall=3.36mm  |I|=13.1A  v=104.67mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=76.0mm  bif=0.0mm  H=-0.00  res=-3.2mm  wall=3.36mm  |I|=13.1A  v=104.67mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=36.3mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.95mm  |I|=13.1A  v=106.01mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=36.3mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.95mm  |I|=13.1A  v=106.01mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=36.3mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.95mm  |I|=13.1A  v=106.01mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=36.3mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.95mm  |I|=13.1A  v=106.01mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=36.3mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.95mm  |I|=13.1A  v=106.01mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=36.3mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.95mm  |I|=13.1A  v=106.01mm/s
+  step  275/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.4mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.03mm  |I|=13.1A  v=58.38mm/s
+  step  275/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.4mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.03mm  |I|=13.1A  v=58.38mm/s
+  step  275/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.4mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.03mm  |I|=13.1A  v=58.38mm/s
+  step  275/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.4mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.03mm  |I|=13.1A  v=58.38mm/s
+  step  275/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.4mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.03mm  |I|=13.1A  v=58.38mm/s
+  step  275/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.4mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=11.03mm  |I|=13.1A  v=58.38mm/s
+  COMET summary: hard_commits=191, transitions=7, emergency_switches=0, avg_ctrl=70.8ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_authority_reserve
+  COMET summary: hard_commits=191, transitions=7, emergency_switches=0, avg_ctrl=71.0ms
+  COMET summary: hard_commits=191, transitions=7, emergency_switches=0, avg_ctrl=71.4ms
+  COMET summary: hard_commits=191, transitions=6, emergency_switches=0, avg_ctrl=71.4ms
+  COMET summary: hard_commits=191, transitions=7, emergency_switches=0, avg_ctrl=71.8ms
+  COMET summary: hard_commits=191, transitions=7, emergency_switches=0, avg_ctrl=72.0ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_commitment_memory
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=222, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=222, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=222, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=222, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=222, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=222, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet
+  step   25/2000  mode=COMET_COMMIT    dist=278.5mm  bif=2.7mm  H=-0.00  res=3.4mm  wall=2.85mm  |I|=13.1A  v=129.16mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=278.5mm  bif=2.7mm  H=-0.00  res=3.4mm  wall=2.85mm  |I|=13.1A  v=129.16mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=278.5mm  bif=2.7mm  H=-0.00  res=3.4mm  wall=2.85mm  |I|=13.1A  v=129.16mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=278.5mm  bif=2.7mm  H=-0.00  res=3.4mm  wall=2.85mm  |I|=13.1A  v=129.16mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=278.5mm  bif=2.7mm  H=-0.00  res=3.4mm  wall=2.85mm  |I|=13.1A  v=129.16mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=278.5mm  bif=2.7mm  H=-0.00  res=3.4mm  wall=2.85mm  |I|=13.1A  v=129.16mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_terminal_precision
+  step   50/2000  mode=COMET_COMMIT    dist=263.6mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=1.04mm  |I|=12.9A  v=132.06mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=263.6mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=1.04mm  |I|=12.9A  v=132.06mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=263.6mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=1.04mm  |I|=12.9A  v=132.06mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=263.6mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=1.04mm  |I|=12.9A  v=132.06mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=263.6mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=1.04mm  |I|=12.9A  v=132.06mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=263.6mm  bif=0.0mm  H=-0.00  res=0.2mm  wall=1.04mm  |I|=12.9A  v=132.06mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_downstream_value
+  step   75/2000  mode=COMET_COMMIT    dist=240.0mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=0.92mm  |I|=13.1A  v=84.54mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=240.0mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=0.92mm  |I|=13.1A  v=84.54mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=240.0mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=0.92mm  |I|=13.1A  v=84.54mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=240.0mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=0.92mm  |I|=13.1A  v=84.54mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=240.0mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=0.92mm  |I|=13.1A  v=84.54mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=240.0mm  bif=0.0mm  H=-0.00  res=1.1mm  wall=0.92mm  |I|=13.1A  v=84.54mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet_no_flow_scaled_reserve
+  step  100/2000  mode=COMET_COMMIT    dist=193.9mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=9.69mm  |I|=13.1A  v=81.82mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=193.9mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=9.69mm  |I|=13.1A  v=81.82mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=193.9mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=9.69mm  |I|=13.1A  v=81.82mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=193.9mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=9.69mm  |I|=13.1A  v=81.82mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=193.9mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=9.69mm  |I|=13.1A  v=81.82mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=193.9mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=9.69mm  |I|=13.1A  v=81.82mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=156.8mm  bif=0.0mm  H=-0.00  res=-3.5mm  wall=3.56mm  |I|=13.1A  v=41.91mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=156.8mm  bif=0.0mm  H=-0.00  res=-3.5mm  wall=3.56mm  |I|=13.1A  v=41.91mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=156.8mm  bif=0.0mm  H=-0.00  res=-3.5mm  wall=3.56mm  |I|=13.1A  v=41.91mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=156.8mm  bif=0.0mm  H=-0.00  res=-3.5mm  wall=3.56mm  |I|=13.1A  v=41.91mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=156.8mm  bif=0.0mm  H=-0.00  res=-3.5mm  wall=3.56mm  |I|=13.1A  v=41.91mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=156.8mm  bif=0.0mm  H=-0.00  res=-3.5mm  wall=3.56mm  |I|=13.1A  v=41.91mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=108.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=7.38mm  |I|=13.1A  v=65.84mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=108.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=7.38mm  |I|=13.1A  v=65.84mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=108.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=7.38mm  |I|=13.1A  v=65.84mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=108.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=7.38mm  |I|=13.1A  v=65.84mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=108.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=7.38mm  |I|=13.1A  v=65.84mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=108.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=7.38mm  |I|=13.1A  v=65.84mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=73.5mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.36mm  |I|=13.1A  v=88.17mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=73.5mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.36mm  |I|=13.1A  v=88.17mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=73.5mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.36mm  |I|=13.1A  v=88.17mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=73.5mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.36mm  |I|=13.1A  v=88.17mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=73.5mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.36mm  |I|=13.1A  v=88.17mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=73.5mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.36mm  |I|=13.1A  v=88.17mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=30.5mm  bif=0.0mm  H=-0.00  res=-6.4mm  wall=3.18mm  |I|=13.1A  v=94.84mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=30.5mm  bif=0.0mm  H=-0.00  res=-6.4mm  wall=3.18mm  |I|=13.1A  v=94.84mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=30.5mm  bif=0.0mm  H=-0.00  res=-6.4mm  wall=3.18mm  |I|=13.1A  v=94.84mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=30.5mm  bif=0.0mm  H=-0.00  res=-6.4mm  wall=3.18mm  |I|=13.1A  v=94.84mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=30.5mm  bif=0.0mm  H=-0.00  res=-6.4mm  wall=3.18mm  |I|=13.1A  v=94.84mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=30.5mm  bif=0.0mm  H=-0.00  res=-6.4mm  wall=3.18mm  |I|=13.1A  v=94.84mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=2.8mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=9.96mm  |I|=13.1A  v=52.14mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=2.8mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=9.96mm  |I|=13.1A  v=52.14mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=2.8mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=9.96mm  |I|=13.1A  v=52.14mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=2.8mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=9.96mm  |I|=13.1A  v=52.14mm/s
+  COMET summary: hard_commits=187, transitions=7, emergency_switches=0, avg_ctrl=76.0ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_002_random_to_publication_target controller=comet
+  COMET summary: hard_commits=187, transitions=5, emergency_switches=0, avg_ctrl=76.5ms
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=2.8mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=9.96mm  |I|=13.1A  v=52.14mm/s
+  COMET summary: hard_commits=187, transitions=7, emergency_switches=0, avg_ctrl=76.3ms
+  COMET summary: hard_commits=187, transitions=7, emergency_switches=0, avg_ctrl=76.5ms
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=2.8mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=9.96mm  |I|=13.1A  v=52.14mm/s
+  COMET summary: hard_commits=187, transitions=6, emergency_switches=0, avg_ctrl=76.7ms
+  COMET summary: hard_commits=187, transitions=7, emergency_switches=0, avg_ctrl=77.2ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=154, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=154, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=154, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=154, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=154, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=135.4mm  bif=5.4mm  H=-0.00  res=5.1mm  wall=2.27mm  |I|=13.1A  v=116.23mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=154, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=135.4mm  bif=5.4mm  H=-0.00  res=5.1mm  wall=2.27mm  |I|=13.1A  v=116.23mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=135.4mm  bif=5.4mm  H=-0.00  res=5.1mm  wall=2.27mm  |I|=13.1A  v=116.23mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=135.4mm  bif=5.4mm  H=-0.00  res=5.1mm  wall=2.27mm  |I|=13.1A  v=116.23mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=135.4mm  bif=5.4mm  H=-0.00  res=5.1mm  wall=2.27mm  |I|=13.1A  v=116.23mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_authority_reserve
+  step   25/2000  mode=COMET_COMMIT    dist=135.4mm  bif=5.4mm  H=-0.00  res=5.1mm  wall=2.27mm  |I|=13.1A  v=116.23mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=106.1mm  bif=36.0mm  H=-0.00  res=1.1mm  wall=1.92mm  |I|=13.1A  v=137.38mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=106.1mm  bif=36.0mm  H=-0.00  res=1.1mm  wall=1.92mm  |I|=13.1A  v=137.38mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=106.1mm  bif=36.0mm  H=-0.00  res=1.1mm  wall=1.92mm  |I|=13.1A  v=137.38mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=106.1mm  bif=36.0mm  H=-0.00  res=1.1mm  wall=1.92mm  |I|=13.1A  v=137.38mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=106.1mm  bif=36.0mm  H=-0.00  res=1.1mm  wall=1.92mm  |I|=13.1A  v=137.38mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=75.7mm  bif=0.3mm  H=-0.00  res=1.1mm  wall=2.97mm  |I|=11.7A  v=58.87mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=106.1mm  bif=36.0mm  H=-0.00  res=1.1mm  wall=1.92mm  |I|=13.1A  v=137.38mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=75.7mm  bif=0.3mm  H=-0.00  res=1.1mm  wall=2.97mm  |I|=11.7A  v=58.87mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_downstream_value
+  step   75/2000  mode=COMET_COMMIT    dist=75.7mm  bif=0.3mm  H=-0.00  res=1.1mm  wall=2.97mm  |I|=11.7A  v=58.87mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=75.7mm  bif=0.3mm  H=-0.00  res=1.1mm  wall=2.97mm  |I|=11.7A  v=58.87mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=75.7mm  bif=0.3mm  H=-0.00  res=1.1mm  wall=2.97mm  |I|=11.7A  v=58.87mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=42.3mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=1.58mm  |I|=13.1A  v=147.46mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=75.7mm  bif=0.3mm  H=-0.00  res=1.1mm  wall=2.97mm  |I|=11.7A  v=58.87mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=42.3mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=1.58mm  |I|=13.1A  v=147.46mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=42.3mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=1.58mm  |I|=13.1A  v=147.46mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=42.3mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=1.58mm  |I|=13.1A  v=147.46mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=42.3mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=1.58mm  |I|=13.1A  v=147.46mm/s
+  step  125/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.2mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=1.45mm  |I|=12.3A  v=91.39mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=42.3mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=1.58mm  |I|=13.1A  v=147.46mm/s
+  COMET summary: hard_commits=53, transitions=9, emergency_switches=0, avg_ctrl=34.8ms
+  step  125/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.2mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=1.45mm  |I|=12.3A  v=91.39mm/s
+  step  125/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.2mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=1.45mm  |I|=12.3A  v=91.39mm/s
+  COMET summary: hard_commits=53, transitions=7, emergency_switches=0, avg_ctrl=34.7ms
+  step  125/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.2mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=1.45mm  |I|=12.3A  v=91.39mm/s
+  COMET summary: hard_commits=53, transitions=9, emergency_switches=0, avg_ctrl=35.4ms
+  COMET summary: hard_commits=53, transitions=9, emergency_switches=0, avg_ctrl=35.3ms
+  step  125/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.2mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=1.45mm  |I|=12.3A  v=91.39mm/s
+  COMET summary: hard_commits=54, transitions=8, emergency_switches=0, avg_ctrl=34.9ms
+  step  125/2000  mode=COMET_TERMINAL_CAPTURE  dist=4.2mm  bif=0.0mm  H=-0.00  res=0.8mm  wall=1.45mm  |I|=12.3A  v=91.39mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_commitment_memory
+  COMET summary: hard_commits=53, transitions=9, emergency_switches=0, avg_ctrl=35.3ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=47, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=47, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=47, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=47, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=47, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=47, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.37mm  |I|=10.3A  v=90.55mm/s
+  step   25/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.37mm  |I|=10.3A  v=90.55mm/s
+  COMET summary: hard_commits=13, transitions=4, emergency_switches=0, avg_ctrl=37.2ms
+  step   25/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.37mm  |I|=10.3A  v=90.55mm/s
+  step   25/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.37mm  |I|=10.3A  v=90.55mm/s
+  COMET summary: hard_commits=13, transitions=4, emergency_switches=0, avg_ctrl=38.8ms
+  step   25/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.37mm  |I|=10.3A  v=90.55mm/s
+  COMET summary: hard_commits=13, transitions=4, emergency_switches=0, avg_ctrl=40.1ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_terminal_precision
+  COMET summary: hard_commits=13, transitions=4, emergency_switches=0, avg_ctrl=40.3ms
+  step   25/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.8mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.37mm  |I|=10.3A  v=90.55mm/s
+  COMET summary: hard_commits=14, transitions=3, emergency_switches=0, avg_ctrl=40.2ms
+  COMET summary: hard_commits=13, transitions=4, emergency_switches=0, avg_ctrl=38.5ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=176, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=176, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=176, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=176, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=176, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_002_random_to_publication_target controller=comet_no_flow_scaled_reserve
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=176, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=169.0mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=3.34mm  |I|=13.1A  v=134.61mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=169.0mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=3.34mm  |I|=13.1A  v=134.61mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_003_publication_start_to_random controller=comet
+  step   25/2000  mode=COMET_COMMIT    dist=169.0mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=3.34mm  |I|=13.1A  v=134.61mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_authority_reserve
+  step   25/2000  mode=COMET_COMMIT    dist=169.0mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=3.34mm  |I|=13.1A  v=134.61mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=169.0mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=3.34mm  |I|=13.1A  v=134.61mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_commitment_memory
+  step   25/2000  mode=COMET_COMMIT    dist=169.0mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=3.34mm  |I|=13.1A  v=134.61mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=canonical_003_publication_start_to_random controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0001 controller=comet
+  step   50/2000  mode=COMET_COMMIT    dist=142.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.45mm  |I|=13.1A  v=143.77mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0001 controller=comet_no_authority_reserve
+  step   50/2000  mode=COMET_COMMIT    dist=142.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.45mm  |I|=13.1A  v=143.77mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=142.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.45mm  |I|=13.1A  v=143.77mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0001 controller=comet_no_downstream_value
+  step   50/2000  mode=COMET_COMMIT    dist=142.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.45mm  |I|=13.1A  v=143.77mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=142.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.45mm  |I|=13.1A  v=143.77mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=142.7mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=2.45mm  |I|=13.1A  v=143.77mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0001 controller=comet_no_commitment_memory
+  step   75/2000  mode=COMET_COMMIT    dist=89.1mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=8.12mm  |I|=13.1A  v=99.30mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0001 controller=comet_no_terminal_precision
+  step   75/2000  mode=COMET_COMMIT    dist=89.1mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=8.12mm  |I|=13.1A  v=99.30mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=89.1mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=8.12mm  |I|=13.1A  v=99.30mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0001 controller=comet_no_flow_scaled_reserve
+  step   75/2000  mode=COMET_COMMIT    dist=89.1mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=8.12mm  |I|=13.1A  v=99.30mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=89.1mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=8.12mm  |I|=13.1A  v=99.30mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=89.1mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=8.12mm  |I|=13.1A  v=99.30mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=46.7mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=2.11mm  |I|=13.1A  v=93.55mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=46.7mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=2.11mm  |I|=13.1A  v=93.55mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=46.7mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=2.11mm  |I|=13.1A  v=93.55mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=46.7mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=2.11mm  |I|=13.1A  v=93.55mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=46.7mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=2.11mm  |I|=13.1A  v=93.55mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=46.7mm  bif=0.0mm  H=-0.00  res=-3.0mm  wall=2.11mm  |I|=13.1A  v=93.55mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=26.1mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.15mm  |I|=13.1A  v=83.24mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=26.1mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.15mm  |I|=13.1A  v=83.24mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=26.1mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.15mm  |I|=13.1A  v=83.24mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=26.1mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.15mm  |I|=13.1A  v=83.24mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=26.1mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.15mm  |I|=13.1A  v=83.24mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=26.1mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.15mm  |I|=13.1A  v=83.24mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=33.3mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.75mm  |I|=8.7A  v=20.57mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=33.3mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.75mm  |I|=8.7A  v=20.57mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=33.3mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.75mm  |I|=8.7A  v=20.57mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=33.3mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.75mm  |I|=8.7A  v=20.57mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=33.3mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.75mm  |I|=8.7A  v=20.57mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=33.3mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=4.75mm  |I|=8.7A  v=20.57mm/s
+  COMET summary: hard_commits=152, transitions=4, emergency_switches=0, avg_ctrl=64.4ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0002 controller=comet
+  COMET summary: hard_commits=152, transitions=4, emergency_switches=0, avg_ctrl=63.8ms
+  COMET summary: hard_commits=152, transitions=4, emergency_switches=0, avg_ctrl=63.7ms
+  COMET summary: hard_commits=152, transitions=4, emergency_switches=0, avg_ctrl=64.2ms
+  COMET summary: hard_commits=152, transitions=3, emergency_switches=0, avg_ctrl=64.5ms
+  COMET summary: hard_commits=152, transitions=4, emergency_switches=0, avg_ctrl=63.4ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0002 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0002 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0002 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0002 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=3 pair=random_0002 controller=comet_no_flow_scaled_reserve
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_3x/comet/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_3x/comet_no_authority_reserve/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_3x/comet_no_commitment_memory/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_3x/comet_no_downstream_value/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_3x/comet_no_terminal_precision/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_3x/comet_no_flow_scaled_reserve/comet_diagnostics.csv
+Generated route-feasible trial pairs:
+  canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  canonical_002_random_to_publication_target kind=canonical start_mm=[-13.145033486604103, 20.156750244645266, -259.9697249985778] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=229.864
+  canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[37.695941422368165, -8.116126269208932, -378.57512066006467] straight_mm=67.199
+  random_0001 kind=random start_mm=[23.208166886179928, 2.397357095827697, -166.50209659966055] target_mm=[26.43191651882742, -6.359961140306316, -297.24302499870464] straight_mm=131.074
+  random_0002 kind=random start_mm=[-41.056223867569145, 13.079529533265546, -181.9375254245619] target_mm=[7.434696261461543, 46.35289206909364, -143.64506145576604] straight_mm=70.177
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0001 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0001 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0001 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0001 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0001 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0001 controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0002 controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0002 controller=comet_no_authority_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0002 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0002 controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0002 controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] submit flow=5 pair=random_0002 controller=comet_no_flow_scaled_reserve
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=374.4mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=2.18mm  |I|=13.1A  v=92.11mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=374.4mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=2.18mm  |I|=13.1A  v=92.11mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=374.4mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=2.18mm  |I|=13.1A  v=92.11mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=374.4mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=2.18mm  |I|=13.1A  v=92.11mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=374.4mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=2.18mm  |I|=13.1A  v=92.11mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=374.4mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=2.18mm  |I|=13.1A  v=92.11mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=338.2mm  bif=48.5mm  H=-0.00  res=19.7mm  wall=2.71mm  |I|=13.1A  v=70.22mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=338.2mm  bif=48.5mm  H=-0.00  res=19.7mm  wall=2.71mm  |I|=13.1A  v=70.22mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=338.2mm  bif=48.5mm  H=-0.00  res=19.7mm  wall=2.71mm  |I|=13.1A  v=70.22mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=338.2mm  bif=48.5mm  H=-0.00  res=19.7mm  wall=2.71mm  |I|=13.1A  v=70.22mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=338.2mm  bif=48.5mm  H=-0.00  res=19.7mm  wall=2.71mm  |I|=13.1A  v=70.22mm/s
+  step   50/2000  mode=COMET_APPROACH  dist=338.2mm  bif=48.5mm  H=-0.00  res=19.7mm  wall=2.71mm  |I|=13.1A  v=70.22mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=310.7mm  bif=18.6mm  H=-0.00  res=23.9mm  wall=1.95mm  |I|=11.7A  v=58.67mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=310.7mm  bif=18.6mm  H=-0.00  res=23.9mm  wall=1.95mm  |I|=11.7A  v=58.67mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=310.7mm  bif=18.6mm  H=-0.00  res=23.9mm  wall=1.95mm  |I|=11.7A  v=58.67mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=310.7mm  bif=18.6mm  H=-0.00  res=23.9mm  wall=1.95mm  |I|=11.7A  v=58.67mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=310.7mm  bif=18.6mm  H=-0.00  res=23.9mm  wall=1.95mm  |I|=11.7A  v=58.67mm/s
+  step   75/2000  mode=COMET_APPROACH  dist=310.7mm  bif=18.6mm  H=-0.00  res=23.9mm  wall=1.95mm  |I|=11.7A  v=58.67mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=293.1mm  bif=5.9mm  H=-0.00  res=13.5mm  wall=2.97mm  |I|=13.1A  v=75.32mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=293.1mm  bif=5.9mm  H=-0.00  res=13.5mm  wall=2.97mm  |I|=13.1A  v=75.32mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=293.1mm  bif=5.9mm  H=-0.00  res=13.5mm  wall=2.97mm  |I|=13.1A  v=75.32mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=293.1mm  bif=5.9mm  H=-0.00  res=13.5mm  wall=2.97mm  |I|=13.1A  v=75.32mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=293.1mm  bif=5.9mm  H=-0.00  res=13.5mm  wall=2.97mm  |I|=13.1A  v=75.32mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=293.1mm  bif=5.9mm  H=-0.00  res=13.5mm  wall=2.97mm  |I|=13.1A  v=75.32mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=0.97mm  |I|=13.1A  v=115.31mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=0.97mm  |I|=13.1A  v=115.31mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=0.97mm  |I|=13.1A  v=115.31mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=0.97mm  |I|=13.1A  v=115.31mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=0.97mm  |I|=13.1A  v=115.31mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=268.3mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=0.97mm  |I|=13.1A  v=115.31mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=253.4mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.28mm  |I|=10.1A  v=40.36mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=253.4mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.28mm  |I|=10.1A  v=40.36mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=253.4mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.28mm  |I|=10.1A  v=40.36mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=253.4mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.28mm  |I|=10.1A  v=40.36mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=253.4mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.28mm  |I|=10.1A  v=40.36mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=253.4mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=2.28mm  |I|=10.1A  v=40.36mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=206.0mm  bif=0.0mm  H=-0.00  res=-3.6mm  wall=4.66mm  |I|=13.1A  v=72.19mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=206.0mm  bif=0.0mm  H=-0.00  res=-3.6mm  wall=4.66mm  |I|=13.1A  v=72.19mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=206.0mm  bif=0.0mm  H=-0.00  res=-3.6mm  wall=4.66mm  |I|=13.1A  v=72.19mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=206.0mm  bif=0.0mm  H=-0.00  res=-3.6mm  wall=4.66mm  |I|=13.1A  v=72.19mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=206.0mm  bif=0.0mm  H=-0.00  res=-3.6mm  wall=4.66mm  |I|=13.1A  v=72.19mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=206.0mm  bif=0.0mm  H=-0.00  res=-3.6mm  wall=4.66mm  |I|=13.1A  v=72.19mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=169.1mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=5.64mm  |I|=13.1A  v=81.71mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=169.1mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=5.64mm  |I|=13.1A  v=81.71mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=169.1mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=5.64mm  |I|=13.1A  v=81.71mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=169.1mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=5.64mm  |I|=13.1A  v=81.71mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=169.1mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=5.64mm  |I|=13.1A  v=81.71mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=169.1mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=5.64mm  |I|=13.1A  v=81.71mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.71mm  |I|=13.1A  v=114.80mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.71mm  |I|=13.1A  v=114.80mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.71mm  |I|=13.1A  v=114.80mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.71mm  |I|=13.1A  v=114.80mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.71mm  |I|=13.1A  v=114.80mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=150.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=1.71mm  |I|=13.1A  v=114.80mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=108.0mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=2.40mm  |I|=13.1A  v=33.19mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=108.0mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=2.40mm  |I|=13.1A  v=33.19mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=108.0mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=2.40mm  |I|=13.1A  v=33.19mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=108.0mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=2.40mm  |I|=13.1A  v=33.19mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=108.0mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=2.40mm  |I|=13.1A  v=33.19mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=108.0mm  bif=0.0mm  H=-0.00  res=-4.2mm  wall=2.40mm  |I|=13.1A  v=33.19mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=82.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=1.74mm  |I|=13.1A  v=99.84mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=82.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=1.74mm  |I|=13.1A  v=99.84mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=82.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=1.74mm  |I|=13.1A  v=99.84mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=82.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=1.74mm  |I|=13.1A  v=99.84mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=82.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=1.74mm  |I|=13.1A  v=99.84mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=82.5mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=1.74mm  |I|=13.1A  v=99.84mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=48.8mm  bif=0.0mm  H=-0.00  res=-7.9mm  wall=1.33mm  |I|=13.1A  v=90.33mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=48.8mm  bif=0.0mm  H=-0.00  res=-7.9mm  wall=1.33mm  |I|=13.1A  v=90.33mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=48.8mm  bif=0.0mm  H=-0.00  res=-7.9mm  wall=1.33mm  |I|=13.1A  v=90.33mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=48.8mm  bif=0.0mm  H=-0.00  res=-7.9mm  wall=1.33mm  |I|=13.1A  v=90.33mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=48.8mm  bif=0.0mm  H=-0.00  res=-7.9mm  wall=1.33mm  |I|=13.1A  v=90.33mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=48.8mm  bif=0.0mm  H=-0.00  res=-7.9mm  wall=1.33mm  |I|=13.1A  v=90.33mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=26.2mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=8.11mm  |I|=13.1A  v=28.91mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=26.2mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=8.11mm  |I|=13.1A  v=28.91mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=26.2mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=8.11mm  |I|=13.1A  v=28.91mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=26.2mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=8.11mm  |I|=13.1A  v=28.91mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=26.2mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=8.11mm  |I|=13.1A  v=28.91mm/s
+  step  325/2000  mode=COMET_COMMIT    dist=26.2mm  bif=0.0mm  H=-0.00  res=-0.9mm  wall=8.11mm  |I|=13.1A  v=28.91mm/s
+  step  350/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.0mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=9.62mm  |I|=13.1A  v=18.07mm/s
+  step  350/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.0mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=9.62mm  |I|=13.1A  v=18.07mm/s
+  step  350/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.0mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=9.62mm  |I|=13.1A  v=18.07mm/s
+  step  350/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.0mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=9.62mm  |I|=13.1A  v=18.07mm/s
+  step  350/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.0mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=9.62mm  |I|=13.1A  v=18.07mm/s
+  step  350/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.0mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=9.62mm  |I|=13.1A  v=18.07mm/s
+  step  375/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.7mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=9.18mm  |I|=13.1A  v=14.10mm/s
+  step  375/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.7mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=9.18mm  |I|=13.1A  v=14.10mm/s
+  step  375/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.7mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=9.18mm  |I|=13.1A  v=14.10mm/s
+  step  375/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.7mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=9.18mm  |I|=13.1A  v=14.10mm/s
+  step  375/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.7mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=9.18mm  |I|=13.1A  v=14.10mm/s
+  step  375/2000  mode=COMET_TERMINAL_CAPTURE  dist=9.7mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=9.18mm  |I|=13.1A  v=14.10mm/s
+  COMET summary: hard_commits=235, transitions=13, emergency_switches=0, avg_ctrl=71.9ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_flow_scaled_reserve
+  COMET summary: hard_commits=236, transitions=11, emergency_switches=0, avg_ctrl=72.0ms
+  COMET summary: hard_commits=236, transitions=9, emergency_switches=0, avg_ctrl=72.0ms
+  COMET summary: hard_commits=236, transitions=11, emergency_switches=0, avg_ctrl=72.1ms
+  COMET summary: hard_commits=236, transitions=11, emergency_switches=0, avg_ctrl=72.9ms
+  COMET summary: hard_commits=236, transitions=10, emergency_switches=0, avg_ctrl=73.7ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=132, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=132, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=132, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=132, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_downstream_value
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=132, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=132, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=196.7mm  bif=0.0mm  H=-0.00  res=-6.9mm  wall=6.67mm  |I|=13.1A  v=42.60mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=196.7mm  bif=0.0mm  H=-0.00  res=-6.9mm  wall=6.67mm  |I|=13.1A  v=42.60mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=196.7mm  bif=0.0mm  H=-0.00  res=-6.9mm  wall=6.67mm  |I|=13.1A  v=42.60mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=196.7mm  bif=0.0mm  H=-0.00  res=-6.9mm  wall=6.67mm  |I|=13.1A  v=42.60mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=196.7mm  bif=0.0mm  H=-0.00  res=-6.9mm  wall=6.67mm  |I|=13.1A  v=42.60mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=177.5mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=5.49mm  |I|=13.1A  v=87.92mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=177.5mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=5.49mm  |I|=13.1A  v=87.92mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=177.5mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=5.49mm  |I|=13.1A  v=87.92mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=177.5mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=5.49mm  |I|=13.1A  v=87.92mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_authority_reserve
+  step   50/2000  mode=COMET_COMMIT    dist=177.5mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=5.49mm  |I|=13.1A  v=87.92mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=196.7mm  bif=0.0mm  H=-0.00  res=-6.9mm  wall=6.67mm  |I|=13.1A  v=42.60mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=155.3mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=5.54mm  |I|=13.1A  v=47.23mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=155.3mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=5.54mm  |I|=13.1A  v=47.23mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=155.3mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=5.54mm  |I|=13.1A  v=47.23mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=155.3mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=5.54mm  |I|=13.1A  v=47.23mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=177.5mm  bif=0.0mm  H=-0.00  res=1.0mm  wall=5.49mm  |I|=13.1A  v=87.92mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=155.3mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=5.54mm  |I|=13.1A  v=47.23mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=155.3mm  bif=0.0mm  H=-0.00  res=-1.0mm  wall=5.54mm  |I|=13.1A  v=47.23mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet
+  step  100/2000  mode=COMET_COMMIT    dist=116.7mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.15mm  |I|=13.1A  v=71.68mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=116.7mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.15mm  |I|=13.1A  v=71.68mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=116.7mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.15mm  |I|=13.1A  v=71.68mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=116.7mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.15mm  |I|=13.1A  v=71.68mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=116.7mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.15mm  |I|=13.1A  v=71.68mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=116.7mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.15mm  |I|=13.1A  v=71.68mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_commitment_memory
+  step  125/2000  mode=COMET_COMMIT    dist=93.1mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.19mm  |I|=13.1A  v=50.64mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=93.1mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.19mm  |I|=13.1A  v=50.64mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=93.1mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.19mm  |I|=13.1A  v=50.64mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=93.1mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.19mm  |I|=13.1A  v=50.64mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=93.1mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.19mm  |I|=13.1A  v=50.64mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet_no_terminal_precision
+  step  125/2000  mode=COMET_COMMIT    dist=93.1mm  bif=0.0mm  H=-0.00  res=-2.1mm  wall=5.19mm  |I|=13.1A  v=50.64mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=67.0mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=4.42mm  |I|=13.1A  v=54.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=67.0mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=4.42mm  |I|=13.1A  v=54.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=67.0mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=4.42mm  |I|=13.1A  v=54.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=67.0mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=4.42mm  |I|=13.1A  v=54.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=67.0mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=4.42mm  |I|=13.1A  v=54.12mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=67.0mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=4.42mm  |I|=13.1A  v=54.12mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=39.9mm  bif=0.2mm  H=-0.00  res=-3.5mm  wall=5.24mm  |I|=13.1A  v=57.68mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=39.9mm  bif=0.2mm  H=-0.00  res=-3.5mm  wall=5.24mm  |I|=13.1A  v=57.68mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=39.9mm  bif=0.2mm  H=-0.00  res=-3.5mm  wall=5.24mm  |I|=13.1A  v=57.68mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=39.9mm  bif=0.2mm  H=-0.00  res=-3.5mm  wall=5.24mm  |I|=13.1A  v=57.68mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=39.9mm  bif=0.2mm  H=-0.00  res=-3.5mm  wall=5.24mm  |I|=13.1A  v=57.68mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=39.9mm  bif=0.2mm  H=-0.00  res=-3.5mm  wall=5.24mm  |I|=13.1A  v=57.68mm/s
+  step  200/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.5mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=7.72mm  |I|=13.1A  v=28.57mm/s
+  step  200/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.5mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=7.72mm  |I|=13.1A  v=28.57mm/s
+  step  200/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.5mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=7.72mm  |I|=13.1A  v=28.57mm/s
+  step  200/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.5mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=7.72mm  |I|=13.1A  v=28.57mm/s
+  step  200/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.5mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=7.72mm  |I|=13.1A  v=28.57mm/s
+  step  200/2000  mode=COMET_TERMINAL_CAPTURE  dist=12.5mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=7.72mm  |I|=13.1A  v=28.57mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=7.4mm  bif=0.0mm  H=-0.00  res=-0.8mm  wall=7.25mm  |I|=13.1A  v=28.78mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=7.4mm  bif=0.0mm  H=-0.00  res=-0.8mm  wall=7.25mm  |I|=13.1A  v=28.78mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=7.4mm  bif=0.0mm  H=-0.00  res=-0.8mm  wall=7.25mm  |I|=13.1A  v=28.78mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=7.4mm  bif=0.0mm  H=-0.00  res=-0.8mm  wall=7.25mm  |I|=13.1A  v=28.78mm/s
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=7.4mm  bif=0.0mm  H=-0.00  res=-0.8mm  wall=7.25mm  |I|=13.1A  v=28.78mm/s
+  COMET summary: hard_commits=180, transitions=3, emergency_switches=0, avg_ctrl=71.8ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_authority_reserve
+  COMET summary: hard_commits=180, transitions=3, emergency_switches=0, avg_ctrl=71.7ms
+  COMET summary: hard_commits=180, transitions=3, emergency_switches=0, avg_ctrl=71.8ms
+  COMET summary: hard_commits=180, transitions=3, emergency_switches=0, avg_ctrl=71.8ms
+  step  225/2000  mode=COMET_TERMINAL_CAPTURE  dist=7.4mm  bif=0.0mm  H=-0.00  res=-0.8mm  wall=7.25mm  |I|=13.1A  v=28.78mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=46, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=46, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=46, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=46, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=180, transitions=2, emergency_switches=0, avg_ctrl=72.4ms
+  step   25/2000  mode=COMET_COMMIT    dist=30.3mm  bif=5.6mm  H=-0.00  res=4.3mm  wall=2.01mm  |I|=13.1A  v=104.50mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=30.3mm  bif=5.6mm  H=-0.00  res=4.3mm  wall=2.01mm  |I|=13.1A  v=104.50mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=30.3mm  bif=5.6mm  H=-0.00  res=4.3mm  wall=2.01mm  |I|=13.1A  v=104.50mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=30.3mm  bif=5.6mm  H=-0.00  res=4.3mm  wall=2.01mm  |I|=13.1A  v=104.50mm/s
+  COMET summary: hard_commits=5, transitions=5, emergency_switches=0, avg_ctrl=11.5ms
+  COMET summary: hard_commits=5, transitions=5, emergency_switches=0, avg_ctrl=11.8ms
+  COMET summary: hard_commits=5, transitions=5, emergency_switches=0, avg_ctrl=11.6ms
+  COMET summary: hard_commits=5, transitions=5, emergency_switches=0, avg_ctrl=11.8ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=46, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=180, transitions=3, emergency_switches=0, avg_ctrl=73.1ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=46, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=30.3mm  bif=5.6mm  H=-0.00  res=4.3mm  wall=2.01mm  |I|=13.1A  v=104.50mm/s
+  COMET summary: hard_commits=5, transitions=4, emergency_switches=0, avg_ctrl=11.6ms
+  step   25/2000  mode=COMET_COMMIT    dist=30.3mm  bif=5.6mm  H=-0.00  res=4.3mm  wall=2.01mm  |I|=13.1A  v=104.50mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_002_random_to_publication_target controller=comet
+  COMET summary: hard_commits=4, transitions=9, emergency_switches=0, avg_ctrl=11.4ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=141, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=141, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=141, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=141, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=141, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_commitment_memory
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=141, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=131.0mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=5.86mm  |I|=13.1A  v=183.25mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=131.0mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=5.86mm  |I|=13.1A  v=183.25mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=131.0mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=5.86mm  |I|=13.1A  v=183.25mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=131.0mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=5.86mm  |I|=13.1A  v=183.25mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=63.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=5.44mm  |I|=13.1A  v=170.35mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_downstream_value
+  step   50/2000  mode=COMET_COMMIT    dist=63.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=5.44mm  |I|=13.1A  v=170.35mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=63.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=5.44mm  |I|=13.1A  v=170.35mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=131.0mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=5.86mm  |I|=13.1A  v=183.25mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=131.0mm  bif=0.0mm  H=-0.00  res=0.9mm  wall=5.86mm  |I|=13.1A  v=183.25mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=63.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=5.44mm  |I|=13.1A  v=170.35mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=26.9mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=0.71mm  |I|=3.3A  v=29.06mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=63.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=5.44mm  |I|=13.1A  v=170.35mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=26.9mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=0.71mm  |I|=3.3A  v=29.06mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=26.9mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=0.71mm  |I|=3.3A  v=29.06mm/s
+  COMET summary: hard_commits=72, transitions=5, emergency_switches=0, avg_ctrl=41.6ms
+  step   50/2000  mode=COMET_COMMIT    dist=63.3mm  bif=0.0mm  H=-0.00  res=1.3mm  wall=5.44mm  |I|=13.1A  v=170.35mm/s
+  COMET summary: hard_commits=72, transitions=5, emergency_switches=0, avg_ctrl=42.6ms
+  COMET summary: hard_commits=72, transitions=5, emergency_switches=0, avg_ctrl=41.9ms
+  step   75/2000  mode=COMET_COMMIT    dist=26.9mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=0.71mm  |I|=3.3A  v=29.06mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=26.9mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=0.71mm  |I|=3.3A  v=29.06mm/s
+  COMET summary: hard_commits=72, transitions=5, emergency_switches=0, avg_ctrl=43.7ms
+  COMET summary: hard_commits=72, transitions=4, emergency_switches=0, avg_ctrl=42.2ms
+  step   75/2000  mode=COMET_COMMIT    dist=26.9mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=0.71mm  |I|=3.3A  v=29.06mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_terminal_precision
+  COMET summary: hard_commits=72, transitions=5, emergency_switches=0, avg_ctrl=41.9ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=99, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=99, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=99, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=99, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=99, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=99, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_003_publication_start_to_random controller=comet
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_authority_reserve
+  step   25/2000  mode=COMET_COMMIT    dist=47.2mm  bif=0.1mm  H=-0.00  res=2.8mm  wall=1.91mm  |I|=13.1A  v=98.52mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=47.2mm  bif=0.1mm  H=-0.00  res=2.8mm  wall=1.91mm  |I|=13.1A  v=98.52mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_commitment_memory
+  step   25/2000  mode=COMET_COMMIT    dist=47.2mm  bif=0.1mm  H=-0.00  res=2.8mm  wall=1.91mm  |I|=13.1A  v=98.52mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_downstream_value
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_002_random_to_publication_target controller=comet_no_flow_scaled_reserve
+  step   25/2000  mode=COMET_COMMIT    dist=47.2mm  bif=0.1mm  H=-0.00  res=2.8mm  wall=1.91mm  |I|=13.1A  v=98.52mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=47.2mm  bif=0.1mm  H=-0.00  res=2.8mm  wall=1.91mm  |I|=13.1A  v=98.52mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=47.2mm  bif=0.1mm  H=-0.00  res=2.8mm  wall=1.91mm  |I|=13.1A  v=98.52mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_terminal_precision
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=canonical_003_publication_start_to_random controller=comet_no_flow_scaled_reserve
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0001 controller=comet_no_authority_reserve
+  step   50/2000  mode=COMET_COMMIT    dist=56.2mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.31mm  |I|=13.1A  v=30.78mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=56.2mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.31mm  |I|=13.1A  v=30.78mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=56.2mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.31mm  |I|=13.1A  v=30.78mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=56.2mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.31mm  |I|=13.1A  v=30.78mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=56.2mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.31mm  |I|=13.1A  v=30.78mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=56.2mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.31mm  |I|=13.1A  v=30.78mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0001 controller=comet
+  step   75/2000  mode=COMET_COMMIT    dist=65.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=4.93mm  |I|=13.1A  v=34.51mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=65.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=4.93mm  |I|=13.1A  v=34.51mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=65.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=4.93mm  |I|=13.1A  v=34.51mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0001 controller=comet_no_commitment_memory
+  step   75/2000  mode=COMET_COMMIT    dist=65.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=4.93mm  |I|=13.1A  v=34.51mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=65.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=4.93mm  |I|=13.1A  v=34.51mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=65.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=4.93mm  |I|=13.1A  v=34.51mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0001 controller=comet_no_downstream_value
+  step  100/2000  mode=COMET_COMMIT    dist=64.4mm  bif=0.0mm  H=-0.00  res=-0.6mm  wall=7.87mm  |I|=13.1A  v=87.98mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=64.4mm  bif=0.0mm  H=-0.00  res=-0.6mm  wall=7.87mm  |I|=13.1A  v=87.98mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=64.4mm  bif=0.0mm  H=-0.00  res=-0.6mm  wall=7.87mm  |I|=13.1A  v=87.98mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=64.4mm  bif=0.0mm  H=-0.00  res=-0.6mm  wall=7.87mm  |I|=13.1A  v=87.98mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=64.4mm  bif=0.0mm  H=-0.00  res=-0.6mm  wall=7.87mm  |I|=13.1A  v=87.98mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0001 controller=comet_no_terminal_precision
+  step  100/2000  mode=COMET_BOOST     dist=53.4mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=8.24mm  |I|=13.1A  v=9.27mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=52.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.35mm  |I|=13.1A  v=149.26mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=52.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.35mm  |I|=13.1A  v=149.26mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=52.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.35mm  |I|=13.1A  v=149.26mm/s
+  COMET summary: hard_commits=80, transitions=9, emergency_switches=0, avg_ctrl=65.1ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0001 controller=comet_no_flow_scaled_reserve
+  COMET summary: hard_commits=80, transitions=9, emergency_switches=0, avg_ctrl=65.1ms
+  COMET summary: hard_commits=80, transitions=9, emergency_switches=0, avg_ctrl=65.4ms
+  step  125/2000  mode=COMET_COMMIT    dist=52.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.35mm  |I|=13.1A  v=149.26mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=52.5mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.35mm  |I|=13.1A  v=149.26mm/s
+  COMET summary: hard_commits=80, transitions=9, emergency_switches=0, avg_ctrl=65.9ms
+  COMET summary: hard_commits=81, transitions=8, emergency_switches=0, avg_ctrl=64.7ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0002 controller=comet
+  step  125/2000  mode=COMET_RESCUE    dist=51.6mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.80mm  |I|=13.1A  v=91.43mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0002 controller=comet_no_authority_reserve
+  step  150/2000  mode=COMET_RESCUE    dist=47.5mm  bif=0.5mm  H=-0.00  res=-11.1mm  wall=1.74mm  |I|=9.0A  v=7.84mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0002 controller=comet_no_commitment_memory
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0002 controller=comet_no_downstream_value
+  step  175/2000  mode=COMET_RESCUE    dist=47.4mm  bif=0.5mm  H=-0.00  res=-11.2mm  wall=1.68mm  |I|=11.5A  v=2.17mm/s
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0002 controller=comet_no_terminal_precision
+  step  200/2000  mode=COMET_BOOST     dist=55.3mm  bif=0.0mm  H=-0.00  res=-3.1mm  wall=4.46mm  |I|=13.1A  v=58.69mm/s
+  step  225/2000  mode=COMET_BOOST     dist=52.4mm  bif=0.0mm  H=-0.00  res=-0.0mm  wall=6.62mm  |I|=13.1A  v=87.22mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=23.4mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=3.96mm  |I|=12.4A  v=189.87mm/s
+  COMET summary: hard_commits=111, transitions=8, emergency_switches=0, avg_ctrl=70.0ms
+[m1pro_cm_corrected_flows1_3_5_comet_ablations] done flow=5 pair=random_0002 controller=comet_no_flow_scaled_reserve
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_5x/comet/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_5x/comet_no_authority_reserve/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_5x/comet_no_commitment_memory/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_5x/comet_no_downstream_value/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_5x/comet_no_terminal_precision/comet_diagnostics.csv
+COMET diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/flow_5x/comet_no_flow_scaled_reserve/comet_diagnostics.csv
+
+Benchmark outputs saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations
+Paired CSV: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/paired_results.csv
+===== BENCHMARK m1pro_cm_corrected_flows1_3_5_comet_ablations FINISHED at Thu Jun 11 18:28:02 PDT 2026 =====
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:141: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  ax.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:141: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  ax.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:141: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  ax.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:211: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  plt.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:233: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  ax.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:233: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  ax.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+/Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/scripts/generate_publication_figures_1mm.py:233: MatplotlibDeprecationWarning: The 'labels' parameter of boxplot() has been renamed 'tick_labels' since Matplotlib 3.9; support for the old name will be dropped in 3.11.
+  ax.boxplot(data, labels=[labels[k] for k in controllers], showfliers=False)
+Publication figures/tables saved to: finaloutputs/m1pro_comet_ablations_500um_20260611_182145/m1pro_cm_corrected_flows1_3_5_comet_ablations/publication_figures
