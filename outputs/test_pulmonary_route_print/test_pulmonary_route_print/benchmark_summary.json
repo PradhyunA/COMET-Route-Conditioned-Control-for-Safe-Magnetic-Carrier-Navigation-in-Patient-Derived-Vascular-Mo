@@ -1,0 +1,85 @@
+{
+  "run_id": "test_pulmonary_route_print",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 3,
+  "n_pairs": 3,
+  "seed_records": [
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 23260611,
+      "start": [
+        -0.05204981803894043,
+        -0.04507847309112549,
+        -0.06347911834716798
+      ],
+      "target": [
+        0.02458595037460327,
+        -0.014713741540908813,
+        0.11807354927062988
+      ],
+      "route_length_m": 0.2996999147752628,
+      "route_min_clearance_m": 0.0014631541643152968,
+      "route_min_authority_reserve_m_s": 0.16769883495415874
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 23260612,
+      "start": [
+        -0.0027757031681033364,
+        0.007325699375292001,
+        0.05668599917887545
+      ],
+      "target": [
+        0.02458595037460327,
+        -0.014713741540908813,
+        0.11807354927062988
+      ],
+      "route_length_m": 0.09257290562556411,
+      "route_min_clearance_m": 0.0014631541643152968,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 23260613,
+      "start": [
+        -0.05204981803894043,
+        -0.04507847309112549,
+        -0.06347911834716798
+      ],
+      "target": [
+        0.019063855939802386,
+        0.009320597855118701,
+        0.061489726093264425
+      ],
+      "route_length_m": 0.23067363185744721,
+      "route_min_clearance_m": 0.0018404142585188702,
+      "route_min_authority_reserve_m_s": 0.16769883495415874
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 153.46778276783047,
+      "median_sim_time_s": 0.02,
+      "median_steps_to_target": 1.0,
+      "median_wall_time_s": 0.38736179197439924,
+      "median_avg_control_step_time_s": 0.3240013330359943,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 5.599199880591855,
+      "median_energy_proxy_A2s": 5.643187074507571,
+      "median_min_wall_clearance_mm": 1.8372491811550842,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 1.0
+    }
+  ],
+  "paired_statistics": []
+}

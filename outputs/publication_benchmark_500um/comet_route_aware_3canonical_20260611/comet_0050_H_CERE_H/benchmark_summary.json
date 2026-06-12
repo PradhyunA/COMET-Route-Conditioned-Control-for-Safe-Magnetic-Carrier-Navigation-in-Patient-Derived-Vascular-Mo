@@ -1,0 +1,229 @@
+{
+  "run_id": "comet_0050_H_CERE_H",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 9,
+  "n_pairs": 9,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_hard_0050_endpoint08",
+      "seed": 21260611,
+      "start": [
+        -0.030809462069999998,
+        0.00276482804,
+        -0.04719573259
+      ],
+      "target": [
+        -0.02123204619,
+        -0.03894729167,
+        0.048836722969999996
+      ],
+      "route_length_m": 0.24155079640368332,
+      "route_min_clearance_m": 0.0007780494491242936,
+      "route_min_authority_reserve_m_s": 0.16089043611132442
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 21260612,
+      "start": [
+        -0.008322428882304219,
+        -0.01841702622037308,
+        0.03943394292309966
+      ],
+      "target": [
+        -0.02123204619,
+        -0.03894729167,
+        0.048836722969999996
+      ],
+      "route_length_m": 0.049067319148347416,
+      "route_min_clearance_m": 0.0007780494491242936,
+      "route_min_authority_reserve_m_s": 0.16558715878840935
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 21260613,
+      "start": [
+        -0.030809462069999998,
+        0.00276482804,
+        -0.04719573259
+      ],
+      "target": [
+        -0.01771551231523743,
+        0.025205767496254902,
+        0.0035056872072821775
+      ],
+      "route_length_m": 0.13197851291957174,
+      "route_min_clearance_m": 0.0007858348316877435,
+      "route_min_authority_reserve_m_s": 0.16089043611132442
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_001_hard_0050_endpoint08",
+      "seed": 23260611,
+      "start": [
+        -0.030809462069999998,
+        0.00276482804,
+        -0.04719573259
+      ],
+      "target": [
+        -0.02123204619,
+        -0.03894729167,
+        0.048836722969999996
+      ],
+      "route_length_m": 0.24155079640368332,
+      "route_min_clearance_m": 0.0007780494491242936,
+      "route_min_authority_reserve_m_s": 0.12267130833397333
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 23260612,
+      "start": [
+        -0.02832253039574583,
+        -0.011624414099448852,
+        0.01773072000877659
+      ],
+      "target": [
+        -0.02123204619,
+        -0.03894729167,
+        0.048836722969999996
+      ],
+      "route_length_m": 0.10607402283469312,
+      "route_min_clearance_m": 0.0007780494491242936,
+      "route_min_authority_reserve_m_s": 0.12743368641027858
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 23260613,
+      "start": [
+        -0.030809462069999998,
+        0.00276482804,
+        -0.04719573259
+      ],
+      "target": [
+        -0.019767531845411752,
+        0.0045191333470748375,
+        -0.014582631731510481
+      ],
+      "route_length_m": 0.07436912701230469,
+      "route_min_clearance_m": 0.0011971624823891582,
+      "route_min_authority_reserve_m_s": 0.12267130833397333
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_001_hard_0050_endpoint08",
+      "seed": 25260611,
+      "start": [
+        -0.030809462069999998,
+        0.00276482804,
+        -0.04719573259
+      ],
+      "target": [
+        -0.02123204619,
+        -0.03894729167,
+        0.048836722969999996
+      ],
+      "route_length_m": 0.24155079640368332,
+      "route_min_clearance_m": 0.0007780494491242936,
+      "route_min_authority_reserve_m_s": 0.08445218055662221
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 25260612,
+      "start": [
+        0.0021577499347578835,
+        -0.00301885697358117,
+        0.019886198170988956
+      ],
+      "target": [
+        -0.02123204619,
+        -0.03894729167,
+        0.048836722969999996
+      ],
+      "route_length_m": 0.18730186319615483,
+      "route_min_clearance_m": 0.0007780494491242936,
+      "route_min_authority_reserve_m_s": 0.08662253783809933
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 25260613,
+      "start": [
+        -0.030809462069999998,
+        0.00276482804,
+        -0.04719573259
+      ],
+      "target": [
+        -0.014048087588851654,
+        0.009821415924370313,
+        -0.02316929814838841
+      ],
+      "route_length_m": 0.08946962155871484,
+      "route_min_clearance_m": 0.0011971624823891582,
+      "route_min_authority_reserve_m_s": 0.08445218055662221
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.3664588011471011,
+      "median_sim_time_s": 3.8200000000000003,
+      "median_steps_to_target": 191.0,
+      "median_wall_time_s": 33.17199070804054,
+      "median_avg_control_step_time_s": 0.16881842716628714,
+      "median_path_efficiency": 0.8660418088595996,
+      "median_current_rms_A": 5.755854115877543,
+      "median_energy_proxy_A2s": 1131.182736739755,
+      "median_min_wall_clearance_mm": 0.6290667328445086,
+      "clearance_target_met_rate": 0.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.333333333333334
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 38.651384965431795,
+      "median_sim_time_s": 80.0,
+      "median_steps_to_target": 4000.0,
+      "median_wall_time_s": 611.3873748330516,
+      "median_avg_control_step_time_s": 0.14679426841934037,
+      "median_path_efficiency": 0.10481310233182364,
+      "median_current_rms_A": 7.462250658837323,
+      "median_energy_proxy_A2s": 40093.33312462901,
+      "median_min_wall_clearance_mm": 0.5687455628467888,
+      "clearance_target_met_rate": 0.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 116.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.0,
+      "median_final_error_mm": 49.341348233502394,
+      "median_sim_time_s": 80.0,
+      "median_steps_to_target": 4000.0,
+      "median_wall_time_s": 1906.4678168329992,
+      "median_avg_control_step_time_s": 0.4692778653831483,
+      "median_path_efficiency": 0.1750312677082453,
+      "median_current_rms_A": 9.805643229917612,
+      "median_energy_proxy_A2s": 69228.46018974895,
+      "median_min_wall_clearance_mm": 0.19993493055966027,
+      "clearance_target_met_rate": 0.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 100.0
+    }
+  ],
+  "paired_statistics": []
+}
