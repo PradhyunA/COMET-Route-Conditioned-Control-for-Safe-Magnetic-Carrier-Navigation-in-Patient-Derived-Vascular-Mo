@@ -3,8 +3,8 @@
   "config_path": "run_config.json",
   "paired_results_path": "paired_results.csv",
   "paired_differences_path": "paired_differences.csv",
-  "n_rows": 8,
-  "n_pairs": 4,
+  "n_rows": 10,
+  "n_pairs": 5,
   "seed_records": [
     {
       "flow_scale": 5.0,
@@ -77,52 +77,70 @@
       "route_length_m": 0.33831750443799957,
       "route_min_clearance_m": 0.0011411322063906554,
       "route_min_authority_reserve_m_s": 0.16325262480881692
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 25260613,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.10397411361440193,
+        0.11367668766563652,
+        -0.3314325277764187
+      ],
+      "route_length_m": 0.14810575716230695,
+      "route_min_clearance_m": 0.009526439258064899,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
     }
   ],
   "aggregate": [
     {
       "flow_scale": 5.0,
       "controller_key": "acbc_tuned",
-      "n": 4,
-      "success_rate": 0.5,
-      "median_final_error_mm": 11.868075871537522,
-      "median_sim_time_s": 6.0,
-      "median_steps_to_target": 300.0,
-      "early_stop_count": 2,
-      "early_stop_rate": 0.5,
+      "n": 5,
+      "success_rate": 0.4,
+      "median_final_error_mm": 16.9,
+      "median_sim_time_s": 7.2,
+      "median_steps_to_target": 360.0,
+      "early_stop_count": 3,
+      "early_stop_rate": 0.6,
       "early_stop_window_steps": 200,
       "early_stop_improvement_threshold_mm": 2.0,
-      "median_early_stop_measured_improvement_mm": 1.9045378844138905,
-      "median_wall_time_s": 1361.6670743540744,
-      "median_avg_control_step_time_s": 6.300612430301874,
-      "median_path_efficiency": 0.8824733775306361,
-      "median_current_rms_A": 10.456118552991352,
-      "median_energy_proxy_A2s": 4923.815957781002,
-      "median_min_wall_clearance_mm": 0.23064940584384278,
-      "clearance_target_met_rate": 0.0,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 1120.9356322920648,
+      "median_avg_control_step_time_s": 4.862202997343006,
+      "median_path_efficiency": 0.7649467550612722,
+      "median_current_rms_A": 10.807351699399465,
+      "median_energy_proxy_A2s": 6932.305344570686,
+      "median_min_wall_clearance_mm": 0.29576461385452407,
+      "clearance_target_met_rate": 0.2,
       "finite_re_drag_valid_rate": 1.0,
-      "mean_transitions": 55.5
+      "mean_transitions": 44.4
     },
     {
       "flow_scale": 5.0,
       "controller_key": "mpc_tuned",
-      "n": 4,
-      "success_rate": 0.25,
-      "median_final_error_mm": 31.37370774673377,
-      "median_sim_time_s": 7.88,
-      "median_steps_to_target": 394.0,
-      "early_stop_count": 3,
-      "early_stop_rate": 0.75,
+      "n": 5,
+      "success_rate": 0.2,
+      "median_final_error_mm": 37.600446817512186,
+      "median_sim_time_s": 6.0,
+      "median_steps_to_target": 300.0,
+      "early_stop_count": 4,
+      "early_stop_rate": 0.8,
       "early_stop_window_steps": 200,
       "early_stop_improvement_threshold_mm": 2.0,
-      "median_early_stop_measured_improvement_mm": 1.3739597673519608,
-      "median_wall_time_s": 2580.55753270851,
-      "median_avg_control_step_time_s": 9.012013739330673,
-      "median_path_efficiency": 0.7918209939364402,
-      "median_current_rms_A": 11.55676966506738,
-      "median_energy_proxy_A2s": 9497.056912533291,
-      "median_min_wall_clearance_mm": 0.5891562283684867,
-      "clearance_target_met_rate": 0.25,
+      "median_early_stop_measured_improvement_mm": 1.3158992142700727,
+      "median_wall_time_s": 2405.1016772500006,
+      "median_avg_control_step_time_s": 8.898149119620403,
+      "median_path_efficiency": 0.696374050418926,
+      "median_current_rms_A": 11.54355377150778,
+      "median_energy_proxy_A2s": 7235.450362837228,
+      "median_min_wall_clearance_mm": 0.6676041935219926,
+      "clearance_target_met_rate": 0.4,
       "finite_re_drag_valid_rate": 1.0,
       "mean_transitions": 0.0
     }
@@ -133,9 +151,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "reached_target",
-      "n_pairs": 4,
+      "n_pairs": 5,
       "median_paired_difference": 0.0,
-      "mean_paired_difference": 0.25,
+      "mean_paired_difference": 0.2,
       "wilcoxon_p_value": 1.0
     },
     {
@@ -143,29 +161,29 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "steps_taken",
-      "n_pairs": 4,
-      "median_paired_difference": -68.0,
-      "mean_paired_difference": -109.75,
-      "wilcoxon_p_value": 0.25
+      "n_pairs": 5,
+      "median_paired_difference": -60.0,
+      "mean_paired_difference": -74.2,
+      "wilcoxon_p_value": 0.375
     },
     {
       "flow_scale": 5.0,
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "sim_time_s",
-      "n_pairs": 4,
-      "median_paired_difference": -1.36,
-      "mean_paired_difference": -2.195,
-      "wilcoxon_p_value": 0.25
+      "n_pairs": 5,
+      "median_paired_difference": -1.2000000000000002,
+      "mean_paired_difference": -1.4839999999999998,
+      "wilcoxon_p_value": 0.375
     },
     {
       "flow_scale": 5.0,
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "wall_time_s",
-      "n_pairs": 4,
-      "median_paired_difference": -938.1580494584632,
-      "mean_paired_difference": -1087.2435465937306,
+      "n_pairs": 5,
+      "median_paired_difference": -435.1005579170305,
+      "mean_paired_difference": -869.7948372749845,
       "wilcoxon_p_value": 0.125
     },
     {
@@ -173,9 +191,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "avg_control_step_time_s",
-      "n_pairs": 4,
-      "median_paired_difference": -2.315368680023939,
-      "mean_paired_difference": -2.5368096126991815,
+      "n_pairs": 5,
+      "median_paired_difference": -0.4198719535476716,
+      "mean_paired_difference": -2.029447690159345,
       "wilcoxon_p_value": 0.375
     },
     {
@@ -183,9 +201,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "path_efficiency",
-      "n_pairs": 4,
+      "n_pairs": 5,
       "median_paired_difference": 0.0,
-      "mean_paired_difference": 0.04813926423443243,
+      "mean_paired_difference": 0.03851141138754595,
       "wilcoxon_p_value": 1.0
     },
     {
@@ -193,9 +211,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "current_rms_A",
-      "n_pairs": 4,
-      "median_paired_difference": -1.0719636373228258,
-      "mean_paired_difference": -2.277762056596889,
+      "n_pairs": 5,
+      "median_paired_difference": -0.7052589097211133,
+      "mean_paired_difference": -1.8222096452775112,
       "wilcoxon_p_value": 0.125
     },
     {
@@ -203,9 +221,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "energy_proxy_A2s",
-      "n_pairs": 4,
-      "median_paired_difference": -4274.605163332603,
-      "mean_paired_difference": -4523.888040688909,
+      "n_pairs": 5,
+      "median_paired_difference": -2518.0644256553005,
+      "mean_paired_difference": -3619.1104325511274,
       "wilcoxon_p_value": 0.125
     },
     {
@@ -213,9 +231,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "min_wall_clearance_mm",
-      "n_pairs": 4,
-      "median_paired_difference": -0.43126424091727966,
-      "mean_paired_difference": -0.6914439882356851,
+      "n_pairs": 5,
+      "median_paired_difference": -0.37183957966746856,
+      "mean_paired_difference": -0.5531551905885481,
       "wilcoxon_p_value": 0.125
     },
     {
@@ -223,9 +241,9 @@
       "baseline": "mpc_tuned",
       "comparator": "acbc_tuned",
       "metric": "min_surface_clearance_mm",
-      "n_pairs": 4,
-      "median_paired_difference": -0.43126424091727966,
-      "mean_paired_difference": -0.6914439882356851,
+      "n_pairs": 5,
+      "median_paired_difference": -0.37183957966746856,
+      "mean_paired_difference": -0.5531551905885481,
       "wilcoxon_p_value": 0.125
     }
   ]

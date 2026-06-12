@@ -19,6 +19,16 @@ flow_scale,pair_id,trial_kind,baseline,comparator,metric,baseline_value,comparat
 5.0,canonical_002_random_to_publication_target,canonical,mpc_tuned,acbc_tuned,energy_proxy_A2s,4797.130812324895,2279.066386669594,-2518.0644256553005
 5.0,canonical_002_random_to_publication_target,canonical,mpc_tuned,acbc_tuned,min_wall_clearance_mm,2.1617243905644252,0.6036509848380633,-1.5580734057263619
 5.0,canonical_002_random_to_publication_target,canonical,mpc_tuned,acbc_tuned,min_surface_clearance_mm,1.9117243905644252,0.3536509848380634,-1.5580734057263619
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,reached_target,0.0,0.0,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,steps_taken,292.0,360.0,68.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,sim_time_s,5.84,7.2,1.3600000000000003
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,wall_time_s,1120.9356322920648,1120.9356322920648,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,avg_control_step_time_s,3.8163898501549975,3.8163898501549975,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,path_efficiency,0.696374050418926,0.696374050418926,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,current_rms_A,11.484475445860188,11.484475445860188,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,energy_proxy_A2s,6932.305344570686,6932.305344570686,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,min_wall_clearance_mm,7.140158620894223,7.140158620894223,0.0
+5.0,canonical_003_publication_start_to_random,canonical,mpc_tuned,acbc_tuned,min_surface_clearance_mm,6.890158620894223,6.890158620894223,0.0
 5.0,random_0001,random,mpc_tuned,acbc_tuned,reached_target,0.0,0.0,0.0
 5.0,random_0001,random,mpc_tuned,acbc_tuned,steps_taken,300.0,240.0,-60.0
 5.0,random_0001,random,mpc_tuned,acbc_tuned,sim_time_s,6.0,4.8,-1.2000000000000002
