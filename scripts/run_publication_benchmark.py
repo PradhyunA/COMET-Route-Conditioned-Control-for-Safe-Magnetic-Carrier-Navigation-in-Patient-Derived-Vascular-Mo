@@ -61,6 +61,9 @@ from simulation_3d_pid import (
 )
 from simulation_3d_comet import save_comet_diagnostics, simulate_trial_comet
 
+BENCHMARK_EARLY_STOP_WINDOW_STEPS = 200
+BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
+
 
 MPC_DEFAULT_WEIGHTS = {
     "w_progress": 120.0,
@@ -226,6 +229,13 @@ PAIRED_HEADER = [
     "sim_time_s",
     "final_error_m",
     "final_error_mm",
+    "early_stopped",
+    "early_stop_reason",
+    "early_stop_window_steps",
+    "early_stop_improvement_threshold_m",
+    "early_stop_improvement_threshold_mm",
+    "early_stop_measured_improvement_m",
+    "early_stop_measured_improvement_mm",
     "path_length_m",
     "planned_route_length_m",
     "route_length_ratio",
@@ -618,6 +628,23 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         "sim_time_s": float(result.steps_taken * result.dt),
         "final_error_m": float(result.final_error),
         "final_error_mm": float(result.final_error * 1000.0),
+        "early_stopped": bool(getattr(result, "early_stopped", False)),
+        "early_stop_reason": getattr(result, "early_stop_reason", ""),
+        "early_stop_window_steps": int(
+            getattr(result, "early_stop_window_steps", 0) or 0
+        ),
+        "early_stop_improvement_threshold_m": float(
+            getattr(result, "early_stop_improvement_threshold_m", np.nan)
+        ),
+        "early_stop_improvement_threshold_mm": float(
+            getattr(result, "early_stop_improvement_threshold_m", np.nan) * 1000.0
+        ),
+        "early_stop_measured_improvement_m": float(
+            getattr(result, "early_stop_measured_improvement_m", np.nan)
+        ),
+        "early_stop_measured_improvement_mm": float(
+            getattr(result, "early_stop_measured_improvement_m", np.nan) * 1000.0
+        ),
         **path_metrics,
         "min_wall_clearance_m": min_clearance,
         "min_wall_clearance_mm": min_clearance * 1000.0,
@@ -671,6 +698,19 @@ def _save_trial_npz(result, metrics, output_dir):
         reached=result.reached,
         steps_taken=result.steps_taken,
         final_error=result.final_error,
+        early_stopped=getattr(result, "early_stopped", False),
+        early_stop_reason=getattr(result, "early_stop_reason", ""),
+        early_stop_window_steps=getattr(result, "early_stop_window_steps", 0),
+        early_stop_improvement_threshold_m=getattr(
+            result,
+            "early_stop_improvement_threshold_m",
+            np.nan,
+        ),
+        early_stop_measured_improvement_m=getattr(
+            result,
+            "early_stop_measured_improvement_m",
+            np.nan,
+        ),
         dt=result.dt,
         metrics=json.dumps(metrics),
     )
@@ -696,6 +736,18 @@ def _aggregate(rows):
         sim_time = np.array([r["sim_time_s"] for r in group], dtype=float)
         finite_re = np.array([bool(r["finite_re_drag_valid"]) for r in group], dtype=bool)
         steps = np.array([r["steps_taken"] for r in group], dtype=float)
+        early_stopped = np.array(
+            [bool(r.get("early_stopped", False)) for r in group],
+            dtype=bool,
+        )
+        early_stop_improvements = np.array(
+            [
+                r["early_stop_measured_improvement_mm"]
+                for r in group
+                if bool(r.get("early_stopped", False))
+            ],
+            dtype=float,
+        )
         wall_time = np.array([r["wall_time_s"] for r in group], dtype=float)
         control_step = np.array(
             [r["avg_control_step_time_s"] for r in group], dtype=float
@@ -716,6 +768,18 @@ def _aggregate(rows):
             "median_final_error_mm": float(np.median(final_error)) if len(group) else np.nan,
             "median_sim_time_s": float(np.median(sim_time)) if len(group) else np.nan,
             "median_steps_to_target": float(np.median(steps)) if len(group) else np.nan,
+            "early_stop_count": int(np.sum(early_stopped)) if len(group) else 0,
+            "early_stop_rate": float(np.mean(early_stopped)) if len(group) else 0.0,
+            "early_stop_window_steps": int(
+                group[0].get("early_stop_window_steps", 0)
+            ) if len(group) else 0,
+            "early_stop_improvement_threshold_mm": float(
+                group[0].get("early_stop_improvement_threshold_mm", np.nan)
+            ) if len(group) else np.nan,
+            "median_early_stop_measured_improvement_mm": (
+                float(np.median(early_stop_improvements))
+                if early_stop_improvements.size else np.nan
+            ),
             "median_wall_time_s": float(np.median(wall_time)) if len(group) else np.nan,
             "median_avg_control_step_time_s": (
                 float(np.median(control_step)) if len(group) else np.nan
@@ -878,14 +942,22 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     if variant.kind == "mpc":
         from simulation_3d_mpc import simulate_trial_mpc
 
+        kwargs = {
+            **common_kwargs,
+            **variant.kwargs,
+            "early_stop_enabled": True,
+            "early_stop_window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
+            "early_stop_improvement_threshold_m": (
+                BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+            ),
+        }
         return simulate_trial_mpc(
             start=pair["start"],
             target=pair["target"],
             network=network,
             trial_name=pair["pair_id"],
             rng_seed=trial_seed,
-            **common_kwargs,
-            **variant.kwargs,
+            **kwargs,
         )
 
     if variant.kind == "naive_mpc":
@@ -904,14 +976,22 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     if variant.kind == "acbc":
         from simulation_3d_acbc import simulate_trial_acbc
 
+        kwargs = {
+            **common_kwargs,
+            **variant.kwargs,
+            "early_stop_enabled": True,
+            "early_stop_window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
+            "early_stop_improvement_threshold_m": (
+                BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+            ),
+        }
         return simulate_trial_acbc(
             start=pair["start"],
             target=pair["target"],
             network=network,
             trial_name=pair["pair_id"],
             rng_seed=trial_seed,
-            **common_kwargs,
-            **variant.kwargs,
+            **kwargs,
         )
 
     if variant.kind == "comet":
@@ -1016,6 +1096,15 @@ def run_benchmark(
         "profile_key": profile_key,
         "wall_clearance_threshold_m": wall_clearance_threshold_m,
         "workers": int(max(1, workers)),
+        "early_stopping": {
+            "enabled_controller_kinds": ["mpc", "acbc"],
+            "excluded_controller_kinds": ["comet"],
+            "window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
+            "improvement_threshold_m": BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M,
+            "improvement_threshold_mm": (
+                BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M * 1000.0
+            ),
+        },
         "software": _software_metadata(),
         "profile": {
             "name": profile.name,

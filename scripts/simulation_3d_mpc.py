@@ -92,6 +92,8 @@ DEFAULT_WAYPOINT_SPACING = 0.002          # 2.0 mm
 DEFAULT_WAYPOINT_ARRIVAL_TOL = 0.0015    # 1.5 mm
 DEFAULT_MPC_WAYPOINT_LOOKAHEAD = 1
 DEFAULT_FORWARD_SEARCH_POINTS = 25
+DEFAULT_EARLY_STOP_WINDOW_STEPS = 200
+DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -422,6 +424,11 @@ def simulate_trial_mpc(
     waypoint_spacing: float = DEFAULT_WAYPOINT_SPACING,
     waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
     forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
+    early_stop_enabled: bool = False,
+    early_stop_window_steps: int = DEFAULT_EARLY_STOP_WINDOW_STEPS,
+    early_stop_improvement_threshold_m: float = (
+        DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+    ),
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -539,6 +546,13 @@ def simulate_trial_mpc(
     gantry_lateral_shift_log = []
 
     reached = False
+    early_stopped = False
+    early_stop_reason = ""
+    early_stop_measured_improvement_m = np.nan
+    early_stop_window_steps = int(early_stop_window_steps)
+    early_stop_improvement_threshold_m = float(early_stop_improvement_threshold_m)
+    best_final_target_distance = float(np.linalg.norm(particle.pos - target))
+    best_distance_history = [best_final_target_distance]
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
     converged_count = 0
@@ -651,9 +665,34 @@ def simulate_trial_mpc(
         gantry_axis_dist_log.append(device_diag["gantry_axis_dist"])
         gantry_lateral_shift_log.append(device_diag["gantry_lateral_shift"].copy())
 
+        best_final_target_distance = min(best_final_target_distance, float(distance))
+        best_distance_history.append(best_final_target_distance)
+
         if distance < tolerance:
             reached = True
             break
+
+        if (
+            early_stop_enabled
+            and early_stop_window_steps > 0
+            and len(best_distance_history) > early_stop_window_steps
+        ):
+            previous_best = best_distance_history[-early_stop_window_steps - 1]
+            improvement = previous_best - best_final_target_distance
+            if improvement < early_stop_improvement_threshold_m:
+                early_stopped = True
+                early_stop_measured_improvement_m = float(improvement)
+                early_stop_reason = (
+                    "best final-target distance improved by "
+                    f"{improvement * 1000.0:.3f} mm over "
+                    f"{early_stop_window_steps} completed steps "
+                    f"(< {early_stop_improvement_threshold_m * 1000.0:.3f} mm)"
+                )
+                print(
+                    f"  Early stopping: {early_stop_reason}",
+                    flush=True,
+                )
+                break
 
         if (step + 1) % 10 == 0:
             flow_v = flow.velocity_at(particle.pos, sim_time)
@@ -745,6 +784,11 @@ def simulate_trial_mpc(
         if len(step_time_log) > 0 else 0.0,
         max_control_step_time_s=float(np.max(step_time_log))
         if len(step_time_log) > 0 else 0.0,
+        early_stopped=early_stopped,
+        early_stop_reason=early_stop_reason,
+        early_stop_window_steps=early_stop_window_steps,
+        early_stop_improvement_threshold_m=early_stop_improvement_threshold_m,
+        early_stop_measured_improvement_m=early_stop_measured_improvement_m,
         seed=rng_seed,
         profile_name=profile.name,
         dt=dt,
@@ -758,6 +802,18 @@ def simulate_trial_mpc(
             "dt": dt,
             "steps": steps,
             "tolerance": tolerance,
+            "early_stop_enabled": bool(early_stop_enabled),
+            "early_stopped": bool(early_stopped),
+            "early_stop_reason": early_stop_reason,
+            "early_stop_window_steps": early_stop_window_steps,
+            "early_stop_improvement_threshold_m": early_stop_improvement_threshold_m,
+            "early_stop_improvement_threshold_mm": (
+                early_stop_improvement_threshold_m * 1000.0
+            ),
+            "early_stop_measured_improvement_m": early_stop_measured_improvement_m,
+            "early_stop_measured_improvement_mm": (
+                early_stop_measured_improvement_m * 1000.0
+            ),
             "coil_radius": coil_radius,
             "coil_diameter": 2.0 * coil_radius,
             "coil_length": coil_length,

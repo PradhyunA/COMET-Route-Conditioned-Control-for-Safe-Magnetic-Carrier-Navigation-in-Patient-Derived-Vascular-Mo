@@ -48,6 +48,13 @@ class TrialResult:
     avg_control_step_time_s: float = 0.0
     max_control_step_time_s: float = 0.0
 
+    # Trial-level early stopping
+    early_stopped: bool = False
+    early_stop_reason: str = ""
+    early_stop_window_steps: int = 0
+    early_stop_improvement_threshold_m: float = np.nan
+    early_stop_measured_improvement_m: float = np.nan
+
     # Metadata
     seed: int = 42
     profile_name: str = "microsphere_500um"
@@ -72,6 +79,18 @@ def print_summary(result: TrialResult):
     print(f"  Final error (m) : {result.final_error:.6f}")
     print(f"  Final error (mm): {result.final_error * 1000:.3f}")
     print(f"  Reached target  : {result.reached}")
+    print(f"  Early stopped   : {result.early_stopped}")
+    if result.early_stopped:
+        print(f"  Stop reason     : {result.early_stop_reason}")
+        print(f"  Stop window     : {result.early_stop_window_steps} steps")
+        print(
+            "  Stop threshold  : "
+            f"{result.early_stop_improvement_threshold_m * 1000:.3f} mm"
+        )
+        print(
+            "  Stop improvement: "
+            f"{result.early_stop_measured_improvement_m * 1000:.3f} mm"
+        )
     print(f"  Max current (A) : {result.max_current_used:.3f}")
     print(f"  Avg ctrl time(s): {result.avg_control_step_time_s:.4f}")
     print(f"  Wall time (s)   : {result.wall_time_s:.2f}")
@@ -96,6 +115,12 @@ CSV_HEADER = [
     "steps_taken", "sim_time_s",
     "final_error_m", "final_error_mm",
     "reached_target", "max_current_A",
+    "early_stopped", "early_stop_reason",
+    "early_stop_window_steps",
+    "early_stop_improvement_threshold_m",
+    "early_stop_improvement_threshold_mm",
+    "early_stop_measured_improvement_m",
+    "early_stop_measured_improvement_mm",
     "wall_time_s",
     "avg_control_step_time_s", "max_control_step_time_s",
     "mean_reynolds", "max_reynolds", "low_re_valid",
@@ -126,6 +151,13 @@ def save_results_csv(results: list, output_dir: str,
                 r.final_error * 1000.0,
                 r.reached,
                 r.max_current_used,
+                r.early_stopped,
+                r.early_stop_reason,
+                r.early_stop_window_steps,
+                r.early_stop_improvement_threshold_m,
+                r.early_stop_improvement_threshold_m * 1000.0,
+                r.early_stop_measured_improvement_m,
+                r.early_stop_measured_improvement_m * 1000.0,
                 r.wall_time_s,
                 r.avg_control_step_time_s,
                 r.max_control_step_time_s,

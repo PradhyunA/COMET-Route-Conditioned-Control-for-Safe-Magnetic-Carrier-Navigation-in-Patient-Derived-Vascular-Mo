@@ -95,6 +95,8 @@ DEFAULT_MAGNET_CLEARANCE = 0.04
 
 # flow_scale=5 means current baseline max v_mean 20 mm/s becomes ~100 mm/s
 DEFAULT_FLOW_SCALE = 1.0
+DEFAULT_EARLY_STOP_WINDOW_STEPS = 200
+DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
 
 
 def magnet_setup_for_network(
@@ -466,6 +468,11 @@ def simulate_trial_acbc(
     enable_authority_assessment: bool = True,
     enable_recovery: bool = True,
     enable_stall_escape: bool = True,
+    early_stop_enabled: bool = False,
+    early_stop_window_steps: int = DEFAULT_EARLY_STOP_WINDOW_STEPS,
+    early_stop_improvement_threshold_m: float = (
+        DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+    ),
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -616,6 +623,13 @@ def simulate_trial_acbc(
     acbc_log = []
 
     reached = False
+    early_stopped = False
+    early_stop_reason = ""
+    early_stop_measured_improvement_m = np.nan
+    early_stop_window_steps = int(early_stop_window_steps)
+    early_stop_improvement_threshold_m = float(early_stop_improvement_threshold_m)
+    best_final_target_distance = float(np.linalg.norm(particle.pos - target))
+    best_distance_history = [best_final_target_distance]
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
     converged_count = 0
@@ -752,9 +766,31 @@ def simulate_trial_acbc(
             "gantry_lateral_shift": _vec_or_nan(device_diag["gantry_lateral_shift"]),
         })
 
+        best_final_target_distance = min(best_final_target_distance, float(distance))
+        best_distance_history.append(best_final_target_distance)
+
         if distance < tolerance:
             reached = True
             break
+
+        if (
+            early_stop_enabled
+            and early_stop_window_steps > 0
+            and len(best_distance_history) > early_stop_window_steps
+        ):
+            previous_best = best_distance_history[-early_stop_window_steps - 1]
+            improvement = previous_best - best_final_target_distance
+            if improvement < early_stop_improvement_threshold_m:
+                early_stopped = True
+                early_stop_measured_improvement_m = float(improvement)
+                early_stop_reason = (
+                    "best final-target distance improved by "
+                    f"{improvement * 1000.0:.3f} mm over "
+                    f"{early_stop_window_steps} completed steps "
+                    f"(< {early_stop_improvement_threshold_m * 1000.0:.3f} mm)"
+                )
+                print(f"  Early stopping: {early_stop_reason}")
+                break
 
         if (step + 1) % 10 == 0:
             flow_v = flow.velocity_at(particle.pos, sim_time)
@@ -847,6 +883,11 @@ def simulate_trial_acbc(
         if len(step_time_log) > 0 else 0.0,
         max_control_step_time_s=float(np.max(step_time_log))
         if len(step_time_log) > 0 else 0.0,
+        early_stopped=early_stopped,
+        early_stop_reason=early_stop_reason,
+        early_stop_window_steps=early_stop_window_steps,
+        early_stop_improvement_threshold_m=early_stop_improvement_threshold_m,
+        early_stop_measured_improvement_m=early_stop_measured_improvement_m,
         seed=rng_seed,
         profile_name=profile.name,
         dt=dt,
@@ -860,6 +901,18 @@ def simulate_trial_acbc(
             "dt": dt,
             "steps": steps,
             "tolerance": tolerance,
+            "early_stop_enabled": bool(early_stop_enabled),
+            "early_stopped": bool(early_stopped),
+            "early_stop_reason": early_stop_reason,
+            "early_stop_window_steps": early_stop_window_steps,
+            "early_stop_improvement_threshold_m": early_stop_improvement_threshold_m,
+            "early_stop_improvement_threshold_mm": (
+                early_stop_improvement_threshold_m * 1000.0
+            ),
+            "early_stop_measured_improvement_m": early_stop_measured_improvement_m,
+            "early_stop_measured_improvement_mm": (
+                early_stop_measured_improvement_m * 1000.0
+            ),
             "coil_radius": coil_radius,
             "coil_diameter": 2.0 * coil_radius,
             "coil_length": coil_length,
