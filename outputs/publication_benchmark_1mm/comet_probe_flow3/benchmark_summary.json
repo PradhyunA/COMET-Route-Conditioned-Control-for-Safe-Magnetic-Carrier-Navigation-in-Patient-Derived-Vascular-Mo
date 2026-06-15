@@ -1,0 +1,76 @@
+{
+  "run_id": "comet_probe_flow3",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 3,
+  "n_pairs": 3,
+  "seed_records": [
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 23260610,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 23260611,
+      "start": [
+        -0.033008366324259596,
+        0.011282498312719979,
+        -0.17746219249737075
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_003_inlet_to_mid",
+      "seed": 23260612,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.031117714057301547,
+        0.05180899417919085,
+        -0.14007957242741176
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.30388097516266055,
+      "median_sim_time_s": 4.4,
+      "median_steps_to_target": 220.0,
+      "median_wall_time_s": 12.24906966695562,
+      "median_avg_control_step_time_s": 0.038582114435047665,
+      "median_path_efficiency": 0.980608412045438,
+      "median_current_rms_A": 10.708865995930054,
+      "median_energy_proxy_A2s": 4418.270262120922,
+      "median_min_wall_clearance_mm": 0.8688915517928917,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.333333333333334
+    }
+  ],
+  "paired_statistics": []
+}

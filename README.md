@@ -1,21 +1,21 @@
 # DynaMag Simulation Suite
 
-Physics-based simulation of multi-coil electromagnetic particle steering for
-magnetic drug targeting research.
+Physics-based simulation of multi-coil electromagnetic steering for magnetic
+carrier routing research.
 
 ## Overview
 
-DynaMag models a programmable 8-coil electromagnet array steering a
-superparamagnetic microsphere through a 3D workspace. The simulation
-includes:
+DynaMag models a programmable electromagnet array steering magnetic
+microspheres or larger SPION-loaded carriers through 3D workspaces and real
+vessel networks. The simulation includes:
 
-- **Regularized magnetic dipole field model** (8 corner electromagnets, softened at r < R)
+- **Regularized magnetic dipole field model** (body-scale multi-coil array, softened near sources)
 - **Superparamagnetic particle** with susceptibility + saturation crossover
 - **Schiller-Naumann drag** (nonlinear; reduces to Stokes at Re ≪ 1, valid to Re ≈ 800)
 - **Brownian thermal noise** (Stokes-Einstein diffusion)
 - **Background flow fields** (NoFlow, Uniform, Poiseuille, Pulsatile cardiac)
 - **Flow-aware MPC controller** (1-step SLSQP optimisation with flow compensation)
-- **Reynolds number tracking** and low-Re validity flagging
+- **Reynolds number tracking** with Stokes and finite-Re carrier-regime labels
 - **Adaptive substepping** with per-substep flow evaluation
 
 ## Quick Start
@@ -28,6 +28,9 @@ pip install -r requirements.txt
 
 # Run the default 3-trial MPC simulation
 python scripts/simulation_3d_mpc.py
+
+# Run the paired 1 mm publication benchmark infrastructure
+python scripts/run_publication_benchmark_1mm.py --smoke-test
 
 # Run tests
 python -m pytest tests/ -v
@@ -47,7 +50,7 @@ python -m pytest tests/ -v
 │   │   ├── flow.py                   # Background flow models (Uniform, Poiseuille, Pulsatile)
 │   │   ├── integrator.py             # Adaptive substepping with flow evaluation
 │   │   ├── controllers.py            # Flow-aware MPC controller
-│   │   ├── validation.py             # Reynolds number checks
+│   │   ├── validation.py             # Stokes / finite-Re regime checks
 │   │   ├── reporting.py              # TrialResult, CSV output
 │   │   └── plotting.py               # Consolidated plot generation
 │   ├── simulation_2d.py              # Legacy 2D (deprecated)
@@ -56,6 +59,9 @@ python -m pytest tests/ -v
 │   └── simulation_3d.py              # Legacy simplified 3D (deprecated)
 ├── scripts/                          # Executable runners and analysis tools
 │   ├── simulation_3d_mpc.py          # Primary simulation entry point (MPC)
+│   ├── simulation_3d_acbc.py         # ACBC supervisor over MPC allocator
+│   ├── run_publication_benchmark_1mm.py # Paired 1 mm ACBC/MPC benchmark
+│   ├── generate_publication_figures_1mm.py # 1 mm manuscript figures/tables
 │   ├── simulation_3d_realistic.py    # Backward-compatible wrapper
 │   ├── run_100_trials_flow.py        # 100-trial flow runner (500 µm microspheres)
 │   ├── run_50um_100trials.py         # 100-trial flow runner (50 µm microspheres)
@@ -91,6 +97,10 @@ python -m pytest tests/ -v
 | `microsphere_500um`  | 500 µm   | Default: benchtop phantom system          |
 | `microsphere_50um`   | 50 µm    | Scaled-down runs with background flow     |
 | `nanoparticle_500nm` | 500 nm   | Theoretical comparison only               |
+| `spion_carrier_1mm`  | 1 mm     | Large-vessel magnetic carrier study       |
+
+The 1 mm carrier profiles are **not nanoparticles**. Use “magnetic carrier,”
+“magnetic milliparticle,” or “large-vessel carrier” for those simulations.
 
 ## Outputs
 
@@ -102,7 +112,12 @@ Each trial produces:
 
 CSV columns include `wall_time_s`, `avg_control_step_time_s`,
 `max_control_step_time_s`, `mean_reynolds`, `max_reynolds`, `low_re_valid`,
+`stokes_regime`, `finite_re_drag_valid`, `drag_model`, `drag_regime_label`,
 `seed`, and `profile_name`. All plots and summaries are saved under `outputs/`.
+
+For 1 mm carrier studies, `low_re_valid=False` means the carrier is outside
+the creeping-flow/Stokes regime; it is not by itself a publication failure.
+The finite-Re validity field is the relevant drag-model check.
 
 ## MacBook M3 Pro (Apple Silicon) Speedup Guide
 

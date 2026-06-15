@@ -1,0 +1,259 @@
+{
+  "run_id": "replacement_comet_40Left85Right_flow5_seed20260622",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 36,
+  "n_pairs": 6,
+  "seed_records": [
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_001_medium_40Left85Right_endpoint03",
+      "seed": 25260622,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.32256882008872867,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 25260623,
+      "start": [
+        -0.11848716565706041,
+        0.13247213183305137,
+        -0.10545811826731517
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.4993832442987523,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.1632427538356035
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 25260624,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.0837246147038281,
+        0.1201792362733041,
+        -0.24825920670749005
+      ],
+      "route_length_m": 0.23309317800287052,
+      "route_min_clearance_m": 0.003594540896521883,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0001",
+      "seed": 25260625,
+      "start": [
+        -0.12223031224107532,
+        0.11093286388314476,
+        -0.2813439323639374
+      ],
+      "target": [
+        -0.084085651510497,
+        0.12215783123954121,
+        -0.20323067413695853
+      ],
+      "route_length_m": 0.22839095457026892,
+      "route_min_clearance_m": 0.002490042156586052,
+      "route_min_authority_reserve_m_s": 0.1632427538356035
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0002",
+      "seed": 25260626,
+      "start": [
+        -0.13943559984394596,
+        0.11037744070055525,
+        -0.18860415698714297
+      ],
+      "target": [
+        -0.13165601857834197,
+        0.11535352859058609,
+        -0.1603969252365656
+      ],
+      "route_length_m": 0.03185149705324344,
+      "route_min_clearance_m": 0.001723718595483432,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0003",
+      "seed": 25260627,
+      "start": [
+        -0.11544706169589355,
+        0.04413654316819416,
+        -0.3333638546470528
+      ],
+      "target": [
+        -0.08000073874359176,
+        0.11941695469437924,
+        -0.2565397381646546
+      ],
+      "route_length_m": 0.17854701547353719,
+      "route_min_clearance_m": 0.003594540896521883,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet",
+      "n": 6,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.17755954642692023,
+      "median_sim_time_s": 2.25,
+      "median_steps_to_target": 112.5,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 0,
+      "early_stop_improvement_threshold_mm": NaN,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 10.492890375026036,
+      "median_avg_control_step_time_s": 0.06927294476023264,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.576442914877177,
+      "median_energy_proxy_A2s": 2010.8072196701796,
+      "median_min_wall_clearance_mm": 0.7631439861392448,
+      "clearance_target_met_rate": 0.8333333333333334,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 5.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet_no_authority_reserve",
+      "n": 6,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.17755954642692023,
+      "median_sim_time_s": 2.25,
+      "median_steps_to_target": 112.5,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 0,
+      "early_stop_improvement_threshold_mm": NaN,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 10.497623292001663,
+      "median_avg_control_step_time_s": 0.06962082346725496,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.576442914877177,
+      "median_energy_proxy_A2s": 2010.8072196701796,
+      "median_min_wall_clearance_mm": 0.7631439861392448,
+      "clearance_target_met_rate": 0.8333333333333334,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 5.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet_no_commitment_memory",
+      "n": 6,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.17755954642692023,
+      "median_sim_time_s": 2.25,
+      "median_steps_to_target": 112.5,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 0,
+      "early_stop_improvement_threshold_mm": NaN,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 10.529103187494911,
+      "median_avg_control_step_time_s": 0.06893414233210035,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.576442914877177,
+      "median_energy_proxy_A2s": 2010.8072196701796,
+      "median_min_wall_clearance_mm": 0.7631439861392448,
+      "clearance_target_met_rate": 0.8333333333333334,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 5.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet_no_downstream_value",
+      "n": 6,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.17755954642692023,
+      "median_sim_time_s": 2.25,
+      "median_steps_to_target": 112.5,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 0,
+      "early_stop_improvement_threshold_mm": NaN,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 10.509150500001851,
+      "median_avg_control_step_time_s": 0.06904528401893383,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.576442914877177,
+      "median_energy_proxy_A2s": 2010.8072196701796,
+      "median_min_wall_clearance_mm": 0.7631439861392448,
+      "clearance_target_met_rate": 0.8333333333333334,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 5.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet_no_flow_scaled_reserve",
+      "n": 6,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.11601599305096721,
+      "median_sim_time_s": 2.23,
+      "median_steps_to_target": 111.5,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 0,
+      "early_stop_improvement_threshold_mm": NaN,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 10.053942208003718,
+      "median_avg_control_step_time_s": 0.06854189240477153,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.472710150653501,
+      "median_energy_proxy_A2s": 1915.0768158706387,
+      "median_min_wall_clearance_mm": 0.760894412243051,
+      "clearance_target_met_rate": 0.6666666666666666,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 5.666666666666667
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet_no_terminal_precision",
+      "n": 6,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.24229668278961064,
+      "median_sim_time_s": 2.2600000000000002,
+      "median_steps_to_target": 113.0,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 0,
+      "early_stop_improvement_threshold_mm": NaN,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 10.526340457960032,
+      "median_avg_control_step_time_s": 0.06897591699595344,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 9.564862458709628,
+      "median_energy_proxy_A2s": 2008.6814980933627,
+      "median_min_wall_clearance_mm": 0.7631439861392448,
+      "clearance_target_met_rate": 0.8333333333333334,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 4.0
+    }
+  ],
+  "paired_statistics": []
+}

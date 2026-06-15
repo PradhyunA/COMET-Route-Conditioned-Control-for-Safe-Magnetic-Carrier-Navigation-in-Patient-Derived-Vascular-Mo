@@ -1,0 +1,145 @@
+{
+  "run_id": "comet_pub_0050_allflows",
+  "vessel_file": "data/0050_H_CERE_H/real_vessel_segments.pkl",
+  "flow_scales": [
+    0.0,
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 7,
+  "seed": 20260609,
+  "controller_keys": [
+    "comet",
+    "comet_no_authority_reserve",
+    "comet_no_commitment_memory",
+    "comet_no_downstream_value",
+    "comet_no_terminal_precision",
+    "comet_no_flow_scaled_reserve",
+    "mpc_tuned",
+    "acbc_tuned"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_1mm",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 6,
+  "software": {
+    "python": "3.12.1 (v3.12.1:2305ca5144, Dec  7 2023, 17:23:38) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 8,
+    "numpy": "2.2.6"
+  },
+  "profile": {
+    "name": "spion_carrier_1mm_blood",
+    "diameter_m": 0.001,
+    "diameter_um": 1000.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.5
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 4000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet": {
+      "label": "COMET",
+      "kind": "comet",
+      "kwargs": {}
+    },
+    "comet_no_authority_reserve": {
+      "label": "COMET-no-authority-reserve",
+      "kind": "comet",
+      "kwargs": {
+        "authority_reserve_weight": 0.0,
+        "capture_reserve_gain": 0.0,
+        "capture_urgency_gain": 0.0,
+        "hard_commit_reserve_threshold": -1000000000.0,
+        "rescue_reserve_threshold": -1000000000.0,
+        "rescue_exit_reserve": -1000000000.0
+      }
+    },
+    "comet_no_commitment_memory": {
+      "label": "COMET-no-commitment-memory",
+      "kind": "comet",
+      "kwargs": {
+        "intent_smoothing": 0.0,
+        "min_commitment_dwell_steps": 0,
+        "branch_switch_penalty": 0.0
+      }
+    },
+    "comet_no_downstream_value": {
+      "label": "COMET-no-downstream-value",
+      "kind": "comet",
+      "kwargs": {
+        "downstream_value_weight": 0.0
+      }
+    },
+    "comet_no_terminal_precision": {
+      "label": "COMET-no-terminal-precision-servo",
+      "kind": "comet",
+      "kwargs": {
+        "terminal_precision_distance": 0.0,
+        "terminal_precision_kp": 0.0,
+        "terminal_precision_kv": 0.0
+      }
+    },
+    "comet_no_flow_scaled_reserve": {
+      "label": "COMET-no-flow-scaled-reserve",
+      "kind": "comet",
+      "kwargs": {
+        "wrong_branch_flow_penalty_gain": 0.0,
+        "flow_commitment_reaction_time": 0.0,
+        "max_flow_commitment_extension": 0.0,
+        "flow_branch_adaptation_min_scale": 1000000000.0,
+        "terminal_feasibility_min_flow_scale": 1000000000.0,
+        "rescue_min_flow_scale": 1000000000.0
+      }
+    },
+    "mpc_tuned": {
+      "label": "MPC-tuned",
+      "kind": "mpc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    },
+    "acbc_tuned": {
+      "label": "ACBC-tuned",
+      "kind": "acbc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    }
+  },
+  "git": {
+    "commit": "28fa0ddf72b07ff973e0a0c27c9a100dcd940264",
+    "branch": "fair-mpc-baseline-v1",
+    "status_short": ""
+  }
+}

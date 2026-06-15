@@ -1,0 +1,7 @@
+authority_reserve_weight,branch_switch_penalty,capture_reserve_gain,capture_urgency_gain,controller_key,downstream_value_weight,flow_branch_adaptation_min_scale,flow_commitment_reaction_time,hard_commit_reserve_threshold,intent_smoothing,kind,label,max_flow_commitment_extension,min_commitment_dwell_steps,rescue_exit_reserve,rescue_min_flow_scale,rescue_reserve_threshold,terminal_feasibility_min_flow_scale,terminal_precision_distance,terminal_precision_kp,terminal_precision_kv,wrong_branch_flow_penalty_gain
+,,,,comet,,,,,,comet,COMET,,,,,,,,,,
+0.0,,0.0,0.0,comet_no_authority_reserve,,,,-1000000000.0,,comet,COMET-no-authority-reserve,,,-1000000000.0,,-1000000000.0,,,,,
+,0.0,,,comet_no_commitment_memory,,,,,0.0,comet,COMET-no-commitment-memory,,0,,,,,,,,
+,,,,comet_no_downstream_value,0.0,,,,,comet,COMET-no-downstream-value,,,,,,,,,,
+,,,,comet_no_terminal_precision,,,,,,comet,COMET-no-terminal-precision-servo,,,,,,,0.0,0.0,0.0,
+,,,,comet_no_flow_scaled_reserve,,1000000000.0,0.0,,,comet,COMET-no-flow-scaled-reserve,0.0,,,1000000000.0,,1000000000.0,,,,0.0

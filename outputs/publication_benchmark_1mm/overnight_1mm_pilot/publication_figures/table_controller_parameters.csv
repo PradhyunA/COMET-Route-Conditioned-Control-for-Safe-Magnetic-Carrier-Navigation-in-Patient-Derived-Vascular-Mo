@@ -1,0 +1,5 @@
+controller_key,kind,label,w_align,w_curr,w_dist,w_edge,w_overshoot,w_progress,w_route,w_smooth
+mpc_default,mpc,MPC-default,8.0,1e-05,1.0,50.0,2.0,120.0,0.0,0.0001
+mpc_tuned,mpc,MPC-tuned,35.0,1e-07,2.0,250.0,8.0,450.0,15.0,1e-06
+acbc_same_weights,acbc,ACBC-same-weights,8.0,1e-05,1.0,50.0,2.0,120.0,0.0,0.0001
+acbc_tuned,acbc,ACBC-tuned,35.0,1e-07,2.0,250.0,8.0,450.0,15.0,1e-06

@@ -1,0 +1,56 @@
+{
+  "run_id": "acbc_tuned_trial2_500um_adaptive_enclosing_flow1",
+  "vessel_file": "real_vessel_segments_cm_corrected.pkl",
+  "flow_scales": [
+    1.0
+  ],
+  "n_random_trials": 0,
+  "seed": 20260609,
+  "controller_keys": [
+    "acbc_tuned"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 4000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry"
+  },
+  "variants": {
+    "acbc_tuned": {
+      "label": "ACBC-tuned",
+      "kind": "acbc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    }
+  },
+  "git": {
+    "commit": "5b81d14233bafc8038928391add801eecf929648",
+    "branch": "acbc-trial2-only-linear-gantry",
+    "status_short": "M scripts/run_publication_benchmark_1mm.py\n M scripts/simulation_3d_acbc.py\n?? outputs/publication_benchmark_500um/\n?? overnight_1mm_pilot_results.zip\n?? saved_runs/ACBC_trial2_500um_no_lateral_shift.log\n?? saved_runs/acbc_direct_trial2_500um_linear_enclosing_flow1.log\n?? saved_runs/acbc_tuned_trial2_500um_adaptive_enclosing_flow1.log\n?? saved_runs/acbc_tuned_trial2_500um_linear_enclosing_flow1.log"
+  }
+}

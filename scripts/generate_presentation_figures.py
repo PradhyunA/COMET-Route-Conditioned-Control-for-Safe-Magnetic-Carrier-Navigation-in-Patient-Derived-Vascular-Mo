@@ -65,7 +65,7 @@ ACCENT_4  = "#9467bd"   # purple
 ACCENT_5  = "#d62728"   # red
 ACCENT_6  = "#b8860b"   # dark goldenrod
 WHITE     = "#222222"   # re-used as "emphasis" text color (dark on white bg)
-TOLERANCE_MM = 3.0
+TOLERANCE_MM = 0.5
 LOW_RE = 0.1
 
 

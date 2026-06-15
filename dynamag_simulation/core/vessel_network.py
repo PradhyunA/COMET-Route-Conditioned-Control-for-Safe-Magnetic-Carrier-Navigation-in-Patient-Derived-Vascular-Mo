@@ -710,7 +710,7 @@ class VesselNetwork:
         self,
         start_pos: np.ndarray,
         target_pos: np.ndarray,
-        arrival_tol: float = 0.003,
+        arrival_tol: float = 0.0005,
     ):
         """
         Returns a callable next_waypoint(current_pos).

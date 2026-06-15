@@ -1,0 +1,126 @@
+[m3pro_cm_corrected] submit flow=1 pair=canonical_001_inlet_to_outlet controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=canonical_001_inlet_to_outlet controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=canonical_002_mid_to_outlet controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=canonical_002_mid_to_outlet controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=canonical_003_inlet_to_mid controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=canonical_003_inlet_to_mid controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0001 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0001 controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0002 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0002 controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0003 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0003 controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0004 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0004 controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0005 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0005 controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0006 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0006 controller=acbc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0007 controller=mpc_tuned
+[m3pro_cm_corrected] submit flow=1 pair=random_0007 controller=acbc_tuned
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    Raw waypoints: 2127, sparse waypoints: 230
+      wp1: [  69.8   18.  -429. ] mm
+      wp2: [  69.7   17.8 -426.9] mm
+      wp3: [  69.7   17.4 -424.9] mm
+      wp4: [  69.7   16.8 -422.6] mm
+      wp5: [  69.4   16.1 -420.6] mm
+      wp6: [  68.8   15.4 -418.5] mm
+      wp7: [  68.    14.9 -416.5] mm
+      wp8: [  67.    14.4 -414.7] mm
+      wp9: [  66.   14. -413.] mm
+      wp10: [  65.    13.8 -411.2] mm
+      ...
+      wp230: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    Raw waypoints: 1598, sparse waypoints: 181
+      wp1: [ -53.7  -40.7 -345.6] mm
+      wp2: [ -51.9  -40.4 -344.5] mm
+      wp3: [ -49.9  -40.7 -343.1] mm
+      wp4: [ -48.6  -40.6 -341.4] mm
+      wp5: [ -47.4  -39.6 -339.7] mm
+      wp6: [ -46.   -38.5 -338.3] mm
+      wp7: [ -45.   -37.1 -337.1] mm
+      wp8: [ -43.9  -35.4 -336.1] mm
+      wp9: [ -43.3  -33.6 -335.5] mm
+      wp10: [ -43.3  -31.5 -335.4] mm
+      ...
+      wp181: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -55.1  -41.3 -347. ] mm
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    Raw waypoints: 1062, sparse waypoints: 84
+      wp1: [  -0.4   20.  -294.5] mm
+      wp2: [  -2.2   19.9 -293.2] mm
+      wp3: [  -3.7   20.3 -291.8] mm
+      wp4: [  -5.    20.5 -290.1] mm
+      wp5: [  -6.4   20.8 -288.4] mm
+      wp6: [  -7.3   20.9 -286.6] mm
+      wp7: [  -8.4   20.9 -284.7] mm
+      wp8: [ -10.    20.3 -283.3] mm
+      wp9: [ -11.3   19.9 -281.6] mm
+      wp10: [ -12.    19.6 -279.5] mm
+      ...
+      wp84: [ -64.2  -19.3 -340.3] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[   1.4   20.1 -295.5] mm
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    Raw waypoints: 2211, sparse waypoints: 215
+      wp1: [  69.8   18.  -429. ] mm
+      wp2: [  69.7   17.8 -426.9] mm
+      wp3: [  69.7   17.4 -424.9] mm
+      wp4: [  69.7   16.8 -422.6] mm
+      wp5: [  69.4   16.1 -420.6] mm
+      wp6: [  68.8   15.4 -418.5] mm
+      wp7: [  68.    14.9 -416.5] mm
+      wp8: [  67.    14.4 -414.7] mm
+      wp9: [  66.   14. -413.] mm
+      wp10: [  65.    13.8 -411.2] mm
+      ...
+      wp215: [   6.5   29.  -136.4] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  step   10/4000  final_dist=369.3mm  wp=19/230  best_wp=18/230  lookahead=20/230  wp_dist=2.02mm  wall=2.93mm  |F|=4.18e-05N  |B|=5.41e-02T  |I|=16.0A  v=217.84mm/s  flow=7.69mm/s  Re=6.85e+01  lat=4.6mm
+  step   10/4000  final_dist=262.0mm  wp=19/215  best_wp=18/215  lookahead=20/215  wp_dist=2.02mm  wall=2.93mm  |F|=4.18e-05N  |B|=5.18e-02T  |I|=16.0A  v=217.84mm/s  flow=7.69mm/s  Re=6.85e+01  lat=7.9mm
+  step   10/4000  final_dist=279.3mm  wp=19/181  best_wp=18/181  lookahead=20/181  wp_dist=2.27mm  wall=2.59mm  |F|=4.19e-05N  |B|=5.12e-02T  |I|=14.3A  v=219.99mm/s  flow=6.86mm/s  Re=6.85e+01  lat=19.1mm
+  step   20/4000  final_dist=341.9mm  wp=39/230  best_wp=38/230  lookahead=40/230  wp_dist=2.55mm  wall=3.55mm  |F|=5.02e-05N  |B|=6.73e-02T  |I|=16.0A  v=245.97mm/s  flow=9.10mm/s  Re=7.73e+01  lat=22.2mm
+  step   20/4000  final_dist=244.4mm  wp=39/215  best_wp=38/215  lookahead=40/215  wp_dist=2.55mm  wall=3.55mm  |F|=5.02e-05N  |B|=6.73e-02T  |I|=16.0A  v=245.97mm/s  flow=9.10mm/s  Re=7.73e+01  lat=34.1mm
+  step   20/4000  final_dist=278.8mm  wp=39/181  best_wp=38/181  lookahead=40/181  wp_dist=2.45mm  wall=2.44mm  |F|=4.77e-05N  |B|=5.57e-02T  |I|=14.3A  v=240.37mm/s  flow=6.38mm/s  Re=7.48e+01  lat=48.1mm
+  step   10/4000  final_dist=87.6mm  wp=19/84  best_wp=18/84  lookahead=20/84  wp_dist=2.17mm  wall=2.30mm  |F|=3.46e-05N  |B|=5.11e-02T  |I|=16.0A  v=207.23mm/s  flow=6.20mm/s  Re=6.03e+01  lat=26.3mm
+  step   30/4000  final_dist=304.3mm  wp=59/230  best_wp=58/230  lookahead=60/230  wp_dist=2.01mm  wall=1.52mm  |F|=3.57e-05N  |B|=4.38e-02T  |I|=16.0A  v=200.47mm/s  flow=3.26mm/s  Re=6.17e+01  lat=24.7mm
+  step   30/4000  final_dist=209.5mm  wp=59/215  best_wp=58/215  lookahead=60/215  wp_dist=2.01mm  wall=1.52mm  |F|=3.57e-05N  |B|=4.52e-02T  |I|=16.0A  v=200.47mm/s  flow=3.26mm/s  Re=6.17e+01  lat=43.5mm
+  step   30/4000  final_dist=253.4mm  wp=59/181  best_wp=58/181  lookahead=60/181  wp_dist=2.12mm  wall=3.47mm  |F|=4.35e-05N  |B|=4.32e-02T  |I|=16.0A  v=223.75mm/s  flow=7.47mm/s  Re=7.03e+01  lat=49.2mm
+  step   20/4000  final_dist=67.1mm  wp=39/84  best_wp=38/84  lookahead=40/84  wp_dist=2.09mm  wall=3.26mm  |F|=3.43e-05N  |B|=4.56e-02T  |I|=12.1A  v=205.97mm/s  flow=8.29mm/s  Re=6.01e+01  lat=9.2mm
+  step   40/4000  final_dist=174.2mm  wp=79/215  best_wp=78/215  lookahead=80/215  wp_dist=2.11mm  wall=4.33mm  |F|=3.90e-05N  |B|=4.42e-02T  |I|=16.0A  v=207.41mm/s  flow=8.51mm/s  Re=6.53e+01  lat=39.9mm
+  step   40/4000  final_dist=270.9mm  wp=79/230  best_wp=78/230  lookahead=80/230  wp_dist=2.11mm  wall=4.33mm  |F|=3.90e-05N  |B|=4.79e-02T  |I|=16.0A  v=207.40mm/s  flow=8.51mm/s  Re=6.53e+01  lat=15.7mm
+  step   30/4000  final_dist=42.8mm  wp=59/84  best_wp=58/84  lookahead=60/84  wp_dist=2.13mm  wall=2.48mm  |F|=3.63e-05N  |B|=4.31e-02T  |I|=16.0A  v=211.26mm/s  flow=5.31mm/s  Re=6.24e+01  lat=12.6mm
+  step   50/4000  final_dist=269.3mm  wp=99/230  best_wp=98/230  lookahead=100/230  wp_dist=2.01mm  wall=2.37mm  |F|=3.69e-05N  |B|=4.64e-02T  |I|=16.0A  v=202.35mm/s  flow=5.38mm/s  Re=6.30e+01  lat=20.9mm
+  step   50/4000  final_dist=161.6mm  wp=99/215  best_wp=98/215  lookahead=100/215  wp_dist=2.01mm  wall=2.37mm  |F|=3.69e-05N  |B|=4.74e-02T  |I|=16.0A  v=202.35mm/s  flow=5.38mm/s  Re=6.30e+01  lat=22.4mm
+  step   40/4000  final_dist=224.4mm  wp=79/181  best_wp=78/181  lookahead=80/181  wp_dist=2.01mm  wall=4.65mm  |F|=4.39e-05N  |B|=4.77e-02T  |I|=16.0A  v=224.98mm/s  flow=9.17mm/s  Re=7.08e+01  lat=64.7mm
+  step   40/4000  final_dist=7.1mm  wp=79/84  best_wp=78/84  lookahead=80/84  wp_dist=2.08mm  wall=3.13mm  |F|=3.44e-05N  |B|=5.06e-02T  |I|=16.0A  v=204.94mm/s  flow=6.17mm/s  Re=6.01e+01  lat=6.5mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.1C
+  Gantry: mean_particle_dist=2.3mm, max_lateral=27.4mm
+[m3pro_cm_corrected] done flow=1 pair=random_0001 controller=mpc_tuned
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    Raw waypoints: 768, sparse waypoints: 101
+      wp1: [-19.9 -23.4 -96.1] mm
+      wp2: [-19.  -22.2 -97.8] mm
+      wp3: [-18.1 -21.  -99.3] mm
+      wp4: [ -17.1  -19.6 -100.7] mm
+      wp5: [ -16.3  -17.9 -102.2] mm
+      wp6: [ -15.4  -15.8 -104. ] mm
+      wp7: [ -14.2  -14.5 -106.1] mm
+      wp8: [ -13.5  -13.4 -108.1] mm
+      wp9: [ -12.7  -12.6 -109.8] mm
+      wp10: [ -11.9  -11.8 -111.6] mm
+      ...
+      wp101: [ -22.2    4.4 -296.7] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-21.4 -24.6 -93.7] mm
+  step   60/4000  final_dist=240.6mm  wp=119/230  best_wp=118/230  lookahead=120/230  wp_dist=2.14mm  wall=4.28mm  |F|=3.98e-05N  |B|=5.07e-02T  |I|=16.0A  v=209.07mm/s  flow=11.31mm/s  Re=6.62e+01  lat=39.2mm
+  step   60/4000  final_dist=137.5mm  wp=119/215  best_wp=118/215  lookahead=120/215  wp_dist=2.14mm  wall=4.28mm  |F|=3.98e-05N  |B|=4.96e-02T  |I|=16.0A  v=209.07mm/s  flow=11.31mm/s  Re=6.62e+01  lat=41.1mm
+  step   50/4000  final_dist=179.1mm  wp=99/181  best_wp=98/181  lookahead=100/181  wp_dist=5.10mm  wall=8.25mm  |F|=7.63e-05N  |B|=5.65e-02T  |I|=16.0A  v=312.75mm/s  flow=18.85mm/s  Re=1.02e+02  lat=64.4mm
+[m3pro_cm_corrected] done flow=1 pair=random_0001 controller=acbc_tuned

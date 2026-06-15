@@ -15,7 +15,7 @@ import time
 
 import numpy as np
 
-from dynamag_simulation.core.constants import HALF, TEST_RANGE
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE, HALF, TEST_RANGE
 from dynamag_simulation.core.profiles import MICROSPHERE_500UM
 from dynamag_simulation.core.workspace import Workspace3D
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
@@ -68,7 +68,7 @@ def run_100_trials_with_flow(
     seed: int = 42,
     steps: int = 3000,
     dt: float = 0.02,
-    tolerance: float = 0.003,
+    tolerance: float = DEFAULT_TARGET_TOLERANCE,
     verbose: bool = True,
 ):
     """
@@ -172,6 +172,6 @@ if __name__ == "__main__":
         seed=42,
         steps=3000,
         dt=0.02,
-        tolerance=0.003,
+        tolerance=DEFAULT_TARGET_TOLERANCE,
         verbose=True,
     )

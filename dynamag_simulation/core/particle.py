@@ -41,18 +41,27 @@ class MagneticParticle3D:
         self.profile = profile
         self.radius = profile.diameter / 2.0
         self.volume = (4.0 / 3.0) * PI * self.radius ** 3
+        self.magnetic_volume = self.volume * profile.magnetic_loading_fraction
 
         self.chi_eff = profile.chi_eff
         self.M_sat = profile.M_sat
         self.B_sat = MU_0 * self.M_sat / self.chi_eff
 
-        self.force_prefactor_linear = self.volume * self.chi_eff / (2.0 * MU_0)
-        self.force_prefactor_sat = self.volume * self.M_sat
+        self.force_prefactor_linear = (
+            self.magnetic_volume * self.chi_eff / (2.0 * MU_0)
+        )
+        self.force_prefactor_sat = self.magnetic_volume * self.M_sat
 
         self.eta = profile.fluid_viscosity
         self.rho = profile.fluid_density
         self.diameter = profile.diameter
-        self.drag_stokes = 6.0 * PI * self.eta * self.radius
+        self.drag_stokes = (
+            6.0
+            * PI
+            * self.eta
+            * self.radius
+            * profile.hydrodynamic_drag_multiplier
+        )
 
         # Keep .drag as Stokes value for backward compat & diffusion calc
         self.drag = self.drag_stokes

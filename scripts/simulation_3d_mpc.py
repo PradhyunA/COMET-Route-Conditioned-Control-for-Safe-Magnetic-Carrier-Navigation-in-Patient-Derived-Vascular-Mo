@@ -23,14 +23,19 @@ Important:
         - same final-target tolerance
 
 Baseline behavior:
-    MPC tracks dense local waypoints using continuous_mpc_controller().
+    MPC tracks local route waypoints using continuous_mpc_controller().
+    Route-resolution arguments are exposed so MPC and COMET can be
+    compared under the same waypoint discretization.
     ACBC should be compared against this under the same physics.
 
 Recommended run:
     python -u scripts/simulation_3d_mpc.py \
       --only-trial trial_2_mid_to_outlet \
       --flow-scale 5 \
-      2>&1 | tee saved_runs/MPC_trial2_1mm_reasonable_magnets_flow5x.log
+      --waypoint-spacing 0.002 \
+      --waypoint-arrival-tol 0.0015 \
+      --forward-search-points 25 \
+      2>&1 | tee saved_runs/MPC_route_resolution_2mm_flow5x.log
 """
 
 import os
@@ -43,6 +48,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import numpy as np
 
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.profiles import PhysicalProfile, SPION_CARRIER_1MM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
@@ -78,6 +84,16 @@ DEFAULT_MAGNET_CLEARANCE = 0.04
 
 # flow_scale=5 makes baseline max v_mean 20 mm/s become ~100 mm/s.
 DEFAULT_FLOW_SCALE = 5.0
+
+# Fair route-resolution defaults used for route-discretization sensitivity.
+# These are intentionally coarser than the old 1.0 mm / 50-search setting,
+# but still give every controller the same planned centerline route.
+DEFAULT_WAYPOINT_SPACING = 0.002          # 2.0 mm
+DEFAULT_WAYPOINT_ARRIVAL_TOL = 0.0015    # 1.5 mm
+DEFAULT_MPC_WAYPOINT_LOOKAHEAD = 1
+DEFAULT_FORWARD_SEARCH_POINTS = 25
+DEFAULT_EARLY_STOP_WINDOW_STEPS = 200
+DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -376,7 +392,7 @@ def simulate_trial_mpc(
     trial_name: str = "trial",
     dt: float = 0.02,
     steps: int = 4000,
-    tolerance: float = 0.003,
+    tolerance: float = DEFAULT_TARGET_TOLERANCE,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
     core_radius: float = FIXED_CORE_RADIUS,
@@ -393,6 +409,7 @@ def simulate_trial_mpc(
     profile: PhysicalProfile = SPION_CARRIER_1MM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
+    wall_clearance_threshold_m: float = 0.0007,
     # Baseline MPC weights. These are intentionally simpler than ACBC.
     w_progress: float = 120.0,
     w_align: float = 8.0,
@@ -401,11 +418,17 @@ def simulate_trial_mpc(
     w_smooth: float = 1e-4,
     w_edge: float = 50.0,
     w_overshoot: float = 2.0,
+    w_route: float = 0.0,
     # Dense local waypoint baseline.
-    waypoint_arrival_tol: float = 0.001,
-    waypoint_spacing: float = 0.001,
-    waypoint_lookahead: int = 1,
-    forward_search_points: int = 50,
+    waypoint_arrival_tol: float = DEFAULT_WAYPOINT_ARRIVAL_TOL,
+    waypoint_spacing: float = DEFAULT_WAYPOINT_SPACING,
+    waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
+    forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
+    early_stop_enabled: bool = False,
+    early_stop_window_steps: int = DEFAULT_EARLY_STOP_WINDOW_STEPS,
+    early_stop_improvement_threshold_m: float = (
+        DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+    ),
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -523,6 +546,13 @@ def simulate_trial_mpc(
     gantry_lateral_shift_log = []
 
     reached = False
+    early_stopped = False
+    early_stop_reason = ""
+    early_stop_measured_improvement_m = np.nan
+    early_stop_window_steps = int(early_stop_window_steps)
+    early_stop_improvement_threshold_m = float(early_stop_improvement_threshold_m)
+    best_final_target_distance = float(np.linalg.norm(particle.pos - target))
+    best_distance_history = [best_final_target_distance]
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
     converged_count = 0
@@ -545,6 +575,21 @@ def simulate_trial_mpc(
 
         current_target = navigator(particle.pos)
 
+        route_tangent = None
+        nav_waypoints = getattr(navigator, "waypoints", None)
+        if nav_waypoints is not None and len(nav_waypoints) > 1:
+            nav_idx = getattr(navigator, "current_idx", 0)
+            tidx = min(nav_idx, len(nav_waypoints) - 1)
+            tidx_next = min(tidx + 3, len(nav_waypoints) - 1)
+            if tidx_next > tidx:
+                rt = (
+                    np.asarray(nav_waypoints[tidx_next], dtype=float)
+                    - np.asarray(nav_waypoints[tidx], dtype=float)
+                )
+                rtn = np.linalg.norm(rt)
+                if rtn > 1e-10:
+                    route_tangent = rt / rtn
+
         best_currents, best_force, best_cost, converged = continuous_mpc_controller(
             particle=particle,
             particle_pos=particle.pos,
@@ -561,6 +606,9 @@ def simulate_trial_mpc(
             w_smooth=w_smooth,
             w_edge=w_edge,
             w_overshoot=w_overshoot,
+            w_route=w_route,
+            route_tangent=route_tangent,
+            wall_buffer_m=wall_clearance_threshold_m,
             flow=flow,
             sim_time=sim_time,
         )
@@ -617,9 +665,34 @@ def simulate_trial_mpc(
         gantry_axis_dist_log.append(device_diag["gantry_axis_dist"])
         gantry_lateral_shift_log.append(device_diag["gantry_lateral_shift"].copy())
 
+        best_final_target_distance = min(best_final_target_distance, float(distance))
+        best_distance_history.append(best_final_target_distance)
+
         if distance < tolerance:
             reached = True
             break
+
+        if (
+            early_stop_enabled
+            and early_stop_window_steps > 0
+            and len(best_distance_history) > early_stop_window_steps
+        ):
+            previous_best = best_distance_history[-early_stop_window_steps - 1]
+            improvement = previous_best - best_final_target_distance
+            if improvement < early_stop_improvement_threshold_m:
+                early_stopped = True
+                early_stop_measured_improvement_m = float(improvement)
+                early_stop_reason = (
+                    "best final-target distance improved by "
+                    f"{improvement * 1000.0:.3f} mm over "
+                    f"{early_stop_window_steps} completed steps "
+                    f"(< {early_stop_improvement_threshold_m * 1000.0:.3f} mm)"
+                )
+                print(
+                    f"  Early stopping: {early_stop_reason}",
+                    flush=True,
+                )
+                break
 
         if (step + 1) % 10 == 0:
             flow_v = flow.velocity_at(particle.pos, sim_time)
@@ -702,11 +775,20 @@ def simulate_trial_mpc(
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
+        stokes_regime=re_stats["stokes_regime"],
+        finite_re_drag_valid=re_stats["finite_re_drag_valid"],
+        drag_model=re_stats["drag_model"],
+        drag_regime_label=re_stats["drag_regime_label"],
         wall_time_s=wall_end - wall_start,
         avg_control_step_time_s=float(np.mean(step_time_log))
         if len(step_time_log) > 0 else 0.0,
         max_control_step_time_s=float(np.max(step_time_log))
         if len(step_time_log) > 0 else 0.0,
+        early_stopped=early_stopped,
+        early_stop_reason=early_stop_reason,
+        early_stop_window_steps=early_stop_window_steps,
+        early_stop_improvement_threshold_m=early_stop_improvement_threshold_m,
+        early_stop_measured_improvement_m=early_stop_measured_improvement_m,
         seed=rng_seed,
         profile_name=profile.name,
         dt=dt,
@@ -720,6 +802,18 @@ def simulate_trial_mpc(
             "dt": dt,
             "steps": steps,
             "tolerance": tolerance,
+            "early_stop_enabled": bool(early_stop_enabled),
+            "early_stopped": bool(early_stopped),
+            "early_stop_reason": early_stop_reason,
+            "early_stop_window_steps": early_stop_window_steps,
+            "early_stop_improvement_threshold_m": early_stop_improvement_threshold_m,
+            "early_stop_improvement_threshold_mm": (
+                early_stop_improvement_threshold_m * 1000.0
+            ),
+            "early_stop_measured_improvement_m": early_stop_measured_improvement_m,
+            "early_stop_measured_improvement_mm": (
+                early_stop_measured_improvement_m * 1000.0
+            ),
             "coil_radius": coil_radius,
             "coil_diameter": 2.0 * coil_radius,
             "coil_length": coil_length,
@@ -747,6 +841,7 @@ def simulate_trial_mpc(
             "particle_diameter_m": profile.diameter,
             "particle_diameter_mm": profile.diameter * 1000.0,
             "max_substep_disp": max_substep_disp,
+            "wall_clearance_threshold_m": wall_clearance_threshold_m,
             "vessel_network": network.params_dict(),
             "low_level_convergence_rate": low_level_convergence_rate,
             "navigator_arrival_tol": getattr(navigator, "arrival_tol", None),
@@ -762,6 +857,7 @@ def simulate_trial_mpc(
             "w_smooth": w_smooth,
             "w_edge": w_edge,
             "w_overshoot": w_overshoot,
+            "w_route": w_route,
             **hardware_diag,
         },
     )
@@ -807,10 +903,10 @@ def run_all_trials(
     lateral_gain: float = LATERAL_GAIN,
     only_trial: str | None = None,
     flow_scale: float = DEFAULT_FLOW_SCALE,
-    waypoint_spacing: float = 0.001,
-    waypoint_arrival_tol: float = 0.001,
-    waypoint_lookahead: int = 1,
-    forward_search_points: int = 50,
+    waypoint_spacing: float = DEFAULT_WAYPOINT_SPACING,
+    waypoint_arrival_tol: float = DEFAULT_WAYPOINT_ARRIVAL_TOL,
+    waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
+    forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
 ):
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -963,10 +1059,10 @@ if __name__ == "__main__":
     parser.add_argument("--max-lateral-shift", type=float, default=MAX_LATERAL_SHIFT)
     parser.add_argument("--lateral-gain", type=float, default=LATERAL_GAIN)
     parser.add_argument("--flow-scale", type=float, default=DEFAULT_FLOW_SCALE)
-    parser.add_argument("--waypoint-spacing", type=float, default=0.001)
-    parser.add_argument("--waypoint-arrival-tol", type=float, default=0.001)
-    parser.add_argument("--waypoint-lookahead", type=int, default=1)
-    parser.add_argument("--forward-search-points", type=int, default=50)
+    parser.add_argument("--waypoint-spacing", type=float, default=DEFAULT_WAYPOINT_SPACING)
+    parser.add_argument("--waypoint-arrival-tol", type=float, default=DEFAULT_WAYPOINT_ARRIVAL_TOL)
+    parser.add_argument("--waypoint-lookahead", type=int, default=DEFAULT_MPC_WAYPOINT_LOOKAHEAD)
+    parser.add_argument("--forward-search-points", type=int, default=DEFAULT_FORWARD_SEARCH_POINTS)
     parser.add_argument(
         "--only-trial",
         default=None,

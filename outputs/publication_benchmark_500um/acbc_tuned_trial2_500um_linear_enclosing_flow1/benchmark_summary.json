@@ -1,0 +1,37 @@
+{
+  "run_id": "acbc_tuned_trial2_500um_linear_enclosing_flow1",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "n_rows": 1,
+  "n_pairs": 1,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 21260609,
+      "start": [
+        -0.055085677707460194,
+        -0.04125857063974653,
+        -0.34702631252697536
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "acbc_tuned",
+      "n": 1,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.021798701647404634,
+      "median_sim_time_s": 6.24,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 56.0
+    }
+  ],
+  "paired_statistics": []
+}

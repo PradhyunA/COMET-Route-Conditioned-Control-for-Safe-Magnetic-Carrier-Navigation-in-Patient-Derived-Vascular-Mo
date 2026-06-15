@@ -22,7 +22,7 @@ import json
 
 import numpy as np
 
-from dynamag_simulation.core.constants import HALF
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE, HALF
 from dynamag_simulation.core.profiles import MICROSPHERE_500UM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.reporting import print_summary, save_results_csv
@@ -193,8 +193,8 @@ def main():
                         help="Max steps per trial (default: 1500)")
     parser.add_argument("--dt", type=float, default=0.02,
                         help="Timestep in seconds (default: 0.02)")
-    parser.add_argument("--tolerance", type=float, default=0.003,
-                        help="Target tolerance in meters (default: 0.003)")
+    parser.add_argument("--tolerance", type=float, default=DEFAULT_TARGET_TOLERANCE,
+                        help="Target tolerance in meters (default: 0.0005)")
     parser.add_argument("--edge", type=float, default=DEFAULT_EDGE,
                         help="Start/target range in meters (default: 0.04)")
     parser.add_argument("--base-seed", type=int, default=2024,

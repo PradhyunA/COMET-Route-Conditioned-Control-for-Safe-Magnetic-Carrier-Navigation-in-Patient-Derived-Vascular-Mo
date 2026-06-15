@@ -1,0 +1,58 @@
+{
+  "run_id": "comet_40Left85Right_flow5_topup",
+  "vessel_file": "data/vessels/aortic_root_cerebral_40Left85Right/real_vessel_segments.pkl",
+  "flow_scales": [
+    5.0
+  ],
+  "n_random_trials": 1,
+  "seed": 20260611,
+  "controller_keys": [
+    "comet"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 6,
+  "software": {
+    "python": "3.13.13 | packaged by Anaconda, Inc. | (main, Apr 14 2026, 06:14:06) [Clang 20.1.8 ]",
+    "platform": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 8,
+    "numpy": "2.4.6"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 4000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet": {
+      "label": "COMET",
+      "kind": "comet",
+      "kwargs": {}
+    }
+  },
+  "git": {
+    "commit": "7312988bc43663e292211130d2b34e561603e183",
+    "branch": "fair-mpc-baseline-v1",
+    "status_short": "?? data/0050_H_CERE_H/real_vessel_segments_cm_corrected.pkl\n?? data/0050_H_CERE_H/real_vessel_segments_downscaled_10x.pkl\n?? outputs/interactive_0050_original_with_magnets.html\n?? outputs/interactive_40Left85Right_with_magnets.html\n?? outputs/interactive_cerebral_downscaled_10x_with_magnets.html\n?? outputs/interactive_cerebral_with_magnets.html\n?? outputs/publication_benchmark_500um/comet_route_aware_3canonical_20260611/\n?? scripts/visualize_0050_original_plotly_magnets.py\n?? scripts/visualize_40Left85Right_plotly_magnets.py\n?? scripts/visualize_cerebral_downscaled_10x_plotly_magnets.py\n?? scripts/visualize_cerebral_plotly_magnets.py\n?? scripts/visualize_cerebral_with_magnets.py"
+  }
+}

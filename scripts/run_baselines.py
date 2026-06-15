@@ -30,7 +30,7 @@ import time
 
 import numpy as np
 
-from dynamag_simulation.core.constants import HALF, TEST_RANGE
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE, HALF, TEST_RANGE
 from dynamag_simulation.core.profiles import MICROSPHERE_50UM
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
@@ -45,7 +45,7 @@ from dynamag_simulation.core.plotting import save_all_plots
 INNER = max(0.01, HALF - TEST_RANGE)
 DEFAULT_DT = 1.0
 DEFAULT_STEPS = 3000
-DEFAULT_TOL = 0.003       # 3 mm
+DEFAULT_TOL = DEFAULT_TARGET_TOLERANCE  # 0.5 mm
 DEFAULT_FLOW_SPEED = 0.0002   # 200 µm/s  +x
 DEFAULT_MAX_CURRENT = 13.0
 DEFAULT_SEED = 42
@@ -202,6 +202,10 @@ def simulate_trial_baseline(
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
+        stokes_regime=re_stats["stokes_regime"],
+        finite_re_drag_valid=re_stats["finite_re_drag_valid"],
+        drag_model=re_stats["drag_model"],
+        drag_regime_label=re_stats["drag_regime_label"],
         wall_time_s=wall_end - wall_start,
         avg_control_step_time_s=float(np.mean(step_time_log)) if len(step_time_log) > 0 else 0.0,
         max_control_step_time_s=float(np.max(step_time_log)) if len(step_time_log) > 0 else 0.0,

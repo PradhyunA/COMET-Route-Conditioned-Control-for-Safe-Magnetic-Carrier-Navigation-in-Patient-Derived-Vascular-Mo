@@ -1,0 +1,29 @@
+[acbc_tuned_trial2_500um_adaptive_enclosing_flow1] flow=1 pair=canonical_002_mid_to_outlet controller=acbc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1598, sparse waypoints: 233
+      wp1: [ -54.   -40.7 -345.8] mm
+      wp2: [ -52.7  -40.5 -344.9] mm
+      wp3: [ -51.3  -40.4 -344.2] mm
+      wp4: [ -49.9  -40.7 -343.1] mm
+      wp5: [ -48.8  -40.7 -341.9] mm
+      wp6: [ -48.   -40.  -340.4] mm
+      wp7: [ -46.9  -39.2 -339.2] mm
+      wp8: [ -45.7  -38.2 -338. ] mm
+      wp9: [ -45.   -37.1 -337.1] mm
+      wp10: [ -44.2  -36.  -336.4] mm
+      ...
+      wp233: [-46.8 -52.5 -44.5] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -55.1  -41.3 -347. ] mm
+  step   10/4000  state=RECOVERY_MODE         dist=298.9mm  wp=6/233  best_wp=4/233  acbc_best=4/233  stag=7  wall=1.99mm  wall_frac=0.798  |F|=3.83e-07N  |B|=1.40e-02T  |I|=16.0A  v=7.24mm/s  flow=5.72mm/s  Re=1.96e+00  lat=4.2mm
+  step   20/4000  state=VIABILITY_ASSESSMENT  dist=294.8mm  wp=8/233  best_wp=6/233  acbc_best=6/233  stag=8  wall=0.76mm  wall_frac=0.873  |F|=9.57e-06N  |B|=7.98e-02T  |I|=16.0A  v=163.96mm/s  flow=3.12mm/s  Re=2.54e+01  lat=6.0mm
+  step   30/4000  state=VIABILITY_ASSESSMENT  dist=292.4mm  wp=13/233  best_wp=11/233  acbc_best=11/233  stag=0  wall=0.83mm  wall_frac=0.283  |F|=1.08e-05N  |B|=1.10e-01T  |I|=16.0A  v=180.25mm/s  flow=2.99mm/s  Re=2.78e+01  lat=10.4mm
+  step   40/4000  state=RECOVERY_MODE         dist=290.1mm  wp=18/233  best_wp=16/233  acbc_best=16/233  stag=0  wall=1.19mm  wall_frac=0.241  |F|=6.49e-07N  |B|=1.81e-02T  |I|=16.0A  v=20.08mm/s  flow=3.45mm/s  Re=3.10e+00  lat=15.0mm
+  step   50/4000  state=RECOVERY_MODE         dist=288.6mm  wp=20/233  best_wp=17/233  acbc_best=17/233  stag=1  wall=0.96mm  wall_frac=0.350  |F|=3.30e-07N  |B|=1.34e-02T  |I|=16.0A  v=10.77mm/s  flow=2.89mm/s  Re=1.72e+00  lat=15.9mm
+  step   60/4000  state=RECOVERY_MODE         dist=288.2mm  wp=20/233  best_wp=18/233  acbc_best=18/233  stag=3  wall=1.35mm  wall_frac=0.808  |F|=1.58e-07N  |B|=3.44e-02T  |I|=16.0A  v=2.15mm/s  flow=3.59mm/s  Re=8.80e-01  lat=15.8mm
+  step   70/4000  state=RECOVERY_MODE         dist=287.9mm  wp=20/233  best_wp=18/233  acbc_best=18/233  stag=13  wall=1.34mm  wall_frac=0.805  |F|=9.95e-08N  |B|=1.34e-02T  |I|=16.0A  v=1.00mm/s  flow=3.41mm/s  Re=5.72e-01  lat=15.8mm
+  step   80/4000  state=RECOVERY_MODE         dist=287.7mm  wp=20/233  best_wp=18/233  acbc_best=18/233  stag=23  wall=1.28mm  wall_frac=0.788  |F|=1.68e-07N  |B|=3.47e-02T  |I|=16.0A  v=3.35mm/s  flow=2.81mm/s  Re=9.32e-01  lat=15.8mm
+  step   90/4000  state=VIABILITY_ASSESSMENT  dist=285.1mm  wp=21/233  best_wp=18/233  acbc_best=18/233  stag=33  wall=0.79mm  wall_frac=0.783  |F|=6.16e-06N  |B|=5.65e-02T  |I|=15.9A  v=119.68mm/s  flow=2.20mm/s  Re=1.85e+01  lat=15.8mm
+  step  100/4000  state=RECOVERY_MODE         dist=284.6mm  wp=23/233  best_wp=20/233  acbc_best=20/233  stag=9  wall=1.36mm  wall_frac=0.768  |F|=1.28e-07N  |B|=8.87e-03T  |I|=16.0A  v=1.76mm/s  flow=3.21mm/s  Re=7.25e-01  lat=16.0mm
+  step  110/4000  state=RECOVERY_MODE         dist=284.3mm  wp=23/233  best_wp=20/233  acbc_best=20/233  stag=19  wall=1.46mm  wall_frac=0.805  |F|=1.41e-07N  |B|=1.03e-02T  |I|=16.0A  v=1.34mm/s  flow=3.92mm/s  Re=7.91e-01  lat=16.0mm
+  step  120/4000  state=RECOVERY_MODE         dist=282.1mm  wp=25/233  best_wp=23/233  acbc_best=23/233  stag=4  wall=2.18mm  wall_frac=0.783  |F|=2.24e-07N  |B|=1.35e-02T  |I|=16.0A  v=7.24mm/s  flow=5.80mm/s  Re=1.21e+00  lat=18.2mm

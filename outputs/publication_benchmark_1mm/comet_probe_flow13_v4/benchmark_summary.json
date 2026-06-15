@@ -1,0 +1,139 @@
+{
+  "run_id": "comet_probe_flow13_v4",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 6,
+  "n_pairs": 6,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 21260610,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 21260611,
+      "start": [
+        0.008938509633979057,
+        0.03239900722116712,
+        -0.13867499443524448
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_003_inlet_to_mid",
+      "seed": 21260612,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.002541714376436173,
+        0.009092660671305496,
+        -0.12555967557431816
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_001_inlet_to_outlet",
+      "seed": 23260610,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_002_mid_to_outlet",
+      "seed": 23260611,
+      "start": [
+        -0.033008366324259596,
+        0.011282498312719979,
+        -0.17746219249737075
+      ],
+      "target": [
+        -0.04681534320116043,
+        -0.052479423582553864,
+        -0.04449916630983353
+      ]
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_003_inlet_to_mid",
+      "seed": 23260612,
+      "start": [
+        0.0702989250421524,
+        0.018237296491861343,
+        -0.43109387159347534
+      ],
+      "target": [
+        -0.031117714057301547,
+        0.05180899417919085,
+        -0.14007957242741176
+      ]
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.6666666666666666,
+      "median_final_error_mm": 0.3555168560986337,
+      "median_sim_time_s": 4.44,
+      "median_steps_to_target": 222.0,
+      "median_wall_time_s": 10.646446416969411,
+      "median_avg_control_step_time_s": 0.0530027584254276,
+      "median_path_efficiency": 0.9625140608797609,
+      "median_current_rms_A": 10.177410666222233,
+      "median_energy_proxy_A2s": 4217.289551350457,
+      "median_min_wall_clearance_mm": 0.9607080888309961,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 9.333333333333334
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet",
+      "n": 3,
+      "success_rate": 0.6666666666666666,
+      "median_final_error_mm": 0.4233833369705562,
+      "median_sim_time_s": 5.08,
+      "median_steps_to_target": 254.0,
+      "median_wall_time_s": 11.048090083058923,
+      "median_avg_control_step_time_s": 0.05103477697816561,
+      "median_path_efficiency": 0.9526550922620435,
+      "median_current_rms_A": 10.234405457024456,
+      "median_energy_proxy_A2s": 4788.852477287055,
+      "median_min_wall_clearance_mm": 0.9266604869095934,
+      "clearance_target_met_rate": 0.6666666666666666,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 8.666666666666666
+    }
+  ],
+  "paired_statistics": []
+}

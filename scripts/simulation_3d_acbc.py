@@ -42,6 +42,7 @@ from dynamag_simulation.core.profiles import (
     PhysicalProfile,
     SPION_CARRIER_1MM,
 )
+from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
 from dynamag_simulation.core.integrator import adaptive_step
@@ -94,6 +95,8 @@ DEFAULT_MAGNET_CLEARANCE = 0.04
 
 # flow_scale=5 means current baseline max v_mean 20 mm/s becomes ~100 mm/s
 DEFAULT_FLOW_SCALE = 1.0
+DEFAULT_EARLY_STOP_WINDOW_STEPS = 200
+DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
 
 
 def magnet_setup_for_network(
@@ -434,7 +437,7 @@ def simulate_trial_acbc(
     trial_name: str = "trial",
     dt: float = 0.02,
     steps: int = 4000,
-    tolerance: float = 0.003,
+    tolerance: float = DEFAULT_TARGET_TOLERANCE,
     coil_radius: float = FIXED_COIL_RADIUS,
     coil_length: float = FIXED_COIL_LENGTH,
     core_radius: float = FIXED_CORE_RADIUS,
@@ -451,6 +454,7 @@ def simulate_trial_acbc(
     profile: PhysicalProfile = SPION_CARRIER_1MM,
     max_substep_disp: float = 1e-3,
     rng_seed: int = 42,
+    wall_clearance_threshold_m: float = 0.0007,
     # MPC weights — aggressive authority, moderate route-tangent
     w_progress: float = 450.0,
     w_align: float = 35.0,
@@ -460,6 +464,15 @@ def simulate_trial_acbc(
     w_edge: float = 250.0,
     w_overshoot: float = 8.0,
     w_route: float = 15.0,
+    enable_branch_commitment: bool = True,
+    enable_authority_assessment: bool = True,
+    enable_recovery: bool = True,
+    enable_stall_escape: bool = True,
+    early_stop_enabled: bool = False,
+    early_stop_window_steps: int = DEFAULT_EARLY_STOP_WINDOW_STEPS,
+    early_stop_improvement_threshold_m: float = (
+        DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+    ),
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -515,7 +528,7 @@ def simulate_trial_acbc(
     navigator = network.waypoint_navigator(
         start,
         target,
-        arrival_tol=0.003,
+        arrival_tol=DEFAULT_TARGET_TOLERANCE,
         waypoint_spacing=0.0015,
         lookahead=5,
         forward_search_points=50,
@@ -532,16 +545,21 @@ def simulate_trial_acbc(
         authority_threshold=1.02,
         recovery_threshold=0.65,
 
-        min_wall_safety_fraction=0.015,
-        absolute_wall_clearance_threshold=0.00045,
-        stall_escape_min_wall_clearance=0.00090,
+        wall_clearance_threshold_m=wall_clearance_threshold_m,
+        min_wall_safety_fraction=0.0,
+        absolute_wall_clearance_threshold=wall_clearance_threshold_m,
+        surface_clearance_target_m=0.0,
+        recovery_enter_wall_clearance=wall_clearance_threshold_m,
+        recovery_exit_wall_clearance=wall_clearance_threshold_m + 0.00020,
+        near_wall_edge_multiplier=6.0,
+        stall_escape_min_wall_clearance=wall_clearance_threshold_m,
         stall_escape_min_wall_fraction_multiplier=1.00,
 
-        recovery_center_fraction=0.30,
-        recovery_route_fraction=0.25,
+        recovery_center_fraction=0.55,
+        recovery_route_fraction=0.10,
         recovery_route_tangent_steps=3,
         max_recovery_steps=40,
-        recovery_release_clearance=0.00090,
+        recovery_release_clearance=wall_clearance_threshold_m,
 
         stall_window_steps=15,
         stall_escape_lookahead=12,
@@ -549,6 +567,11 @@ def simulate_trial_acbc(
         stall_escape_max_steps=80,
 
         recovery_escape_lockout_steps=0,
+        enable_wall_safety_current_filter=False,
+        enable_branch_commitment=enable_branch_commitment,
+        enable_authority_assessment=enable_authority_assessment,
+        enable_recovery=enable_recovery,
+        enable_stall_escape=enable_stall_escape,
     )
 
     print(
@@ -600,6 +623,13 @@ def simulate_trial_acbc(
     acbc_log = []
 
     reached = False
+    early_stopped = False
+    early_stop_reason = ""
+    early_stop_measured_improvement_m = np.nan
+    early_stop_window_steps = int(early_stop_window_steps)
+    early_stop_improvement_threshold_m = float(early_stop_improvement_threshold_m)
+    best_final_target_distance = float(np.linalg.norm(particle.pos - target))
+    best_distance_history = [best_final_target_distance]
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
     converged_count = 0
@@ -736,9 +766,31 @@ def simulate_trial_acbc(
             "gantry_lateral_shift": _vec_or_nan(device_diag["gantry_lateral_shift"]),
         })
 
+        best_final_target_distance = min(best_final_target_distance, float(distance))
+        best_distance_history.append(best_final_target_distance)
+
         if distance < tolerance:
             reached = True
             break
+
+        if (
+            early_stop_enabled
+            and early_stop_window_steps > 0
+            and len(best_distance_history) > early_stop_window_steps
+        ):
+            previous_best = best_distance_history[-early_stop_window_steps - 1]
+            improvement = previous_best - best_final_target_distance
+            if improvement < early_stop_improvement_threshold_m:
+                early_stopped = True
+                early_stop_measured_improvement_m = float(improvement)
+                early_stop_reason = (
+                    "best final-target distance improved by "
+                    f"{improvement * 1000.0:.3f} mm over "
+                    f"{early_stop_window_steps} completed steps "
+                    f"(< {early_stop_improvement_threshold_m * 1000.0:.3f} mm)"
+                )
+                print(f"  Early stopping: {early_stop_reason}")
+                break
 
         if (step + 1) % 10 == 0:
             flow_v = flow.velocity_at(particle.pos, sim_time)
@@ -822,11 +874,20 @@ def simulate_trial_acbc(
         mean_reynolds=re_stats["mean_reynolds"],
         max_reynolds=re_stats["max_reynolds"],
         low_re_valid=re_stats["low_re_valid"],
+        stokes_regime=re_stats["stokes_regime"],
+        finite_re_drag_valid=re_stats["finite_re_drag_valid"],
+        drag_model=re_stats["drag_model"],
+        drag_regime_label=re_stats["drag_regime_label"],
         wall_time_s=wall_end - wall_start,
         avg_control_step_time_s=float(np.mean(step_time_log))
         if len(step_time_log) > 0 else 0.0,
         max_control_step_time_s=float(np.max(step_time_log))
         if len(step_time_log) > 0 else 0.0,
+        early_stopped=early_stopped,
+        early_stop_reason=early_stop_reason,
+        early_stop_window_steps=early_stop_window_steps,
+        early_stop_improvement_threshold_m=early_stop_improvement_threshold_m,
+        early_stop_measured_improvement_m=early_stop_measured_improvement_m,
         seed=rng_seed,
         profile_name=profile.name,
         dt=dt,
@@ -840,6 +901,18 @@ def simulate_trial_acbc(
             "dt": dt,
             "steps": steps,
             "tolerance": tolerance,
+            "early_stop_enabled": bool(early_stop_enabled),
+            "early_stopped": bool(early_stopped),
+            "early_stop_reason": early_stop_reason,
+            "early_stop_window_steps": early_stop_window_steps,
+            "early_stop_improvement_threshold_m": early_stop_improvement_threshold_m,
+            "early_stop_improvement_threshold_mm": (
+                early_stop_improvement_threshold_m * 1000.0
+            ),
+            "early_stop_measured_improvement_m": early_stop_measured_improvement_m,
+            "early_stop_measured_improvement_mm": (
+                early_stop_measured_improvement_m * 1000.0
+            ),
             "coil_radius": coil_radius,
             "coil_diameter": 2.0 * coil_radius,
             "coil_length": coil_length,
@@ -868,6 +941,7 @@ def simulate_trial_acbc(
             "particle_diameter_m": profile.diameter,
             "particle_diameter_mm": profile.diameter * 1000.0,
             "max_substep_disp": max_substep_disp,
+            "wall_clearance_threshold_m": wall_clearance_threshold_m,
             "vessel_network": network.params_dict(),
             "low_level_convergence_rate": low_level_convergence_rate,
             "navigator_arrival_tol": getattr(navigator, "arrival_tol", None),
@@ -877,6 +951,10 @@ def simulate_trial_acbc(
                 navigator, "forward_search_points", None,
             ),
             "w_route": w_route,
+            "enable_branch_commitment": enable_branch_commitment,
+            "enable_authority_assessment": enable_authority_assessment,
+            "enable_recovery": enable_recovery,
+            "enable_stall_escape": enable_stall_escape,
             **hardware_diag,
             **acbc_summary,
         },

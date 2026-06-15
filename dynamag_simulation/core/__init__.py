@@ -10,8 +10,13 @@ from .workspace import Workspace2D, Workspace3D, WorkspaceVessel
 from .magnets import ElectromagnetArray3D
 from .particle import MagneticParticle3D
 from .integrator import adaptive_step
-from .controllers import continuous_mpc_controller
-from .validation import compute_reynolds, check_low_re_validity
+try:
+    from .controllers import continuous_mpc_controller
+except ModuleNotFoundError as exc:
+    if exc.name != "scipy":
+        raise
+    continuous_mpc_controller = None
+from .validation import compute_reynolds, check_low_re_validity, classify_reynolds_regime
 from .reporting import TrialResult, save_results_csv, print_summary
 from .flow import NoFlow, UniformFlow, PoiseuilleFlow, PulsatileFlow
 from .vessel_network import VesselNetwork, VesselSegment
@@ -25,7 +30,7 @@ __all__ = [
     "MagneticParticle3D",
     "adaptive_step",
     "continuous_mpc_controller",
-    "compute_reynolds", "check_low_re_validity",
+    "compute_reynolds", "check_low_re_validity", "classify_reynolds_regime",
     "TrialResult", "save_results_csv", "print_summary",
     "NoFlow", "UniformFlow", "PoiseuilleFlow", "PulsatileFlow",
 ]

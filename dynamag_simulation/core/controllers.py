@@ -61,7 +61,12 @@ def _simulate_one_step(
     return next_pos, force, step_vec
 
 
-def _wall_penalty(pos, workspace, wall_buffer_fraction: float = 0.15):
+def _wall_penalty(
+    pos,
+    workspace,
+    wall_buffer_fraction: float = 0.15,
+    wall_buffer_m: float | None = None,
+):
     """
     Vessel-aware wall proximity penalty.
 
@@ -79,6 +84,8 @@ def _wall_penalty(pos, workspace, wall_buffer_fraction: float = 0.15):
             return 0.0
 
         buffer = wall_buffer_fraction * seg.radius
+        if wall_buffer_m is not None:
+            buffer = max(buffer, float(wall_buffer_m))
         margin = seg.radius - radial_dist
 
         return max(0.0, buffer - margin)
@@ -194,6 +201,7 @@ def _mpc_cost(
     sim_time,
     w_route=0.0,
     route_tangent=None,
+    wall_buffer_m=None,
 ):
     """Scalar cost for a candidate current vector. Lower is better."""
     particle_pos = np.asarray(particle_pos, dtype=float)
@@ -231,7 +239,7 @@ def _mpc_cost(
     force_norm = float(np.linalg.norm(force))
     alignment = float(np.dot(desired_hat, force / (force_norm + EPS)))
 
-    wall_cost = _wall_penalty(unclipped_pos, workspace)
+    wall_cost = _wall_penalty(unclipped_pos, workspace, wall_buffer_m=wall_buffer_m)
     overshoot_cost = _overshoot_penalty(step_vec, current_distance)
 
     smoothness_cost = 0.0
@@ -281,6 +289,7 @@ def continuous_mpc_controller(
     w_overshoot: float = 2.0,
     w_route: float = 0.0,
     route_tangent=None,
+    wall_buffer_m=None,
     flow=None,
     sim_time: float = 0.0,
     fast_mode: bool = True,
@@ -354,6 +363,7 @@ def continuous_mpc_controller(
         sim_time,
         w_route,
         route_tangent,
+        wall_buffer_m,
     )
 
     if fast_mode:

@@ -1,0 +1,59 @@
+RealVesselNetwork: 13975 segments, flow_scale=1.00, v_mean=1.2–20.0 mm/s, radius=1.06–17.39 mm
+Flow scale: 1.00x
+Magnet: mode=moving_adaptive_enclosing_gantry, placement_r=0.300m, coil_r=0.070m, turns=600, max_I=16.0A, mu_r=70, B_sat=1.8T
+
+>>> Running trial_2_mid_to_outlet
+    start:  [-0.0322086  -0.01253763 -0.31953124]
+    target: [-0.04681534 -0.05247942 -0.04449917]
+    Profile: spion_carrier_1mm_blood, diameter=1.000 mm
+    Raw waypoints: 1222, sparse waypoints: 154
+      wp1: [ -29.9  -12.3 -319.8] mm
+      wp2: [ -27.6  -12.1 -320.2] mm
+      wp3: [ -25.6  -11.8 -320.5] mm
+      wp4: [ -23.6  -11.4 -321. ] mm
+      wp5: [ -21.6  -11.  -321.6] mm
+      wp6: [ -19.7  -10.4 -321.9] mm
+      wp7: [ -17.6   -9.4 -321.7] mm
+      wp8: [ -15.7   -8.2 -320.7] mm
+      wp9: [ -14.2   -7.3 -319.7] mm
+      wp10: [ -12.5   -6.6 -318.7] mm
+      ...
+      wp154: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -32.2  -12.5 -319.5] mm
+  step   10/4000  final_dist=267.5mm  wp=19/154  best_wp=18/154  lookahead=20/154  wp_dist=2.33mm  wall=3.71mm  |F|=4.27e-05N  |B|=4.31e-02T  |I|=14.5A  v=220.32mm/s  flow=9.78mm/s  Re=6.95e+01  lat=24.3mm
+  step   20/4000  final_dist=242.8mm  wp=39/154  best_wp=38/154  lookahead=40/154  wp_dist=2.38mm  wall=2.24mm  |F|=4.46e-05N  |B|=4.68e-02T  |I|=13.7A  v=229.43mm/s  flow=5.78mm/s  Re=7.15e+01  lat=28.1mm
+  step   30/4000  final_dist=212.3mm  wp=59/154  best_wp=58/154  lookahead=60/154  wp_dist=2.23mm  wall=9.98mm  |F|=4.38e-05N  |B|=4.35e-02T  |I|=14.0A  v=214.41mm/s  flow=21.39mm/s  Re=7.07e+01  lat=45.0mm
+  step   40/4000  final_dist=167.7mm  wp=77/154  best_wp=76/154  lookahead=78/154  wp_dist=2.86mm  wall=8.53mm  |F|=6.02e-05N  |B|=4.58e-02T  |I|=14.8A  v=271.88mm/s  flow=16.89mm/s  Re=8.71e+01  lat=46.6mm
+  step   50/4000  final_dist=126.6mm  wp=97/154  best_wp=96/154  lookahead=98/154  wp_dist=2.31mm  wall=8.83mm  |F|=4.44e-05N  |B|=4.44e-02T  |I|=14.3A  v=215.59mm/s  flow=20.04mm/s  Re=7.13e+01  lat=49.2mm
+  step   60/4000  final_dist=84.7mm  wp=117/154  best_wp=116/154  lookahead=118/154  wp_dist=2.13mm  wall=8.61mm  |F|=4.36e-05N  |B|=5.72e-02T  |I|=13.6A  v=208.79mm/s  flow=22.55mm/s  Re=7.04e+01  lat=38.2mm
+  step   70/4000  final_dist=38.6mm  wp=135/154  best_wp=134/154  lookahead=136/154  wp_dist=2.74mm  wall=11.35mm  |F|=5.37e-05N  |B|=5.65e-02T  |I|=13.1A  v=237.96mm/s  flow=28.92mm/s  Re=8.08e+01  lat=16.9mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.3C
+  Gantry: mean_particle_dist=5.6mm, max_lateral=49.9mm
+
+============================================================
+  trial_2_mid_to_outlet
+============================================================
+  Profile         : spion_carrier_1mm_blood
+  Start           : [-0.0322086  -0.01253763 -0.31953124]
+  Target          : [-0.04681534 -0.05247942 -0.04449917]
+  Final position  : [-0.04685216 -0.05250329 -0.04450882]
+  Steps taken     : 79
+  Final error (m) : 0.000045
+  Final error (mm): 0.045
+  Reached target  : True
+  Max current (A) : 13.104
+  Avg ctrl time(s): 4.2394
+  Wall time (s)   : 336.49
+  Mean Re         : 7.352e+01
+  Max  Re         : 1.010e+02
+  Stokes regime   : False
+  Drag model      : schiller_naumann
+  Drag regime     : finite_re_schiller_naumann
+  Finite-Re valid : True
+  Peak |F|  (N)   : 7.551e-05
+  Peak |v|  (m/s) : 3.106e-01
+  Peak |B|  (T)   : 5.716e-02
+
+Results saved to: outputs/simulation_outputs_3d_mpc/
