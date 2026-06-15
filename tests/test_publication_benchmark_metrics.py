@@ -40,6 +40,16 @@ def test_five_primary_controller_variants_are_available():
     }.issubset(CONTROLLER_VARIANTS)
 
 
+def test_five_comet_ablation_programs_are_available():
+    assert {
+        "comet",
+        "comet_no_authority_reserve",
+        "comet_no_commitment_memory",
+        "comet_no_downstream_value",
+        "comet_no_terminal_precision",
+    }.issubset(CONTROLLER_VARIANTS)
+
+
 def test_paired_differences_match_trials_by_flow_and_pair():
     rows = [
         _row("mpc_default", True, 100),

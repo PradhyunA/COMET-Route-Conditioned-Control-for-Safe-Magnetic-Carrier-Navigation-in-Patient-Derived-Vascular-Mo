@@ -1298,14 +1298,22 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
         )
 
     if variant.kind == "comet":
+        kwargs = {
+            **common_kwargs,
+            **variant.kwargs,
+            "early_stop_enabled": True,
+            "early_stop_window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
+            "early_stop_improvement_threshold_m": (
+                BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
+            ),
+        }
         return simulate_trial_comet(
             start=pair["start"],
             target=pair["target"],
             network=network,
             trial_name=pair["pair_id"],
             rng_seed=trial_seed,
-            **common_kwargs,
-            **variant.kwargs,
+            **kwargs,
         )
 
     if variant.kind == "pid":
@@ -1431,8 +1439,8 @@ def run_benchmark(
         ),
         "rerun_coordinate_source": rerun_coordinate_source,
         "early_stopping": {
-            "enabled_controller_kinds": ["mpc", "acbc"],
-            "excluded_controller_kinds": ["comet"],
+            "enabled_controller_kinds": ["mpc", "acbc", "comet"],
+            "excluded_controller_kinds": [],
             "window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
             "improvement_threshold_m": BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M,
             "improvement_threshold_mm": (
