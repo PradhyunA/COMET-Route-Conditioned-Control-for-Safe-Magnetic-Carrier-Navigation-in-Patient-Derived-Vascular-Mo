@@ -434,12 +434,22 @@ def write_p_bc(path: Path) -> None:
     path.write_text(content)
 
 
-def write_snappy_hex_mesh_dict(path: Path, stl_name: str = "vessel.stl") -> None:
+def write_snappy_hex_mesh_dict(
+    path: Path,
+    location_in_mesh: tuple = (0.0, 0.0, 0.0),
+) -> None:
     """
-    snappyHexMeshDict skeleton for meshing from an STL surface.
-    Adjust refinementRegions and layers for your mesh resolution needs.
-    Typical settings for a 500 µm carrier: surface refinement level 4–5.
+    snappyHexMeshDict using three separate named STL files:
+        vessel_wall.stl    → patch type wall
+        vessel_inlet.stl   → patch type patch (inlet)
+        vessel_outlet.stl  → patch type patch (outlet)
+
+    Each file is a separate geometry entry so OpenFOAM assigns the
+    correct patch type automatically during snappyHexMesh.
+
+    location_in_mesh is auto-set to the vessel centroid by generate_case().
     """
+    lx, ly, lz = location_in_mesh
     content = _header("dictionary", "snappyHexMeshDict") + textwrap.dedent(f"""\
 
         castellatedMesh true;
@@ -448,16 +458,20 @@ def write_snappy_hex_mesh_dict(path: Path, stl_name: str = "vessel.stl") -> None
 
         geometry
         {{
-            {stl_name}
+            vessel_wall.stl
             {{
                 type triSurfaceMesh;
-                name vessel;
-                regions
-                {{
-                    inlet  {{ name inlet;  }}
-                    outlet {{ name outlet; }}
-                    wall   {{ name wall;   }}
-                }}
+                name wall;
+            }}
+            vessel_inlet.stl
+            {{
+                type triSurfaceMesh;
+                name inlet;
+            }}
+            vessel_outlet.stl
+            {{
+                type triSurfaceMesh;
+                name outlet;
             }}
         }}
 
@@ -469,32 +483,31 @@ def write_snappy_hex_mesh_dict(path: Path, stl_name: str = "vessel.stl") -> None
             maxLoadUnbalance   0.10;
             nCellsBetweenLevels 3;
 
-            features
-            (
-                {{ file \"{stl_name.replace('.stl', '.eMesh')}\"; level 2; }}
-            );
+            features ();
 
             refinementSurfaces
             {{
-                vessel
+                wall
                 {{
                     level (4 5);
-                    regions
-                    {{
-                        inlet  {{ level (4 4); patchInfo {{ type patch;      }} }}
-                        outlet {{ level (4 4); patchInfo {{ type patch;      }} }}
-                        wall   {{ level (4 5); patchInfo {{ type wall;       }} }}
-                    }}
+                    patchInfo {{ type wall; }}
+                }}
+                inlet
+                {{
+                    level (4 4);
+                    patchInfo {{ type patch; }}
+                }}
+                outlet
+                {{
+                    level (4 4);
+                    patchInfo {{ type patch; }}
                 }}
             }}
 
             resolveFeatureAngle 30;
+            refinementRegions  {{}}
 
-            refinementRegions
-            {{
-            }}
-
-            locationInMesh (0 0 0);   // IMPORTANT: set a point inside the vessel
+            locationInMesh ({lx:.6f} {ly:.6f} {lz:.6f});
 
             allowFreeStandingZoneFaces true;
         }}
@@ -608,31 +621,105 @@ def write_gmsh_geo(path: Path, stl_name: str = "vessel.stl",
 # STL export from pkl
 # ---------------------------------------------------------------------------
 
-def export_stl_from_pkl(segments: list, output_path: Path) -> None:
+def _find_terminal_endpoints(segments: list) -> tuple[np.ndarray, list[np.ndarray]]:
     """
-    Build a rudimentary triangulated vessel surface from segment cylinders
-    and save as STL.  Each segment is represented as a 16-sided prism.
+    Identify inlet and outlet endpoints from segment topology.
 
-    For production use, export the original VTP surface from SimVascular
-    or pyvista and run it through vmtk for a smooth, closed manifold.
-    This function provides a quick-start geometry for testing.
+    Strategy mirrors RealVesselNetwork:
+    - Build an endpoint connectivity map (node → how many segments touch it)
+    - Terminal nodes (degree 1) are open ends — either inlet or outlets
+    - Inlet  = terminal node with minimum z  (matches inlet_start() convention)
+    - Outlets = all other terminal nodes
+
+    Returns
+    -------
+    inlet_pt  : (3,) array
+    outlet_pts : list of (3,) arrays
+    """
+    EPS = 1e-6
+    ROUND = 6   # decimal places for endpoint key — matches connection_tol ~1e-6
+
+    endpoint_count: dict[tuple, list] = {}
+    for s in segments:
+        for pt in (np.asarray(s["start"], dtype=float),
+                   np.asarray(s["end"],   dtype=float)):
+            key = tuple(np.round(pt, ROUND))
+            endpoint_count.setdefault(key, []).append(pt)
+
+    # Degree-1 nodes = open ends
+    terminals = [
+        pts[0] for key, pts in endpoint_count.items()
+        if len(pts) == 1   # only one segment touches this point
+    ]
+
+    if not terminals:
+        # Fallback: use z-extremes of all endpoints
+        all_pts = np.array(
+            [np.asarray(s["start"], float) for s in segments] +
+            [np.asarray(s["end"],   float) for s in segments]
+        )
+        terminals = [all_pts[np.argmin(all_pts[:, 2])],
+                     all_pts[np.argmax(all_pts[:, 2])]]
+
+    terminals_arr = np.array(terminals)
+    inlet_idx  = int(np.argmin(terminals_arr[:, 2]))
+    inlet_pt   = terminals[inlet_idx]
+    outlet_pts = [t for i, t in enumerate(terminals) if i != inlet_idx]
+
+    return np.asarray(inlet_pt, dtype=float), outlet_pts
+
+
+def _disk_mesh(center: np.ndarray, normal: np.ndarray,
+               radius: float, n_sides: int = 32):
+    """Return a pyvista PolyData disk cap."""
+    import pyvista as pv
+    normal = normal / (np.linalg.norm(normal) + 1e-12)
+    disk = pv.Disc(center=center, normal=normal,
+                   inner=0.0, outer=radius, r_res=4, c_res=n_sides)
+    return disk
+
+
+def export_stl_from_pkl(segments: list, output_dir: Path,
+                        n_sides: int = 32) -> tuple[np.ndarray, list[np.ndarray]]:
+    """
+    Build a multi-region STL from segment cylinders with named inlet/outlet/wall
+    surfaces.  OpenFOAM's snappyHexMesh requires each boundary to be a separate
+    named solid in the STL so it can assign patch types correctly.
+
+    Writes three files into output_dir:
+        vessel_wall.stl    — cylinder side faces for every segment
+        vessel_inlet.stl   — disk cap at the inlet endpoint
+        vessel_outlet.stl  — disk cap(s) at all outlet endpoints
+
+    snappyHexMeshDict should reference these as three separate geometries
+    (or one STL with three named solids — we use separate files for clarity).
+
+    Returns
+    -------
+    inlet_pt   : (3,) array   — inlet center [m]
+    outlet_pts : list of (3,) — outlet centers [m]
     """
     try:
         import pyvista as pv
     except ImportError:
         print("[WARNING] pyvista not available — skipping STL export.")
-        print("          Export your vessel surface manually and place it at:")
-        print(f"          {output_path}")
-        return
+        return np.zeros(3), []
 
-    n_sides = 16
-    meshes = []
+    output_dir = Path(output_dir)
 
+    # --- Identify inlet/outlet endpoints ---
+    inlet_pt, outlet_pts = _find_terminal_endpoints(segments)
+    print(f"[STL] Inlet  : {inlet_pt}")
+    for i, o in enumerate(outlet_pts):
+        print(f"[STL] Outlet {i}: {o}")
+
+    # --- Wall: cylinder side surfaces only (capping=False) ---
+    wall_meshes = []
     for s in segments:
-        start = np.asarray(s["start"], dtype=float)
-        end = np.asarray(s["end"], dtype=float)
-        r = float(s["radius"])
-        axis = end - start
+        start  = np.asarray(s["start"], dtype=float)
+        end    = np.asarray(s["end"],   dtype=float)
+        r      = float(s["radius"])
+        axis   = end - start
         length = np.linalg.norm(axis)
         if length < 1e-9:
             continue
@@ -642,19 +729,80 @@ def export_stl_from_pkl(segments: list, output_path: Path) -> None:
             radius=r,
             height=length,
             resolution=n_sides,
+            capping=False,
         )
-        meshes.append(cyl)
+        wall_meshes.append(cyl)
 
-    if not meshes:
+    if not wall_meshes:
         print("[WARNING] No segments to export.")
-        return
+        return inlet_pt, outlet_pts
 
-    combined = meshes[0]
-    for m in meshes[1:]:
-        combined = combined.merge(m)
+    wall = wall_meshes[0]
+    for m in wall_meshes[1:]:
+        wall = wall.merge(m)
 
-    combined.save(str(output_path))
-    print(f"[STL] Exported vessel surface → {output_path}  ({len(segments)} segments)")
+    wall_path = output_dir / "vessel_wall.stl"
+    wall.save(str(wall_path))
+    print(f"[STL] Wall   → {wall_path}")
+
+    # --- Inlet cap ---
+    # The inlet segment is whichever segment has an endpoint == inlet_pt
+    inlet_seg = None
+    EPS = 1e-5
+    for s in segments:
+        for pt_key in ("start", "end"):
+            pt = np.asarray(s[pt_key], dtype=float)
+            if np.linalg.norm(pt - inlet_pt) < EPS:
+                inlet_seg = s
+                break
+        if inlet_seg is not None:
+            break
+
+    if inlet_seg is not None:
+        axis = np.asarray(inlet_seg["end"], float) - np.asarray(inlet_seg["start"], float)
+        # Normal points INTO the domain (inward), so flip if pointing away
+        if np.dot(axis, np.array([0, 0, 1])) < 0:
+            axis = -axis
+        r_inlet = float(inlet_seg["radius"])
+        inlet_disk = _disk_mesh(inlet_pt, axis / np.linalg.norm(axis), r_inlet, n_sides)
+        inlet_path = output_dir / "vessel_inlet.stl"
+        inlet_disk.save(str(inlet_path))
+        print(f"[STL] Inlet  → {inlet_path}  r={r_inlet*1000:.2f} mm")
+    else:
+        print("[WARNING] Could not find inlet segment — inlet cap not written.")
+        r_inlet = float(max(s["radius"] for s in segments))
+
+    # --- Outlet caps ---
+    outlet_meshes = []
+    for o_pt in outlet_pts:
+        o_seg = None
+        for s in segments:
+            for pt_key in ("start", "end"):
+                pt = np.asarray(s[pt_key], dtype=float)
+                if np.linalg.norm(pt - o_pt) < EPS:
+                    o_seg = s
+                    break
+            if o_seg is not None:
+                break
+        if o_seg is None:
+            continue
+        axis = np.asarray(o_seg["end"], float) - np.asarray(o_seg["start"], float)
+        if np.dot(axis, o_pt - np.asarray(o_seg["start"], float)) < 0:
+            axis = -axis
+        r_out = float(o_seg["radius"])
+        outlet_meshes.append(_disk_mesh(o_pt, axis / np.linalg.norm(axis), r_out, n_sides))
+
+    if outlet_meshes:
+        outlet_combined = outlet_meshes[0]
+        for m in outlet_meshes[1:]:
+            outlet_combined = outlet_combined.merge(m)
+        outlet_path = output_dir / "vessel_outlet.stl"
+        outlet_combined.save(str(outlet_path))
+        print(f"[STL] Outlet → {outlet_path}  ({len(outlet_meshes)} caps)")
+    else:
+        print("[WARNING] No outlet caps written.")
+
+    return inlet_pt, outlet_pts
 
 
 # ---------------------------------------------------------------------------
@@ -695,17 +843,30 @@ def generate_case(
 
     write_fv_schemes(base / "system" / "fvSchemes", solver)
     write_fv_solution(base / "system" / "fvSolution", solver)
-    write_snappy_hex_mesh_dict(base / "system" / "snappyHexMeshDict")
     write_gmsh_geo(base / "constant" / "triSurface" / "vessel.geo")
-
     write_U_bc(base / "0" / "U", v_inlet, r_inlet, pulsatile)
     write_p_bc(base / "0" / "p")
 
+    # Export named STL regions first so we can compute centroid for locationInMesh.
+    tri_dir = base / "constant" / "triSurface"
+    centroid = np.zeros(3)
     if export_stl:
-        export_stl_from_pkl(
-            segments,
-            base / "constant" / "triSurface" / "vessel.stl",
-        )
+        _, _ = export_stl_from_pkl(segments, tri_dir)
+    # Centroid: length-weighted mean of segment midpoints
+    pts, wts = [], []
+    for s in segments:
+        st = np.asarray(s["start"], float)
+        en = np.asarray(s["end"],   float)
+        pts.append((st + en) / 2)
+        wts.append(float(np.linalg.norm(en - st)))
+    if pts:
+        pts = np.array(pts); wts = np.array(wts)
+        centroid = (pts * wts[:, None]).sum(axis=0) / wts.sum()
+    print(f"[case] locationInMesh : {centroid}")
+    write_snappy_hex_mesh_dict(
+        base / "system" / "snappyHexMeshDict",
+        location_in_mesh=tuple(centroid),
+    )
 
     # Write a shell script that runs the full pipeline
     run_script = base / "run_cfd.sh"
