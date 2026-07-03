@@ -1,4 +1,5 @@
 """
+dynamag_simulation/core/comet_controller.py
 COMET: Commitment-Oriented Measure-Transport Control.
 
 COMET is a post-MPC controller for magnetic carrier navigation through
@@ -228,6 +229,16 @@ class COMETConfig:
     #: Deprecated compatibility field. Hard feasibility uses the single
     #: center-to-wall threshold above; soft wall repulsion has its own margin.
     safety_filter_margin: float = 0.0
+
+    # --- publication ablation switches ------------------------------------
+    # These flags remove architectural mechanisms explicitly instead of only
+    # changing weights. They are intended for mechanism-level ablation studies.
+    ablate_authority_reserve: bool = False
+    ablate_commitment_memory: bool = False
+    ablate_downstream_value: bool = False
+    ablate_flow_scaled_reserve: bool = False
+    ablate_terminal_precision: bool = False
+    ablate_occupancy_measure: bool = False
 
     #: Verbose per-step debug logging.
     debug: bool = False
@@ -952,7 +963,10 @@ class COMETController:
     ) -> List[BranchHypothesis]:
         cfg = self.cfg
         node_point = np.asarray(node_point, dtype=float)
-        high_flow = flow_adaptation_active
+        high_flow = (
+            flow_adaptation_active
+            and not cfg.ablate_flow_scaled_reserve
+        )
         capture_offset = (
             cfg.capture_point_offset
             if capture_point_offset is None else float(capture_point_offset)
@@ -1072,13 +1086,16 @@ class COMETController:
             )
 
             seg_scale = max(min_radius, 1e-4)
-            z = (
-                cfg.capture_reserve_gain * np.tanh(reserve / seg_scale)
-                + cfg.capture_alignment_gain * alignment
-                - (cfg.capture_urgency_gain if high_flow else 0.0)
-                * np.clip(1.0 - tau / 0.25, 0.0, 1.0)
-                * max(0.0, -reserve / seg_scale)
-            )
+            if cfg.ablate_authority_reserve:
+                z = cfg.capture_alignment_gain * alignment
+            else:
+                z = (
+                    cfg.capture_reserve_gain * np.tanh(reserve / seg_scale)
+                    + cfg.capture_alignment_gain * alignment
+                    - (cfg.capture_urgency_gain if high_flow else 0.0)
+                    * np.clip(1.0 - tau / 0.25, 0.0, 1.0)
+                    * max(0.0, -reserve / seg_scale)
+                )
             p_capture = float(1.0 / (1.0 + np.exp(-z)))
 
             min_safe_radius = cfg.wall_clearance_threshold
@@ -1088,7 +1105,11 @@ class COMETController:
 
             effort = float(required / (reachable + 1e-6))
 
-            if np.isfinite(d_target) and np.isfinite(d_min):
+            if (
+                not cfg.ablate_downstream_value
+                and np.isfinite(d_target)
+                and np.isfinite(d_min)
+            ):
                 downstream_value = float(
                     np.exp(-(d_target - d_min) / cfg.downstream_value_scale)
                 )
@@ -1096,12 +1117,16 @@ class COMETController:
                 downstream_value = 0.0
 
             is_target = bool(np.isfinite(d_target) and d_target <= d_min + EPS)
+            authority_score = 0.0 if cfg.ablate_authority_reserve else float(
+                np.tanh(reserve / seg_scale)
+            )
+            downstream_score = 0.0 if cfg.ablate_downstream_value else downstream_value
 
             score = (
                 cfg.target_value_weight * (1.0 if is_target else 0.0)
                 + cfg.capture_probability_weight * float(np.log(p_capture + 1e-6))
-                + cfg.authority_reserve_weight * float(np.tanh(reserve / seg_scale))
-                + cfg.downstream_value_weight * downstream_value
+                + cfg.authority_reserve_weight * authority_score
+                + cfg.downstream_value_weight * downstream_score
                 - cfg.control_effort_weight * effort
                 - cfg.wall_risk_weight * wall_risk
             )
@@ -1161,11 +1186,17 @@ class COMETController:
             self.commit_step = None
             self.commit_reason = ""
 
-        leader_prev = self.incumbent_seg_id
+        memory_enabled = (
+            not cfg.ablate_commitment_memory
+            and not cfg.ablate_occupancy_measure
+        )
+        occupancy_enabled = not cfg.ablate_occupancy_measure
+
+        leader_prev = self.incumbent_seg_id if memory_enabled else None
         scores = np.array([h.score for h in hypotheses], dtype=float)
 
         # Anti-chatter: incumbent advantage.
-        if leader_prev is not None:
+        if leader_prev is not None and memory_enabled:
             for i, h in enumerate(hypotheses):
                 if h.seg_id != leader_prev:
                     scores[i] -= cfg.branch_switch_penalty
@@ -1188,7 +1219,10 @@ class COMETController:
         if arc_to_node < commitment_distance:
             hard_commit = True
             reason = f"distance<{commitment_distance * 1000:.1f}mm"
-        elif lead.reserve < cfg.hard_commit_reserve_threshold:
+        elif (
+            not cfg.ablate_authority_reserve
+            and lead.reserve < cfg.hard_commit_reserve_threshold
+        ):
             hard_commit = True
             reason = f"reserve={lead.reserve * 1000:.1f}mm"
 
@@ -1200,8 +1234,17 @@ class COMETController:
         q_raw = np.exp(logits)
         q_raw /= np.sum(q_raw)
 
+        if not occupancy_enabled:
+            q_new = {h.seg_id: 0.0 for h in hypotheses}
+            q_new[lead.seg_id] = 1.0
+            self.incumbent_seg_id = lead.seg_id
+            self.q = q_new
+            return q_new, temperature, "greedy_no_occupancy_measure"
+
         # Mirror-descent (entropic transport) blend with the previous measure.
-        rho = cfg.intent_smoothing if not hard_commit else 0.15
+        rho = cfg.intent_smoothing if (not hard_commit and memory_enabled) else 0.0
+        if hard_commit and memory_enabled:
+            rho = 0.15
         q_new = {}
         for i, h in enumerate(hypotheses):
             q_prev = self.q.get(h.seg_id, 1.0 / len(hypotheses))
@@ -1213,7 +1256,8 @@ class COMETController:
 
         # Commitment with dwell + hysteresis.
         dwell_active = (
-            self.commit_step is not None
+            memory_enabled
+            and self.commit_step is not None
             and self.step_count - self.commit_step
             < cfg.min_commitment_dwell_steps
         )
@@ -1625,7 +1669,8 @@ class COMETController:
                 target_authority + float(np.dot(v_flow, target_direction))
             )
             high_flow_terminal_gate = (
-                float(getattr(self.network, "flow_scale", 1.0))
+                not cfg.ablate_flow_scaled_reserve
+                and float(getattr(self.network, "flow_scale", 1.0))
                 >= cfg.terminal_feasibility_min_flow_scale
             )
             direct_terminal_feasible = (
@@ -1646,6 +1691,7 @@ class COMETController:
         direct_terminal = terminal and terminal_line_of_sight
         terminal_precision = (
             direct_terminal
+            and not cfg.ablate_terminal_precision
             and dist_to_final <= cfg.terminal_precision_distance
         )
         terminal_stage = (
@@ -1665,7 +1711,8 @@ class COMETController:
         dist_to_bif = np.inf
         selected: Optional[BranchHypothesis] = None
         high_flow = (
-            float(getattr(self.network, "flow_scale", 1.0))
+            not cfg.ablate_flow_scaled_reserve
+            and float(getattr(self.network, "flow_scale", 1.0))
             >= cfg.flow_branch_adaptation_min_scale
         )
         dynamic_commitment_distance = commitment_distance
@@ -1730,8 +1777,7 @@ class COMETController:
 
         rescue_entry = bool(
             selected is not None
-            and float(getattr(self.network, "flow_scale", 1.0))
-            >= cfg.rescue_min_flow_scale
+            and high_flow
             and dist_to_final < cfg.rescue_target_horizon
             and dist_to_bif
             < cfg.rescue_distance_multiplier * dynamic_commitment_distance
@@ -1743,8 +1789,7 @@ class COMETController:
         rescue_hold = bool(
             prev_mode == COMET_RESCUE
             and selected is not None
-            and float(getattr(self.network, "flow_scale", 1.0))
-            >= cfg.rescue_min_flow_scale
+            and high_flow
             and dist_to_final < cfg.rescue_target_horizon
             and dist_to_bif
             < cfg.rescue_distance_multiplier * dynamic_commitment_distance
@@ -2214,4 +2259,10 @@ class COMETController:
             "comet_terminal_overshoots": self._terminal_overshoot_count,
             "comet_max_control_norm_A": self.max_current,
             "comet_wall_clearance_threshold_m": cfg.wall_clearance_threshold,
+            "comet_ablate_authority_reserve": cfg.ablate_authority_reserve,
+            "comet_ablate_commitment_memory": cfg.ablate_commitment_memory,
+            "comet_ablate_downstream_value": cfg.ablate_downstream_value,
+            "comet_ablate_flow_scaled_reserve": cfg.ablate_flow_scaled_reserve,
+            "comet_ablate_terminal_precision": cfg.ablate_terminal_precision,
+            "comet_ablate_occupancy_measure": cfg.ablate_occupancy_measure,
         }
