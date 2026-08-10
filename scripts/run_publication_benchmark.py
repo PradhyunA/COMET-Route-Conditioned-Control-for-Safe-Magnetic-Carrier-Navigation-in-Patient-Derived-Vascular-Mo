@@ -180,6 +180,13 @@ CONTROLLER_VARIANTS = {
             "rescue_min_flow_scale": 1e9,
         },
     ),
+    "comet_no_flow_compensation": ControllerVariant(
+        label="COMET-no-flow-compensation",
+        kind="comet",
+        kwargs={
+            "flow_compensation_gain": 0.0,
+        },
+    ),
     "pid": ControllerVariant(
         label="PID-route-aware",
         kind="pid",
