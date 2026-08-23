@@ -131,7 +131,7 @@ class COMETConfig:
     #: Cap on the centering/capture lateral speed.
     max_lateral_speed: float = 0.040
     #: Multiplier on the adverse (lateral) flow component to cancel.
-    flow_compensation_gain: float = 1.0
+    flow_compensation_gain: float = 0.0
     #: First-order smoothing of the desired velocity (anti-oscillation).
     damping_gain: float = 0.30
     #: Arc lookahead for the tracking aim point.
