@@ -2038,7 +2038,9 @@ class COMETController:
         motion_axis = (
             aim_tangent if cfg.ablate_polyline_tracking else tangent
         )
-        flow_probe = pos if cfg.ablate_polyline_tracking else route_pt
+        # Keep the Full-COMET flow-sampling location unchanged in the
+        # route-guidance ablation so that only desired-motion guidance changes.
+        flow_probe = route_pt
 
         if direct_terminal:
             self._ride_dir = None
