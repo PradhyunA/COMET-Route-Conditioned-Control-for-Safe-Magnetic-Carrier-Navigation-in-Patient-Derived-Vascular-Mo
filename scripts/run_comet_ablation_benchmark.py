@@ -113,6 +113,27 @@ COMET_ABLATION_VARIANTS: dict[str, AblationVariant] = {
         "COMET-no-occupancy-measure",
         {"ablate_occupancy_measure": True},
     ),
+    "comet_no_branch_shaping": AblationVariant(
+        "comet_no_branch_shaping",
+        "COMET-no-branch-shaping",
+        {"ablate_branch_conditioned_motion_shaping": True},
+    ),
+    "comet_no_polyline_tracking": AblationVariant(
+        "comet_no_polyline_tracking",
+        "COMET-no-polyline-tracking",
+        {"ablate_polyline_tracking": True},
+    ),
+
+    "comet_no_flow_compensation": AblationVariant(
+        "comet_no_flow_compensation",
+        "COMET-no-flow-compensation",
+        {"ablate_flow_compensation": True},
+    ),
+    "comet_slsqp_allocator": AblationVariant(
+        "comet_slsqp_allocator",
+        "COMET-SLSQP-allocator",
+        {"allocator": "slsqp"},
+    ),
 
     "comet_core_only": AblationVariant(
         "comet_core_only",
@@ -131,6 +152,8 @@ COMET_ABLATION_VARIANTS: dict[str, AblationVariant] = {
 ROW_FIELDS = [
     "run_id",
     "stress_mode",
+    "vessel_key",
+    "vessel_label",
     "flow_scale",
     "pair_id",
     "trial_kind",
@@ -237,6 +260,76 @@ def _safe_float(value: Any, default: float = float("nan")) -> float:
 
 def _vector_mm_to_m(values: list[float]) -> np.ndarray:
     return np.asarray(values, dtype=float) / 1000.0
+
+
+MANUSCRIPT_VESSEL_FILES = {
+    "cm_corrected": "data/real_vessel_segments_cm_corrected.pkl",
+    "40Left85Right": (
+        "data/vessels/aortic_root_cerebral_40Left85Right/"
+        "real_vessel_segments.pkl"
+    ),
+    "pulmonary_0082_H_PULM_H": (
+        "data/vessels/pulmonary_0082_H_PULM_H/"
+        "real_vessel_segments_cm_corrected.pkl"
+    ),
+}
+
+
+def _load_selected_cases(path: str, flow_scales: list[float]) -> list[dict[str, Any]]:
+    """Load the 45 matched manuscript cases from full-COMET rows."""
+    allowed_flows = {float(value) for value in flow_scales}
+    cases = []
+    seen = set()
+    with open(path, newline="") as f:
+        for row in csv.DictReader(f):
+            if row.get("controller_key") != "comet":
+                continue
+            flow_scale = float(row["flow_scale"])
+            if flow_scale not in allowed_flows:
+                continue
+            vessel_key = row["vessel_key"]
+            if vessel_key not in MANUSCRIPT_VESSEL_FILES:
+                raise ValueError(f"No vessel-file mapping for selected vessel {vessel_key!r}")
+            case_key = (vessel_key, flow_scale, row["pair_id"])
+            if case_key in seen:
+                raise ValueError(f"Duplicate full-COMET selected case: {case_key}")
+            seen.add(case_key)
+            route_seed = _safe_float(row.get("route_seed"))
+            if not np.isfinite(route_seed):
+                route_seed = _safe_float(row.get("replacement_seed"))
+            cases.append({
+                "vessel_key": vessel_key,
+                "vessel_label": row.get("vessel_label", vessel_key),
+                "vessel_file": MANUSCRIPT_VESSEL_FILES[vessel_key],
+                "flow_scale": flow_scale,
+                "pair": {
+                    "pair_id": row["pair_id"],
+                    "trial_kind": row.get("trial_kind", "selected"),
+                    "start": np.asarray([
+                        float(row["start_x_m"]), float(row["start_y_m"]),
+                        float(row["start_z_m"]),
+                    ]),
+                    "target": np.asarray([
+                        float(row["target_x_m"]), float(row["target_y_m"]),
+                        float(row["target_z_m"]),
+                    ]),
+                    "route_length_m": _safe_float(
+                        row.get("route_length_m_from_seed_record")
+                    ),
+                    "route_min_clearance_m": _safe_float(
+                        row.get("route_min_clearance_m_from_seed_record")
+                    ),
+                    "route_min_authority_reserve_m_s": _safe_float(
+                        row.get("route_min_authority_reserve_m_s_from_seed_record")
+                    ),
+                },
+                "trial_seed": int(route_seed) if np.isfinite(route_seed) else None,
+            })
+
+    cases.sort(key=lambda item: (
+        item["vessel_key"], item["flow_scale"], item["pair"]["pair_id"]
+    ))
+    return cases
 
 
 def _trial_pairs(
@@ -479,6 +572,8 @@ def _result_row(run_id, stress_mode, flow_scale, pair, variant, result, network,
     row = {
         "run_id": run_id,
         "stress_mode": stress_mode,
+        "vessel_key": pair.get("vessel_key", ""),
+        "vessel_label": pair.get("vessel_label", ""),
         "flow_scale": float(flow_scale),
         "pair_id": pair["pair_id"],
         "trial_kind": pair["trial_kind"],
@@ -611,7 +706,7 @@ def _common_kwargs(args, profile, max_current: float) -> dict[str, Any]:
         "device_mode": args.device_mode,
         "profile": profile,
         "wall_clearance_threshold_m": args.wall_clearance_threshold_mm / 1000.0,
-        "early_stop_enabled": True,
+        "early_stop_enabled": not bool(args.selected_cases_csv),
         "early_stop_window_steps": args.early_stop_window_steps,
         "early_stop_improvement_threshold_m": args.early_stop_improvement_threshold_m,
         "verbose_every": args.verbose_every,
@@ -630,6 +725,9 @@ def _run_task(task: dict[str, Any]) -> dict[str, Any]:
         **task["variant"].kwargs,
     )
     return {
+        "vessel_key": task["vessel_key"],
+        "vessel_label": task["vessel_label"],
+        "vessel_file": task["vessel_file"],
         "flow_scale": task["flow_scale"],
         "pair": task["pair"],
         "variant": task["variant"],
@@ -662,10 +760,15 @@ def run_benchmark(args) -> str:
     config = {
         "run_id": run_id,
         "stress_mode": args.stress_mode,
-        "vessel_file": args.vessel_file,
+        "vessel_file": args.vessel_file if not args.selected_cases_csv else None,
+        "selected_cases_csv": args.selected_cases_csv,
         "flow_scales": flow_scales,
         "n_random_trials": args.n_random_trials,
         "seed": args.seed,
+        "workers": max(1, int(args.workers)),
+        "steps": int(args.steps),
+        "dt": float(args.dt),
+        "early_stop_enabled": not bool(args.selected_cases_csv),
         "controllers": selected_keys,
         "profile": {
             "name": profile.name,
@@ -683,110 +786,140 @@ def run_benchmark(args) -> str:
     rows = []
     seed_records = []
     workers = max(1, int(args.workers))
+    common_kwargs = _common_kwargs(args, profile, effective_max_current)
 
-    for flow_scale in flow_scales:
-        network = RealVesselNetwork(args.vessel_file, flow_scale=flow_scale)
-        print(network.segment_summary(), flush=True)
-        rng = np.random.default_rng(args.seed + int(round(flow_scale * 1000)))
-        pairs = _trial_pairs(
-            network=network,
-            rng=rng,
-            n_random=args.n_random_trials,
-            vessel_file=args.vessel_file,
-            profile=profile,
-            wall_clearance_threshold_m=args.wall_clearance_threshold_mm / 1000.0,
+    if args.selected_cases_csv:
+        cases = _load_selected_cases(args.selected_cases_csv, flow_scales)
+        expected = len(MANUSCRIPT_VESSEL_FILES) * 5 * len(flow_scales)
+        if (not args.allow_partial_selected_cases) and (len(cases) != expected):
+            raise ValueError(
+                f"Selected-case CSV yielded {len(cases)} cases; expected {expected} "
+                f"({len(MANUSCRIPT_VESSEL_FILES)} anatomies x 5 routes x "
+                f"{len(flow_scales)} flows)"
+            )
+    else:
+        cases = []
+        for flow_scale in flow_scales:
+            network = RealVesselNetwork(args.vessel_file, flow_scale=flow_scale)
+            print(network.segment_summary(), flush=True)
+            rng = np.random.default_rng(args.seed + int(round(flow_scale * 1000)))
+            pairs = _trial_pairs(
+                network=network,
+                rng=rng,
+                n_random=args.n_random_trials,
+                vessel_file=args.vessel_file,
+                profile=profile,
+                wall_clearance_threshold_m=args.wall_clearance_threshold_mm / 1000.0,
+            )
+            for pair in pairs:
+                cases.append({
+                    "vessel_key": "single_vessel",
+                    "vessel_label": "Single vessel",
+                    "vessel_file": args.vessel_file,
+                    "flow_scale": flow_scale,
+                    "pair": pair,
+                    "trial_seed": None,
+                })
+
+    tasks = []
+    for case_idx, case in enumerate(cases):
+        pair = dict(case["pair"])
+        pair["vessel_key"] = case["vessel_key"]
+        pair["vessel_label"] = case["vessel_label"]
+        trial_seed = case["trial_seed"]
+        if trial_seed is None:
+            trial_seed = args.seed + case_idx
+        seed_records.append({
+            "vessel_key": case["vessel_key"],
+            "vessel_file": case["vessel_file"],
+            "flow_scale": case["flow_scale"],
+            "pair_id": pair["pair_id"],
+            "seed": trial_seed,
+            "start": np.asarray(pair["start"], dtype=float).tolist(),
+            "target": np.asarray(pair["target"], dtype=float).tolist(),
+            "route_length_m": pair.get("route_length_m"),
+            "route_min_clearance_m": pair.get("route_min_clearance_m"),
+            "route_min_authority_reserve_m_s": pair.get("route_min_authority_reserve_m_s"),
+        })
+        for variant in selected:
+            tasks.append({
+                "vessel_key": case["vessel_key"],
+                "vessel_label": case["vessel_label"],
+                "vessel_file": case["vessel_file"],
+                "flow_scale": case["flow_scale"],
+                "pair": pair,
+                "variant": variant,
+                "trial_seed": trial_seed,
+                "common_kwargs": common_kwargs,
+            })
+
+    network_cache = {}
+    results_by_bucket = defaultdict(list)
+
+    def handle(item):
+        variant = item["variant"]
+        pair = item["pair"]
+        flow_scale = item["flow_scale"]
+        bucket = (item["vessel_key"], flow_scale, variant.key)
+        network_key = (item["vessel_file"], flow_scale)
+        if network_key not in network_cache:
+            network_cache[network_key] = RealVesselNetwork(
+                item["vessel_file"], flow_scale=flow_scale
+            )
+        row = _result_row(
+            run_id=run_id,
+            stress_mode=args.stress_mode,
+            flow_scale=flow_scale,
+            pair=pair,
+            variant=variant,
+            result=item["result"],
+            network=network_cache[network_key],
+            clearance_target_m=args.wall_clearance_threshold_mm / 1000.0,
+        )
+        rows.append(row)
+        results_by_bucket[bucket].append(item["result"])
+        _write_csv(rows, os.path.join(root, "ablation_results.csv"), ROW_FIELDS)
+        _write_csv(
+            _aggregate(rows, run_id, args.stress_mode, args.steps),
+            os.path.join(root, "ablation_summary.csv"), SUMMARY_FIELDS,
         )
 
-        common_kwargs = _common_kwargs(args, profile, effective_max_current)
-        tasks = []
-        for pair_idx, pair in enumerate(pairs):
-            trial_seed = args.seed + 100000 * int(round(flow_scale * 10)) + pair_idx
-            seed_records.append(
-                {
-                    "flow_scale": flow_scale,
-                    "pair_id": pair["pair_id"],
-                    "seed": trial_seed,
-                    "start": np.asarray(pair["start"], dtype=float).tolist(),
-                    "target": np.asarray(pair["target"], dtype=float).tolist(),
-                    "route_length_m": pair.get("route_length_m"),
-                    "route_min_clearance_m": pair.get("route_min_clearance_m"),
-                    "route_min_authority_reserve_m_s": pair.get("route_min_authority_reserve_m_s"),
-                }
-            )
-            for variant in selected:
-                tasks.append(
-                    {
-                        "vessel_file": args.vessel_file,
-                        "flow_scale": flow_scale,
-                        "pair": pair,
-                        "variant": variant,
-                        "trial_seed": trial_seed,
-                        "common_kwargs": common_kwargs,
-                    }
-                )
+    def task_label(task):
+        return (
+            f"anatomy={task['vessel_key']} flow={task['flow_scale']:g} "
+            f"pair={task['pair']['pair_id']} variant={task['variant'].key}"
+        )
 
-        results_by_variant = defaultdict(list)
-
-        def handle(item):
-            variant = item["variant"]
-            pair = item["pair"]
-            result = item["result"]
-            out_dir = os.path.join(root, f"flow_{flow_scale:g}x", variant.key)
-            os.makedirs(out_dir, exist_ok=True)
-            row = _result_row(
-                run_id=run_id,
-                stress_mode=args.stress_mode,
-                flow_scale=flow_scale,
-                pair=pair,
-                variant=variant,
-                result=result,
-                network=network,
-                clearance_target_m=args.wall_clearance_threshold_mm / 1000.0,
-            )
-            rows.append(row)
-            results_by_variant[variant.key].append(result)
-            _write_csv(rows, os.path.join(root, "ablation_results.csv"), ROW_FIELDS)
-            _write_csv(
-                _aggregate(rows, run_id, args.stress_mode, args.steps),
-                os.path.join(root, "ablation_summary.csv"),
-                SUMMARY_FIELDS,
-            )
-
-        if workers == 1:
+    if workers == 1:
+        for task in tasks:
+            print(f"[{run_id}] {task_label(task)}", flush=True)
+            handle(_run_task(task))
+    else:
+        try:
+            executor = ProcessPoolExecutor(max_workers=workers)
+        except PermissionError:
+            executor = ThreadPoolExecutor(max_workers=workers)
+        with executor:
+            futures = []
             for task in tasks:
+                print(f"[{run_id}] submit {task_label(task)}", flush=True)
+                futures.append(executor.submit(_run_task, task))
+            for future in as_completed(futures):
+                item = future.result()
                 print(
-                    f"[{run_id}] flow={flow_scale:g} pair={task['pair']['pair_id']} "
-                    f"variant={task['variant'].key}",
-                    flush=True,
+                    f"[{run_id}] done anatomy={item['vessel_key']} "
+                    f"flow={item['flow_scale']:g} pair={item['pair']['pair_id']} "
+                    f"variant={item['variant'].key}", flush=True,
                 )
-                handle(_run_task(task))
-        else:
-            try:
-                executor = ProcessPoolExecutor(max_workers=workers)
-            except PermissionError:
-                executor = ThreadPoolExecutor(max_workers=workers)
-            with executor:
-                futures = []
-                for task in tasks:
-                    print(
-                        f"[{run_id}] submit flow={flow_scale:g} pair={task['pair']['pair_id']} "
-                        f"variant={task['variant'].key}",
-                        flush=True,
-                    )
-                    futures.append(executor.submit(_run_task, task))
-                for future in as_completed(futures):
-                    item = future.result()
-                    print(
-                        f"[{run_id}] done flow={item['flow_scale']:g} pair={item['pair']['pair_id']} "
-                        f"variant={item['variant'].key}",
-                        flush=True,
-                    )
-                    handle(item)
+                handle(item)
 
-        for variant in selected:
-            out_dir = os.path.join(root, f"flow_{flow_scale:g}x", variant.key)
-            save_results_csv(results_by_variant[variant.key], out_dir)
-            save_comet_diagnostics(results_by_variant[variant.key], out_dir)
+    for (vessel_key, flow_scale, variant_key), results in results_by_bucket.items():
+        out_dir = os.path.join(
+            root, vessel_key, f"flow_{flow_scale:g}x", variant_key
+        )
+        os.makedirs(out_dir, exist_ok=True)
+        save_results_csv(results, out_dir)
+        save_comet_diagnostics(results, out_dir)
 
     summary = {
         **config,
@@ -814,6 +947,19 @@ def main():
     parser.add_argument("--output-dir", default="outputs/comet_ablation_benchmark")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--vessel-file", default=DEFAULT_VESSEL_FILE)
+    parser.add_argument(
+        "--selected-cases-csv",
+        default=None,
+        help=(
+            "Use the full-COMET rows in a manuscript selected-results CSV "
+            "instead of generating routes for one vessel."
+        ),
+    )
+    parser.add_argument(
+        "--allow-partial-selected-cases",
+        action="store_true",
+        help="Allow fewer than the frozen 45 selected cases for implementation sanity checks only.",
+    )
     parser.add_argument("--flow-scales", default="1,3,5")
     parser.add_argument("--n-random-trials", type=int, default=4)
     parser.add_argument("--seed", type=int, default=20260609)
@@ -841,6 +987,13 @@ def main():
     parser.add_argument("--list-controllers", action="store_true")
     parser.add_argument("--smoke-test", action="store_true")
     args = parser.parse_args()
+    controllers_explicit = any(
+        arg == "--controllers" or arg.startswith("--controllers=")
+        for arg in sys.argv[1:]
+    )
+    steps_explicit = any(
+        arg == "--steps" or arg.startswith("--steps=") for arg in sys.argv[1:]
+    )
 
     if args.list_controllers:
         for key, variant in COMET_ABLATION_VARIANTS.items():
@@ -850,9 +1003,13 @@ def main():
     if args.smoke_test:
         args.flow_scales = "1"
         args.n_random_trials = 1
-        args.controllers = "comet,comet_no_terminal_precision"
+        if not controllers_explicit:
+            args.controllers = "comet,comet_no_terminal_precision"
         args.steps = min(args.steps, 300)
         args.verbose_every = args.verbose_every or 50
+    elif args.selected_cases_csv and not steps_explicit:
+        # The source manuscript benchmark configs used a 2,000-step budget.
+        args.steps = 2000
 
     run_benchmark(args)
 
