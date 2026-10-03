@@ -1,0 +1,4 @@
+controller_key,algorithm,trials,median_steps,mean_steps,max_steps,success_rate,success_rate_percent
+acbc_tuned,aCBC,18,133.0,155.33333333333334,360,0.8333333333333334,83.33333333333334
+comet,COMET,45,127.0,138.15555555555557,393,1.0,100.0
+mpc_tuned,MPC,18,83.0,137.61111111111111,663,0.8333333333333334,83.33333333333334

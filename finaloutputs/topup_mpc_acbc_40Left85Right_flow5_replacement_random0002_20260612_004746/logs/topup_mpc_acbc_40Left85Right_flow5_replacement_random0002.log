@@ -1,0 +1,51 @@
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=5 pair=random_0002 kind=random start_mm=[-139.43559984394597, 110.37744070055524, -188.60415698714297] target_mm=[-131.65601857834196, 115.3535285905861, -160.3969252365656] straight_mm=29.680
+[topup_mpc_acbc_40Left85Right_flow5_replacement_random0002] submit flow=5 pair=random_0002 controller=mpc_tuned
+[topup_mpc_acbc_40Left85Right_flow5_replacement_random0002] submit flow=5 pair=random_0002 controller=acbc_tuned
+Matplotlib is building the font cache; this may take a moment.
+Matplotlib is building the font cache; this may take a moment.
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 277, sparse waypoints: 16
+      wp1: [-139.8  109.4 -186.9] mm
+      wp2: [-140.   108.7 -185. ] mm
+      wp3: [-140.   108.2 -182.9] mm
+      wp4: [-139.9  108.1 -180.9] mm
+      wp5: [-139.6  108.5 -178.9] mm
+      wp6: [-139.3  109.  -176.9] mm
+      wp7: [-138.8  109.7 -174.9] mm
+      wp8: [-138.3  110.5 -173. ] mm
+      wp9: [-137.7  111.5 -171.1] mm
+      wp10: [-136.9  112.4 -169.2] mm
+      ...
+      wp16: [-131.7  115.4 -160.4] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-139.4  110.4 -188.6] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.1C
+  Gantry: mean_particle_dist=0.4mm, max_lateral=3.7mm
+[topup_mpc_acbc_40Left85Right_flow5_replacement_random0002] done flow=5 pair=random_0002 controller=mpc_tuned
+[topup_mpc_acbc_40Left85Right_flow5_replacement_random0002] done flow=5 pair=random_0002 controller=acbc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 277, sparse waypoints: 20
+      wp1: [-139.7  109.7 -187.3] mm
+      wp2: [-139.9  109.  -185.7] mm
+      wp3: [-140.   108.5 -184.3] mm
+      wp4: [-140.   108.2 -182.8] mm
+      wp5: [-139.9  108.1 -181.2] mm
+      wp6: [-139.7  108.3 -179.6] mm
+      wp7: [-139.5  108.7 -178.1] mm
+      wp8: [-139.2  109.1 -176.6] mm
+      wp9: [-138.9  109.6 -175.1] mm
+      wp10: [-138.5  110.2 -173.7] mm
+      ...
+      wp20: [-131.7  115.4 -160.4] mm
+    ACBC: detection_radius=25.7 mm, branch_lookahead=16.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-139.4  110.4 -188.6] mm
+  step   10/2000  state=VIABILITY_ASSESSMENT  dist=5.0mm  wp=15/20  best_wp=15/20  acbc_best=15/20  stag=0  wall=0.92mm  wall_frac=0.329  |F|=7.16e-06N  |B|=5.65e-02T  |I|=16.0A  v=155.90mm/s  flow=19.76mm/s  Re=2.06e+01  lat=1.2mm
+  ACBC summary: transitions=3, commitments=0, recoveries=0, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.1C
+  Gantry: mean_particle_dist=0.4mm, max_lateral=3.6mm
+ACBC diagnostics saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/topup_mpc_acbc_40Left85Right_flow5_replacement_random0002_20260612_004746/topup_mpc_acbc_40Left85Right_flow5_replacement_random0002/flow_5x/acbc_tuned/acbc_diagnostics.csv
+
+Benchmark outputs saved to: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/topup_mpc_acbc_40Left85Right_flow5_replacement_random0002_20260612_004746/topup_mpc_acbc_40Left85Right_flow5_replacement_random0002
+Paired CSV: /Users/pradhyun/DynaMag-Magnetic-Nanoparticle-Steering-Simulation-3/finaloutputs/topup_mpc_acbc_40Left85Right_flow5_replacement_random0002_20260612_004746/topup_mpc_acbc_40Left85Right_flow5_replacement_random0002/paired_results.csv

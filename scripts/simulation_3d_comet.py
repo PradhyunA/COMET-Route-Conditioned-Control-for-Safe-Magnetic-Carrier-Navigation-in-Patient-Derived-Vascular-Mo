@@ -109,6 +109,9 @@ def save_comet_diagnostics(results, output_dir, filename="comet_diagnostics.csv"
        "terminal_correction_x_m_s", "terminal_correction_y_m_s",
        "terminal_correction_z_m_s", "current_saturation",
        "final_hold_steps", "overshoot_count", "direct_terminal_feasible",
+       "ablate_branch_conditioned_motion_shaping", "branch_shaping_active",
+       "ablate_flow_compensation", "flow_compensation_active",
+       "allocator_type", "ablate_cem_allocator",
    ]
 
 
@@ -402,6 +405,12 @@ def simulate_trial_comet(
            *info.terminal_correction, info.current_saturation,
            info.final_hold_steps, info.overshoot_count,
            info.direct_terminal_feasible,
+           info.ablate_branch_conditioned_motion_shaping,
+           info.branch_shaping_active,
+           info.ablate_flow_compensation,
+           info.flow_compensation_active,
+           info.allocator_type,
+           info.ablate_cem_allocator,
        ])
        # Compatibility log so the shared benchmark CSV can count
        # mode transitions for COMET like it does for ACBC.
