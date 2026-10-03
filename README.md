@@ -15,6 +15,7 @@ vessel networks. The simulation includes:
 - **Brownian thermal noise** (Stokes-Einstein diffusion)
 - **Background flow fields** (NoFlow, Uniform, Poiseuille, Pulsatile cardiac)
 - **Flow-aware MPC controller** (1-step SLSQP optimisation with flow compensation)
+- **Published PETS-style CEM-MPC baseline** (multi-step sampling MPC; Chua et al., NeurIPS 2018)
 - **Reynolds number tracking** with Stokes and finite-Re carrier-regime labels
 - **Adaptive substepping** with per-substep flow evaluation
 
@@ -30,7 +31,7 @@ pip install -r requirements.txt
 python scripts/simulation_3d_mpc.py
 
 # Run the paired 1 mm publication benchmark infrastructure
-python scripts/run_publication_benchmark_1mm.py --smoke-test
+python scripts/run_publication_benchmark.py --smoke-test
 
 # Run tests
 python -m pytest tests/ -v
@@ -50,6 +51,7 @@ python -m pytest tests/ -v
 │   │   ├── flow.py                   # Background flow models (Uniform, Poiseuille, Pulsatile)
 │   │   ├── integrator.py             # Adaptive substepping with flow evaluation
 │   │   ├── controllers.py            # Flow-aware MPC controller
+│   │   ├── cem_mpc_controller.py     # Published PETS-style CEM-MPC baseline
 │   │   ├── validation.py             # Stokes / finite-Re regime checks
 │   │   ├── reporting.py              # TrialResult, CSV output
 │   │   └── plotting.py               # Consolidated plot generation
@@ -158,3 +160,7 @@ Results appear in `outputs/simulation_outputs_3d_mpc/`.
 
 See `docs/modeling_assumptions.md` for detailed equations, units, validity
 limits, and a list of what is and is not modelled.
+
+See `docs/cem_mpc_baseline.md` for the published baseline citation, the exact
+reproduced CEM components, the deterministic-physics adaptation, benchmark
+commands, and manuscript-ready method wording.

@@ -1,0 +1,236 @@
+SMC-DOB-inspired published-style baseline
+Adapted from Bhattacharjee et al. (2026); NOT an exact reproduction
+Protocol: 3 anatomies x 3 flow scales x 5 frozen Dijkstra routes = 45 cases
+Shared model: 500 um carrier | dt 0.02 s | max steps 2000 | tolerance 0.5 mm
+Allocation: non-CEM bounded SLSQP current allocator
+COMET branch probability/downstream value/terminal precision: disabled by design
+Workers: 6 | seed: 20260611
+Output root: outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631
+[2026-08-27 23:36:49] Starting cm_corrected (15 cases)
+SMC-DOB-inspired published-style baseline
+Adapted from Bhattacharjee et al. (2026); NOT an exact reproduction
+Protocol: 3 anatomies x 3 flow scales x 5 frozen Dijkstra routes = 45 cases
+Shared model: 500 um carrier | dt 0.02 s | max steps 2000 | tolerance 0.5 mm
+Allocation: non-CEM bounded SLSQP current allocator
+COMET branch probability/downstream value/terminal precision: disabled by design
+Workers: 6 | seed: 20260611
+Output root: outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631
+[2026-08-27 23:40:23] Starting cm_corrected (15 cases)
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  flow=1 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[39.696066130849374, -2.559612817625204, -176.1665153500169] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=165.265
+  flow=1 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[16.828754723605883, -17.112693699283565, -308.7731888542895] straight_mm=138.098
+  flow=1 pair=random_0001 kind=random start_mm=[-33.216786981557256, 50.423613636618, -140.292264646555] target_mm=[-21.3356741199925, 16.33164068124498, -274.3962494360202] straight_mm=138.879
+  flow=1 pair=random_0002 kind=random start_mm=[37.25635223445767, -2.438665044877356, -176.36229001761535] target_mm=[-5.062606340121786, -7.278801507140701, -130.24300683859403] straight_mm=62.780
+  flow=3 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  flow=3 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-62.835609359183834, -20.8890754695203, -336.38111126432204] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=294.023
+  flow=3 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-12.7896692307386, 19.429022858055855, -274.8697912519962] straight_mm=176.949
+  flow=3 pair=random_0001 kind=random start_mm=[26.945830908796115, 0.5604649645978347, -172.01717078916414] target_mm=[0.6702891352264368, 7.965358433098546, -170.3241360304887] straight_mm=27.351
+  flow=3 pair=random_0002 kind=random start_mm=[11.64473671167588, -19.245799374653323, -320.64888625087764] target_mm=[0.3088162751806764, 16.792511260133008, -129.40033257082558] straight_mm=194.944
+  flow=5 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  flow=5 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-13.145033486604103, 20.156750244645266, -259.9697249985778] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=229.864
+  flow=5 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[37.695941422368165, -8.116126269208932, -378.57512066006467] straight_mm=67.199
+  flow=5 pair=random_0001 kind=random start_mm=[23.208166886179928, 2.397357095827697, -166.50209659966055] target_mm=[26.43191651882742, -6.359961140306316, -297.24302499870464] straight_mm=131.074
+  flow=5 pair=random_0002 kind=random start_mm=[-41.056223867569145, 13.079529533265546, -181.9375254245619] target_mm=[7.434696261461543, 46.35289206909364, -143.64506145576604] straight_mm=70.177
+[smc_dob_inspired_cm_corrected] submit flow=1 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=1 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=1 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=1 pair=random_0001 controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=1 pair=random_0002 controller=smc_dob_inspired
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 888, sparse waypoints: 78
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 489, sparse waypoints: 34
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  37.3   -2.4 -176.4] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 766, sparse waypoints: 80
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  39.7   -2.6 -176.2] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1442, sparse waypoints: 129
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -33.2   50.4 -140.3] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2127, sparse waypoints: 230
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=1 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=1 pair=random_0002 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=1 pair=random_0001 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=1 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=1 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+SMC-DOB-inspired diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631/smc_dob_inspired_cm_corrected/flow_1x/smc_dob_inspired/smc_dob_inspired_diagnostics.csv
+[smc_dob_inspired_cm_corrected] submit flow=3 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=3 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=3 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=3 pair=random_0001 controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=3 pair=random_0002 controller=smc_dob_inspired
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1430, sparse waypoints: 119
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 449, sparse waypoints: 35
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  26.9    0.6 -172. ] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1323, sparse waypoints: 137
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  11.6  -19.2 -320.6] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1482, sparse waypoints: 174
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -62.8  -20.9 -336.4] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2127, sparse waypoints: 230
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=3 pair=random_0001 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=3 pair=random_0002 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=3 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=3 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=3 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+SMC-DOB-inspired diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631/smc_dob_inspired_cm_corrected/flow_3x/smc_dob_inspired/smc_dob_inspired_diagnostics.csv
+[smc_dob_inspired_cm_corrected] submit flow=5 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=5 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=5 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=5 pair=random_0001 controller=smc_dob_inspired
+[smc_dob_inspired_cm_corrected] submit flow=5 pair=random_0002 controller=smc_dob_inspired
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 416, sparse waypoints: 35
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1208, sparse waypoints: 75
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -41.1   13.1 -181.9] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1054, sparse waypoints: 110
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  23.2    2.4 -166.5] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 625, sparse waypoints: 104
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -13.1   20.2 -260. ] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2127, sparse waypoints: 230
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=5 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=5 pair=random_0001 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=5 pair=random_0002 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=5 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_cm_corrected] done flow=5 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+SMC-DOB-inspired diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631/smc_dob_inspired_cm_corrected/flow_5x/smc_dob_inspired/smc_dob_inspired_diagnostics.csv
+
+Benchmark outputs saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631/smc_dob_inspired_cm_corrected
+Paired CSV: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/publication_benchmark_500um/smc_dob_inspired_noearlystop_45case_3anatomy_20260827_233631/smc_dob_inspired_cm_corrected/paired_results.csv
+Validated 15 SMC-DOB-inspired cases
+[2026-08-28 02:50:48] Starting 40Left85Right (15 cases)
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_medium_40Left85Right_endpoint03 kind=canonical start_mm=[-104.88859564, 39.14727271, -376.76280737] target_mm=[-76.45376772, 123.07464331, -166.75929725] straight_mm=227.934
+  flow=1 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-111.49065876312531, 148.59538852212847, -72.20407117566381] target_mm=[-76.45376772, 123.07464331, -166.75929725] straight_mm=104.017
+  flow=1 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-104.88859564, 39.14727271, -376.76280737] target_mm=[-126.794016109328, 116.68735646816931, -149.63719661859201] straight_mm=240.995
+  flow=1 pair=random_0001 kind=random start_mm=[-132.63739819825616, 110.29960585733613, -253.24464160416167] target_mm=[-78.40969714809957, 119.09320811322692, -261.3382794901324] straight_mm=55.529
+  flow=1 pair=random_0002 kind=random start_mm=[-102.81591028610919, 113.03955015383775, -338.9272240459785] target_mm=[-102.47707526290263, 112.32098081293832, -342.8133384091479] straight_mm=3.966
+  flow=3 pair=canonical_001_medium_40Left85Right_endpoint03 kind=canonical start_mm=[-104.88859564, 39.14727271, -376.76280737] target_mm=[-76.45376772, 123.07464331, -166.75929725] straight_mm=227.934
+  flow=3 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-97.07953251467707, 123.33096591576339, -294.56815875061994] target_mm=[-76.45376772, 123.07464331, -166.75929725] straight_mm=129.463
+  flow=3 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-104.88859564, 39.14727271, -376.76280737] target_mm=[-86.6911763189489, 122.94403264219672, -183.41362161854653] straight_mm=211.511
+  flow=3 pair=random_0001 kind=random start_mm=[-109.21308235629188, 141.29782102655068, -93.52860859121955] target_mm=[-105.69143015000995, 112.72250385686871, -323.59747482887514] straight_mm=231.863
+  flow=3 pair=random_0002 kind=random start_mm=[-132.4186482943915, 111.28508373230719, -132.03226075657443] target_mm=[-134.3257820579075, 117.00730996901282, -217.50538679256437] straight_mm=85.686
+  flow=5 pair=canonical_001_medium_40Left85Right_endpoint03 kind=canonical start_mm=[-104.88859564, 39.14727271, -376.76280737] target_mm=[-76.45376772, 123.07464331, -166.75929725] straight_mm=227.934
+  flow=5 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-130.31770085714334, 108.20098587553039, -267.46863784924784] target_mm=[-76.45376772, 123.07464331, -166.75929725] straight_mm=115.173
+  flow=5 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-104.88859564, 39.14727271, -376.76280737] target_mm=[-101.17424401553868, 122.72188689382071, -302.0223536446207] straight_mm=112.181
+  flow=5 pair=random_0001 kind=random start_mm=[-114.30230705878793, 125.30541268195446, -90.60668725759525] target_mm=[-78.78587670967151, 117.64445506041382, -276.2736740783527] straight_mm=189.189
+  flow=5 pair=random_0002 kind=random start_mm=[-132.92655114193497, 132.7420720327562, -93.49999366940149] target_mm=[-102.93458924665933, 113.11712733338108, -338.76999647578646] straight_mm=247.875
+[smc_dob_inspired_40Left85Right] submit flow=1 pair=canonical_001_medium_40Left85Right_endpoint03 controller=smc_dob_inspired
+[smc_dob_inspired_40Left85Right] submit flow=1 pair=canonical_002_random_to_publication_target controller=smc_dob_inspired
+[smc_dob_inspired_40Left85Right] submit flow=1 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+[smc_dob_inspired_40Left85Right] submit flow=1 pair=random_0001 controller=smc_dob_inspired
+[smc_dob_inspired_40Left85Right] submit flow=1 pair=random_0002 controller=smc_dob_inspired
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 32, sparse waypoints: 2
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-102.8  113.  -338.9] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2234, sparse waypoints: 151
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-104.9   39.1 -376.8] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2680, sparse waypoints: 175
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-104.9   39.1 -376.8] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1318, sparse waypoints: 93
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-132.6  110.3 -253.2] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 4243, sparse waypoints: 267
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-111.5  148.6  -72.2] mm
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_40Left85Right] done flow=1 pair=random_0002 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_40Left85Right] done flow=1 pair=canonical_001_medium_40Left85Right_endpoint03 controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_40Left85Right] done flow=1 pair=canonical_003_publication_start_to_random controller=smc_dob_inspired
+  smc_dob_inspired summary: low-level convergence=100.00%
+[smc_dob_inspired_40Left85Right] done flow=1 pair=random_0001 controller=smc_dob_inspired

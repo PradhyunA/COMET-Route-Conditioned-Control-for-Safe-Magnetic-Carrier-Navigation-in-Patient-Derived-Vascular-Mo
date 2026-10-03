@@ -30,14 +30,60 @@ def _row(controller, reached, steps):
     }
 
 
-def test_five_primary_controller_variants_are_available():
+def test_primary_controller_variants_include_published_cem_mpc():
     assert {
+        "icem_mpc_default_shared",
+        "icem_mpc_tuned_shared",
+        "pets_cem_mpc",
         "naive_mpc",
         "mpc_default",
         "mpc_tuned",
         "acbc_same_weights",
         "acbc_tuned",
+        "smc_dob_inspired",
     }.issubset(CONTROLLER_VARIANTS)
+
+    published = CONTROLLER_VARIANTS["pets_cem_mpc"]
+    assert published.kind == "cem_mpc"
+    assert published.kwargs["optimizer"] == "pets_cem"
+    assert published.kwargs["cem_population_size"] == 400
+    assert published.kwargs["cem_num_elites"] == 40
+
+    smc_dob = CONTROLLER_VARIANTS["smc_dob_inspired"]
+    assert smc_dob.kind == "smc_dob_inspired"
+    assert "not an exact reproduction" in smc_dob.label
+    assert smc_dob.kwargs["sliding_gamma"] == 2.0
+    assert smc_dob.kwargs["sliding_lambda"] == 1.0
+
+
+def test_icem_shared_objective_variants_only_change_task_cost_weights():
+    default = CONTROLLER_VARIANTS["icem_mpc_default_shared"]
+    tuned = CONTROLLER_VARIANTS["icem_mpc_tuned_shared"]
+
+    assert default.kind == tuned.kind == "cem_mpc"
+    assert default.kwargs["optimizer"] == tuned.kwargs["optimizer"] == "icem"
+    for key in (
+        "cem_horizon",
+        "cem_population_size",
+        "cem_num_elites",
+        "cem_max_iterations",
+        "cem_alpha",
+        "icem_init_std",
+        "icem_population_decay_factor",
+        "icem_fraction_elites_reused",
+        "icem_noise_beta",
+        "icem_use_mean_action",
+        "icem_keep_previous_elites",
+        "icem_shift_elites_over_time",
+    ):
+        assert default.kwargs[key] == tuned.kwargs[key]
+
+    assert default.kwargs["w_progress"] == 120.0
+    assert default.kwargs["w_align"] == 8.0
+    assert default.kwargs["w_route"] == 0.0
+    assert tuned.kwargs["w_progress"] == 450.0
+    assert tuned.kwargs["w_align"] == 35.0
+    assert tuned.kwargs["w_route"] == 15.0
 
 
 def test_five_comet_ablation_programs_are_available():

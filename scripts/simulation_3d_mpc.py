@@ -54,9 +54,18 @@ from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
 from dynamag_simulation.core.integrator import adaptive_step
 from dynamag_simulation.core.controllers import continuous_mpc_controller
+from dynamag_simulation.core.cem_mpc_controller import (
+    ICEMConfig,
+    ICEMMPCController,
+    PETSCEMConfig,
+    PETSCEMMPCController,
+    icem_population_schedule,
+)
 from dynamag_simulation.core.validation import compute_reynolds, check_low_re_validity
+from dynamag_simulation.core.constrained_cem_controller import (
+    ConstrainedCEMConfig, ConstrainedCEMMPCController, REFERENCE_COMMIT,
+)
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
-from dynamag_simulation.core.plotting import save_all_plots
 from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
 from dynamag_simulation.core.workspace import WorkspaceVessel
 
@@ -94,6 +103,7 @@ DEFAULT_MPC_WAYPOINT_LOOKAHEAD = 1
 DEFAULT_FORWARD_SEARCH_POINTS = 25
 DEFAULT_EARLY_STOP_WINDOW_STEPS = 200
 DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
+VALID_MPC_OPTIMIZERS = {"slsqp", "pets_cem", "icem", "constrained_cem"}
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -429,11 +439,37 @@ def simulate_trial_mpc(
     early_stop_improvement_threshold_m: float = (
         DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
     ),
+    optimizer: str = "slsqp",
+    cem_horizon: int = 25,
+    cem_population_size: int = 400,
+    cem_num_elites: int = 40,
+    cem_max_iterations: int = 5,
+    cem_alpha: float = 0.1,
+    cem_epsilon: float = 1e-3,
+    icem_init_std: float = 0.5,
+    icem_population_decay_factor: float = 1.25,
+    icem_fraction_elites_reused: float = 0.3,
+    icem_noise_beta: float = 3.0,
+    icem_use_mean_action: bool = True,
+    icem_keep_previous_elites: bool = True,
+    icem_shift_elites_over_time: bool = True,
+    constrained_cem_initial_std: float = 1.0,
+    constrained_cem_sample_within_action_bounds: bool = False,
+    constrained_cem_include_initial_state_constraint: bool = True,
+    constrained_cem_best_effort_on_infeasible: bool = False,
+    constrained_cem_hard_clearance_m: float | None = None,
+    constrained_cem_action_blocks: int | None = None,
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
             f"device_mode must be one of {sorted(VALID_DEVICE_MODES)}, "
             f"got {device_mode}"
+        )
+
+    if optimizer not in VALID_MPC_OPTIMIZERS:
+        raise ValueError(
+            f"optimizer must be one of {sorted(VALID_MPC_OPTIMIZERS)}, "
+            f"got {optimizer}"
         )
 
     workspace = WorkspaceVessel(network)
@@ -468,6 +504,74 @@ def simulate_trial_mpc(
         profile=profile,
         rng_seed=rng_seed,
     )
+
+    cem_config = None
+    cem_controller = None
+    if optimizer == "constrained_cem":
+        cem_config = ConstrainedCEMConfig(
+            horizon=int(cem_horizon), population_size=int(cem_population_size),
+            num_elites=int(cem_num_elites), max_iterations=int(cem_max_iterations),
+            initial_std=float(constrained_cem_initial_std),
+            sample_within_action_bounds=bool(
+                constrained_cem_sample_within_action_bounds
+            ),
+            include_initial_state_constraint=bool(
+                constrained_cem_include_initial_state_constraint
+            ),
+            best_effort_on_infeasible=bool(
+                constrained_cem_best_effort_on_infeasible
+            ),
+            hard_clearance_m=(
+                None
+                if constrained_cem_hard_clearance_m is None
+                else float(constrained_cem_hard_clearance_m)
+            ),
+            action_blocks=(
+                None
+                if constrained_cem_action_blocks is None
+                else int(constrained_cem_action_blocks)
+            ),
+        )
+        cem_controller = ConstrainedCEMMPCController(
+            action_dim=magnets.n_magnets, max_current=max_current,
+            config=cem_config, rng_seed=rng_seed,
+        )
+    elif optimizer == "pets_cem":
+        cem_config = PETSCEMConfig(
+            horizon=int(cem_horizon),
+            population_size=int(cem_population_size),
+            num_elites=int(cem_num_elites),
+            max_iterations=int(cem_max_iterations),
+            alpha=float(cem_alpha),
+            epsilon=float(cem_epsilon),
+        )
+        cem_controller = PETSCEMMPCController(
+            action_dim=magnets.n_magnets,
+            max_current=max_current,
+            config=cem_config,
+            rng_seed=rng_seed,
+        )
+    elif optimizer == "icem":
+        cem_config = ICEMConfig(
+            horizon=int(cem_horizon),
+            population_size=int(cem_population_size),
+            num_elites=int(cem_num_elites),
+            max_iterations=int(cem_max_iterations),
+            alpha=float(cem_alpha),
+            init_std=float(icem_init_std),
+            population_decay_factor=float(icem_population_decay_factor),
+            fraction_elites_reused=float(icem_fraction_elites_reused),
+            noise_beta=float(icem_noise_beta),
+            use_mean_action=bool(icem_use_mean_action),
+            keep_previous_elites=bool(icem_keep_previous_elites),
+            shift_elites_over_time=bool(icem_shift_elites_over_time),
+        )
+        cem_controller = ICEMMPCController(
+            action_dim=magnets.n_magnets,
+            max_current=max_current,
+            config=cem_config,
+            rng_seed=rng_seed,
+        )
 
     initial_device_diag = _apply_device_motion(
         magnets=magnets,
@@ -522,6 +626,49 @@ def simulate_trial_mpc(
         f"forward_search_points={forward_search_points}",
         flush=True,
     )
+
+    if optimizer == "constrained_cem":
+        print(
+            "    Constrained CEM-MPC (Wen–Topcu / Oscar Key adaptation): "
+            f"H={cem_config.horizon}, N={cem_config.population_size}, "
+            f"K={cem_config.num_elites}, iterations={cem_config.max_iterations}; "
+            f"bounded_sampling={cem_config.sample_within_action_bounds}, "
+            f"action_blocks={cem_config.action_blocks or cem_config.horizon}, "
+            f"initial_state_constraint={cem_config.include_initial_state_constraint}, "
+            f"best_effort_fallback={cem_config.best_effort_on_infeasible}",
+            flush=True,
+        )
+    elif optimizer == "pets_cem":
+        print(
+            "    Published baseline: PETS-style CEM-MPC "
+            "(Chua et al., NeurIPS 2018)",
+            flush=True,
+        )
+        print(
+            "    CEM: "
+            f"horizon={cem_config.horizon}, "
+            f"population={cem_config.population_size}, "
+            f"elites={cem_config.num_elites}, "
+            f"iterations={cem_config.max_iterations}, "
+            f"alpha={cem_config.alpha}, epsilon={cem_config.epsilon}",
+            flush=True,
+        )
+    elif optimizer == "icem":
+        schedule = icem_population_schedule(cem_config)
+        print(
+            "    Published baseline: iCEM-MPC "
+            "(Pinneri et al., CoRL 2020 / PMLR 2021)",
+            flush=True,
+        )
+        print(
+            "    iCEM blitz: "
+            f"horizon={cem_config.horizon}, populations={schedule}, "
+            f"elites={cem_config.num_elites}, alpha={cem_config.alpha}, "
+            f"beta={cem_config.noise_beta}, reuse={cem_config.fraction_elites_reused}",
+            flush=True,
+        )
+    else:
+        print("    Optimizer: project SLSQP one-step allocator", flush=True)
 
     print(
         "    Device motion: "
@@ -590,28 +737,37 @@ def simulate_trial_mpc(
                 if rtn > 1e-10:
                     route_tangent = rt / rtn
 
-        best_currents, best_force, best_cost, converged = continuous_mpc_controller(
-            particle=particle,
-            particle_pos=particle.pos,
-            target_pos=current_target,
-            magnet_array=magnets,
-            workspace=workspace,
-            dt=dt,
-            max_current=max_current,
-            initial_guess=prev_currents,
-            w_progress=w_progress,
-            w_align=w_align,
-            w_dist=w_dist,
-            w_curr=w_curr,
-            w_smooth=w_smooth,
-            w_edge=w_edge,
-            w_overshoot=w_overshoot,
-            w_route=w_route,
-            route_tangent=route_tangent,
-            wall_buffer_m=wall_clearance_threshold_m,
-            flow=flow,
-            sim_time=sim_time,
-        )
+        controller_kwargs = {
+            "particle": particle,
+            "particle_pos": particle.pos,
+            "target_pos": current_target,
+            "magnet_array": magnets,
+            "workspace": workspace,
+            "dt": dt,
+            "w_progress": w_progress,
+            "w_align": w_align,
+            "w_dist": w_dist,
+            "w_curr": w_curr,
+            "w_smooth": w_smooth,
+            "w_edge": w_edge,
+            "w_overshoot": w_overshoot,
+            "w_route": w_route,
+            "route_tangent": route_tangent,
+            "wall_buffer_m": wall_clearance_threshold_m,
+            "flow": flow,
+            "sim_time": sim_time,
+        }
+        if optimizer in {"pets_cem", "icem", "constrained_cem"}:
+            best_currents, best_force, best_cost, converged = cem_controller.command(
+                previous_currents=prev_currents,
+                **controller_kwargs,
+            )
+        else:
+            best_currents, best_force, best_cost, converged = continuous_mpc_controller(
+                max_current=max_current,
+                initial_guess=prev_currents,
+                **controller_kwargs,
+            )
 
         t1 = time.perf_counter()
 
@@ -619,7 +775,14 @@ def simulate_trial_mpc(
             converged_count += 1
         else:
             warnings.warn(
-                f"Step {step}: no SLSQP start converged; using best-so-far",
+                f"Step {step}: {optimizer} optimizer failed; " + (
+                    "no feasible plan; applying minimum-violation sampled action"
+                    if optimizer == "constrained_cem"
+                    and cem_config.best_effort_on_infeasible
+                    else "no feasible plan; applying zero-current fallback (not certified safe)"
+                    if optimizer == "constrained_cem"
+                    else "using best-so-far"
+                ),
                 RuntimeWarning,
                 stacklevel=1,
             )
@@ -796,8 +959,130 @@ def simulate_trial_mpc(
         magnets=magnets.positions.copy(),
         orientations=magnets.orientations.copy(),
         params={
-            "controller": "baseline_dense_waypoint_MPC",
-            "low_level_allocator": "continuous_mpc_controller_v2",
+            "controller": (
+                "adapted_Wen_Topcu_constrained_CEM_MPC_baseline"
+                if optimizer == "constrained_cem"
+                else "published_iCEM_MPC_baseline"
+                if optimizer == "icem"
+                else "published_PETS_CEM_MPC_baseline"
+                if optimizer == "pets_cem"
+                else "baseline_dense_waypoint_MPC"
+            ),
+            "low_level_allocator": (
+                "Oscar_Key_constrained_CEM_trajectory_optimizer"
+                if optimizer == "constrained_cem"
+                else "Pinneri_iCEM_trajectory_optimizer"
+                if optimizer == "icem"
+                else "PETS_CEM_trajectory_optimizer"
+                if optimizer == "pets_cem"
+                else "continuous_mpc_controller_v2"
+            ),
+            "optimizer": optimizer,
+            "published_baseline": bool(optimizer in {"pets_cem", "icem", "constrained_cem"}),
+            "published_method": (
+                "Wen and Topcu, Constrained Cross-Entropy Method for Safe Reinforcement "
+                "Learning, NeurIPS 2018; adapted via Oscar Key's MPC implementation"
+                if optimizer == "constrained_cem"
+                else "Pinneri et al., Sample-efficient Cross-Entropy Method for "
+                "Real-time Planning, CoRL 2020 / PMLR 2021"
+                if optimizer == "icem"
+                else "Chua et al., Deep Reinforcement Learning in a Handful of "
+                "Trials using Probabilistic Dynamics Models, NeurIPS 2018"
+                if optimizer == "pets_cem"
+                else None
+            ),
+            "published_method_url": (
+                "https://papers.nips.cc/paper/7974-constrained-cross-entropy-method-for-safe-reinforcement-learning"
+                if optimizer == "constrained_cem"
+                else "https://proceedings.mlr.press/v155/pinneri21a.html"
+                if optimizer == "icem"
+                else "https://proceedings.neurips.cc/paper/2018/hash/"
+                "3de568f8597b94bda53149c7d7f5958c-Abstract.html"
+                if optimizer == "pets_cem"
+                else None
+            ),
+            "published_reference_repository": (
+                "https://github.com/oscarkey/constrained-cem-mpc"
+                if optimizer == "constrained_cem"
+                else "https://github.com/martius-lab/iCEM"
+                if optimizer == "icem"
+                else None
+            ),
+            "published_reference_commit": (
+                REFERENCE_COMMIT if optimizer == "constrained_cem"
+                else "98c1c1fe2bfc94a87e4658b6c793f4e81bc30203"
+                if optimizer == "icem"
+                else None
+            ),
+            "cem_dynamics_model": (
+                "shared_deterministic_DynaMag_physics"
+                if optimizer in {"pets_cem", "icem", "constrained_cem"}
+                else None
+            ),
+            "cem_horizon": cem_config.horizon if cem_config is not None else None,
+            "cem_population_size": (
+                cem_config.population_size if cem_config is not None else None
+            ),
+            "cem_num_elites": cem_config.num_elites if cem_config is not None else None,
+            "cem_max_iterations": (
+                cem_config.max_iterations if cem_config is not None else None
+            ),
+            "cem_alpha": getattr(cem_config, "alpha", None),
+            "constrained_cem_diagnostics": (
+                cem_controller.diagnostics if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_adaptation": (
+                "NumPy port; shared DynaMag objective/dynamics; unprojected vessel "
+                f"clearance constraint; hard_clearance_m={cem_config.hard_clearance_m}; "
+                f"include_initial_state={cem_config.include_initial_state_constraint}; "
+                "hardware current box; normalized actions in [-2,2]; "
+                f"bounded_sampling={cem_config.sample_within_action_bounds}; "
+                f"best_effort_fallback={cem_config.best_effort_on_infeasible}; "
+                "no safety guarantee or terminal safe set"
+                if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_initial_std": (
+                cem_config.initial_std if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_sample_within_action_bounds": (
+                cem_config.sample_within_action_bounds
+                if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_include_initial_state_constraint": (
+                cem_config.include_initial_state_constraint
+                if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_best_effort_on_infeasible": (
+                cem_config.best_effort_on_infeasible
+                if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_hard_clearance_m": (
+                cem_config.hard_clearance_m if optimizer == "constrained_cem" else None
+            ),
+            "constrained_cem_action_blocks": (
+                cem_config.action_blocks if optimizer == "constrained_cem" else None
+            ),
+            "cem_epsilon": cem_config.epsilon if optimizer == "pets_cem" else None,
+            "icem_population_schedule": (
+                list(icem_population_schedule(cem_config)) if optimizer == "icem" else None
+            ),
+            "icem_init_std": cem_config.init_std if optimizer == "icem" else None,
+            "icem_population_decay_factor": (
+                cem_config.population_decay_factor if optimizer == "icem" else None
+            ),
+            "icem_fraction_elites_reused": (
+                cem_config.fraction_elites_reused if optimizer == "icem" else None
+            ),
+            "icem_noise_beta": cem_config.noise_beta if optimizer == "icem" else None,
+            "icem_use_mean_action": (
+                cem_config.use_mean_action if optimizer == "icem" else None
+            ),
+            "icem_keep_previous_elites": (
+                cem_config.keep_previous_elites if optimizer == "icem" else None
+            ),
+            "icem_shift_elites_over_time": (
+                cem_config.shift_elites_over_time if optimizer == "icem" else None
+            ),
             "device_mode": device_mode,
             "dt": dt,
             "steps": steps,
@@ -907,7 +1192,19 @@ def run_all_trials(
     waypoint_arrival_tol: float = DEFAULT_WAYPOINT_ARRIVAL_TOL,
     waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
     forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
+    optimizer: str = "slsqp",
+    cem_horizon: int = 25,
+    cem_population_size: int = 400,
+    cem_num_elites: int = 40,
+    cem_max_iterations: int = 5,
+    cem_alpha: float = 0.1,
+    cem_epsilon: float = 1e-3,
 ):
+    # Plotting is only needed by this standalone visualization runner. Keep the
+    # import out of publication-benchmark worker processes, which call
+    # simulate_trial_mpc() directly and only serialize numeric results.
+    from dynamag_simulation.core.plotting import save_all_plots
+
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
             f"device_mode must be one of {sorted(VALID_DEVICE_MODES)}, "
@@ -964,7 +1261,11 @@ def run_all_trials(
             )
         trials = {only_trial: trials[only_trial]}
 
-    output_dir = "outputs/simulation_outputs_3d_mpc"
+    output_dir = (
+        "outputs/simulation_outputs_3d_pets_cem_mpc"
+        if optimizer == "pets_cem"
+        else "outputs/simulation_outputs_3d_mpc"
+    )
     os.makedirs(output_dir, exist_ok=True)
 
     results = []
@@ -1021,6 +1322,13 @@ def run_all_trials(
             waypoint_spacing=waypoint_spacing,
             waypoint_lookahead=waypoint_lookahead,
             forward_search_points=forward_search_points,
+            optimizer=optimizer,
+            cem_horizon=cem_horizon,
+            cem_population_size=cem_population_size,
+            cem_num_elites=cem_num_elites,
+            cem_max_iterations=cem_max_iterations,
+            cem_alpha=cem_alpha,
+            cem_epsilon=cem_epsilon,
         )
 
         result.params["flow_scale"] = flow_scale
@@ -1064,6 +1372,18 @@ if __name__ == "__main__":
     parser.add_argument("--waypoint-lookahead", type=int, default=DEFAULT_MPC_WAYPOINT_LOOKAHEAD)
     parser.add_argument("--forward-search-points", type=int, default=DEFAULT_FORWARD_SEARCH_POINTS)
     parser.add_argument(
+        "--optimizer",
+        choices=sorted(VALID_MPC_OPTIMIZERS),
+        default="slsqp",
+        help="Use pets_cem for the published Chua et al. CEM-MPC baseline.",
+    )
+    parser.add_argument("--cem-horizon", type=int, default=25)
+    parser.add_argument("--cem-population-size", type=int, default=400)
+    parser.add_argument("--cem-num-elites", type=int, default=40)
+    parser.add_argument("--cem-max-iterations", type=int, default=5)
+    parser.add_argument("--cem-alpha", type=float, default=0.1)
+    parser.add_argument("--cem-epsilon", type=float, default=1e-3)
+    parser.add_argument(
         "--only-trial",
         default=None,
         choices=[
@@ -1089,4 +1409,11 @@ if __name__ == "__main__":
         waypoint_arrival_tol=args.waypoint_arrival_tol,
         waypoint_lookahead=args.waypoint_lookahead,
         forward_search_points=args.forward_search_points,
+        optimizer=args.optimizer,
+        cem_horizon=args.cem_horizon,
+        cem_population_size=args.cem_population_size,
+        cem_num_elites=args.cem_num_elites,
+        cem_max_iterations=args.cem_max_iterations,
+        cem_alpha=args.cem_alpha,
+        cem_epsilon=args.cem_epsilon,
     )

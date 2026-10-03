@@ -152,6 +152,7 @@ def simulate_trial_comet(
    max_substep_disp: float = 1e-3,
    rng_seed: int = 42,
    wall_clearance_threshold_m: float = 0.0007,
+   comet_localization_noise_std_m: float = 0.0,
    comet_config: COMETConfig | None = None,
    verbose_every: int = 25,
    early_stop_enabled: bool = False,
@@ -296,6 +297,8 @@ def simulate_trial_comet(
    best_final_target_distance = float(np.linalg.norm(particle.pos - target))
    best_distance_history = [best_final_target_distance]
    prev_currents = np.zeros(magnets.n_magnets, dtype=float)
+   localization_noise_std_m = float(comet_localization_noise_std_m)
+   localization_noise_rng = np.random.default_rng(int(rng_seed) + 7919)
    wall_start = time.perf_counter()
 
 
@@ -320,6 +323,17 @@ def simulate_trial_comet(
        )
 
 
+       measured_position = None
+       if localization_noise_std_m > 0.0:
+           measured_position = (
+               particle.pos
+               + localization_noise_rng.normal(
+                   loc=0.0,
+                   scale=localization_noise_std_m,
+                   size=3,
+               )
+           )
+
        best_currents, best_force, best_cost, converged, info = comet.step(
            particle=particle,
            final_target=target,
@@ -328,6 +342,7 @@ def simulate_trial_comet(
            flow=flow,
            sim_time=sim_time,
            initial_guess=prev_currents,
+           measured_position=measured_position,
        )
 
 
@@ -538,6 +553,9 @@ def simulate_trial_comet(
            "particle_diameter_mm": profile.diameter * 1000.0,
            "max_substep_disp": max_substep_disp,
            "wall_clearance_threshold_m": wall_clearance_threshold_m,
+           "comet_localization_noise_std_m": localization_noise_std_m,
+           "comet_localization_noise_std_mm": localization_noise_std_m * 1000.0,
+           "comet_localization_noise_std_um": localization_noise_std_m * 1e6,
            "vessel_network": network.params_dict(),
            **comet.summary_dict(),
            **hardware_diag,

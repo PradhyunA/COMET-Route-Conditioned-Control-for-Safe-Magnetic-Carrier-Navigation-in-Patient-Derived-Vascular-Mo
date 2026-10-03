@@ -1,0 +1,105 @@
+{
+  "run_id": "40Left85Right",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 2,
+  "n_pairs": 2,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_medium_40Left85Right_endpoint03",
+      "seed": 21260611,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.32256882008872867,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.1766535776188011
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_001_medium_40Left85Right_endpoint03",
+      "seed": 25260611,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.32256882008872867,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "constrained_cem_mpc_tuned_recovery",
+      "n": 1,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.0,
+      "median_final_error_mm": 228.40798814544175,
+      "median_sim_time_s": 0.04,
+      "median_steps_to_target": 2.0,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 0.46095404197694734,
+      "median_avg_control_step_time_s": 0.22916052100481465,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 4.081626014473272,
+      "median_energy_proxy_A2s": 5.99748153192899,
+      "median_min_wall_clearance_mm": 8.859591834152152,
+      "median_min_clearance_margin_mm": 8.159591834152153,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "constrained_cem_mpc_tuned_recovery",
+      "n": 1,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.0,
+      "median_final_error_mm": 231.43220598032065,
+      "median_sim_time_s": 0.04,
+      "median_steps_to_target": 2.0,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 0.365362084005028,
+      "median_avg_control_step_time_s": 0.17989274999126792,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 4.343492109020792,
+      "median_energy_proxy_A2s": 6.7917325324053195,
+      "median_min_wall_clearance_mm": 5.9199268937911755,
+      "median_min_clearance_margin_mm": 5.219926893791175,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    }
+  ],
+  "paired_statistics": []
+}

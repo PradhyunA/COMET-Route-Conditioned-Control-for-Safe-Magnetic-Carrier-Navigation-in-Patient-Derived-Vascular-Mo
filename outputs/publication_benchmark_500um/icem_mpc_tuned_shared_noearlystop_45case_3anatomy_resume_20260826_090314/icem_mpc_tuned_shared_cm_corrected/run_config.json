@@ -1,0 +1,110 @@
+{
+  "run_id": "icem_mpc_tuned_shared_cm_corrected",
+  "vessel_file": "data/real_vessel_segments_cm_corrected.pkl",
+  "flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 100,
+  "seed": 20260611,
+  "controller_keys": [
+    "icem_mpc_tuned_shared"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 6,
+  "rerun_mode_enabled": true,
+  "rerun_from_csv": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/benchmark_manifests/icem_45case_500um/cm_corrected.csv",
+  "rerun_pair_ids": [
+    "canonical_001_inlet_to_outlet",
+    "canonical_002_random_to_publication_target",
+    "canonical_003_publication_start_to_random",
+    "random_0001",
+    "random_0002"
+  ],
+  "rerun_flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "rerun_coordinate_source": "paired_results_csv",
+  "early_stopping": {
+    "enabled_controller_kinds": [
+      "mpc",
+      "cem_mpc",
+      "acbc",
+      "comet"
+    ],
+    "excluded_controller_kinds": [],
+    "enabled": false,
+    "window_steps": 200,
+    "improvement_threshold_m": 0.002,
+    "improvement_threshold_mm": 2.0
+  },
+  "software": {
+    "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "Darwin-25.0.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 11,
+    "numpy": "1.26.4"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 2000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "icem_mpc_tuned_shared": {
+      "label": "iCEM-MPC \u2014 shared tuned MPC objective (Pinneri et al., 2021)",
+      "kind": "cem_mpc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0,
+        "optimizer": "icem",
+        "cem_horizon": 30,
+        "cem_population_size": 40,
+        "cem_num_elites": 10,
+        "cem_max_iterations": 3,
+        "cem_alpha": 0.1,
+        "icem_init_std": 0.5,
+        "icem_population_decay_factor": 1.25,
+        "icem_fraction_elites_reused": 0.3,
+        "icem_noise_beta": 3.0,
+        "icem_use_mean_action": true,
+        "icem_keep_previous_elites": true,
+        "icem_shift_elites_over_time": true
+      }
+    }
+  },
+  "git": {
+    "commit": "66a2083ab9e9df8d2aefe61beba4724338c2224b",
+    "branch": "amrit",
+    "status_short": "M README.md\n M dynamag_simulation/core/__init__.py\n M dynamag_simulation/core/comet_controller.py\n M scripts/run_publication_benchmark.py\n M scripts/simulation_3d_comet.py\n M scripts/simulation_3d_mpc.py\n M tests/test_publication_benchmark_metrics.py\n?? benchmark_manifests/\n?? cfd_cases/\n?? data/aortasegments.pkl\n?? data/pulmonarysegments.pkl\n?? data/rootsegments.pkl\n?? docs/cem_mpc_baseline.md\n?? dynamag_simulation/core/cem_mpc_controller.py\n?? finaloutputs/comet_localization_noise_pilot/\n?? finaloutputs/comet_noise_safety_smoke/\n?? outputs/manuscript_figures/\n?? outputs/publication_benchmark_1mm/comet_localization_noise_45cases_noearlystop/\n?? outputs/publication_benchmark_1mm/comet_localization_noise_45cases_noearlystop_proc/\n?? outputs/publication_benchmark_1mm/comet_localization_noise_pilot/\n?? outputs/publication_benchmark_1mm/comet_noise_safety_smoke/\n?? outputs/publication_benchmark_1mm/pets_cem_mpc_45cases_full/\n?? outputs/publication_benchmark_1mm/pets_cem_mpc_45trials_20260823_203117/\n?? outputs/publication_benchmark_1mm/pets_cem_mpc_45trials_20260823_203429/\n?? outputs/publication_benchmark_500um/icem_mpc_45case_3anatomy_20260824_222933/\n?? outputs/publication_benchmark_500um/icem_mpc_45case_3anatomy_20260824_223427/\n?? outputs/publication_benchmark_500um/icem_mpc_tuned_shared_noearlystop_45case_3anatomy_20260825_235555/\n?? run_all_vessels_cfd.sh\n?? run_icem_mpc_45trials_3anatomies.sh\n?? run_icem_shared_objective_45trials.sh\n?? run_pets_cem_mpc_45trials.sh\n?? run_publication_benchmark_cfd.py\n?? scripts/generate_fig4_representative_aortic_root.py\n?? scripts/validate_icem_reference.py\n?? tests/test_cem_mpc_controller.py\n?? tmp/"
+  }
+}

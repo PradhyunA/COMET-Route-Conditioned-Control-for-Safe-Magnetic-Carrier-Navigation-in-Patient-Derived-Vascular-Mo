@@ -1,0 +1,98 @@
+{
+  "run_id": "comet_noise_safety_smoke",
+  "vessel_file": "real_vessel_segments_cm_corrected.pkl",
+  "flow_scales": [
+    1.0
+  ],
+  "n_random_trials": 1,
+  "seed": 20260609,
+  "controller_keys": [
+    "comet",
+    "comet_loc_noise_50um",
+    "comet_loc_noise_100um",
+    "comet_loc_noise_200um"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_1mm",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 1,
+  "rerun_mode_enabled": false,
+  "rerun_from_csv": null,
+  "rerun_pair_ids": [],
+  "rerun_flow_scales": null,
+  "rerun_coordinate_source": null,
+  "early_stopping": {
+    "enabled_controller_kinds": [
+      "mpc",
+      "acbc",
+      "comet"
+    ],
+    "excluded_controller_kinds": [],
+    "window_steps": 200,
+    "improvement_threshold_m": 0.002,
+    "improvement_threshold_mm": 2.0
+  },
+  "software": {
+    "python": "3.14.1 (main, Dec  2 2025, 12:51:37) [Clang 17.0.0 (clang-1700.4.4.1)]",
+    "platform": "macOS-26.0-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 11,
+    "numpy": "1.26.4"
+  },
+  "profile": {
+    "name": "spion_carrier_1mm_blood",
+    "diameter_m": 0.001,
+    "diameter_um": 1000.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.5
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 40,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet": {
+      "label": "COMET",
+      "kind": "comet",
+      "kwargs": {}
+    },
+    "comet_loc_noise_50um": {
+      "label": "COMET-localization-noise-50um",
+      "kind": "comet",
+      "kwargs": {
+        "comet_localization_noise_std_m": 5e-05
+      }
+    },
+    "comet_loc_noise_100um": {
+      "label": "COMET-localization-noise-100um",
+      "kind": "comet",
+      "kwargs": {
+        "comet_localization_noise_std_m": 0.0001
+      }
+    },
+    "comet_loc_noise_200um": {
+      "label": "COMET-localization-noise-200um",
+      "kind": "comet",
+      "kwargs": {
+        "comet_localization_noise_std_m": 0.0002
+      }
+    }
+  },
+  "git": {
+    "commit": "66a2083ab9e9df8d2aefe61beba4724338c2224b",
+    "branch": "amrit",
+    "status_short": "M dynamag_simulation/core/comet_controller.py\n M scripts/run_publication_benchmark.py\n M scripts/simulation_3d_comet.py\n?? cfd_cases/\n?? data/aortasegments.pkl\n?? data/pulmonarysegments.pkl\n?? data/rootsegments.pkl\n?? outputs/publication_benchmark_1mm/comet_noise_safety_smoke/\n?? run_all_vessels_cfd.sh\n?? run_publication_benchmark_cfd.py"
+  }
+}

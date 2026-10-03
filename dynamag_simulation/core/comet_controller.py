@@ -1496,12 +1496,17 @@ class COMETController:
         flow,
         sim_time: float,
         initial_guess=None,
+        measured_position=None,
     ):
         cfg = self.cfg
         self.step_count += 1
         prev_mode = self.mode
 
-        pos = np.asarray(particle.pos, dtype=float).copy()
+        true_pos = np.asarray(particle.pos, dtype=float).copy()
+        if measured_position is None:
+            pos = true_pos.copy()
+        else:
+            pos = np.asarray(measured_position, dtype=float).copy()
         final_target = np.asarray(final_target, dtype=float)
 
         # Keep the navigator's internal progress state in sync (its return
@@ -2106,8 +2111,8 @@ class COMETController:
         # Exact force from the true magnet model for the simulator.
         previous_currents = self.magnet_array.currents.copy()
         self.magnet_array.set_currents(currents)
-        B = self.magnet_array.field_at(pos)
-        grad = self.magnet_array.grad_B_squared(pos)
+        B = self.magnet_array.field_at(true_pos)
+        grad = self.magnet_array.grad_B_squared(true_pos)
         force = particle.magnetic_force(B, grad)
         self.magnet_array.set_currents(previous_currents)
 

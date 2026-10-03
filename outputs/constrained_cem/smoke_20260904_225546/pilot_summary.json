@@ -1,0 +1,28 @@
+{
+  "mode": "smoke",
+  "max_steps": 2,
+  "controllers": {
+    "constrained_cem_mpc": {
+      "n_cases": 5,
+      "success_count": 0,
+      "median_final_error_mm": 232.0611354524511,
+      "max_final_error_mm": 411.68113401619894,
+      "median_steps": 2,
+      "mean_effective_steps": 2.0,
+      "wall_exit_cases": 0,
+      "no_feasible_plan_steps": 6,
+      "controller_calls": 10
+    },
+    "constrained_cem_mpc_tuned_shared": {
+      "n_cases": 5,
+      "success_count": 0,
+      "median_final_error_mm": 232.0611354524511,
+      "max_final_error_mm": 411.68113401619894,
+      "median_steps": 2,
+      "mean_effective_steps": 2.0,
+      "wall_exit_cases": 0,
+      "no_feasible_plan_steps": 6,
+      "controller_calls": 10
+    }
+  }
+}
