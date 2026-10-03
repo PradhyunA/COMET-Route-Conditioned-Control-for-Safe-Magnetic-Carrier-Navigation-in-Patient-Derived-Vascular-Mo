@@ -1,0 +1,14 @@
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=199.390
+[smoke_smc_dob_inspired_pulmonary_0082_H_PULM_H] flow=1 pair=canonical_001_inlet_to_outlet controller=smc_dob_inspired
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1951, sparse waypoints: 134
+    Published-style adapted baseline: SMC-DOB-inspired (Bhattacharjee et al., 2026; not an exact reproduction)
+    SMC-DOB-inspired: gamma=2, lambda=1, Ksw_v=0.045m/s, eta=0.12s, phi_v=0.02m/s, route_speed=120.0mm/s
+    Allocation: bounded bidirectional SLSQP velocity allocator; no COMET logic and no CEM
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-52.  -45.1 -63.5] mm
+  smc_dob_inspired summary: low-level convergence=100.00%
+SMC-DOB-inspired diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/smoke_tests/smc_dob_inspired_20260827_233417/smoke_smc_dob_inspired_pulmonary_0082_H_PULM_H/flow_1x/smc_dob_inspired/smc_dob_inspired_diagnostics.csv
+
+Benchmark outputs saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/smoke_tests/smc_dob_inspired_20260827_233417/smoke_smc_dob_inspired_pulmonary_0082_H_PULM_H
+Paired CSV: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/smoke_tests/smc_dob_inspired_20260827_233417/smoke_smc_dob_inspired_pulmonary_0082_H_PULM_H/paired_results.csv

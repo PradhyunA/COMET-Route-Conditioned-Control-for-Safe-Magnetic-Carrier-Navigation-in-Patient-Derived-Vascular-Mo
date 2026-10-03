@@ -60,6 +60,10 @@ from simulation_3d_pid import (
     simulate_trial_pid,
 )
 from simulation_3d_comet import save_comet_diagnostics, simulate_trial_comet
+from simulation_3d_smc_dob import (
+    save_smc_dob_diagnostics,
+    simulate_trial_smc_dob,
+)
 
 BENCHMARK_EARLY_STOP_WINDOW_STEPS = 200
 BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
@@ -87,6 +91,23 @@ ACBC_TUNED_WEIGHTS = {
     "w_route": 15.0,
 }
 
+ICEM_BLITZ_KWARGS = {
+    "optimizer": "icem",
+    # Official martius-lab/iCEM defaults/i-cem-blitz.json settings.
+    "cem_horizon": 30,
+    "cem_population_size": 40,
+    "cem_num_elites": 10,
+    "cem_max_iterations": 3,
+    "cem_alpha": 0.1,
+    "icem_init_std": 0.5,
+    "icem_population_decay_factor": 1.25,
+    "icem_fraction_elites_reused": 0.3,
+    "icem_noise_beta": 3.0,
+    "icem_use_mean_action": True,
+    "icem_keep_previous_elites": True,
+    "icem_shift_elites_over_time": True,
+}
+
 PROFILE_CHOICES = {
     "spion_carrier_1mm": SPION_CARRIER_1MM,
     "spion_carrier_500um": SPION_CARRIER_500UM,
@@ -101,6 +122,85 @@ class ControllerVariant:
 
 
 CONTROLLER_VARIANTS = {
+    "constrained_cem_mpc": ControllerVariant(
+        label="Constrained CEM-MPC — shared default objective (Wen–Topcu / Oscar Key adaptation)",
+        kind="cem_mpc",
+        kwargs={
+            **MPC_DEFAULT_WEIGHTS,
+            "optimizer": "constrained_cem", "cem_horizon": 10,
+            "cem_population_size": 50, "cem_num_elites": 10, "cem_max_iterations": 8,
+        },
+    ),
+    "constrained_cem_mpc_tuned_shared": ControllerVariant(
+        label="Constrained CEM-MPC — existing shared tuned objective (Wen–Topcu / Oscar Key adaptation)",
+        kind="cem_mpc",
+        kwargs={
+            **ACBC_TUNED_WEIGHTS,
+            "optimizer": "constrained_cem", "cem_horizon": 10,
+            "cem_population_size": 50, "cem_num_elites": 10, "cem_max_iterations": 8,
+        },
+    ),
+    "constrained_cem_mpc_tuned_recovery": ControllerVariant(
+        label=(
+            "Constrained CEM-MPC — dimension/recovery tuned, shared tuned objective "
+            "(Wen–Topcu / Oscar Key adaptation)"
+        ),
+        kind="cem_mpc",
+        kwargs={
+            **ACBC_TUNED_WEIGHTS,
+            "optimizer": "constrained_cem",
+            "cem_horizon": 10,
+            "cem_population_size": 100,
+            "cem_num_elites": 10,
+            "cem_max_iterations": 8,
+            "constrained_cem_initial_std": 0.75,
+            "constrained_cem_sample_within_action_bounds": True,
+            "constrained_cem_include_initial_state_constraint": False,
+            "constrained_cem_best_effort_on_infeasible": True,
+            "constrained_cem_hard_clearance_m": 0.00025,
+            "constrained_cem_action_blocks": 2,
+        },
+    ),
+    # Backward-compatible key used by the completed 2026-08-24 run.
+    "icem_mpc": ControllerVariant(
+        label="iCEM-MPC (Pinneri et al., 2021)",
+        kind="cem_mpc",
+        kwargs={
+            **MPC_DEFAULT_WEIGHTS,
+            **ICEM_BLITZ_KWARGS,
+        },
+    ),
+    "icem_mpc_default_shared": ControllerVariant(
+        label="iCEM-MPC — default shared MPC objective (Pinneri et al., 2021)",
+        kind="cem_mpc",
+        kwargs={
+            **MPC_DEFAULT_WEIGHTS,
+            **ICEM_BLITZ_KWARGS,
+        },
+    ),
+    "icem_mpc_tuned_shared": ControllerVariant(
+        label="iCEM-MPC — shared tuned MPC objective (Pinneri et al., 2021)",
+        kind="cem_mpc",
+        kwargs={
+            **ACBC_TUNED_WEIGHTS,
+            **ICEM_BLITZ_KWARGS,
+        },
+    ),
+    "pets_cem_mpc": ControllerVariant(
+        label="PETS-CEM-MPC (Chua et al., 2018)",
+        kind="cem_mpc",
+        kwargs={
+            **MPC_DEFAULT_WEIGHTS,
+            "optimizer": "pets_cem",
+            # Published PETS 3-D reacher optimizer settings.
+            "cem_horizon": 25,
+            "cem_population_size": 400,
+            "cem_num_elites": 40,
+            "cem_max_iterations": 5,
+            "cem_alpha": 0.1,
+            "cem_epsilon": 1e-3,
+        },
+    ),
     "naive_mpc": ControllerVariant(
         label="Naive-MPC-final-target",
         kind="naive_mpc",
@@ -130,6 +230,21 @@ CONTROLLER_VARIANTS = {
         label="COMET",
         kind="comet",
         kwargs={},
+    ),
+    "comet_loc_noise_50um": ControllerVariant(
+        label="COMET-localization-noise-50um",
+        kind="comet",
+        kwargs={"comet_localization_noise_std_m": 50e-6},
+    ),
+    "comet_loc_noise_100um": ControllerVariant(
+        label="COMET-localization-noise-100um",
+        kind="comet",
+        kwargs={"comet_localization_noise_std_m": 100e-6},
+    ),
+    "comet_loc_noise_200um": ControllerVariant(
+        label="COMET-localization-noise-200um",
+        kind="comet",
+        kwargs={"comet_localization_noise_std_m": 200e-6},
     ),
     "comet_no_authority_reserve": ControllerVariant(
         label="COMET-no-authority-reserve",
@@ -184,6 +299,35 @@ CONTROLLER_VARIANTS = {
         label="PID-route-aware",
         kind="pid",
         kwargs={},
+    ),
+    "smc_dob_inspired": ControllerVariant(
+        label=(
+            "SMC-DOB-inspired — adapted from Bhattacharjee et al. (2026); "
+            "not an exact reproduction"
+        ),
+        kind="smc_dob_inspired",
+        kwargs={
+            "sliding_gamma": 2.0,
+            "sliding_lambda": 1.0,
+            "equivalent_velocity_gain": 0.55,
+            "equivalent_position_gain": 10.0,
+            "switching_gain": 0.045,
+            "boundary_layer": 0.020,
+            "disturbance_time_constant": 0.12,
+            "disturbance_gain": 1.0,
+            "max_disturbance_norm": 0.080,
+            "route_speed": 0.120,
+            "terminal_distance": 0.006,
+            "terminal_position_gain": 35.0,
+            "max_step_fraction": 0.70,
+            "flow_compensation_gain": 1.0,
+            "wall_repulsion_gain": 0.040,
+            "max_control_norm": 0.180,
+            "current_effort_weight": 1e-4,
+            "current_smoothness_weight": 1e-4,
+            "wall_penalty_weight": 20.0,
+            "optimizer_maxiter": 40,
+        },
     ),
 }
 
@@ -255,6 +399,13 @@ PAIRED_HEADER = [
     "clearance_target_m",
     "clearance_target_mm",
     "clearance_target_met",
+    "min_clearance_margin_mm",
+    "safety_violation_fraction",
+    "wall_exit",
+    "max_wall_intrusion_mm",
+    "comet_localization_noise_std_m",
+    "comet_localization_noise_std_mm",
+    "comet_localization_noise_std_um",
     "current_rms_A",
     "max_current_A",
     "energy_proxy_A2s",
@@ -848,11 +999,11 @@ def _safe_float(value, default=float("nan")):
     except Exception:
         return default
 
-def _wall_clearance_stats(network, trajectory):
+def _wall_clearance_series(network, trajectory):
     """
-    Return minimum vessel wall clearance over a trajectory.
+    Return true-state vessel wall clearance for each trajectory sample.
 
-    Clearance = nearest centerline distance - local vessel radius.
+    Clearance = local vessel radius - nearest centerline distance.
     Positive means inside the vessel with remaining wall clearance.
     Negative means outside/through wall by that amount.
 
@@ -862,19 +1013,37 @@ def _wall_clearance_stats(network, trajectory):
     traj = np.asarray(trajectory, dtype=float)
 
     if traj.ndim != 2 or traj.shape[0] == 0:
-        return float("nan")
+        return np.array([], dtype=float)
 
     if not hasattr(network, "find_segment"):
-        return float("nan")
+        return np.full(traj.shape[0], np.nan, dtype=float)
 
-    min_clearance = float("inf")
+    clearances = []
     for p in traj:
         seg, radial = network.find_segment(p)
         if seg is None:
-            return float("-inf")
-        min_clearance = min(min_clearance, float(seg.radius - radial))
+            clearances.append(float("-inf"))
+        else:
+            clearances.append(float(seg.radius - radial))
 
-    return min_clearance
+    return np.asarray(clearances, dtype=float)
+
+
+def _wall_clearance_stats(network, trajectory):
+    """Return minimum vessel wall clearance over a trajectory."""
+    clearances = _wall_clearance_series(network, trajectory)
+
+    if clearances.size == 0:
+        return float("nan")
+
+    if np.any(np.isneginf(clearances)):
+        return float("-inf")
+
+    finite = clearances[np.isfinite(clearances)]
+    if finite.size == 0:
+        return float("nan")
+
+    return float(np.min(finite))
 
 def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, network):
     traj = np.asarray(result.trajectory, dtype=float)
@@ -895,7 +1064,6 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         current_rms = 0.0
         energy_proxy = 0.0
 
-    min_clearance = _wall_clearance_stats(network, traj)
     state = _state_fractions(result)
     params = getattr(result, "params", {})
     particle_diameter_m = _safe_float(params.get("particle_diameter_m"), 0.0)
@@ -904,8 +1072,22 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         params.get("wall_clearance_threshold_m"),
         params.get("acbc_wall_clearance_threshold_m", 0.0007),
     )
+    clearance_series = _wall_clearance_series(network, traj)
+    min_clearance = _wall_clearance_stats(network, traj)
     min_surface_clearance_m = min_clearance - particle_radius_m
     clearance_target_met = bool(min_clearance >= clearance_target_m)
+    if clearance_series.size:
+        invalid_clearance = ~np.isfinite(clearance_series)
+        safety_violations = invalid_clearance | (
+            clearance_series < clearance_target_m
+        )
+        safety_violation_fraction = float(np.mean(safety_violations))
+        wall_exit = bool(np.any(invalid_clearance | (clearance_series < 0.0)))
+    else:
+        safety_violation_fraction = float("nan")
+        wall_exit = False
+    min_clearance_margin_m = min_clearance - clearance_target_m
+    max_wall_intrusion_m = max(0.0, -min_clearance)
     step_times = np.asarray(result.step_time_log, dtype=float)
     total_control_time_s = float(np.sum(step_times)) if step_times.size else 0.0
     p95_control_step_time_s = (
@@ -956,6 +1138,19 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
         "clearance_target_m": clearance_target_m,
         "clearance_target_mm": clearance_target_m * 1000.0,
         "clearance_target_met": clearance_target_met,
+        "min_clearance_margin_mm": min_clearance_margin_m * 1000.0,
+        "safety_violation_fraction": safety_violation_fraction,
+        "wall_exit": wall_exit,
+        "max_wall_intrusion_mm": max_wall_intrusion_m * 1000.0,
+        "comet_localization_noise_std_m": _safe_float(
+            params.get("comet_localization_noise_std_m"), 0.0,
+        ),
+        "comet_localization_noise_std_mm": _safe_float(
+            params.get("comet_localization_noise_std_mm"), 0.0,
+        ),
+        "comet_localization_noise_std_um": _safe_float(
+            params.get("comet_localization_noise_std_um"), 0.0,
+        ),
         "current_rms_A": current_rms,
         "max_current_A": float(result.max_current_used),
         "energy_proxy_A2s": energy_proxy,
@@ -984,6 +1179,14 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
 
 def _save_trial_npz(result, metrics, output_dir):
     os.makedirs(output_dir, exist_ok=True)
+    if result.params.get("optimizer") == "constrained_cem":
+        with open(os.path.join(output_dir, f"{result.trial_name}_constrained_cem.json"), "w") as f:
+            json.dump({
+                "reference_repository": result.params["published_reference_repository"],
+                "reference_commit": result.params["published_reference_commit"],
+                "adaptation": result.params["constrained_cem_adaptation"],
+                "steps": result.params["constrained_cem_diagnostics"],
+            }, f, indent=2)
     np.savez(
         os.path.join(output_dir, f"{result.trial_name}_data.npz"),
         start=result.start,
@@ -1063,10 +1266,28 @@ def _aggregate(rows):
         clearance = np.array(
             [r["min_wall_clearance_mm"] for r in group], dtype=float
         )
+        clearance_margin = np.array(
+            [r["min_clearance_margin_mm"] for r in group], dtype=float
+        )
+        safety_violation = np.array(
+            [r["safety_violation_fraction"] for r in group], dtype=float
+        )
+        wall_exit = np.array(
+            [bool(r["wall_exit"]) for r in group], dtype=bool
+        )
+        wall_intrusion = np.array(
+            [r["max_wall_intrusion_mm"] for r in group], dtype=float
+        )
+        comet_noise_um = np.array(
+            [r["comet_localization_noise_std_um"] for r in group], dtype=float
+        )
         out.append({
             "flow_scale": flow_scale,
             "controller_key": controller,
             "n": len(group),
+            "comet_localization_noise_std_um": (
+                float(np.median(comet_noise_um)) if len(group) else np.nan
+            ),
             "success_rate": float(np.mean(success)) if len(success) else 0.0,
             "median_final_error_mm": float(np.median(final_error)) if len(group) else np.nan,
             "median_sim_time_s": float(np.median(sim_time)) if len(group) else np.nan,
@@ -1099,6 +1320,16 @@ def _aggregate(rows):
             "median_min_wall_clearance_mm": (
                 float(np.median(clearance)) if len(group) else np.nan
             ),
+            "median_min_clearance_margin_mm": (
+                float(np.median(clearance_margin)) if len(group) else np.nan
+            ),
+            "median_safety_violation_fraction": (
+                float(np.median(safety_violation)) if len(group) else np.nan
+            ),
+            "wall_exit_rate": float(np.mean(wall_exit)) if len(group) else 0.0,
+            "median_max_wall_intrusion_mm": (
+                float(np.median(wall_intrusion)) if len(group) else np.nan
+            ),
             "clearance_target_met_rate": float(np.mean([
                 bool(r["clearance_target_met"]) for r in group
             ])) if len(group) else 0.0,
@@ -1114,6 +1345,9 @@ def _aggregate(rows):
 
 
 PRIMARY_COMPARISONS = (
+    ("pets_cem_mpc", "mpc_tuned"),
+    ("pets_cem_mpc", "acbc_tuned"),
+    ("pets_cem_mpc", "comet"),
     ("naive_mpc", "acbc_same_weights"),
     ("mpc_default", "acbc_same_weights"),
     ("mpc_tuned", "acbc_tuned"),
@@ -1242,13 +1476,18 @@ def _write_benchmark_summary(root, run_id, seed_records, paired_rows):
 
 
 def _run_variant(variant, pair, network, trial_seed, common_kwargs):
-    if variant.kind == "mpc":
+    common_kwargs = dict(common_kwargs)
+    benchmark_early_stop_enabled = bool(
+        common_kwargs.pop("_benchmark_early_stop_enabled", True)
+    )
+
+    if variant.kind in {"mpc", "cem_mpc"}:
         from simulation_3d_mpc import simulate_trial_mpc
 
         kwargs = {
             **common_kwargs,
             **variant.kwargs,
-            "early_stop_enabled": True,
+            "early_stop_enabled": benchmark_early_stop_enabled,
             "early_stop_window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
             "early_stop_improvement_threshold_m": (
                 BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
@@ -1282,7 +1521,7 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
         kwargs = {
             **common_kwargs,
             **variant.kwargs,
-            "early_stop_enabled": True,
+            "early_stop_enabled": benchmark_early_stop_enabled,
             "early_stop_window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
             "early_stop_improvement_threshold_m": (
                 BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
@@ -1301,7 +1540,7 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
         kwargs = {
             **common_kwargs,
             **variant.kwargs,
-            "early_stop_enabled": True,
+            "early_stop_enabled": benchmark_early_stop_enabled,
             "early_stop_window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
             "early_stop_improvement_threshold_m": (
                 BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
@@ -1318,6 +1557,17 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
 
     if variant.kind == "pid":
         return simulate_trial_pid(
+            start=pair["start"],
+            target=pair["target"],
+            network=network,
+            trial_name=pair["pair_id"],
+            rng_seed=trial_seed,
+            **common_kwargs,
+            **variant.kwargs,
+        )
+
+    if variant.kind == "smc_dob_inspired":
+        return simulate_trial_smc_dob(
             start=pair["start"],
             target=pair["target"],
             network=network,
@@ -1371,6 +1621,7 @@ def run_benchmark(
     rerun_pair_ids=None,
     rerun_flow_scales=None,
     rerun_trial_kind="rerun",
+    early_stop_enabled=True,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1398,6 +1649,7 @@ def run_benchmark(
         "device_mode": device_mode,
         "profile": profile,
         "wall_clearance_threshold_m": wall_clearance_threshold_m,
+        "_benchmark_early_stop_enabled": bool(early_stop_enabled),
     }
 
     rerun_mode_enabled = rerun_from_csv is not None
@@ -1439,8 +1691,9 @@ def run_benchmark(
         ),
         "rerun_coordinate_source": rerun_coordinate_source,
         "early_stopping": {
-            "enabled_controller_kinds": ["mpc", "acbc", "comet"],
-            "excluded_controller_kinds": [],
+            "enabled_controller_kinds": ["mpc", "cem_mpc", "acbc", "comet"],
+            "excluded_controller_kinds": ["pid", "smc_dob_inspired"],
+            "enabled": bool(early_stop_enabled),
             "window_steps": BENCHMARK_EARLY_STOP_WINDOW_STEPS,
             "improvement_threshold_m": BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M,
             "improvement_threshold_mm": (
@@ -1456,7 +1709,8 @@ def run_benchmark(
             "hydrodynamic_drag_multiplier": profile.hydrodynamic_drag_multiplier,
         },
         "common_kwargs": {
-            key: value for key, value in common_kwargs.items() if key != "profile"
+            key: value for key, value in common_kwargs.items()
+            if key not in {"profile", "_benchmark_early_stop_enabled"}
         },
         "variants": {
             key: {
@@ -1609,6 +1863,10 @@ def run_benchmark(
                 save_comet_diagnostics(results_by_controller[controller_key], out_dir)
             if variant.kind == "pid":
                 save_pid_diagnostics(results_by_controller[controller_key], out_dir)
+            if variant.kind == "smc_dob_inspired":
+                save_smc_dob_diagnostics(
+                    results_by_controller[controller_key], out_dir,
+                )
 
     paired_csv = os.path.join(root, "paired_results.csv")
     _write_paired_csv(paired_rows, paired_csv)
@@ -1665,7 +1923,7 @@ def main():
     )
     parser.add_argument(
         "--controllers",
-        default="mpc_default,mpc_tuned,acbc_same_weights,acbc_tuned",
+        default="pets_cem_mpc,mpc_default,mpc_tuned,acbc_same_weights,acbc_tuned",
         help="Comma-separated controller keys. Use --list-controllers to inspect.",
     )
     parser.add_argument("--include-ablations", action="store_true")
@@ -1673,6 +1931,14 @@ def main():
     parser.add_argument("--dt", type=float, default=0.02)
     parser.add_argument("--steps", type=int, default=4000)
     parser.add_argument("--tolerance", type=float, default=DEFAULT_TARGET_TOLERANCE)
+    parser.add_argument(
+        "--disable-early-stop",
+        action="store_true",
+        help=(
+            "Disable benchmark stagnation early stopping for controllers that "
+            "normally use it."
+        ),
+    )
     parser.add_argument(
         "--wall-clearance-threshold-mm",
         type=float,
@@ -1695,7 +1961,7 @@ def main():
     parser.add_argument(
         "--smoke-test",
         action="store_true",
-        help="Run one random pair at flow=1 with the four primary controllers.",
+        help="Run one random pair at flow=1 with the selected controllers.",
     )
     args = parser.parse_args()
 
@@ -1721,6 +1987,7 @@ def main():
     if args.smoke_test:
         flow_scales = [1.0]
         n_random_trials = 1
+        args.steps = min(args.steps, 2)
 
     if args.include_ablations:
         allowed = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1751,6 +2018,7 @@ def main():
         rerun_pair_ids=rerun_pair_ids,
         rerun_flow_scales=rerun_flow_scales,
         rerun_trial_kind=args.rerun_trial_kind,
+        early_stop_enabled=not args.disable_early_stop,
     )
 
 

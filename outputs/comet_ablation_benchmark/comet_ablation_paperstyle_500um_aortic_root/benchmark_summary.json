@@ -1,0 +1,417 @@
+{
+  "run_id": "comet_ablation_paperstyle_500um_aortic_root",
+  "stress_mode": "standard",
+  "vessel_file": "data/vessels/aortic_root_cerebral_40Left85Right/real_vessel_segments.pkl",
+  "flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 4,
+  "seed": 20260609,
+  "controllers": [
+    "comet_no_authority_reserve",
+    "comet_no_commitment_memory",
+    "comet_no_downstream_value",
+    "comet_no_flow_scaled_reserve",
+    "comet_no_terminal_precision"
+  ],
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0
+  },
+  "max_current_A": 16.0,
+  "wall_clearance_threshold_m": 0.0007,
+  "software": {
+    "python": "3.12.1 (v3.12.1:2305ca5144, Dec  7 2023, 17:23:38) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 8,
+    "numpy": "2.4.6"
+  },
+  "variants": {
+    "comet_no_authority_reserve": {
+      "ablate_authority_reserve": true
+    },
+    "comet_no_commitment_memory": {
+      "ablate_commitment_memory": true
+    },
+    "comet_no_downstream_value": {
+      "ablate_downstream_value": true
+    },
+    "comet_no_flow_scaled_reserve": {
+      "ablate_flow_scaled_reserve": true
+    },
+    "comet_no_terminal_precision": {
+      "ablate_terminal_precision": true
+    }
+  },
+  "n_rows": 100,
+  "n_pairs": 20,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_medium_40Left85Right_endpoint03",
+      "seed": 21260609,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.32256882008872867,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.1766535776188011
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 21260610,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.1356267678259349,
+        0.11599252112869139,
+        -0.1997119954192894
+      ],
+      "route_length_m": 0.31539908555003443,
+      "route_min_clearance_m": 0.002983961284516649,
+      "route_min_authority_reserve_m_s": 0.17664854206413103
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0001",
+      "seed": 21260611,
+      "start": [
+        -0.12123898742982268,
+        0.06806157176618072,
+        -0.3071612173257409
+      ],
+      "target": [
+        -0.10738388698801767,
+        0.1125761836669119,
+        -0.31559883634715485
+      ],
+      "route_length_m": 0.06546632309509438,
+      "route_min_clearance_m": 0.01139983009833499,
+      "route_min_authority_reserve_m_s": 0.1766535776188011
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0002",
+      "seed": 21260612,
+      "start": [
+        -0.08334068370709585,
+        0.1200630820980863,
+        -0.24915403568612235
+      ],
+      "target": [
+        -0.10316654224274051,
+        0.11340108736724615,
+        -0.33626410435765125
+      ],
+      "route_length_m": 0.10520483058165639,
+      "route_min_clearance_m": 0.003594540896521883,
+      "route_min_authority_reserve_m_s": 0.1766519388157926
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0003",
+      "seed": 21260613,
+      "start": [
+        -0.10246066899118908,
+        0.11207800181546768,
+        -0.3440156037140491
+      ],
+      "target": [
+        -0.10722312805681587,
+        0.11116705063255908,
+        -0.31842307613191745
+      ],
+      "route_length_m": 0.02658992809270063,
+      "route_min_clearance_m": 0.014744951349161144,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0004",
+      "seed": 21260614,
+      "start": [
+        -0.10937173687798722,
+        0.11011550592716543,
+        -0.31352432768988203
+      ],
+      "target": [
+        -0.10737446143087159,
+        0.11235315178646352,
+        -0.3160014899102173
+      ],
+      "route_length_m": 0.058767499891274874,
+      "route_min_clearance_m": 0.013166834255444404,
+      "route_min_authority_reserve_m_s": 0.1766485507671207
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_001_medium_40Left85Right_endpoint03",
+      "seed": 23260609,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.32256882008872867,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.16996073285640328
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 23260610,
+      "start": [
+        -0.13536807256934597,
+        0.1166458765082699,
+        -0.2030632882213047
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.35461379957396294,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.1699456523013621
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 23260611,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.13342706625137582,
+        0.11251374299356137,
+        -0.2423600484766826
+      ],
+      "route_length_m": 0.2721350740080847,
+      "route_min_clearance_m": 0.002983961284516649,
+      "route_min_authority_reserve_m_s": 0.1699456261923931
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0001",
+      "seed": 23260612,
+      "start": [
+        -0.10754742543510559,
+        0.11156521546716636,
+        -0.31924866407130587
+      ],
+      "target": [
+        -0.10461276640765481,
+        0.11371628058260896,
+        -0.3293992540484572
+      ],
+      "route_length_m": 0.010840742339053756,
+      "route_min_clearance_m": 0.014738508843248522,
+      "route_min_authority_reserve_m_s": 0.16996299826505634
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0002",
+      "seed": 23260613,
+      "start": [
+        -0.10775373448250686,
+        0.11136247739658696,
+        -0.3185376576567082
+      ],
+      "target": [
+        -0.1302987246190029,
+        0.10819222474179742,
+        -0.26761571461512834
+      ],
+      "route_length_m": 0.06132610474404023,
+      "route_min_clearance_m": 0.0029846637325481496,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0003",
+      "seed": 23260614,
+      "start": [
+        -0.08419788249695369,
+        0.12031607378128086,
+        -0.24706161979666413
+      ],
+      "target": [
+        -0.108244602124891,
+        0.11095857634889789,
+        -0.31678094710580973
+      ],
+      "route_length_m": 0.14123813632133309,
+      "route_min_clearance_m": 0.003594540896521883,
+      "route_min_authority_reserve_m_s": 0.1699456261923931
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0004",
+      "seed": 23260615,
+      "start": [
+        -0.10520800357759273,
+        0.11315656962083073,
+        -0.3255652568598257
+      ],
+      "target": [
+        -0.10248489136712702,
+        0.11199450422326772,
+        -0.3444256770937101
+      ],
+      "route_length_m": 0.01928516063892825,
+      "route_min_clearance_m": 0.014744951349161144,
+      "route_min_authority_reserve_m_s": 0.16994406920166177
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_001_medium_40Left85Right_endpoint03",
+      "seed": 25260609,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.32256882008872867,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 25260610,
+      "start": [
+        -0.10189508274392348,
+        0.12245686086890697,
+        -0.3031034992322811
+      ],
+      "target": [
+        -0.07645376772,
+        0.12307464331,
+        -0.16675929725
+      ],
+      "route_length_m": 0.15639225981882177,
+      "route_min_clearance_m": 0.000978485110451885,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 25260611,
+      "start": [
+        -0.10488859564,
+        0.03914727271,
+        -0.37676280737
+      ],
+      "target": [
+        -0.10380534809992817,
+        0.11366071692195824,
+        -0.3322627182061317
+      ],
+      "route_length_m": 0.14895333960896595,
+      "route_min_clearance_m": 0.009526439258064899,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0001",
+      "seed": 25260612,
+      "start": [
+        -0.102568733629966,
+        0.11254369300877144,
+        -0.3418140791222815
+      ],
+      "target": [
+        -0.10308990414858678,
+        0.11333009800798703,
+        -0.3369660826181409
+      ],
+      "route_length_m": 0.006878429254568335,
+      "route_min_clearance_m": 0.015616999153972841,
+      "route_min_authority_reserve_m_s": 0.1632427538356035
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0002",
+      "seed": 25260613,
+      "start": [
+        -0.10690050014637867,
+        0.039088023909788154,
+        -0.36694506837367546
+      ],
+      "target": [
+        -0.10516985953280748,
+        0.11320325260090791,
+        -0.3257953823036012
+      ],
+      "route_length_m": 0.13215639952456065,
+      "route_min_clearance_m": 0.010185842633714283,
+      "route_min_authority_reserve_m_s": 0.16326788809400547
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0003",
+      "seed": 25260614,
+      "start": [
+        -0.11170850132400478,
+        0.11044766862075336,
+        -0.3063486940906851
+      ],
+      "target": [
+        -0.11355157489592502,
+        0.04159722861394925,
+        -0.34220382670112065
+      ],
+      "route_length_m": 0.16196537699206356,
+      "route_min_clearance_m": 0.008599776458301607,
+      "route_min_authority_reserve_m_s": 0.1632427538356035
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0004",
+      "seed": 25260615,
+      "start": [
+        -0.10380415293928606,
+        0.1137115850995961,
+        -0.3333970613745612
+      ],
+      "target": [
+        -0.12061908722064868,
+        0.06078370970129065,
+        -0.31018383684826517
+      ],
+      "route_length_m": 0.09382951911027118,
+      "route_min_clearance_m": 0.01139983009833499,
+      "route_min_authority_reserve_m_s": 0.1632427538356035
+    }
+  ],
+  "results_csv": "ablation_results.csv",
+  "summary_csv": "ablation_summary.csv"
+}

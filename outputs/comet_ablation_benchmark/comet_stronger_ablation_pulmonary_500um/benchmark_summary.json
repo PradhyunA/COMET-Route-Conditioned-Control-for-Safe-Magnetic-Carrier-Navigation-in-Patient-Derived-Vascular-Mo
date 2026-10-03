@@ -1,0 +1,276 @@
+{
+  "run_id": "comet_stronger_ablation_pulmonary_500um",
+  "stress_mode": "standard",
+  "vessel_file": "data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments.pkl",
+  "flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 4,
+  "seed": 20260609,
+  "controllers": [
+    "comet",
+    "comet_no_terminal_precision",
+    "comet_no_flow_scaled_reserve",
+    "comet_no_occupancy_measure",
+    "comet_core_only"
+  ],
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0
+  },
+  "max_current_A": 16.0,
+  "wall_clearance_threshold_m": 0.0007,
+  "software": {
+    "python": "3.12.1 (v3.12.1:2305ca5144, Dec  7 2023, 17:23:38) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 8,
+    "numpy": "2.4.6"
+  },
+  "variants": {
+    "comet": {},
+    "comet_no_terminal_precision": {
+      "ablate_terminal_precision": true
+    },
+    "comet_no_flow_scaled_reserve": {
+      "ablate_flow_scaled_reserve": true
+    },
+    "comet_no_occupancy_measure": {
+      "ablate_occupancy_measure": true
+    },
+    "comet_core_only": {
+      "ablate_authority_reserve": true,
+      "ablate_commitment_memory": true,
+      "ablate_downstream_value": true,
+      "ablate_flow_scaled_reserve": true,
+      "ablate_terminal_precision": true,
+      "ablate_occupancy_measure": true
+    }
+  },
+  "n_rows": 60,
+  "n_pairs": 12,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0001",
+      "seed": 21260609,
+      "start": [
+        -0.0017011286354391216,
+        0.0012035978093668167,
+        0.005995626304141402
+      ],
+      "target": [
+        -0.002606463117386102,
+        0.002089592891491146,
+        0.006108161524014362
+      ],
+      "route_length_m": 0.0012889826645148025,
+      "route_min_clearance_m": 0.0010818827413832726,
+      "route_min_authority_reserve_m_s": 0.14907932606645505
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0002",
+      "seed": 21260610,
+      "start": [
+        -0.0028321500024679406,
+        0.0002390087614208471,
+        0.006519259411877579
+      ],
+      "target": [
+        -0.0020916018418149947,
+        0.0014923563121118214,
+        0.006061410284614767
+      ],
+      "route_length_m": 0.0028685836646104067,
+      "route_min_clearance_m": 0.0009802605721883372,
+      "route_min_authority_reserve_m_s": 0.1489717427603304
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0003",
+      "seed": 21260611,
+      "start": [
+        -0.002730974158913117,
+        0.00043447403417817013,
+        0.006501420381548949
+      ],
+      "target": [
+        -0.002547231826122776,
+        0.0009036985645415695,
+        0.006396490568011209
+      ],
+      "route_length_m": 0.000517800688204107,
+      "route_min_clearance_m": 0.0010248823822970115,
+      "route_min_authority_reserve_m_s": 0.15064066802966875
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0004",
+      "seed": 21260612,
+      "start": [
+        -0.002607656376984663,
+        0.0020538323802618977,
+        0.006134118415861277
+      ],
+      "target": [
+        -0.0024476983208668772,
+        0.0018540533651907893,
+        0.006107124482365899
+      ],
+      "route_length_m": 0.0004059255260525676,
+      "route_min_clearance_m": 0.0012289138821442566,
+      "route_min_authority_reserve_m_s": 0.1489717427603304
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0001",
+      "seed": 23260609,
+      "start": [
+        -0.002484891686762184,
+        0.0015783548838297849,
+        0.00628646166124831
+      ],
+      "target": [
+        -0.0026049758097187762,
+        0.002043610429700536,
+        0.006137979071834538
+      ],
+      "route_length_m": 0.0005037705965985824,
+      "route_min_clearance_m": 0.0013015826299736387,
+      "route_min_authority_reserve_m_s": 0.08695144904330285
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0002",
+      "seed": 23260610,
+      "start": [
+        -0.0024615260798080607,
+        0.0013673211267233591,
+        0.006335332207278001
+      ],
+      "target": [
+        -0.002516493190620799,
+        0.001736924262274229,
+        0.006238120458437974
+      ],
+      "route_length_m": 0.00038790724264829837,
+      "route_min_clearance_m": 0.0012728276788514497,
+      "route_min_authority_reserve_m_s": 0.08729686871032857
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0003",
+      "seed": 23260611,
+      "start": [
+        -0.0028996046226296085,
+        0.00013248134573873088,
+        0.006531968410794008
+      ],
+      "target": [
+        -0.0025868774593109816,
+        0.0007775930357758167,
+        0.006413895739560535
+      ],
+      "route_length_m": 0.0007323482286052134,
+      "route_min_clearance_m": 0.0009596895620193566,
+      "route_min_authority_reserve_m_s": 0.0931185085242018
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0004",
+      "seed": 23260612,
+      "start": [
+        -0.0023826049090616597,
+        0.0017742097859006919,
+        0.006106084802347785
+      ],
+      "target": [
+        -0.0019375844945496545,
+        0.0013759620314037159,
+        0.006029390195388569
+      ],
+      "route_length_m": 0.0006056874323914378,
+      "route_min_clearance_m": 0.0011101839768719803,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0001",
+      "seed": 25260609,
+      "start": [
+        -0.002771098887222703,
+        0.00035515232857009053,
+        0.006508056850324723
+      ],
+      "target": [
+        -0.0007815638920793899,
+        0.0008170800871066645,
+        0.005772229660384717
+      ],
+      "route_length_m": 0.004258861050006647,
+      "route_min_clearance_m": 0.0009985710317513196,
+      "route_min_authority_reserve_m_s": 0.024858713801652027
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0002",
+      "seed": 25260610,
+      "start": [
+        -0.002127921364337988,
+        0.0015189779383383284,
+        0.006069100312986935
+      ],
+      "target": [
+        -0.0010915372502666243,
+        0.0008995725692370064,
+        0.00585842950536047
+      ],
+      "route_length_m": 0.0012354495394450702,
+      "route_min_clearance_m": 0.0010265164954518103,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0003",
+      "seed": 25260611,
+      "start": [
+        -0.0024928891037049967,
+        0.0011266425573660574,
+        0.006366417888491097
+      ],
+      "target": [
+        -0.0017733764857093782,
+        0.001253527030995273,
+        0.00600835795956621
+      ],
+      "route_length_m": 0.0022997055823429876,
+      "route_min_clearance_m": 0.0010867841342362347,
+      "route_min_authority_reserve_m_s": 0.024858713801652027
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0004",
+      "seed": 25260612,
+      "start": [
+        -0.0025895472596454217,
+        0.0019870010589812404,
+        0.006158323154464062
+      ],
+      "target": [
+        -0.00242310755032946,
+        0.0018238903259098847,
+        0.006106731715539752
+      ],
+      "route_length_m": 0.0005182280008327515,
+      "route_min_clearance_m": 0.0012289138821442566,
+      "route_min_authority_reserve_m_s": 0.024858713801652027
+    }
+  ],
+  "results_csv": "ablation_results.csv",
+  "summary_csv": "ablation_summary.csv"
+}

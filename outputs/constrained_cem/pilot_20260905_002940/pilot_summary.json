@@ -1,0 +1,19 @@
+{
+  "mode": "pilot",
+  "max_steps": 2000,
+  "controllers": {
+    "constrained_cem_mpc_tuned_recovery": {
+      "n_cases": 5,
+      "success_count": 1,
+      "median_final_error_mm": 99.7771198677679,
+      "max_final_error_mm": 295.05982668847753,
+      "median_steps": 2000,
+      "mean_effective_steps": 1908.4,
+      "wall_exit_cases": 0,
+      "no_feasible_plan_steps": 0,
+      "best_effort_plan_steps": 0,
+      "feasible_plan_steps": 9542,
+      "controller_calls": 9542
+    }
+  }
+}

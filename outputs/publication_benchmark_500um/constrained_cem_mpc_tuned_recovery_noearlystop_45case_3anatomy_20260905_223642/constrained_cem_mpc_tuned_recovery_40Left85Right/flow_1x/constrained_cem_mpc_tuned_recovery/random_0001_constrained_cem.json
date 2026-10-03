@@ -1,0 +1,6937 @@
+{
+  "reference_repository": "https://github.com/oscarkey/constrained-cem-mpc",
+  "reference_commit": "aa162f9e242269ab66c42598e77c28a8d69f00a2",
+  "adaptation": "NumPy port; shared DynaMag objective/dynamics; unprojected vessel clearance constraint; hard_clearance_m=0.00025; include_initial_state=False; hardware current box; normalized actions in [-2,2]; bounded_sampling=True; best_effort_fallback=True; no safety guarantee or terminal safe set",
+  "steps": [
+    {
+      "feasible": true,
+      "feasible_count": 86,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        25,
+        31,
+        43,
+        65,
+        78,
+        89,
+        86
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        24,
+        48,
+        44,
+        61,
+        47,
+        80,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        16,
+        26,
+        64,
+        83,
+        75,
+        86,
+        78,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        17,
+        45,
+        59,
+        84,
+        84,
+        94,
+        91,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        16,
+        32,
+        61,
+        81,
+        74,
+        89,
+        95,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        12,
+        41,
+        39,
+        39,
+        57,
+        64,
+        83,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 93,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        16,
+        22,
+        47,
+        60,
+        68,
+        87,
+        92,
+        93
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        37,
+        61,
+        63,
+        81,
+        77,
+        87,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        48,
+        67,
+        62,
+        89,
+        92,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        15,
+        42,
+        50,
+        60,
+        64,
+        85,
+        84,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 93,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        26,
+        48,
+        65,
+        50,
+        75,
+        87,
+        93
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        12,
+        42,
+        59,
+        73,
+        92,
+        95,
+        96,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 93,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        12,
+        46,
+        58,
+        60,
+        72,
+        72,
+        80,
+        93
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        30,
+        57,
+        61,
+        74,
+        85,
+        87,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 74,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        14,
+        37,
+        40,
+        48,
+        48,
+        57,
+        65,
+        74
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        18,
+        20,
+        59,
+        68,
+        77,
+        87,
+        81,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 86,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        36,
+        48,
+        67,
+        66,
+        88,
+        89,
+        86
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 81,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        40,
+        58,
+        64,
+        72,
+        73,
+        71,
+        81
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 81,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        46,
+        45,
+        45,
+        66,
+        73,
+        71,
+        81
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 90,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        15,
+        43,
+        35,
+        67,
+        75,
+        76,
+        73,
+        90
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        43,
+        50,
+        65,
+        62,
+        67,
+        83,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        18,
+        43,
+        45,
+        68,
+        74,
+        84,
+        96,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        31,
+        47,
+        68,
+        77,
+        93,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        13,
+        29,
+        52,
+        64,
+        87,
+        87,
+        96,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 89,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        28,
+        49,
+        77,
+        84,
+        87,
+        88,
+        89
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 83,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        18,
+        36,
+        49,
+        55,
+        61,
+        70,
+        75,
+        83
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        41,
+        54,
+        81,
+        90,
+        98,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 89,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        35,
+        40,
+        60,
+        55,
+        68,
+        75,
+        89
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        44,
+        49,
+        64,
+        62,
+        88,
+        88,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 84,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        15,
+        22,
+        41,
+        49,
+        58,
+        71,
+        85,
+        84
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 77,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        23,
+        30,
+        70,
+        78,
+        85,
+        89,
+        77
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        11,
+        33,
+        54,
+        65,
+        75,
+        78,
+        90,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 90,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        15,
+        32,
+        55,
+        62,
+        78,
+        87,
+        84,
+        90
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        25,
+        61,
+        68,
+        77,
+        78,
+        95,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 89,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        14,
+        30,
+        40,
+        62,
+        61,
+        54,
+        83,
+        89
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        14,
+        39,
+        65,
+        66,
+        81,
+        89,
+        86,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        15,
+        33,
+        54,
+        69,
+        83,
+        94,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        37,
+        51,
+        39,
+        65,
+        81,
+        93,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        31,
+        37,
+        62,
+        71,
+        89,
+        92,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        18,
+        45,
+        54,
+        70,
+        76,
+        81,
+        97,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        14,
+        50,
+        57,
+        83,
+        91,
+        96,
+        95,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        35,
+        49,
+        67,
+        79,
+        89,
+        91,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 93,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        14,
+        31,
+        69,
+        73,
+        88,
+        83,
+        92,
+        93
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        34,
+        36,
+        55,
+        53,
+        83,
+        83,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        13,
+        30,
+        49,
+        49,
+        80,
+        86,
+        81,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        25,
+        62,
+        70,
+        82,
+        89,
+        86,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        30,
+        48,
+        54,
+        71,
+        84,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        19,
+        52,
+        60,
+        79,
+        86,
+        86,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        18,
+        46,
+        67,
+        80,
+        90,
+        97,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        18,
+        35,
+        51,
+        52,
+        79,
+        89,
+        92,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        15,
+        26,
+        64,
+        81,
+        89,
+        95,
+        93,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        39,
+        52,
+        79,
+        85,
+        92,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        14,
+        32,
+        53,
+        57,
+        80,
+        95,
+        95,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        16,
+        34,
+        32,
+        50,
+        75,
+        81,
+        87,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        17,
+        35,
+        47,
+        56,
+        84,
+        86,
+        91,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        13,
+        30,
+        43,
+        62,
+        67,
+        76,
+        94,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        36,
+        56,
+        58,
+        78,
+        80,
+        95,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 90,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        21,
+        39,
+        37,
+        48,
+        70,
+        58,
+        87,
+        90
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        34,
+        43,
+        62,
+        83,
+        92,
+        98,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        35,
+        48,
+        63,
+        78,
+        87,
+        93,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        26,
+        46,
+        60,
+        76,
+        94,
+        98,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        36,
+        67,
+        81,
+        86,
+        92,
+        94,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        52,
+        68,
+        78,
+        76,
+        81,
+        93,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        43,
+        58,
+        66,
+        73,
+        82,
+        95,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 90,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        21,
+        43,
+        67,
+        76,
+        80,
+        87,
+        84,
+        90
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        44,
+        50,
+        57,
+        81,
+        73,
+        95,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        37,
+        60,
+        81,
+        86,
+        90,
+        96,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        44,
+        53,
+        66,
+        66,
+        84,
+        93,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        48,
+        49,
+        83,
+        91,
+        92,
+        90,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        52,
+        54,
+        64,
+        86,
+        97,
+        100,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        21,
+        50,
+        67,
+        74,
+        94,
+        92,
+        99,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        53,
+        57,
+        84,
+        87,
+        91,
+        81,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        39,
+        51,
+        83,
+        91,
+        90,
+        93,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        45,
+        52,
+        68,
+        95,
+        92,
+        98,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        35,
+        62,
+        65,
+        73,
+        87,
+        93,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        53,
+        59,
+        63,
+        70,
+        68,
+        86,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        39,
+        62,
+        77,
+        84,
+        94,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        45,
+        56,
+        67,
+        91,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 88,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        50,
+        59,
+        73,
+        75,
+        78,
+        89,
+        88
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        35,
+        55,
+        67,
+        79,
+        89,
+        93,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 90,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        36,
+        52,
+        57,
+        91,
+        85,
+        79,
+        90
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        44,
+        35,
+        57,
+        67,
+        77,
+        94,
+        99,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 79,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        41,
+        54,
+        60,
+        76,
+        76,
+        80,
+        79
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 80,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        48,
+        60,
+        71,
+        64,
+        79,
+        89,
+        80
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        32,
+        62,
+        75,
+        79,
+        95,
+        94,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        42,
+        52,
+        64,
+        57,
+        65,
+        85,
+        86,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        51,
+        63,
+        69,
+        83,
+        85,
+        97,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        65,
+        65,
+        61,
+        69,
+        87,
+        95,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        36,
+        55,
+        49,
+        77,
+        85,
+        91,
+        92,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        39,
+        62,
+        54,
+        63,
+        78,
+        81,
+        91,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        37,
+        38,
+        50,
+        73,
+        92,
+        86,
+        95,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        53,
+        53,
+        69,
+        86,
+        89,
+        86,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 82,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        52,
+        49,
+        56,
+        58,
+        58,
+        74,
+        82
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        41,
+        58,
+        74,
+        88,
+        91,
+        94,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        37,
+        33,
+        72,
+        87,
+        85,
+        98,
+        98,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        55,
+        67,
+        77,
+        79,
+        81,
+        95,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        37,
+        46,
+        62,
+        61,
+        69,
+        88,
+        94,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        36,
+        51,
+        70,
+        70,
+        83,
+        100,
+        100,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        37,
+        54,
+        58,
+        79,
+        91,
+        96,
+        93,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        39,
+        55,
+        77,
+        70,
+        83,
+        91,
+        91,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        46,
+        70,
+        76,
+        93,
+        89,
+        89,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        57,
+        50,
+        82,
+        89,
+        98,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        49,
+        67,
+        81,
+        86,
+        89,
+        94,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        53,
+        67,
+        80,
+        90,
+        91,
+        94,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        49,
+        69,
+        82,
+        90,
+        92,
+        92,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        47,
+        76,
+        87,
+        92,
+        89,
+        91,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        56,
+        73,
+        54,
+        68,
+        88,
+        84,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 74,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        56,
+        74,
+        53,
+        66,
+        79,
+        71,
+        74
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 88,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        62,
+        81,
+        72,
+        70,
+        73,
+        78,
+        88
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        50,
+        42,
+        69,
+        91,
+        91,
+        91,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 93,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        40,
+        47,
+        69,
+        72,
+        71,
+        79,
+        92,
+        93
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        53,
+        60,
+        80,
+        80,
+        84,
+        95,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 76,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        56,
+        52,
+        59,
+        60,
+        46,
+        66,
+        76
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        44,
+        57,
+        70,
+        85,
+        90,
+        97,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 90,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        46,
+        65,
+        73,
+        88,
+        91,
+        90,
+        90
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 92,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        42,
+        41,
+        65,
+        77,
+        69,
+        83,
+        92
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        38,
+        38,
+        50,
+        73,
+        81,
+        78,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        40,
+        46,
+        73,
+        65,
+        77,
+        92,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        42,
+        59,
+        76,
+        83,
+        94,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        49,
+        65,
+        70,
+        83,
+        96,
+        97,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        31,
+        57,
+        62,
+        80,
+        91,
+        91,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        40,
+        51,
+        75,
+        94,
+        93,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        41,
+        45,
+        67,
+        89,
+        86,
+        94,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        38,
+        34,
+        58,
+        51,
+        70,
+        80,
+        94,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        47,
+        77,
+        83,
+        89,
+        88,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        30,
+        42,
+        68,
+        81,
+        86,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        42,
+        43,
+        60,
+        77,
+        89,
+        97,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        40,
+        39,
+        58,
+        72,
+        73,
+        94,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        41,
+        70,
+        76,
+        96,
+        99,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        49,
+        77,
+        79,
+        84,
+        97,
+        97,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        42,
+        36,
+        71,
+        90,
+        90,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        34,
+        59,
+        75,
+        94,
+        99,
+        97,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 91,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        36,
+        43,
+        49,
+        62,
+        78,
+        86,
+        91
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        54,
+        58,
+        50,
+        69,
+        91,
+        95,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        31,
+        53,
+        53,
+        67,
+        77,
+        92,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        47,
+        65,
+        66,
+        69,
+        75,
+        93,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        38,
+        57,
+        77,
+        77,
+        87,
+        91,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        37,
+        55,
+        54,
+        76,
+        85,
+        97,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        39,
+        53,
+        72,
+        92,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        36,
+        68,
+        70,
+        86,
+        85,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 76,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        51,
+        50,
+        50,
+        62,
+        69,
+        74,
+        76
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        41,
+        61,
+        78,
+        71,
+        79,
+        93,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        43,
+        55,
+        89,
+        86,
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        41,
+        54,
+        78,
+        95,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        27,
+        51,
+        64,
+        67,
+        88,
+        90,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        41,
+        57,
+        72,
+        84,
+        90,
+        94,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        36,
+        45,
+        77,
+        91,
+        92,
+        97,
+        99,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        46,
+        56,
+        84,
+        90,
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        42,
+        47,
+        46,
+        75,
+        82,
+        99,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        42,
+        58,
+        83,
+        88,
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        43,
+        53,
+        65,
+        73,
+        92,
+        95,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        52,
+        64,
+        84,
+        94,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        43,
+        57,
+        63,
+        73,
+        82,
+        89,
+        97,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        40,
+        71,
+        80,
+        74,
+        90,
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        57,
+        59,
+        78,
+        84,
+        93,
+        96,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        40,
+        52,
+        74,
+        89,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        59,
+        67,
+        73,
+        80,
+        93,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        56,
+        70,
+        86,
+        90,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        52,
+        65,
+        80,
+        88,
+        97,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        63,
+        59,
+        67,
+        82,
+        93,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        62,
+        63,
+        73,
+        80,
+        94,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        55,
+        54,
+        68,
+        77,
+        90,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        53,
+        73,
+        82,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        72,
+        70,
+        81,
+        92,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        77,
+        89,
+        89,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        65,
+        69,
+        79,
+        90,
+        95,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        71,
+        77,
+        74,
+        93,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        62,
+        70,
+        95,
+        96,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        73,
+        68,
+        82,
+        92,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        83,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        87,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        77,
+        90,
+        89,
+        96,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        76,
+        87,
+        97,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        78,
+        93,
+        90,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        72,
+        90,
+        87,
+        94,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        76,
+        87,
+        95,
+        96,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        83,
+        78,
+        81,
+        89,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        77,
+        86,
+        97,
+        100,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        83,
+        96,
+        97,
+        97,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        75,
+        86,
+        90,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        96,
+        95,
+        99,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        85,
+        95,
+        98,
+        99,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        95,
+        97,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        85,
+        91,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        85,
+        88,
+        95,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        89,
+        93,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        88,
+        99,
+        97,
+        99,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        92,
+        97,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        86,
+        97,
+        98,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        82,
+        95,
+        97,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        86,
+        83,
+        96,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        91,
+        97,
+        94,
+        100,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        91,
+        93,
+        96,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        88,
+        94,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        97,
+        93,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        95,
+        96,
+        97,
+        89,
+        93,
+        99,
+        100,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        92,
+        98,
+        100,
+        99,
+        99,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        92,
+        99,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        92,
+        100,
+        99,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        91,
+        96,
+        93,
+        97,
+        99,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        96,
+        99,
+        100,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        98,
+        99,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        92,
+        94,
+        99,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        92,
+        100,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        96,
+        95,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        93,
+        93,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        96,
+        96,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        97,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        95,
+        99,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        85,
+        96,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        86,
+        100,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        90,
+        98,
+        96,
+        96,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        88,
+        98,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        98,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        95,
+        95,
+        98,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        96,
+        97,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        92,
+        99,
+        100,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        89,
+        100,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        93,
+        97,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        90,
+        94,
+        100,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        87,
+        97,
+        97,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        96,
+        90,
+        94,
+        95,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        95,
+        98,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        91,
+        97,
+        98,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        97,
+        99,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        95,
+        99,
+        99,
+        100,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        99,
+        97,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        97,
+        98,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        97,
+        98,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        92,
+        95,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        96,
+        96,
+        93,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        99,
+        96,
+        99,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        94,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        100,
+        100,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        98,
+        99,
+        99,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        96,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        96,
+        98,
+        99,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        95,
+        100,
+        99,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        95,
+        97,
+        99,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        91,
+        97,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        94,
+        91,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        90,
+        90,
+        98,
+        98,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        99,
+        99,
+        100,
+        100,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        94,
+        92,
+        93,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        89,
+        99,
+        99,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        93,
+        94,
+        100,
+        97,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        82,
+        86,
+        96,
+        99,
+        99,
+        100,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        85,
+        92,
+        95,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        92,
+        89,
+        91,
+        94,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        85,
+        88,
+        92,
+        100,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        86,
+        92,
+        92,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        79,
+        98,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        77,
+        84,
+        90,
+        92,
+        99,
+        99,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        84,
+        96,
+        95,
+        97,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        78,
+        79,
+        93,
+        98,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        78,
+        90,
+        85,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        81,
+        83,
+        97,
+        99,
+        98,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        75,
+        90,
+        92,
+        98,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        79,
+        90,
+        86,
+        95,
+        99,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        71,
+        87,
+        88,
+        98,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        76,
+        80,
+        98,
+        100,
+        97,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        66,
+        87,
+        92,
+        90,
+        99,
+        100,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        74,
+        86,
+        91,
+        91,
+        97,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        75,
+        61,
+        77,
+        94,
+        91,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        71,
+        82,
+        95,
+        97,
+        100,
+        100,
+        98,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        73,
+        73,
+        88,
+        91,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        63,
+        96,
+        96,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        67,
+        72,
+        81,
+        93,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        65,
+        82,
+        94,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        77,
+        78,
+        95,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        71,
+        83,
+        93,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        78,
+        87,
+        96,
+        97,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        81,
+        97,
+        95,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        55,
+        82,
+        92,
+        97,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        70,
+        85,
+        96,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        58,
+        84,
+        91,
+        99,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        81,
+        82,
+        79,
+        96,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        85,
+        88,
+        83,
+        94,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        53,
+        81,
+        87,
+        95,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        76,
+        89,
+        96,
+        96,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        63,
+        94,
+        93,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        66,
+        82,
+        96,
+        99,
+        99,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        52,
+        78,
+        95,
+        99,
+        99,
+        100,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        66,
+        74,
+        78,
+        87,
+        90,
+        94,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        67,
+        72,
+        72,
+        92,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        58,
+        88,
+        96,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        69,
+        81,
+        95,
+        100,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        63,
+        83,
+        93,
+        100,
+        100,
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        87,
+        97,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        61,
+        64,
+        87,
+        96,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        79,
+        87,
+        98,
+        96,
+        100,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        81,
+        89,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        78,
+        87,
+        94,
+        93,
+        99,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        84,
+        96,
+        99,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        60,
+        68,
+        78,
+        87,
+        96,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        65,
+        81,
+        94,
+        100,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        66,
+        75,
+        95,
+        95,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        60,
+        67,
+        85,
+        97,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        65,
+        79,
+        90,
+        95,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        90,
+        97,
+        100,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        70,
+        81,
+        96,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        78,
+        91,
+        98,
+        99,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        75,
+        69,
+        86,
+        94,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        65,
+        82,
+        77,
+        95,
+        98,
+        100,
+        100,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        63,
+        83,
+        91,
+        92,
+        99,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        67,
+        93,
+        95,
+        97,
+        95,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        76,
+        94,
+        94,
+        96,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        72,
+        87,
+        86,
+        96,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        79,
+        78,
+        93,
+        95,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        73,
+        93,
+        99,
+        100,
+        100,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        74,
+        84,
+        100,
+        99,
+        95,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        70,
+        80,
+        91,
+        96,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        63,
+        81,
+        86,
+        96,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        77,
+        96,
+        94,
+        100,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        71,
+        78,
+        88,
+        97,
+        97,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        65,
+        85,
+        93,
+        99,
+        98,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        68,
+        71,
+        72,
+        94,
+        96,
+        98,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        60,
+        81,
+        81,
+        97,
+        100,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        58,
+        74,
+        80,
+        87,
+        95,
+        99,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        70,
+        76,
+        90,
+        91,
+        97,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        64,
+        80,
+        93,
+        98,
+        99,
+        99,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        66,
+        70,
+        80,
+        91,
+        95,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        50,
+        64,
+        71,
+        72,
+        78,
+        94,
+        97,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        53,
+        71,
+        73,
+        87,
+        83,
+        93,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        60,
+        55,
+        73,
+        88,
+        96,
+        100,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        49,
+        71,
+        70,
+        86,
+        86,
+        97,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        47,
+        64,
+        67,
+        77,
+        70,
+        87,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 97,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        55,
+        51,
+        48,
+        78,
+        78,
+        83,
+        88,
+        97
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        43,
+        54,
+        63,
+        75,
+        81,
+        95,
+        99,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        32,
+        61,
+        80,
+        88,
+        90,
+        94,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        45,
+        54,
+        74,
+        86,
+        92,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        49,
+        58,
+        70,
+        81,
+        88,
+        98,
+        98,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        40,
+        68,
+        83,
+        83,
+        93,
+        98,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        49,
+        71,
+        77,
+        91,
+        95,
+        98,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        42,
+        56,
+        68,
+        85,
+        88,
+        95,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        52,
+        71,
+        79,
+        76,
+        85,
+        92,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        48,
+        71,
+        92,
+        97,
+        97,
+        98,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 94,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        37,
+        42,
+        36,
+        64,
+        79,
+        75,
+        79,
+        94
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        46,
+        44,
+        84,
+        80,
+        88,
+        96,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        39,
+        35,
+        54,
+        72,
+        94,
+        97,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        52,
+        55,
+        76,
+        91,
+        93,
+        97,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        49,
+        47,
+        72,
+        77,
+        90,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        36,
+        48,
+        62,
+        65,
+        87,
+        91,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        33,
+        52,
+        73,
+        89,
+        90,
+        96,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        42,
+        76,
+        84,
+        94,
+        94,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        46,
+        65,
+        86,
+        92,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        47,
+        49,
+        69,
+        74,
+        87,
+        96,
+        96
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        61,
+        66,
+        77,
+        91,
+        95,
+        100,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        49,
+        60,
+        83,
+        81,
+        97,
+        98,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        21,
+        35,
+        64,
+        76,
+        90,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        45,
+        52,
+        72,
+        92,
+        91,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        31,
+        58,
+        64,
+        72,
+        90,
+        98,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        43,
+        65,
+        68,
+        82,
+        91,
+        90,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        34,
+        59,
+        61,
+        76,
+        79,
+        90,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        43,
+        45,
+        74,
+        79,
+        95,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        38,
+        71,
+        68,
+        77,
+        84,
+        99,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        47,
+        69,
+        84,
+        88,
+        96,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        49,
+        48,
+        69,
+        85,
+        97,
+        96,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        34,
+        53,
+        65,
+        67,
+        89,
+        100,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        28,
+        52,
+        61,
+        61,
+        87,
+        91,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        47,
+        57,
+        57,
+        76,
+        89,
+        99,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 98,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        20,
+        24,
+        42,
+        43,
+        70,
+        92,
+        95,
+        98
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        47,
+        68,
+        87,
+        98,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 93,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        40,
+        48,
+        68,
+        89,
+        85,
+        93,
+        93
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        26,
+        32,
+        40,
+        71,
+        80,
+        93,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        39,
+        62,
+        84,
+        96,
+        98,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        35,
+        65,
+        76,
+        84,
+        86,
+        100,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        46,
+        63,
+        91,
+        89,
+        96,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        42,
+        41,
+        57,
+        83,
+        93,
+        98,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        36,
+        53,
+        73,
+        90,
+        98,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        23,
+        55,
+        64,
+        67,
+        81,
+        88,
+        98,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        46,
+        63,
+        70,
+        79,
+        92,
+        97,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        34,
+        38,
+        61,
+        81,
+        94,
+        100,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        19,
+        35,
+        57,
+        73,
+        77,
+        85,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        47,
+        65,
+        96,
+        95,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        27,
+        42,
+        56,
+        84,
+        96,
+        99,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        56,
+        49,
+        77,
+        87,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        28,
+        46,
+        71,
+        83,
+        98,
+        98,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        60,
+        71,
+        87,
+        92,
+        99,
+        100,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 99,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        22,
+        43,
+        68,
+        83,
+        99,
+        99,
+        96,
+        99
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 95,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        37,
+        47,
+        67,
+        71,
+        78,
+        85,
+        91,
+        95
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 100,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        24,
+        50,
+        59,
+        85,
+        79,
+        92,
+        99,
+        100
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 96,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        29,
+        48,
+        50,
+        76,
+        75,
+        91,
+        96,
+        96
+      ]
+    }
+  ]
+}

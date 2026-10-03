@@ -25,6 +25,10 @@ from dynamag_simulation.core.integrator import adaptive_step
 from dynamag_simulation.core.magnets import ElectromagnetArray3D
 from dynamag_simulation.core.particle import MagneticParticle3D
 from dynamag_simulation.core.pid_controller import PIDConfig, PIDController
+from dynamag_simulation.core.smc_dob_controller import (
+    SMCDOBInspiredConfig,
+    SMCDOBInspiredController,
+)
 from dynamag_simulation.core.profiles import PhysicalProfile, SPION_CARRIER_1MM
 from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
@@ -312,6 +316,64 @@ def save_pid_diagnostics(results, output_dir, filename="pid_diagnostics.csv"):
     print(f"PID diagnostics saved to: {path}", flush=True)
 
 
+def save_smc_dob_diagnostics(
+    results,
+    output_dir,
+    filename="smc_dob_inspired_diagnostics.csv",
+):
+    """Write paper-structure diagnostics for the adapted SMC-DOB baseline."""
+    path = os.path.join(output_dir, filename)
+    header = [
+        "trial_name", "step", "time_s",
+        "waypoint_index", "waypoint_distance_m", "position_error_norm_m",
+        "velocity_error_norm_m_s", "filtered_velocity_error_norm_m_s",
+        "sliding_surface_norm", "equivalent_velocity_norm_m_s",
+        "switching_velocity_norm_m_s", "disturbance_residual_norm_m_s",
+        "disturbance_estimate_norm_m_s", "flow_compensation_norm_m_s",
+        "wall_repulsion_norm_m_s", "reference_velocity_norm_m_s",
+        "desired_velocity_norm_m_s", "current_norm_A", "max_abs_current_A",
+        "saturated", "wall_clearance_m", "controller_step_time_s",
+        "target_x", "target_y", "target_z",
+        "gantry_center_x", "gantry_center_y", "gantry_center_z",
+        "gantry_axis_point_x", "gantry_axis_point_y", "gantry_axis_point_z",
+        "gantry_particle_dist_m", "gantry_axis_dist_m",
+        "gantry_lateral_shift_x", "gantry_lateral_shift_y", "gantry_lateral_shift_z",
+    ]
+
+    with open(path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for result in results:
+            for row in getattr(result, "smc_dob_log", []):
+                writer.writerow([
+                    result.trial_name,
+                    row["step"], row["time_s"],
+                    row["waypoint_index"], row["waypoint_distance_m"],
+                    row["position_error_norm_m"],
+                    row["velocity_error_norm_m_s"],
+                    row["filtered_velocity_error_norm_m_s"],
+                    row["sliding_surface_norm"],
+                    row["equivalent_velocity_norm_m_s"],
+                    row["switching_velocity_norm_m_s"],
+                    row["disturbance_residual_norm_m_s"],
+                    row["disturbance_estimate_norm_m_s"],
+                    row["flow_compensation_norm_m_s"],
+                    row["wall_repulsion_norm_m_s"],
+                    row["reference_velocity_norm_m_s"],
+                    row["desired_velocity_norm_m_s"],
+                    row["current_norm_A"], row["max_abs_current_A"],
+                    row["saturated"], row["wall_clearance_m"],
+                    row["controller_step_time_s"],
+                    *row["target"],
+                    *row["gantry_center"],
+                    *row["gantry_axis_point"],
+                    row["gantry_particle_dist_m"], row["gantry_axis_dist_m"],
+                    *row["gantry_lateral_shift"],
+                ])
+
+    print(f"SMC-DOB-inspired diagnostics saved to: {path}", flush=True)
+
+
 def simulate_trial_pid(
     start,
     target,
@@ -350,7 +412,14 @@ def simulate_trial_pid(
     derivative_filter_alpha: float = PIDConfig.derivative_filter_alpha,
     max_control_norm: float = PIDConfig.max_control_norm,
     debug: bool = False,
+    controller_mode: str = "pid",
+    smc_dob_kwargs: dict | None = None,
 ) -> TrialResult:
+    if controller_mode not in {"pid", "smc_dob_inspired"}:
+        raise ValueError(
+            "controller_mode must be 'pid' or 'smc_dob_inspired', "
+            f"got {controller_mode!r}"
+        )
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
             f"device_mode must be one of {sorted(VALID_DEVICE_MODES)}, "
@@ -411,27 +480,46 @@ def simulate_trial_pid(
         forward_search_points=forward_search_points,
     )
 
-    pid_cfg = PIDConfig(
-        kp=kp,
-        ki=ki,
-        kd=kd,
-        flow_compensation_gain=flow_compensation_gain,
-        wall_repulsion_gain=wall_repulsion_gain,
-        wall_clearance_threshold=wall_clearance_threshold_m,
-        waypoint_lookahead_distance=waypoint_spacing * max(1, waypoint_lookahead),
-        waypoint_reached_radius=waypoint_arrival_tol,
-        max_integral_norm=max_integral_norm,
-        derivative_filter_alpha=derivative_filter_alpha,
-        max_control_norm=max_control_norm,
-        max_current=max_current,
-        debug=debug,
-    )
-    controller = PIDController(
-        network=network,
-        magnet_array=magnets,
-        workspace=workspace,
-        config=pid_cfg,
-    )
+    if controller_mode == "smc_dob_inspired":
+        smc_params = dict(smc_dob_kwargs or {})
+        smc_params.update({
+            "wall_clearance_threshold": wall_clearance_threshold_m,
+            "waypoint_lookahead_distance": (
+                waypoint_spacing * max(1, waypoint_lookahead)
+            ),
+            "waypoint_reached_radius": waypoint_arrival_tol,
+            "max_current": max_current,
+            "debug": debug,
+        })
+        controller_cfg = SMCDOBInspiredConfig(**smc_params)
+        controller = SMCDOBInspiredController(
+            network=network,
+            magnet_array=magnets,
+            workspace=workspace,
+            config=controller_cfg,
+        )
+    else:
+        controller_cfg = PIDConfig(
+            kp=kp,
+            ki=ki,
+            kd=kd,
+            flow_compensation_gain=flow_compensation_gain,
+            wall_repulsion_gain=wall_repulsion_gain,
+            wall_clearance_threshold=wall_clearance_threshold_m,
+            waypoint_lookahead_distance=waypoint_spacing * max(1, waypoint_lookahead),
+            waypoint_reached_radius=waypoint_arrival_tol,
+            max_integral_norm=max_integral_norm,
+            derivative_filter_alpha=derivative_filter_alpha,
+            max_control_norm=max_control_norm,
+            max_current=max_current,
+            debug=debug,
+        )
+        controller = PIDController(
+            network=network,
+            magnet_array=magnets,
+            workspace=workspace,
+            config=controller_cfg,
+        )
 
     print(
         f"    Profile: {profile.name}, "
@@ -443,13 +531,35 @@ def simulate_trial_pid(
         f"sparse waypoints: {navigator.total_hops}",
         flush=True,
     )
-    print(
-        "    PID: "
-        f"kp={kp:.3g}, ki={ki:.3g}, kd={kd:.3g}, "
-        f"flow_gain={flow_compensation_gain:.3g}, "
-        f"max_v={max_control_norm * 1000:.1f}mm/s",
-        flush=True,
-    )
+    if controller_mode == "smc_dob_inspired":
+        print(
+            "    Published-style adapted baseline: SMC-DOB-inspired "
+            "(Bhattacharjee et al., 2026; not an exact reproduction)",
+            flush=True,
+        )
+        print(
+            "    SMC-DOB-inspired: "
+            f"gamma={controller_cfg.sliding_gamma:.3g}, "
+            f"lambda={controller_cfg.sliding_lambda:.3g}, "
+            f"Ksw_v={controller_cfg.switching_gain:.3g}m/s, "
+            f"eta={controller_cfg.disturbance_time_constant:.3g}s, "
+            f"phi_v={controller_cfg.boundary_layer:.3g}m/s, "
+            f"route_speed={controller_cfg.route_speed * 1000:.1f}mm/s",
+            flush=True,
+        )
+        print(
+            "    Allocation: bounded bidirectional SLSQP velocity allocator; "
+            "no COMET logic and no CEM",
+            flush=True,
+        )
+    else:
+        print(
+            "    PID: "
+            f"kp={kp:.3g}, ki={ki:.3g}, kd={kd:.3g}, "
+            f"flow_gain={flow_compensation_gain:.3g}, "
+            f"max_v={max_control_norm * 1000:.1f}mm/s",
+            flush=True,
+        )
     print(
         "    Device motion: "
         f"mode={device_mode}, "
@@ -472,6 +582,7 @@ def simulate_trial_pid(
     gantry_axis_dist_log = []
     gantry_lateral_shift_log = []
     pid_log = []
+    smc_dob_log = []
 
     reached = False
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
@@ -510,7 +621,8 @@ def simulate_trial_pid(
             converged_count += 1
         else:
             warnings.warn(
-                f"Step {step}: PID current allocator did not converge; using best-so-far",
+                f"Step {step}: {controller_mode} current allocator did not "
+                "converge; using best-so-far",
                 RuntimeWarning,
                 stacklevel=1,
             )
@@ -579,6 +691,48 @@ def simulate_trial_pid(
             "gantry_axis_dist_m": float(device_diag["gantry_axis_dist"]),
             "gantry_lateral_shift": _vec_or_nan(device_diag["gantry_lateral_shift"]),
         })
+        if controller_mode == "smc_dob_inspired":
+            smc_dob_log.append({
+                "step": step,
+                "time_s": sim_time,
+                "waypoint_index": info.waypoint_index,
+                "waypoint_distance_m": info.waypoint_distance_m,
+                "position_error_norm_m": info.position_error_norm_m,
+                "velocity_error_norm_m_s": info.velocity_error_norm_m_s,
+                "filtered_velocity_error_norm_m_s": (
+                    info.filtered_velocity_error_norm_m_s
+                ),
+                "sliding_surface_norm": info.sliding_surface_norm,
+                "equivalent_velocity_norm_m_s": (
+                    info.equivalent_velocity_norm_m_s
+                ),
+                "switching_velocity_norm_m_s": (
+                    info.switching_velocity_norm_m_s
+                ),
+                "disturbance_residual_norm_m_s": (
+                    info.disturbance_residual_norm_m_s
+                ),
+                "disturbance_estimate_norm_m_s": (
+                    info.disturbance_estimate_norm_m_s
+                ),
+                "flow_compensation_norm_m_s": info.flow_compensation_norm_m_s,
+                "wall_repulsion_norm_m_s": info.wall_repulsion_norm_m_s,
+                "reference_velocity_norm_m_s": info.reference_velocity_norm_m_s,
+                "desired_velocity_norm_m_s": info.desired_velocity_norm,
+                "current_norm_A": info.current_norm,
+                "max_abs_current_A": info.max_abs_current,
+                "saturated": info.saturated,
+                "wall_clearance_m": info.wall_clearance_m,
+                "controller_step_time_s": info.controller_step_time_s,
+                "target": _vec_or_nan(info.target),
+                "gantry_center": _vec_or_nan(device_diag["gantry_center"]),
+                "gantry_axis_point": _vec_or_nan(device_diag["gantry_axis_point"]),
+                "gantry_particle_dist_m": float(device_diag["gantry_particle_dist"]),
+                "gantry_axis_dist_m": float(device_diag["gantry_axis_dist"]),
+                "gantry_lateral_shift": _vec_or_nan(
+                    device_diag["gantry_lateral_shift"]
+                ),
+            })
 
         if distance < tolerance:
             reached = True
@@ -661,8 +815,24 @@ def simulate_trial_pid(
         magnets=magnets.positions.copy(),
         orientations=magnets.orientations.copy(),
         params={
-            "controller": "route_aware_PID",
-            "low_level_allocator": "pid_velocity_current_allocator",
+            "controller": (
+                "smc_dob_inspired_route_following"
+                if controller_mode == "smc_dob_inspired"
+                else "route_aware_PID"
+            ),
+            "controller_adaptation_note": (
+                "Adapted published-style SMC-DOB baseline based on "
+                "Bhattacharjee et al. (2026), not an exact reproduction; "
+                "the source paper used a 2-D in-vitro cardiac phantom and "
+                "different actuation/localization hardware."
+                if controller_mode == "smc_dob_inspired"
+                else ""
+            ),
+            "low_level_allocator": "bounded_bidirectional_slsqp_velocity_allocator",
+            "uses_cem": False,
+            "uses_comet_branch_probability": False,
+            "uses_comet_downstream_value": False,
+            "uses_comet_terminal_precision": False,
             "device_mode": device_mode,
             "dt": dt,
             "steps": steps,
@@ -703,14 +873,24 @@ def simulate_trial_pid(
             "navigator_forward_search_points": getattr(
                 navigator, "forward_search_points", None,
             ),
-            "pid_kp": kp,
-            "pid_ki": ki,
-            "pid_kd": kd,
-            "pid_flow_compensation_gain": flow_compensation_gain,
-            "pid_wall_repulsion_gain": wall_repulsion_gain,
-            "pid_max_integral_norm": max_integral_norm,
-            "pid_derivative_filter_alpha": derivative_filter_alpha,
-            "pid_max_control_norm": max_control_norm,
+            **(
+                {
+                    f"smc_dob_{key}": value
+                    for key, value in vars(controller_cfg).items()
+                    if isinstance(value, (bool, int, float, str)) or value is None
+                }
+                if controller_mode == "smc_dob_inspired"
+                else {
+                    "pid_kp": kp,
+                    "pid_ki": ki,
+                    "pid_kd": kd,
+                    "pid_flow_compensation_gain": flow_compensation_gain,
+                    "pid_wall_repulsion_gain": wall_repulsion_gain,
+                    "pid_max_integral_norm": max_integral_norm,
+                    "pid_derivative_filter_alpha": derivative_filter_alpha,
+                    "pid_max_control_norm": max_control_norm,
+                }
+            ),
             **hardware_diag,
         },
     )
@@ -720,9 +900,11 @@ def simulate_trial_pid(
     result.gantry_axis_dist_log = gantry_axis_dist_log
     result.gantry_lateral_shift_log = gantry_lateral_shift_log
     result.pid_log = pid_log
+    result.smc_dob_log = smc_dob_log
 
     print(
-        f"  PID summary: low-level convergence={low_level_convergence_rate:.2%}",
+        f"  {controller_mode} summary: "
+        f"low-level convergence={low_level_convergence_rate:.2%}",
         flush=True,
     )
 
