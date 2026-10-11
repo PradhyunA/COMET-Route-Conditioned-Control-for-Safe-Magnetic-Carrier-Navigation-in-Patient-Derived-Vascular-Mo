@@ -407,11 +407,17 @@ class _BatchRealVesselModel:
         velocity = np.zeros_like(positions, dtype=float)
         inside = geometry["distance"] <= geometry["radius"]
         if np.any(inside):
-            radius = geometry["radius"][inside]
-            profile = 1.0 - np.square(geometry["distance"][inside] / radius)
-            pulsation = 1.0 + 0.15 * np.sin(2.0 * np.pi * float(time))
-            speed = 2.0 * np.abs(geometry["v_mean"][inside]) * profile * pulsation
-            velocity[inside] = speed[:, None] * geometry["axis"][inside]
+            cfd_flow = getattr(self.network, "cfd_flow", None)
+            if cfd_flow is not None:
+                # Sampling rollouts must use the same imported vector field
+                # as the particle integrator, including its support checks.
+                velocity[inside] = cfd_flow.velocity_at_many(positions[inside])
+            else:
+                radius = geometry["radius"][inside]
+                profile = 1.0 - np.square(geometry["distance"][inside] / radius)
+                pulsation = 1.0 + 0.15 * np.sin(2.0 * np.pi * float(time))
+                speed = 2.0 * np.abs(geometry["v_mean"][inside]) * profile * pulsation
+                velocity[inside] = speed[:, None] * geometry["axis"][inside]
         return velocity
 
     def wall_penalty(self, positions, wall_buffer_m):

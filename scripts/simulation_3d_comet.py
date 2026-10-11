@@ -235,7 +235,11 @@ def simulate_trial_comet(
            wall_clearance_threshold_m - particle_radius, 0.0,
        ),
        magnetic_authority_m_s=config.cruise_speed,
-       minimum_authority_reserve_m_s=0.0,
+       # Frozen CFD benchmark routes remain test cases even when adverse flow
+       # exceeds cruise authority. Record their reserve and measure failure.
+       minimum_authority_reserve_m_s=(
+           float("-inf") if hasattr(network, "cfd_flow") else 0.0
+       ),
    )
    navigator = network.waypoint_navigator(
        start,

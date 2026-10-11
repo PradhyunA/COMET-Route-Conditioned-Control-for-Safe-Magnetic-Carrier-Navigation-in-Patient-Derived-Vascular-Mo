@@ -1,0 +1,369 @@
+{
+  "run_id": "abdominal",
+  "vessel_file": "data/real_vessel_segments_cm_corrected.pkl",
+  "flow_model": "steady_cfd",
+  "cfd_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+  "cfd_metadata": {
+    "schema_version": 1,
+    "source_zip": "/Users/amrit/Downloads/AbdominalAortaCFD-Incompressible-Run_4.zip",
+    "source_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+    "vessel_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/real_vessel_segments_cm_corrected.pkl",
+    "vessel_sha256": "83539652156dc5c332e150ceb1b93025d087291bb832281928b214500f6dd5f7",
+    "solver_iteration": "1000",
+    "flow_mode": "steady",
+    "coordinate_scale": 1.0,
+    "coordinate_unit": "m",
+    "velocity_unit": "m/s",
+    "n_cells": 649072,
+    "n_boundary_samples": 74930,
+    "bounds_m": [
+      [
+        -0.091065721916,
+        -0.0663350531041,
+        -0.434974021912
+      ],
+      [
+        0.0739825868106,
+        0.0581015990915,
+        -0.0292144012451
+      ]
+    ],
+    "alignment": {
+      "mesh_to_centreline_span_ratio": [
+        1.0462617005635986,
+        1.1530204325702942,
+        1.048358231941336
+      ],
+      "p95_nearest_vertex_distance_over_radius": 0.2526081244510408
+    },
+    "total_fluid_volume_m3": 0.0001662913558795362,
+    "minimum_cell_volume_m3": 1.8123483720978778e-13,
+    "speed_percentiles_m_s": {
+      "min": 5.604625635995502e-07,
+      "p50": 0.01964324204521982,
+      "p95": 0.10158388877488332,
+      "p99": 0.14370470825259096,
+      "max": 0.21569076709051122
+    },
+    "flux_dimensions": "1 0 -1 0 0 0 0",
+    "boundary_flux_imbalance_fraction": 2.5929611881076912e-08,
+    "cell_residual_L1_over_inlet_flux": 1.741725376612808e-05,
+    "boundary_patches": [
+      {
+        "name": "face1",
+        "type": "wall",
+        "start": 1388077,
+        "count": 2,
+        "net_outward_flux": 0.0,
+        "centre_m": [
+          -0.015274062904933333,
+          0.013890923496816667,
+          -0.20573300813016665
+        ]
+      },
+      {
+        "name": "face2",
+        "type": "wall",
+        "start": 1388079,
+        "count": 73337,
+        "net_outward_flux": 0.0,
+        "centre_m": [
+          -0.010448842865651939,
+          0.004048522557388384,
+          -0.23691668446500871
+        ]
+      },
+      {
+        "name": "face3",
+        "type": "patch",
+        "start": 1461416,
+        "count": 114,
+        "net_outward_flux": 0.0018929217142764532,
+        "centre_m": [
+          0.06098299944832688,
+          -0.014533144348725545,
+          -0.17206511123785911
+        ]
+      },
+      {
+        "name": "face4",
+        "type": "patch",
+        "start": 1461530,
+        "count": 184,
+        "net_outward_flux": 0.0044719954705662555,
+        "centre_m": [
+          0.013643446295754123,
+          0.043282600099324206,
+          -0.16301396262127457
+        ]
+      },
+      {
+        "name": "face5",
+        "type": "patch",
+        "start": 1461714,
+        "count": 116,
+        "net_outward_flux": 0.0026315297461045398,
+        "centre_m": [
+          -0.06183553775209818,
+          0.012977427198480733,
+          -0.1741202269391665
+        ]
+      },
+      {
+        "name": "face6",
+        "type": "patch",
+        "start": 1461830,
+        "count": 224,
+        "net_outward_flux": -0.01973391998022291,
+        "centre_m": [
+          -0.04910986036786745,
+          -0.05413250019455163,
+          -0.03332588673217026
+        ]
+      },
+      {
+        "name": "face7",
+        "type": "patch",
+        "start": 1462054,
+        "count": 162,
+        "net_outward_flux": 0.0041061527751830845,
+        "centre_m": [
+          0.050240605572703094,
+          0.0439828168077251,
+          -0.1285976867980148
+        ]
+      },
+      {
+        "name": "face8",
+        "type": "patch",
+        "start": 1462216,
+        "count": 138,
+        "net_outward_flux": 0.0009188724694196284,
+        "centre_m": [
+          0.07055373798912225,
+          0.01836754687813756,
+          -0.43466578394555233
+        ]
+      },
+      {
+        "name": "face9",
+        "type": "patch",
+        "start": 1462354,
+        "count": 116,
+        "net_outward_flux": 0.001031661590557434,
+        "centre_m": [
+          -0.05958808831454848,
+          0.0070004570880324605,
+          -0.13682018915186955
+        ]
+      },
+      {
+        "name": "face10",
+        "type": "patch",
+        "start": 1462470,
+        "count": 158,
+        "net_outward_flux": 0.0005953381213738433,
+        "centre_m": [
+          -0.08649753612134169,
+          0.03744868840712165,
+          -0.43042434514199984
+        ]
+      },
+      {
+        "name": "face11",
+        "type": "patch",
+        "start": 1462628,
+        "count": 124,
+        "net_outward_flux": 0.0025843141970878208,
+        "centre_m": [
+          -0.029437304149494612,
+          0.030545812459594087,
+          -0.27175030273052336
+        ]
+      },
+      {
+        "name": "face12",
+        "type": "patch",
+        "start": 1462752,
+        "count": 128,
+        "net_outward_flux": 0.000669869821212844,
+        "centre_m": [
+          -0.05788832502056991,
+          -0.044472649845716514,
+          -0.35474402989741805
+        ]
+      },
+      {
+        "name": "face13",
+        "type": "patch",
+        "start": 1462880,
+        "count": 126,
+        "net_outward_flux": 0.0008312635627481193,
+        "centre_m": [
+          0.007686004817294007,
+          -0.043249584894659715,
+          -0.34683553033014336
+        ]
+      },
+      {
+        "name": "face14",
+        "type": "wall",
+        "start": 1463006,
+        "count": 1,
+        "net_outward_flux": 0.0,
+        "centre_m": [
+          -0.0146395554485,
+          0.032754939737400006,
+          -0.23413700804866666
+        ]
+      }
+    ],
+    "interpolation": "8-neighbour inverse-distance-squared",
+    "geometry_centroids": "area-weighted faces and volume-weighted face pyramids",
+    "domain_support": "nearest-sample bounding radius times 2; bounded local extrapolation",
+    "solver_residual_history_available": false,
+    "mesh_independence_verified": false,
+    "validation_limits": "Steady exported flow; original centreline wall model. 3x/5x multipliers are sensitivity fields, not independent CFD solves."
+  },
+  "flow_scale_semantics": "Multiplier of one steady CFD velocity field; 3x/5x are sensitivity cases",
+  "route_authority_filter_enabled": false,
+  "flow_scales": [
+    1.0
+  ],
+  "n_random_trials": 0,
+  "seed": 20260611,
+  "controller_keys": [
+    "comet",
+    "constrained_cem_mpc_tuned_recovery",
+    "acbc_tuned",
+    "mpc_tuned"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 4,
+  "rerun_mode_enabled": true,
+  "rerun_from_csv": "benchmark_manifests/icem_45case_500um/cm_corrected.csv",
+  "rerun_pair_ids": [
+    "canonical_001_inlet_to_outlet",
+    "canonical_002_random_to_publication_target",
+    "canonical_003_publication_start_to_random",
+    "random_0001",
+    "random_0002"
+  ],
+  "rerun_flow_scales": [
+    1.0
+  ],
+  "rerun_coordinate_source": "paired_results_csv",
+  "early_stopping": {
+    "enabled_controller_kinds": [
+      "mpc",
+      "cem_mpc",
+      "acbc",
+      "comet"
+    ],
+    "excluded_controller_kinds": [
+      "pid",
+      "smc_dob_inspired"
+    ],
+    "enabled": false,
+    "window_steps": 200,
+    "improvement_threshold_m": 0.002,
+    "improvement_threshold_mm": 2.0
+  },
+  "software": {
+    "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 11,
+    "numpy": "2.5.3"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 2000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 70.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet": {
+      "label": "COMET",
+      "kind": "comet",
+      "kwargs": {}
+    },
+    "constrained_cem_mpc_tuned_recovery": {
+      "label": "Constrained CEM-MPC \u2014 dimension/recovery tuned, shared tuned objective (Wen\u2013Topcu / Oscar Key adaptation)",
+      "kind": "cem_mpc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0,
+        "optimizer": "constrained_cem",
+        "cem_horizon": 10,
+        "cem_population_size": 100,
+        "cem_num_elites": 10,
+        "cem_max_iterations": 8,
+        "constrained_cem_initial_std": 0.75,
+        "constrained_cem_sample_within_action_bounds": true,
+        "constrained_cem_include_initial_state_constraint": false,
+        "constrained_cem_best_effort_on_infeasible": true,
+        "constrained_cem_hard_clearance_m": 0.00025,
+        "constrained_cem_action_blocks": 2
+      }
+    },
+    "acbc_tuned": {
+      "label": "ACBC-tuned",
+      "kind": "acbc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    },
+    "mpc_tuned": {
+      "label": "MPC-tuned",
+      "kind": "mpc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    }
+  },
+  "git": {
+    "commit": "05319206b55d88bbf2cf32500af309217d5595fb",
+    "branch": "cfd",
+    "status_short": "M .gitignore\n M README.md\n M dynamag_simulation/core/cem_mpc_controller.py\n M dynamag_simulation/core/real_vessel_network.py\n M run_publication_benchmark_cfd.py\n M scripts/run_publication_benchmark.py\n M scripts/simulation_3d_comet.py\n?? data/cfd/\n?? docs/cfd_validation.md\n?? dynamag_simulation/core/cfd_flow_field.py\n?? dynamag_simulation/core/patched_vessel_network.py\n?? outputs/cfd_1x_four_controllers/\n?? outputs/cfd_export_audit_20261005/\n?? outputs/cfd_export_audit_run4_20261005/\n?? outputs/cfd_smoke_run4/\n?? outputs/comet_cfd_abdominal_1x/\n?? requirements-cfd.txt\n?? run_cfd_abdominal_pulmonary_1x.sh\n?? run_comet_cfd_abdominal_15trials.sh\n?? run_comet_cfd_abdominal_1x.sh\n?? scripts/import_simscale_flow.py\n?? tests/test_cfd_flow.py"
+  }
+}

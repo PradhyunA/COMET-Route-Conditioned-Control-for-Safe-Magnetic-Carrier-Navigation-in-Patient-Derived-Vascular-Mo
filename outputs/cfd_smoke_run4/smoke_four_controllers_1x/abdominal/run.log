@@ -1,0 +1,361 @@
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  flow=1 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[39.696066130849374, -2.559612817625204, -176.1665153500169] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=165.265
+  flow=1 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[16.828754723605883, -17.112693699283565, -308.7731888542895] straight_mm=138.098
+  flow=1 pair=random_0001 kind=random start_mm=[-33.216786981557256, 50.423613636618, -140.292264646555] target_mm=[-21.3356741199925, 16.33164068124498, -274.3962494360202] straight_mm=138.879
+  flow=1 pair=random_0002 kind=random start_mm=[37.25635223445767, -2.438665044877356, -176.36229001761535] target_mm=[-5.062606340121786, -7.278801507140701, -130.24300683859403] straight_mm=62.780
+[abdominal] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+[abdominal] submit flow=1 pair=canonical_001_inlet_to_outlet controller=constrained_cem_mpc_tuned_recovery
+[abdominal] submit flow=1 pair=canonical_001_inlet_to_outlet controller=acbc_tuned
+[abdominal] submit flow=1 pair=canonical_001_inlet_to_outlet controller=mpc_tuned
+[abdominal] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet
+[abdominal] submit flow=1 pair=canonical_002_random_to_publication_target controller=constrained_cem_mpc_tuned_recovery
+[abdominal] submit flow=1 pair=canonical_002_random_to_publication_target controller=acbc_tuned
+[abdominal] submit flow=1 pair=canonical_002_random_to_publication_target controller=mpc_tuned
+[abdominal] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[abdominal] submit flow=1 pair=canonical_003_publication_start_to_random controller=constrained_cem_mpc_tuned_recovery
+[abdominal] submit flow=1 pair=canonical_003_publication_start_to_random controller=acbc_tuned
+[abdominal] submit flow=1 pair=canonical_003_publication_start_to_random controller=mpc_tuned
+[abdominal] submit flow=1 pair=random_0001 controller=comet
+[abdominal] submit flow=1 pair=random_0001 controller=constrained_cem_mpc_tuned_recovery
+[abdominal] submit flow=1 pair=random_0001 controller=acbc_tuned
+[abdominal] submit flow=1 pair=random_0001 controller=mpc_tuned
+[abdominal] submit flow=1 pair=random_0002 controller=comet
+[abdominal] submit flow=1 pair=random_0002 controller=constrained_cem_mpc_tuned_recovery
+[abdominal] submit flow=1 pair=random_0002 controller=acbc_tuned
+[abdominal] submit flow=1 pair=random_0002 controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2127, sparse waypoints: 230
+      wp1: [  69.8   18.  -429. ] mm
+      wp2: [  69.7   17.8 -426.9] mm
+      wp3: [  69.7   17.4 -424.9] mm
+      wp4: [  69.7   16.8 -422.6] mm
+      wp5: [  69.4   16.1 -420.6] mm
+      wp6: [  68.8   15.4 -418.5] mm
+      wp7: [  68.    14.9 -416.5] mm
+      wp8: [  67.    14.4 -414.7] mm
+      wp9: [  66.   14. -413.] mm
+      wp10: [  65.    13.8 -411.2] mm
+      ...
+      wp230: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Constrained CEM-MPC (Wen–Topcu / Oscar Key adaptation): H=10, N=100, K=10, iterations=8; bounded_sampling=True, action_blocks=2, initial_state_constraint=False, best_effort_fallback=True
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=33.0ms
+[abdominal] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=12.98A, max_V=18.9V, max_P=245.4W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.0mm, max_lateral=0.2mm
+[abdominal] done flow=1 pair=canonical_001_inlet_to_outlet controller=constrained_cem_mpc_tuned_recovery
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2127, sparse waypoints: 230
+      wp1: [  69.8   18.  -429. ] mm
+      wp2: [  69.7   17.8 -426.9] mm
+      wp3: [  69.7   17.4 -424.9] mm
+      wp4: [  69.7   16.8 -422.6] mm
+      wp5: [  69.4   16.1 -420.6] mm
+      wp6: [  68.8   15.4 -418.5] mm
+      wp7: [  68.    14.9 -416.5] mm
+      wp8: [  67.    14.4 -414.7] mm
+      wp9: [  66.   14. -413.] mm
+      wp10: [  65.    13.8 -411.2] mm
+      ...
+      wp230: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.6mm
+[abdominal] done flow=1 pair=canonical_001_inlet_to_outlet controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+[abdominal] done flow=1 pair=canonical_001_inlet_to_outlet controller=acbc_tuned
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=78.0ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 2127, sparse waypoints: 296
+      wp1: [  69.9   18.1 -429.6] mm
+      wp2: [  69.7   18.  -428.1] mm
+      wp3: [  69.7   17.7 -426.6] mm
+      wp4: [  69.7   17.4 -425. ] mm
+      wp5: [  69.7   17.  -423.6] mm
+      wp6: [  69.6   16.5 -422. ] mm
+      wp7: [  69.3   16.  -420.2] mm
+      wp8: [  68.8   15.4 -418.5] mm
+      wp9: [  68.3   15.1 -417.1] mm
+      wp10: [  67.6   14.7 -415.7] mm
+      ...
+      wp296: [-46.8 -52.5 -44.5] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  ACBC summary: transitions=1, commitments=0, recoveries=0, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.6mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 766, sparse waypoints: 80
+      wp1: [  37.7   -2.5 -176.3] mm
+      wp2: [  35.7   -2.3 -176.3] mm
+      wp3: [  33.7   -1.9 -176.1] mm
+      wp4: [  31.9   -1.4 -175.5] mm
+      wp5: [  30.2   -0.7 -174.7] mm
+      wp6: [ 2.850e+01 -1.000e-01 -1.735e+02] mm
+      wp7: [  27.1    0.5 -172.2] mm
+      wp8: [  25.8    1.2 -170.6] mm
+      wp9: [  24.7    1.6 -169. ] mm
+      wp10: [  23.6    2.  -167.3] mm
+      ...
+      wp80: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Constrained CEM-MPC (Wen–Topcu / Oscar Key adaptation): H=10, N=100, K=10, iterations=8; bounded_sampling=True, action_blocks=2, initial_state_constraint=False, best_effort_fallback=True
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  39.7   -2.6 -176.2] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=11.13A, max_V=16.2V, max_P=180.4W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.8mm
+[abdominal] done flow=1 pair=canonical_002_random_to_publication_target controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 766, sparse waypoints: 80
+      wp1: [  37.7   -2.5 -176.3] mm
+      wp2: [  35.7   -2.3 -176.3] mm
+      wp3: [  33.7   -1.9 -176.1] mm
+      wp4: [  31.9   -1.4 -175.5] mm
+      wp5: [  30.2   -0.7 -174.7] mm
+      wp6: [ 2.850e+01 -1.000e-01 -1.735e+02] mm
+      wp7: [  27.1    0.5 -172.2] mm
+      wp8: [  25.8    1.2 -170.6] mm
+      wp9: [  24.7    1.6 -169. ] mm
+      wp10: [  23.6    2.  -167.3] mm
+      ...
+      wp80: [-46.8 -52.5 -44.5] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  39.7   -2.6 -176.2] mm
+[abdominal] done flow=1 pair=canonical_002_random_to_publication_target controller=constrained_cem_mpc_tuned_recovery
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.9mm
+[abdominal] done flow=1 pair=canonical_002_random_to_publication_target controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=15.3ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 766, sparse waypoints: 103
+      wp1: [  38.2   -2.5 -176.3] mm
+      wp2: [  36.7   -2.4 -176.4] mm
+      wp3: [  35.2   -2.2 -176.3] mm
+      wp4: [  33.7   -1.9 -176.1] mm
+      wp5: [  32.2   -1.5 -175.6] mm
+      wp6: [  30.8   -1.  -175.1] mm
+      wp7: [  29.6   -0.5 -174.3] mm
+      wp8: [ 2.830e+01 -1.000e-01 -1.734e+02] mm
+      wp9: [  27.2    0.4 -172.2] mm
+      wp10: [  26.2    1.  -171.1] mm
+      ...
+      wp103: [-46.8 -52.5 -44.5] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  39.7   -2.6 -176.2] mm
+  ACBC summary: transitions=1, commitments=0, recoveries=0, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=1.1mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 888, sparse waypoints: 78
+      wp1: [  69.8   18.  -429. ] mm
+      wp2: [  69.7   17.8 -426.9] mm
+      wp3: [  69.7   17.4 -424.9] mm
+      wp4: [  69.7   16.8 -422.6] mm
+      wp5: [  69.4   16.1 -420.6] mm
+      wp6: [  68.8   15.4 -418.5] mm
+      wp7: [  68.    14.9 -416.5] mm
+      wp8: [  67.    14.4 -414.7] mm
+      wp9: [  66.   14. -413.] mm
+      wp10: [  65.    13.8 -411.2] mm
+      ...
+      wp78: [  16.8  -17.1 -308.8] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Constrained CEM-MPC (Wen–Topcu / Oscar Key adaptation): H=10, N=100, K=10, iterations=8; bounded_sampling=True, action_blocks=2, initial_state_constraint=False, best_effort_fallback=True
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=10.15A, max_V=14.8V, max_P=149.9W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.0mm, max_lateral=0.3mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 888, sparse waypoints: 78
+      wp1: [  69.8   18.  -429. ] mm
+      wp2: [  69.7   17.8 -426.9] mm
+      wp3: [  69.7   17.4 -424.9] mm
+      wp4: [  69.7   16.8 -422.6] mm
+      wp5: [  69.4   16.1 -420.6] mm
+      wp6: [  68.8   15.4 -418.5] mm
+      wp7: [  68.    14.9 -416.5] mm
+      wp8: [  67.    14.4 -414.7] mm
+      wp9: [  66.   14. -413.] mm
+      wp10: [  65.    13.8 -411.2] mm
+      ...
+      wp78: [  16.8  -17.1 -308.8] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+[abdominal] done flow=1 pair=canonical_002_random_to_publication_target controller=acbc_tuned
+[abdominal] done flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[abdominal] done flow=1 pair=canonical_003_publication_start_to_random controller=constrained_cem_mpc_tuned_recovery
+[abdominal] done flow=1 pair=canonical_003_publication_start_to_random controller=acbc_tuned
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.9mm
+[abdominal] done flow=1 pair=canonical_003_publication_start_to_random controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 888, sparse waypoints: 102
+      wp1: [  69.9   18.1 -429.6] mm
+      wp2: [  69.7   18.  -428.1] mm
+      wp3: [  69.7   17.7 -426.6] mm
+      wp4: [  69.7   17.4 -425. ] mm
+      wp5: [  69.7   17.  -423.6] mm
+      wp6: [  69.6   16.5 -422. ] mm
+      wp7: [  69.3   16.  -420.2] mm
+      wp8: [  68.8   15.4 -418.5] mm
+      wp9: [  68.3   15.1 -417.1] mm
+      wp10: [  67.6   14.7 -415.7] mm
+      ...
+      wp102: [  16.8  -17.1 -308.8] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  70.3   18.2 -431.1] mm
+  ACBC summary: transitions=1, commitments=0, recoveries=0, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.9mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=0, transitions=1, emergency_switches=0, avg_ctrl=80.8ms
+[abdominal] done flow=1 pair=random_0001 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1442, sparse waypoints: 129
+      wp1: [ -31.5   51.6 -140.1] mm
+      wp2: [ -29.7   52.6 -139.6] mm
+      wp3: [ -28.    53.6 -139. ] mm
+      wp4: [ -26.2   54.3 -138.3] mm
+      wp5: [ -24.4   54.8 -137.5] mm
+      wp6: [ -22.3   54.9 -136.9] mm
+      wp7: [ -20.3   54.8 -136.5] mm
+      wp8: [ -18.    54.5 -136.3] mm
+      wp9: [ -15.7   54.3 -136.1] mm
+      wp10: [ -13.7   54.3 -136.1] mm
+      ...
+      wp129: [ -21.3   16.3 -274.4] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Constrained CEM-MPC (Wen–Topcu / Oscar Key adaptation): H=10, N=100, K=10, iterations=8; bounded_sampling=True, action_blocks=2, initial_state_constraint=False, best_effort_fallback=True
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -33.2   50.4 -140.3] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=9.05A, max_V=13.2V, max_P=119.2W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.0mm, max_lateral=0.5mm
+[abdominal] done flow=1 pair=random_0001 controller=constrained_cem_mpc_tuned_recovery
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1442, sparse waypoints: 129
+      wp1: [ -31.5   51.6 -140.1] mm
+      wp2: [ -29.7   52.6 -139.6] mm
+      wp3: [ -28.    53.6 -139. ] mm
+      wp4: [ -26.2   54.3 -138.3] mm
+      wp5: [ -24.4   54.8 -137.5] mm
+      wp6: [ -22.3   54.9 -136.9] mm
+      wp7: [ -20.3   54.8 -136.5] mm
+      wp8: [ -18.    54.5 -136.3] mm
+      wp9: [ -15.7   54.3 -136.1] mm
+      wp10: [ -13.7   54.3 -136.1] mm
+      ...
+      wp129: [ -21.3   16.3 -274.4] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -33.2   50.4 -140.3] mm
+[abdominal] done flow=1 pair=random_0001 controller=acbc_tuned
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.2mm, max_lateral=2.1mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1442, sparse waypoints: 167
+      wp1: [ -31.9   51.3 -140.2] mm
+      wp2: [ -30.6   52.2 -139.9] mm
+      wp3: [ -29.1   53.  -139.4] mm
+      wp4: [ -27.7   53.7 -138.9] mm
+      wp5: [ -26.2   54.3 -138.3] mm
+      wp6: [ -24.9   54.7 -137.7] mm
+      wp7: [ -23.5   54.9 -137.2] mm
+      wp8: [ -21.9   54.9 -136.7] mm
+      wp9: [ -20.3   54.8 -136.5] mm
+      wp10: [ -18.7   54.6 -136.3] mm
+      ...
+      wp167: [ -21.3   16.3 -274.4] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[ -33.2   50.4 -140.3] mm
+  ACBC summary: transitions=1, commitments=0, recoveries=0, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.2mm, max_lateral=2.0mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=21.6ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 489, sparse waypoints: 34
+      wp1: [  35.2   -2.2 -176.3] mm
+      wp2: [  33.1   -1.8 -175.9] mm
+      wp3: [  31.2   -1.1 -175.3] mm
+      wp4: [  29.6   -0.5 -174.3] mm
+      wp5: [ 2.79e+01  1.00e-01 -1.73e+02] mm
+      wp6: [  26.6    0.8 -171.6] mm
+      wp7: [  25.3    1.3 -170. ] mm
+      wp8: [  24.2    1.8 -168.4] mm
+      wp9: [  23.3    2.4 -166.6] mm
+      wp10: [  22.4    3.1 -164.8] mm
+      ...
+      wp34: [  -5.1   -7.3 -130.2] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Constrained CEM-MPC (Wen–Topcu / Oscar Key adaptation): H=10, N=100, K=10, iterations=8; bounded_sampling=True, action_blocks=2, initial_state_constraint=False, best_effort_fallback=True
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  37.3   -2.4 -176.4] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=8.61A, max_V=12.5V, max_P=108.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.0mm, max_lateral=0.5mm
+[abdominal] done flow=1 pair=random_0001 controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 489, sparse waypoints: 34
+      wp1: [  35.2   -2.2 -176.3] mm
+      wp2: [  33.1   -1.8 -175.9] mm
+      wp3: [  31.2   -1.1 -175.3] mm
+      wp4: [  29.6   -0.5 -174.3] mm
+      wp5: [ 2.79e+01  1.00e-01 -1.73e+02] mm
+      wp6: [  26.6    0.8 -171.6] mm
+      wp7: [  25.3    1.3 -170. ] mm
+      wp8: [  24.2    1.8 -168.4] mm
+      wp9: [  23.3    2.4 -166.6] mm
+      wp10: [  22.4    3.1 -164.8] mm
+      ...
+      wp34: [  -5.1   -7.3 -130.2] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  37.3   -2.4 -176.4] mm
+[abdominal] done flow=1 pair=random_0002 controller=comet
+[abdominal] done flow=1 pair=random_0002 controller=constrained_cem_mpc_tuned_recovery
+[abdominal] done flow=1 pair=random_0002 controller=acbc_tuned
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=1.1mm
+[abdominal] done flow=1 pair=random_0002 controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 489, sparse waypoints: 44
+      wp1: [  35.7   -2.3 -176.3] mm
+      wp2: [  34.2   -2.  -176.2] mm
+      wp3: [  32.6   -1.6 -175.8] mm
+      wp4: [  31.2   -1.1 -175.3] mm
+      wp5: [  30.    -0.6 -174.6] mm
+      wp6: [  28.8   -0.2 -173.7] mm
+      wp7: [  27.7    0.2 -172.8] mm
+      wp8: [  26.7    0.7 -171.7] mm
+      wp9: [  25.7    1.2 -170.4] mm
+      wp10: [  24.8    1.6 -169.2] mm
+      ...
+      wp44: [  -5.1   -7.3 -130.2] mm
+    ACBC: detection_radius=32.1 mm, branch_lookahead=20.1 mm
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[  37.3   -2.4 -176.4] mm
+  ACBC summary: transitions=1, commitments=0, recoveries=0, escapes=0, low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.0C
+  Gantry: mean_particle_dist=0.1mm, max_lateral=0.7mm
+COMET diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_four_controllers_1x/abdominal/flow_1x/comet/comet_diagnostics.csv
+ACBC diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_four_controllers_1x/abdominal/flow_1x/acbc_tuned/acbc_diagnostics.csv
+
+Benchmark outputs saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_four_controllers_1x/abdominal
+Paired CSV: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_four_controllers_1x/abdominal/paired_results.csv

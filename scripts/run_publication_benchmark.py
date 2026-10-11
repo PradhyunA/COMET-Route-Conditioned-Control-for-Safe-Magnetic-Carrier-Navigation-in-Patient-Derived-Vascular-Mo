@@ -25,6 +25,8 @@ import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from dataclasses import dataclass
+from functools import lru_cache
+from threading import get_ident
 from typing import Callable
 
 import numpy as np
@@ -472,6 +474,7 @@ def _trial_pairs(
     profile=SPION_CARRIER_500UM,
     wall_clearance_threshold_m=0.0007,
     magnetic_authority_m_s=0.180,
+    minimum_authority_reserve_m_s=0.0,
 ):
     """
     Generate paired start/target trials.
@@ -549,7 +552,7 @@ def _trial_pairs(
             wall_clearance_threshold_m - particle_radius, 0.0,
         ),
         magnetic_authority_m_s=magnetic_authority_m_s,
-        minimum_authority_reserve_m_s=0.0,
+        minimum_authority_reserve_m_s=minimum_authority_reserve_m_s,
     )
 
     feasible_pairs = []
@@ -646,6 +649,7 @@ def _trial_pairs_from_csv(
     profile=SPION_CARRIER_500UM,
     wall_clearance_threshold_m=0.0007,
     magnetic_authority_m_s=0.180,
+    minimum_authority_reserve_m_s=0.0,
 ):
     """
     Load exact saved start/target pairs from a previous paired_results.csv.
@@ -864,7 +868,7 @@ def _trial_pairs_from_csv(
             wall_clearance_threshold_m - particle_radius, 0.0,
         ),
         magnetic_authority_m_s=magnetic_authority_m_s,
-        minimum_authority_reserve_m_s=0.0,
+        minimum_authority_reserve_m_s=minimum_authority_reserve_m_s,
     )
 
     pairs_by_flow = defaultdict(list)
@@ -1179,6 +1183,10 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
 
 def _save_trial_npz(result, metrics, output_dir):
     os.makedirs(output_dir, exist_ok=True)
+    cfd_flow = result.params.get("cfd_flow")
+    if cfd_flow is not None:
+        with open(os.path.join(output_dir, f"{result.trial_name}_cfd_flow.json"), "w") as f:
+            json.dump(cfd_flow, f, indent=2)
     if result.params.get("optimizer") == "constrained_cem":
         with open(os.path.join(output_dir, f"{result.trial_name}_constrained_cem.json"), "w") as f:
             json.dump({
@@ -1219,6 +1227,7 @@ def _save_trial_npz(result, metrics, output_dir):
         ),
         dt=result.dt,
         metrics=json.dumps(metrics),
+        **({"cfd_flow": json.dumps(cfd_flow)} if cfd_flow is not None else {}),
     )
 
 
@@ -1580,11 +1589,50 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     raise ValueError(f"Unknown controller kind: {variant.kind}")
 
 
+def _make_benchmark_network(vessel_file, flow_scale, cfd_file=None):
+    if cfd_file is None:
+        return RealVesselNetwork(vessel_file, flow_scale=flow_scale)
+    from dynamag_simulation.core.cfd_flow_field import SteadyCFDFlowField
+    from dynamag_simulation.core.patched_vessel_network import RealVesselNetworkCFD
+
+    return RealVesselNetworkCFD(
+        vessel_file, SteadyCFDFlowField(cfd_file, flow_scale), flow_scale=flow_scale,
+    )
+
+
+@lru_cache(maxsize=8)
+def _worker_cfd_network(vessel_file, flow_scale, cfd_file, thread_id):
+    # Separate per-trial query counters if the process executor falls back
+    # to threads. Immutable CFD source arrays still share the same index.
+    return _make_benchmark_network(vessel_file, flow_scale, cfd_file)
+
+
+def _run_with_flow_metadata(variant, pair, network, trial_seed, common_kwargs):
+    field = getattr(network, "cfd_flow", None)
+    if field is not None:
+        field.query_count = 0
+        field.max_nearest_distance_m = 0.0
+    result = _run_variant(variant, pair, network, trial_seed, common_kwargs)
+    if field is not None:
+        result.params["cfd_flow"] = {
+            "source_file": field.source_file,
+            "source_zip_sha256": field.metadata["source_sha256"],
+            "velocity_multiplier": field.flow_scale,
+            "flow_mode": "steady",
+            "interpolation": field.metadata["interpolation"],
+            "queries": field.query_count,
+            "max_nearest_sample_distance_m": field.max_nearest_distance_m,
+        }
+    return result
+
+
 def _run_variant_task(task):
     variant = task["variant"]
     pair = task["pair"]
-    network = RealVesselNetwork(task["vessel_file"], flow_scale=task["flow_scale"])
-    result = _run_variant(
+    cfd_file = task.get("cfd_file")
+    network = (_worker_cfd_network(task["vessel_file"], task["flow_scale"], cfd_file, get_ident())
+               if cfd_file else _make_benchmark_network(task["vessel_file"], task["flow_scale"]))
+    result = _run_with_flow_metadata(
         variant=variant,
         pair=pair,
         network=network,
@@ -1622,6 +1670,7 @@ def run_benchmark(
     rerun_flow_scales=None,
     rerun_trial_kind="rerun",
     early_stop_enabled=True,
+    cfd_file=None,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1629,6 +1678,15 @@ def run_benchmark(
         variants = dict(CONTROLLER_VARIANTS)
 
     selected = {key: variants[key] for key in controller_keys}
+    if cfd_file is not None:
+        if any(variant.kind not in {"comet", "cem_mpc", "acbc", "mpc"}
+               for variant in selected.values()):
+            raise ValueError("CFD benchmark mode supports COMET, CEM-MPC, ACBC, and MPC variants")
+        cfd_file = os.path.abspath(cfd_file)
+        from dynamag_simulation.core.cfd_flow_field import SteadyCFDFlowField
+        cfd_metadata = SteadyCFDFlowField(cfd_file).metadata
+    else:
+        cfd_metadata = None
     profile = PROFILE_CHOICES[profile_key]
 
     root = os.path.abspath(os.path.join(output_dir, run_id))
@@ -1664,17 +1722,26 @@ def run_benchmark(
             requested_pair_ids=rerun_pair_ids,
             requested_flow_scales=rerun_flow_scales,
             default_trial_kind=rerun_trial_kind,
-            network_factory=lambda flow: RealVesselNetwork(
-                vessel_file, flow_scale=flow,
-            ),
+            network_factory=lru_cache(maxsize=3)(lambda flow: _make_benchmark_network(
+                vessel_file, flow, cfd_file,
+            )),
             profile=profile,
             wall_clearance_threshold_m=wall_clearance_threshold_m,
+            minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
         )
         active_flow_scales = sorted(rerun_pairs_by_flow)
 
     config = {
         "run_id": run_id,
         "vessel_file": vessel_file,
+        "flow_model": "steady_cfd" if cfd_file else "analytical_poiseuille",
+        "cfd_file": cfd_file,
+        "cfd_metadata": cfd_metadata,
+        "flow_scale_semantics": (
+            "Multiplier of one steady CFD velocity field; 3x/5x are sensitivity cases"
+            if cfd_file else "Multiplier of analytical mean velocity"
+        ),
+        "route_authority_filter_enabled": not bool(cfd_file),
         "flow_scales": active_flow_scales,
         "n_random_trials": n_random_trials,
         "seed": seed,
@@ -1730,7 +1797,7 @@ def run_benchmark(
     workers = int(max(1, workers))
 
     for flow_scale in active_flow_scales:
-        network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
+        network = _make_benchmark_network(vessel_file, flow_scale, cfd_file)
         if rerun_mode_enabled:
             pairs = rerun_pairs_by_flow[flow_scale]
         else:
@@ -1742,6 +1809,7 @@ def run_benchmark(
                 vessel_file=vessel_file,
                 profile=profile,
                 wall_clearance_threshold_m=wall_clearance_threshold_m,
+                minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
             )
         results_by_controller = defaultdict(list)
 
@@ -1771,6 +1839,7 @@ def run_benchmark(
                     "trial_seed": trial_seed,
                     "common_kwargs": common_kwargs,
                     "vessel_file": vessel_file,
+                    "cfd_file": cfd_file,
                 })
 
         def handle_completed(item):
@@ -1811,7 +1880,7 @@ def run_benchmark(
                     f"controller={task['controller_key']}",
                     flush=True,
                 )
-                result = _run_variant(
+                result = _run_with_flow_metadata(
                     variant=task["variant"],
                     pair=task["pair"],
                     network=network,
@@ -1892,6 +1961,7 @@ def main():
     parser.add_argument("--output-dir", default="outputs/publication_benchmark_1mm")
     parser.add_argument("--run-id", default=time.strftime("%Y%m%d_%H%M%S"))
     parser.add_argument("--vessel-file", default=DEFAULT_VESSEL_FILE)
+    parser.add_argument("--cfd-file", default=None, help="Steady SI CFD NPZ imported by scripts/import_simscale_flow.py; no analytical fallback.")
     parser.add_argument("--flow-scales", default="1,3,5")
     parser.add_argument("--n-random-trials", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20260609)
@@ -2019,6 +2089,7 @@ def main():
         rerun_flow_scales=rerun_flow_scales,
         rerun_trial_kind=args.rerun_trial_kind,
         early_stop_enabled=not args.disable_early_stop,
+        cfd_file=args.cfd_file,
     )
 
 

@@ -1,0 +1,35 @@
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=410.088
+  flow=1 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[39.696066130849374, -2.559612817625204, -176.1665153500169] target_mm=[-46.81534320116043, -52.47942358255386, -44.49916630983353] straight_mm=165.265
+  flow=1 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[70.2989250421524, 18.237296491861343, -431.09387159347534] target_mm=[16.828754723605883, -17.112693699283565, -308.7731888542895] straight_mm=138.098
+  flow=1 pair=random_0001 kind=random start_mm=[-33.216786981557256, 50.423613636618, -140.292264646555] target_mm=[-21.3356741199925, 16.33164068124498, -274.3962494360202] straight_mm=138.879
+  flow=1 pair=random_0002 kind=random start_mm=[37.25635223445767, -2.438665044877356, -176.36229001761535] target_mm=[-5.062606340121786, -7.278801507140701, -130.24300683859403] straight_mm=62.780
+[smoke_1x_only] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+[smoke_1x_only] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet
+[smoke_1x_only] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[smoke_1x_only] submit flow=1 pair=random_0001 controller=comet
+[smoke_1x_only] submit flow=1 pair=random_0002 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=103, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=296, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=80.5ms
+[smoke_1x_only] done flow=1 pair=canonical_002_random_to_publication_target controller=comet
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=34.8ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=102, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=16.1ms
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=44, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=1, transitions=1, emergency_switches=0, avg_ctrl=21.0ms
+[smoke_1x_only] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=167, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=0, transitions=1, emergency_switches=0, avg_ctrl=84.5ms
+[smoke_1x_only] done flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[smoke_1x_only] done flow=1 pair=random_0002 controller=comet
+[smoke_1x_only] done flow=1 pair=random_0001 controller=comet
+COMET diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_1x_only/flow_1x/comet/comet_diagnostics.csv
+
+Benchmark outputs saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_1x_only
+Paired CSV: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_1x_only/paired_results.csv

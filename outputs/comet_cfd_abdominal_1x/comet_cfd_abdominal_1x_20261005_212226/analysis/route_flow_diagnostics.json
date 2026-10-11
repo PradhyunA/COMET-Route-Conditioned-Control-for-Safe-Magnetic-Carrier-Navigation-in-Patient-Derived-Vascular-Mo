@@ -1,0 +1,72 @@
+{
+  "canonical_001_inlet_to_outlet": {
+    "route_length_mm": 519.5937927594322,
+    "midpoint_opposed_length_fraction": 1.0,
+    "max_midpoint_adverse_mm_s": 129.72501030659032,
+    "min_planner_authority_reserve_mm_s": 50.27498969340968,
+    "start_local_flow_mm_s": [
+      4.554492596689214,
+      5.329685180888589,
+      -39.92772847589057
+    ],
+    "start_flow_toward_route_mm_s": -38.28767978223285,
+    "tail_local_flow_speed_median_mm_s": 49.485896291122636,
+    "tail_local_flow_along_route_median_mm_s": -48.76980188209018
+  },
+  "canonical_002_random_to_publication_target": {
+    "route_length_mm": 182.04964468401369,
+    "midpoint_opposed_length_fraction": 1.0,
+    "max_midpoint_adverse_mm_s": 169.84262268008936,
+    "min_planner_authority_reserve_mm_s": 10.157377319910621,
+    "start_local_flow_mm_s": [
+      115.9514921385736,
+      -11.27393117561436,
+      7.272343866796424
+    ],
+    "start_flow_toward_route_mm_s": -112.8549249252166,
+    "tail_local_flow_speed_median_mm_s": 117.01956309143175,
+    "tail_local_flow_along_route_median_mm_s": -116.16600061186111
+  },
+  "canonical_003_publication_start_to_random": {
+    "route_length_mm": 167.28683197547667,
+    "midpoint_opposed_length_fraction": 1.0,
+    "max_midpoint_adverse_mm_s": 63.019467997070045,
+    "min_planner_authority_reserve_mm_s": 116.98053200292995,
+    "start_local_flow_mm_s": [
+      4.554492596689214,
+      5.329685180888589,
+      -39.92772847589057
+    ],
+    "start_flow_toward_route_mm_s": -38.28767978223285,
+    "tail_local_flow_speed_median_mm_s": 41.88125509726379,
+    "tail_local_flow_along_route_median_mm_s": -41.419336753128796
+  },
+  "random_0001": {
+    "route_length_mm": 292.3827462007154,
+    "midpoint_opposed_length_fraction": 0.4057950292947925,
+    "max_midpoint_adverse_mm_s": 151.64274052474306,
+    "min_planner_authority_reserve_mm_s": 28.357259475256967,
+    "start_local_flow_mm_s": [
+      -47.283348713017226,
+      -33.4230217008741,
+      -5.634819426637937
+    ],
+    "start_flow_toward_route_mm_s": -57.90581835759423,
+    "tail_local_flow_speed_median_mm_s": 93.34893159698943,
+    "tail_local_flow_along_route_median_mm_s": -88.80130574559841
+  },
+  "random_0002": {
+    "route_length_mm": 71.08532574844247,
+    "midpoint_opposed_length_fraction": 1.0,
+    "max_midpoint_adverse_mm_s": 169.84262268008936,
+    "min_planner_authority_reserve_mm_s": 10.157377319910621,
+    "start_local_flow_mm_s": [
+      111.67955564013333,
+      -18.578289102474056,
+      -12.166793734738516
+    ],
+    "start_flow_toward_route_mm_s": -112.28571608286197,
+    "tail_local_flow_speed_median_mm_s": 118.0167556731482,
+    "tail_local_flow_along_route_median_mm_s": -116.19849112590873
+  }
+}

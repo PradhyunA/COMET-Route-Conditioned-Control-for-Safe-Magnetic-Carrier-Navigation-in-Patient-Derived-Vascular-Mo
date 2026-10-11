@@ -380,18 +380,21 @@ class RealVesselNetwork:
             f"radius={min(radii):.2f}–{max(radii):.2f} mm"
         )
 
-    def _route_edge_metrics(self, seg, direction, options):
-        required = options.required_center_clearance_m
-        if seg.radius + EPS < required:
-            return None
-
+    def _route_accessible_flow(self, seg, required):
         flow_speed = 2.0 * abs(seg.v_mean)
         if required > 0.0:
             ride_fraction = np.clip(
                 (seg.radius - required) / max(seg.radius, EPS), 0.0, 1.0,
             )
             flow_speed *= 1.0 - ride_fraction ** 2
-        accessible_flow = flow_speed * seg._axis
+        return flow_speed * seg._axis
+
+    def _route_edge_metrics(self, seg, direction, options):
+        required = options.required_center_clearance_m
+        if seg.radius + EPS < required:
+            return None
+
+        accessible_flow = self._route_accessible_flow(seg, required)
         adverse_flow = max(0.0, -float(np.dot(accessible_flow, direction)))
         authority = float(options.magnetic_authority_m_s)
         reserve = authority - adverse_flow

@@ -1,0 +1,161 @@
+[
+  {
+    "pair_id": "canonical_001_inlet_to_outlet",
+    "reached": true,
+    "sim_time_s": 7.36,
+    "start_distance_mm": 410.0878838463722,
+    "best_distance_mm": 0.4333540504964901,
+    "best_time_s": 7.36,
+    "final_distance_mm": 0.4333540504964901,
+    "path_length_mm": 562.6656550990201,
+    "min_center_clearance_mm": 0.719614068149113,
+    "min_surface_clearance_mm": 0.469614068149113,
+    "boost_rescue_fraction": 0.04619565217391304,
+    "current_saturation_fraction": 0.875,
+    "mean_control_ms": 60.98995985825161,
+    "modes": {
+      "COMET_COMMIT": 267,
+      "COMET_APPROACH": 70,
+      "COMET_BOOST": 17,
+      "COMET_TERMINAL_CAPTURE": 13,
+      "COMET_TERMINAL_PRECISION": 1
+    },
+    "historical_analytical_success": true,
+    "historical_analytical_time_s": 4.42,
+    "provenance": {
+      "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+      "source_zip_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+      "velocity_multiplier": 1.0,
+      "flow_mode": "steady",
+      "interpolation": "8-neighbour inverse-distance-squared",
+      "queries": 2907,
+      "max_nearest_sample_distance_m": 0.002233456855143135
+    }
+  },
+  {
+    "pair_id": "canonical_002_random_to_publication_target",
+    "reached": false,
+    "sim_time_s": 40.0,
+    "start_distance_mm": 165.26494563181362,
+    "best_distance_mm": 158.3563122064309,
+    "best_time_s": 11.68,
+    "final_distance_mm": 164.92469814827862,
+    "path_length_mm": 734.7013635226403,
+    "min_center_clearance_mm": 0.7138071149614515,
+    "min_surface_clearance_mm": 0.4638071149614515,
+    "boost_rescue_fraction": 0.834,
+    "current_saturation_fraction": 0.6735,
+    "mean_control_ms": 69.75252489597187,
+    "modes": {
+      "COMET_COMMIT": 332,
+      "COMET_BOOST": 723,
+      "COMET_RESCUE": 945
+    },
+    "historical_analytical_success": true,
+    "historical_analytical_time_s": 1.76,
+    "provenance": {
+      "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+      "source_zip_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+      "velocity_multiplier": 1.0,
+      "flow_mode": "steady",
+      "interpolation": "8-neighbour inverse-distance-squared",
+      "queries": 19053,
+      "max_nearest_sample_distance_m": 0.0005898133580917837
+    }
+  },
+  {
+    "pair_id": "canonical_003_publication_start_to_random",
+    "reached": true,
+    "sim_time_s": 2.38,
+    "start_distance_mm": 138.09790130986414,
+    "best_distance_mm": 0.4292591586667625,
+    "best_time_s": 2.38,
+    "final_distance_mm": 0.4292591586667625,
+    "path_length_mm": 179.0890964252843,
+    "min_center_clearance_mm": 0.7163430157783329,
+    "min_surface_clearance_mm": 0.46634301577833287,
+    "boost_rescue_fraction": 0.0,
+    "current_saturation_fraction": 0.8571428571428571,
+    "mean_control_ms": 14.90080529459979,
+    "modes": {
+      "COMET_COMMIT": 63,
+      "COMET_APPROACH": 49,
+      "COMET_TERMINAL_CAPTURE": 6,
+      "COMET_TERMINAL_PRECISION": 1
+    },
+    "historical_analytical_success": true,
+    "historical_analytical_time_s": 1.74,
+    "provenance": {
+      "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+      "source_zip_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+      "velocity_multiplier": 1.0,
+      "flow_mode": "steady",
+      "interpolation": "8-neighbour inverse-distance-squared",
+      "queries": 904,
+      "max_nearest_sample_distance_m": 0.0008153424221928176
+    }
+  },
+  {
+    "pair_id": "random_0001",
+    "reached": false,
+    "sim_time_s": 40.0,
+    "start_distance_mm": 138.8787319902952,
+    "best_distance_mm": 137.98039255497443,
+    "best_time_s": 0.46,
+    "final_distance_mm": 151.23530698605725,
+    "path_length_mm": 1288.1685977200107,
+    "min_center_clearance_mm": 0.7039099668800772,
+    "min_surface_clearance_mm": 0.45390996688007723,
+    "boost_rescue_fraction": 0.746,
+    "current_saturation_fraction": 0.726,
+    "mean_control_ms": 36.97635924909264,
+    "modes": {
+      "COMET_APPROACH": 5,
+      "COMET_COMMIT": 503,
+      "COMET_BOOST": 652,
+      "COMET_RESCUE": 840
+    },
+    "historical_analytical_success": false,
+    "historical_analytical_time_s": 40.0,
+    "provenance": {
+      "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+      "source_zip_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+      "velocity_multiplier": 1.0,
+      "flow_mode": "steady",
+      "interpolation": "8-neighbour inverse-distance-squared",
+      "queries": 17825,
+      "max_nearest_sample_distance_m": 0.0012127426010623416
+    }
+  },
+  {
+    "pair_id": "random_0002",
+    "reached": false,
+    "sim_time_s": 40.0,
+    "start_distance_mm": 62.77984912977303,
+    "best_distance_mm": 54.89424406452851,
+    "best_time_s": 16.28,
+    "final_distance_mm": 56.98227449707546,
+    "path_length_mm": 722.9429927199573,
+    "min_center_clearance_mm": 0.78530834504447,
+    "min_surface_clearance_mm": 0.53530834504447,
+    "boost_rescue_fraction": 0.8185,
+    "current_saturation_fraction": 0.672,
+    "mean_control_ms": 15.34646398818586,
+    "modes": {
+      "COMET_COMMIT": 363,
+      "COMET_BOOST": 736,
+      "COMET_RESCUE": 901
+    },
+    "historical_analytical_success": true,
+    "historical_analytical_time_s": 0.86,
+    "provenance": {
+      "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+      "source_zip_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+      "velocity_multiplier": 1.0,
+      "flow_mode": "steady",
+      "interpolation": "8-neighbour inverse-distance-squared",
+      "queries": 18863,
+      "max_nearest_sample_distance_m": 0.0006150710191384475
+    }
+  }
+]

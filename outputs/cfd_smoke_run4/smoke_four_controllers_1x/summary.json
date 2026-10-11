@@ -1,0 +1,43 @@
+{
+  "run_directory": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/cfd_smoke_run4/smoke_four_controllers_1x",
+  "flow_scale": 1.0,
+  "expected_cases": 40,
+  "anatomies": {
+    "abdominal": {
+      "acbc_tuned": {
+        "cases": 5,
+        "reached": 0
+      },
+      "comet": {
+        "cases": 5,
+        "reached": 0
+      },
+      "constrained_cem_mpc_tuned_recovery": {
+        "cases": 5,
+        "reached": 0
+      },
+      "mpc_tuned": {
+        "cases": 5,
+        "reached": 0
+      }
+    },
+    "pulmonary": {
+      "acbc_tuned": {
+        "cases": 5,
+        "reached": 0
+      },
+      "comet": {
+        "cases": 5,
+        "reached": 0
+      },
+      "constrained_cem_mpc_tuned_recovery": {
+        "cases": 5,
+        "reached": 0
+      },
+      "mpc_tuned": {
+        "cases": 5,
+        "reached": 0
+      }
+    }
+  }
+}
