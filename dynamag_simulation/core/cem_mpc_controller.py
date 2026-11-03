@@ -505,6 +505,7 @@ def _batch_magnetic_force(particle, positions, requested_currents, magnet_array)
 
 
 def _batch_magnetic_velocity(particle, force):
+    force = force + getattr(particle, "body_force", 0.0)
     force_magnitude = np.linalg.norm(force, axis=1)
     gamma = np.full(force_magnitude.shape, particle.drag_stokes, dtype=float)
     finite_re = force_magnitude >= EPS

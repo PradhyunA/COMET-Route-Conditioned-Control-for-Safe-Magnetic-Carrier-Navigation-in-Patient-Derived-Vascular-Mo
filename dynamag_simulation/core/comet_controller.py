@@ -233,9 +233,15 @@ class COMETConfig:
     # --- safety -----------------------------------------------------------
     #: Required center-to-wall clearance (benchmark criterion).
     wall_clearance_threshold: float = 0.0007
-    #: Deprecated compatibility field. Hard feasibility uses the single
-    #: center-to-wall threshold above; soft wall repulsion has its own margin.
+    #: Extra clearance (m) the predictive safety backoff demands on top of
+    #: the threshold, absorbing local-field-model prediction error. Route
+    #: feasibility still uses the threshold alone.
     safety_filter_margin: float = 0.0
+    #: When no current backoff restores predicted clearance, also try
+    #: single-coil and all-coil patterns (and their blends with the
+    #: allocated currents) that can push the carrier off the wall. Backoff
+    #: alone fails under gravity, where less current means faster settling.
+    safety_escape_candidates: bool = False
 
     # --- publication ablation switches ------------------------------------
     # These flags remove architectural mechanisms explicitly instead of only
@@ -436,6 +442,7 @@ def _magnetic_velocity_batch(
         particle.force_prefactor_sat / (2.0 * np.maximum(b_mag, EPS)),
     )
     force = scale[:, None] * grad                            # (s, 3)
+    force = force + getattr(particle, "body_force", 0.0)     # gravity, if any
     f_mag = np.linalg.norm(force, axis=1)
 
     gamma_s = particle.drag_stokes
@@ -948,10 +955,8 @@ class COMETController:
     # Authority / branch evaluation
     # ------------------------------------------------------------------
 
-    def _authority_speed_along(
-        self, model: _LocalFieldModel, particle, direction: np.ndarray,
-    ) -> float:
-        """Max achievable magnetic drift speed along a unit direction."""
+    def _probe_patterns(self) -> np.ndarray:
+        """Single-coil +/- full current and all-coil +/- full current."""
         n = self.magnet_array.n_magnets
         i_lim = self._i_lim
         patterns = np.zeros((2 * n + 2, n), dtype=float)
@@ -960,7 +965,13 @@ class COMETController:
             patterns[2 * i + 1, i] = -i_lim[i]
         patterns[-2, :] = i_lim
         patterns[-1, :] = -i_lim
+        return patterns
 
+    def _authority_speed_along(
+        self, model: _LocalFieldModel, particle, direction: np.ndarray,
+    ) -> float:
+        """Max achievable magnetic drift speed along a unit direction."""
+        patterns = self._probe_patterns()
         b, grad = model.field_and_grad(patterns)
         velocity, _ = _magnetic_velocity_batch(particle, b, grad)
         proj = velocity @ direction
@@ -1553,11 +1564,12 @@ class COMETController:
             return np.minimum(c_half, c_full)
 
         safety_active = False
+        safe_clearance = cfg.wall_clearance_threshold + cfg.safety_filter_margin
         b, grad = model.field_and_grad(best_currents[None, :])
         v_mag, _ = _magnetic_velocity_batch(particle, b, grad)
         clearance = float(predicted_clearance(v_mag)[0])
 
-        if clearance < cfg.wall_clearance_threshold:
+        if clearance < safe_clearance:
             safety_active = True
             alphas = np.linspace(0.0, 1.0, 9)
             scaled = alphas[:, None] * best_currents[None, :]
@@ -1565,11 +1577,26 @@ class COMETController:
             v_a, _ = _magnetic_velocity_batch(particle, b, grad)
             c_a = predicted_clearance(v_a)
 
-            safe = c_a >= cfg.wall_clearance_threshold
+            safe = c_a >= safe_clearance
             if np.any(safe):
                 # Largest backoff factor that restores predicted clearance.
                 alpha = float(alphas[np.where(safe)[0].max()])
                 best_currents = alpha * best_currents
+            elif cfg.safety_escape_candidates:
+                # Push off the wall instead: probe patterns and their blends
+                # with the allocated currents. Prefer the safe candidate
+                # closest to the allocation; otherwise maximize clearance.
+                probes = self._probe_patterns()
+                escape = np.vstack([scaled, probes, 0.5 * (probes + best_currents[None, :])])
+                b, grad = model.field_and_grad(escape)
+                v_e, _ = _magnetic_velocity_batch(particle, b, grad)
+                c_e = predicted_clearance(v_e)
+                safe_e = np.where(c_e >= safe_clearance)[0]
+                if len(safe_e):
+                    dist = np.linalg.norm(escape[safe_e] - best_currents[None, :], axis=1)
+                    best_currents = escape[safe_e[int(np.argmin(dist))]].copy()
+                else:
+                    best_currents = escape[int(np.argmax(c_e))].copy()
             else:
                 # Flow-dominated danger: no scaling is safe, so keep the
                 # candidate that maximizes predicted clearance (the cost
@@ -2384,6 +2411,8 @@ class COMETController:
             "comet_terminal_overshoots": self._terminal_overshoot_count,
             "comet_max_control_norm_A": self.max_current,
             "comet_wall_clearance_threshold_m": cfg.wall_clearance_threshold,
+            "comet_safety_filter_margin_m": cfg.safety_filter_margin,
+            "comet_safety_escape_candidates": cfg.safety_escape_candidates,
             "comet_ablate_authority_reserve": cfg.ablate_authority_reserve,
             "comet_ablate_commitment_memory": cfg.ablate_commitment_memory,
             "comet_ablate_downstream_value": cfg.ablate_downstream_value,

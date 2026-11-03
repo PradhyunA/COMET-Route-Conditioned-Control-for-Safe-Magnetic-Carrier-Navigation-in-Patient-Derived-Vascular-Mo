@@ -147,6 +147,7 @@ def simulate_trial_comet(
    magnet_center=None,
    core_relative_permeability: float = FIXED_CORE_MU_R_EFFECTIVE,
    core_saturation_tesla: float = FIXED_CORE_SATURATION_T,
+   ampere_turn_scale: float = 1.0,
    device_mode: str = DEVICE_MODE,
    gantry_standoff: float = GANTRY_STANDOFF,
    max_lateral_shift: float = MAX_LATERAL_SHIFT,
@@ -198,6 +199,7 @@ def simulate_trial_comet(
        core_radius=core_radius,
        core_relative_permeability=core_relative_permeability,
        core_saturation_tesla=core_saturation_tesla,
+       ampere_turn_scale=ampere_turn_scale,
    )
 
 
@@ -561,6 +563,7 @@ def simulate_trial_comet(
            "placement_radius": placement_radius,
            "core_relative_permeability": core_relative_permeability,
            "core_saturation_tesla": core_saturation_tesla,
+           "ampere_turn_scale": ampere_turn_scale,
            "profile": profile.name,
            "particle_diameter_m": profile.diameter,
            "particle_diameter_mm": profile.diameter * 1000.0,

@@ -24,7 +24,7 @@ import tempfile
 import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from threading import get_ident
 from typing import Callable
@@ -43,8 +43,16 @@ from dynamag_simulation.core.real_vessel_network import (
     RealVesselNetwork,
     RoutePlanningOptions,
 )
+from dynamag_simulation.core.particle import MagneticParticle3D
+from dynamag_simulation.core.patient_positioning import (
+    DEFAULT_MAX_TILT_DEG,
+    choose_patient_orientation,
+)
 from dynamag_simulation.core.profiles import SPION_CARRIER_1MM, SPION_CARRIER_500UM
-from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
+from dynamag_simulation.core.constants import (
+    DEFAULT_TARGET_TOLERANCE,
+    STANDARD_GRAVITY_M_S2,
+)
 from dynamag_simulation.core.reporting import save_results_csv
 
 from simulation_3d_pid import (
@@ -68,6 +76,30 @@ from simulation_3d_smc_dob import (
 )
 
 BENCHMARK_EARLY_STOP_WINDOW_STEPS = 200
+
+# Actuator presets. "paper" is the BHI 2026 submission: mu_r = 70 applied to
+# the far field. "navion_calibrated" uses the far-field core gain of ~2 from
+# scripts/estimate_core_gain.py and scales the coils' ampere-turns so the
+# array's peak gradient at the workspace centre (hardware limits on) is
+# 0.25 T/m, the gradient reported for the Navion clinical electromagnetic
+# navigation system (Gervasoni et al., Adv. Mater. 2024). "high_gradient_400"
+# is a next-generation sensitivity case scaled to 0.40 T/m, the gradient
+# reported for MRI imaging-gradient-coil inserts built for magnetic
+# resonance navigation (Martel group, "in excess of 400 mT/m").
+ACTUATOR_PRESETS = {
+    "paper": {
+        "core_relative_permeability": FIXED_CORE_MU_R_EFFECTIVE,
+        "ampere_turn_scale": 1.0,
+    },
+    "navion_calibrated": {
+        "core_relative_permeability": 2.0,
+        "ampere_turn_scale": 13.6,
+    },
+    "high_gradient_400": {
+        "core_relative_permeability": 2.0,
+        "ampere_turn_scale": 21.8,
+    },
+}
 BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
 
 
@@ -232,6 +264,18 @@ CONTROLLER_VARIANTS = {
         label="COMET",
         kind="comet",
         kwargs={},
+    ),
+    # Settings for realistic (gravity, Navion-class) actuation, chosen on
+    # held-out random routes (seed 777), not on the benchmark manifest.
+    "comet_gravity": ControllerVariant(
+        label="COMET-gravity-aware-safety",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True},
+    ),
+    "comet_gravity_buffered": ControllerVariant(
+        label="COMET-gravity-aware-safety-0.1mm-buffer",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True, "safety_filter_margin": 1e-4},
     ),
     "comet_loc_noise_50um": ControllerVariant(
         label="COMET-localization-noise-50um",
@@ -466,6 +510,40 @@ def _software_metadata():
     }
 
 
+def _route_planning_options(
+    profile,
+    wall_clearance_threshold_m,
+    magnetic_authority_m_s=0.180,
+    minimum_authority_reserve_m_s=0.0,
+):
+    particle_radius = 0.5 * profile.diameter
+    return RoutePlanningOptions(
+        wall_clearance_m=wall_clearance_threshold_m,
+        particle_radius_m=particle_radius,
+        minimum_surface_clearance_m=max(
+            wall_clearance_threshold_m - particle_radius, 0.0,
+        ),
+        magnetic_authority_m_s=magnetic_authority_m_s,
+        minimum_authority_reserve_m_s=minimum_authority_reserve_m_s,
+    )
+
+
+def _patient_positioning(network, pair, profile, planning_options, max_table_tilt_deg):
+    """Per-route table orientation; returns (profile with that gravity, record)."""
+    plan = network.plan_route(pair["start"], pair["target"], planning_options)
+    if not plan.feasible:
+        raise RuntimeError(f"Cannot position patient for infeasible route {pair['pair_id']}")
+    particle = MagneticParticle3D(np.asarray(pair["start"], dtype=float), profile=profile)
+    choice = choose_patient_orientation(
+        network,
+        plan.waypoints,
+        particle,
+        net_weight_n=float(np.linalg.norm(particle.body_force)),
+        max_tilt_deg=max_table_tilt_deg,
+    )
+    return replace(profile, gravity_m_s2=choice.gravity_m_s2), choice.as_dict()
+
+
 def _trial_pairs(
     network,
     rng,
@@ -544,15 +622,11 @@ def _trial_pairs(
             }
         )
 
-    particle_radius = 0.5 * profile.diameter
-    planning_options = RoutePlanningOptions(
-        wall_clearance_m=wall_clearance_threshold_m,
-        particle_radius_m=particle_radius,
-        minimum_surface_clearance_m=max(
-            wall_clearance_threshold_m - particle_radius, 0.0,
-        ),
-        magnetic_authority_m_s=magnetic_authority_m_s,
-        minimum_authority_reserve_m_s=minimum_authority_reserve_m_s,
+    planning_options = _route_planning_options(
+        profile,
+        wall_clearance_threshold_m,
+        magnetic_authority_m_s,
+        minimum_authority_reserve_m_s,
     )
 
     feasible_pairs = []
@@ -860,15 +934,11 @@ def _trial_pairs_from_csv(
             **route_metadata,
         }
 
-    particle_radius = 0.5 * profile.diameter
-    planning_options = RoutePlanningOptions(
-        wall_clearance_m=wall_clearance_threshold_m,
-        particle_radius_m=particle_radius,
-        minimum_surface_clearance_m=max(
-            wall_clearance_threshold_m - particle_radius, 0.0,
-        ),
-        magnetic_authority_m_s=magnetic_authority_m_s,
-        minimum_authority_reserve_m_s=minimum_authority_reserve_m_s,
+    planning_options = _route_planning_options(
+        profile,
+        wall_clearance_threshold_m,
+        magnetic_authority_m_s,
+        minimum_authority_reserve_m_s,
     )
 
     pairs_by_flow = defaultdict(list)
@@ -1671,6 +1741,12 @@ def run_benchmark(
     rerun_trial_kind="rerun",
     early_stop_enabled=True,
     cfd_file=None,
+    actuator="paper",
+    core_mu_r=None,
+    carrier_density_kg_m3=None,
+    gravity_direction=(0.0, -1.0, 0.0),
+    patient_positioning="fixed",
+    max_table_tilt_deg=DEFAULT_MAX_TILT_DEG,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1687,7 +1763,23 @@ def run_benchmark(
         cfd_metadata = SteadyCFDFlowField(cfd_file).metadata
     else:
         cfd_metadata = None
+    if patient_positioning not in {"fixed", "optimized"}:
+        raise ValueError(f"Unknown patient_positioning: {patient_positioning}")
+    if patient_positioning == "optimized" and carrier_density_kg_m3 is None:
+        raise ValueError("Optimized patient positioning needs a carrier density (gravity)")
+    actuator_kwargs = dict(ACTUATOR_PRESETS[actuator])
+    if core_mu_r is not None:
+        actuator_kwargs["core_relative_permeability"] = float(core_mu_r)
+
     profile = PROFILE_CHOICES[profile_key]
+    if carrier_density_kg_m3 is not None:
+        g_dir = np.asarray(gravity_direction, dtype=float)
+        g_dir = g_dir / np.linalg.norm(g_dir)
+        profile = replace(
+            profile,
+            particle_density=float(carrier_density_kg_m3),
+            gravity_m_s2=tuple(float(v) for v in STANDARD_GRAVITY_M_S2 * g_dir),
+        )
 
     root = os.path.abspath(os.path.join(output_dir, run_id))
     os.makedirs(root, exist_ok=True)
@@ -1702,7 +1794,7 @@ def run_benchmark(
         "turns": FIXED_TURNS,
         "max_current": FIXED_MAX_CURRENT,
         "placement_radius": FIXED_PLACEMENT_RADIUS,
-        "core_relative_permeability": FIXED_CORE_MU_R_EFFECTIVE,
+        **actuator_kwargs,
         "core_saturation_tesla": FIXED_CORE_SATURATION_T,
         "device_mode": device_mode,
         "profile": profile,
@@ -1742,6 +1834,11 @@ def run_benchmark(
             if cfd_file else "Multiplier of analytical mean velocity"
         ),
         "route_authority_filter_enabled": not bool(cfd_file),
+        "actuator": actuator,
+        "patient_positioning": patient_positioning,
+        "max_table_tilt_deg": (
+            max_table_tilt_deg if patient_positioning == "optimized" else None
+        ),
         "flow_scales": active_flow_scales,
         "n_random_trials": n_random_trials,
         "seed": seed,
@@ -1774,6 +1871,8 @@ def run_benchmark(
             "diameter_um": profile.diameter * 1e6,
             "magnetic_loading_fraction": profile.magnetic_loading_fraction,
             "hydrodynamic_drag_multiplier": profile.hydrodynamic_drag_multiplier,
+            "particle_density_kg_m3": profile.particle_density,
+            "gravity_m_s2": list(profile.gravity_m_s2),
         },
         "common_kwargs": {
             key: value for key, value in common_kwargs.items()
@@ -1794,6 +1893,7 @@ def run_benchmark(
 
     paired_rows = []
     all_seed_records = []
+    positioning_rows = []
     workers = int(max(1, workers))
 
     for flow_scale in active_flow_scales:
@@ -1812,10 +1912,26 @@ def run_benchmark(
                 minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
             )
         results_by_controller = defaultdict(list)
+        planning_options = _route_planning_options(
+            profile,
+            wall_clearance_threshold_m,
+            minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
+        )
 
         tasks = []
         for pair_idx, pair in enumerate(pairs):
             trial_seed = seed + 100000 * int(round(flow_scale * 10)) + pair_idx
+            trial_kwargs = common_kwargs
+            if patient_positioning == "optimized":
+                pair_profile, positioning = _patient_positioning(
+                    network, pair, profile, planning_options, max_table_tilt_deg,
+                )
+                trial_kwargs = {**common_kwargs, "profile": pair_profile}
+                positioning_rows.append({
+                    "flow_scale": flow_scale,
+                    "pair_id": pair["pair_id"],
+                    **positioning,
+                })
             all_seed_records.append({
                 "flow_scale": flow_scale,
                 "pair_id": pair["pair_id"],
@@ -1837,7 +1953,7 @@ def run_benchmark(
                     "controller_key": controller_key,
                     "variant": variant,
                     "trial_seed": trial_seed,
-                    "common_kwargs": common_kwargs,
+                    "common_kwargs": trial_kwargs,
                     "vessel_file": vessel_file,
                     "cfd_file": cfd_file,
                 })
@@ -1885,7 +2001,7 @@ def run_benchmark(
                     pair=task["pair"],
                     network=network,
                     trial_seed=task["trial_seed"],
-                    common_kwargs=common_kwargs,
+                    common_kwargs=task["common_kwargs"],
                 )
                 handle_completed({**task, "result": result})
         else:
@@ -1945,6 +2061,9 @@ def run_benchmark(
     )
 
     _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
+    if positioning_rows:
+        with open(os.path.join(root, "patient_positioning.json"), "w") as f:
+            json.dump(positioning_rows, f, indent=2)
 
     print(f"\nBenchmark outputs saved to: {root}")
     print(f"Paired CSV: {paired_csv}")
@@ -2033,6 +2152,41 @@ def main():
         action="store_true",
         help="Run one random pair at flow=1 with the selected controllers.",
     )
+    parser.add_argument(
+        "--actuator",
+        choices=sorted(ACTUATOR_PRESETS),
+        default="paper",
+        help="Coil array preset (core gain and ampere-turn calibration).",
+    )
+    parser.add_argument(
+        "--core-mu-r",
+        type=float,
+        default=None,
+        help="Override the preset's effective core gain applied to the far field.",
+    )
+    parser.add_argument(
+        "--carrier-density-kg-m3",
+        type=float,
+        default=None,
+        help="Carrier density; enables gravity and buoyancy when set.",
+    )
+    parser.add_argument(
+        "--gravity-direction",
+        default="0,-1,0",
+        help="Gravity direction in vessel coordinates (normalized), e.g. 0,-1,0.",
+    )
+    parser.add_argument(
+        "--patient-positioning",
+        choices=["fixed", "optimized"],
+        default="fixed",
+        help="optimized picks a table roll/tilt per route; overrides --gravity-direction.",
+    )
+    parser.add_argument(
+        "--max-table-tilt-deg",
+        type=float,
+        default=DEFAULT_MAX_TILT_DEG,
+        help="Largest head-up/head-down table tilt allowed when optimizing positioning.",
+    )
     args = parser.parse_args()
 
     variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -2090,6 +2244,14 @@ def main():
         rerun_trial_kind=args.rerun_trial_kind,
         early_stop_enabled=not args.disable_early_stop,
         cfd_file=args.cfd_file,
+        actuator=args.actuator,
+        core_mu_r=args.core_mu_r,
+        carrier_density_kg_m3=args.carrier_density_kg_m3,
+        gravity_direction=tuple(
+            float(v) for v in args.gravity_direction.split(",")
+        ),
+        patient_positioning=args.patient_positioning,
+        max_table_tilt_deg=args.max_table_tilt_deg,
     )
 
 

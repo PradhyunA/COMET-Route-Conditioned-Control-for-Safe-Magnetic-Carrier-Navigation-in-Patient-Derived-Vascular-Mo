@@ -42,11 +42,12 @@ def _simulate_one_step(
     B = magnet_array.field_at(particle_pos)
     grad_Bsq = magnet_array.grad_B_squared(particle_pos)
     force = particle.magnetic_force(B, grad_Bsq)
+    drive_force = force + getattr(particle, "body_force", 0.0)
 
-    force_mag = np.linalg.norm(force)
+    force_mag = np.linalg.norm(drive_force)
     if force_mag > EPS:
         gamma_eff, _, _ = particle._effective_drag(force_mag)
-        v_mag = force / gamma_eff
+        v_mag = drive_force / gamma_eff
     else:
         v_mag = np.zeros(3, dtype=float)
 

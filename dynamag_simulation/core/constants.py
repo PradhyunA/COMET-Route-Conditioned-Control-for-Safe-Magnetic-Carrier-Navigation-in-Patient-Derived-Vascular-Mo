@@ -9,6 +9,7 @@ import numpy as np
 MU_0 = 4.0 * np.pi * 1e-7       # vacuum permeability  (T*m/A)
 K_B = 1.381e-23                  # Boltzmann constant   (J/K)
 PI = np.pi
+STANDARD_GRAVITY_M_S2 = 9.80665  # standard gravity     (m/s^2)
 
 INCH_TO_METER = 0.0254
 SIDE = 6.0 * INCH_TO_METER      # workspace side length 0.1524 m

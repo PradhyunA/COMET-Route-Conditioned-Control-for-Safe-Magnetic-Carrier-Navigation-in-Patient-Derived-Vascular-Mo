@@ -49,7 +49,8 @@ def adaptive_step(
 
     # Estimate total displacement (magnetic + flow) to decide sub-stepping
     v_flow = flow.velocity_at(particle.pos, sim_time)
-    mag_disp = np.linalg.norm((force / particle.drag) * dt)
+    body_force = getattr(particle, "body_force", 0.0)
+    mag_disp = np.linalg.norm(((force + body_force) / particle.drag) * dt)
     flow_disp = np.linalg.norm(v_flow * dt)
     total_est = mag_disp + flow_disp
 
