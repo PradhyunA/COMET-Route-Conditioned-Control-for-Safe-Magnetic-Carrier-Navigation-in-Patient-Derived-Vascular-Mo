@@ -109,6 +109,9 @@ class RoutePlan:
 
 class RealVesselNetwork:
     name = "real_vessel_network"
+    #: Shortcut out-and-back spurs in planned routes (see
+    #: remove_route_backtracks). Off by default to keep published routes.
+    remove_backtracks = False
 
     def __init__(
         self,
@@ -253,6 +256,63 @@ class RealVesselNetwork:
                 best_seg = seg
 
         return best_seg, float(best_dist)
+
+    def lumen_clearance(self, pos):
+        """Largest (radius - radial distance) over the segments near pos."""
+        best = -np.inf
+        for seg in self._candidates(pos):
+            _, _, r, _ = seg.closest_point_and_radial(pos)
+            best = max(best, seg.radius - r)
+        return float(best)
+
+    def _chord_is_clear(self, a, b, required_clearance, sample_spacing=5e-4):
+        n = max(2, int(np.ceil(np.linalg.norm(b - a) / sample_spacing)) + 1)
+        return all(
+            self.lumen_clearance(a + t * (b - a)) >= required_clearance - EPS
+            for t in np.linspace(0.0, 1.0, n)
+        )
+
+    def remove_route_backtracks(self, points, required_clearance, window=40):
+        """
+        Shortcut out-and-back spurs in a route polyline through the lumen.
+
+        Overlapping centerlines that join only at some nodes make the
+        segment graph route run past a junction and double back. At each
+        reversal (consecutive edges more than 120 deg apart) the chord that
+        removes the most route length while keeping `required_clearance`
+        inside the lumen replaces the spur. Unfixable reversals are kept.
+        """
+        pts = [np.asarray(p, dtype=float) for p in points]
+        search_from = 1
+        while True:
+            reversal = None
+            for v in range(search_from, len(pts) - 1):
+                e_in, e_out = pts[v] - pts[v - 1], pts[v + 1] - pts[v]
+                denom = np.linalg.norm(e_in) * np.linalg.norm(e_out)
+                if denom > EPS and float(e_in @ e_out) / denom < -0.5:
+                    reversal = v
+                    break
+            if reversal is None:
+                return pts
+
+            arr = np.asarray(pts)
+            cum = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(arr, axis=0), axis=1))])
+            lo, hi = max(0, reversal - window), min(len(pts) - 1, reversal + window)
+            pairs = [
+                (cum[j] - cum[i] - float(np.linalg.norm(arr[j] - arr[i])), i, j)
+                for i in range(lo, reversal) for j in range(reversal + 1, hi + 1)
+            ]
+            chord = next(
+                ((i, j) for _, i, j in sorted(pairs, reverse=True)
+                 if self._chord_is_clear(arr[i], arr[j], required_clearance)),
+                None,
+            )
+            if chord is None:
+                search_from = reversal + 1
+                continue
+            i, j = chord
+            pts = pts[:i + 1] + pts[j:]
+            search_from = max(1, i)
 
     def in_any_vessel(self, pos):
         for seg in self._candidates(pos):
@@ -532,6 +592,10 @@ class RealVesselNetwork:
             point = seg.start if self._node_key(seg.start) == endpoint_key else seg.end
             waypoints.append(np.asarray(point, dtype=float).copy())
         waypoints.append(target_pos)
+        if self.remove_backtracks:
+            waypoints = self.remove_route_backtracks(
+                [start_pos, *waypoints], options.required_center_clearance_m,
+            )[1:]
 
         radii = [self._seg_by_id[sid].radius for sid in path_ids]
         reserves = []

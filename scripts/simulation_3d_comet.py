@@ -40,6 +40,7 @@ from dynamag_simulation.core.integrator import adaptive_step
 from dynamag_simulation.core.comet_controller import COMETConfig, COMETController
 from dynamag_simulation.core.validation import compute_reynolds, check_low_re_validity
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
+from dynamag_simulation.core.route_progress import RouteRemaining
 from dynamag_simulation.core.real_vessel_network import (
    RealVesselNetwork,
    RoutePlanningOptions,
@@ -160,6 +161,7 @@ def simulate_trial_comet(
    comet_config: COMETConfig | None = None,
    verbose_every: int = 25,
    early_stop_enabled: bool = False,
+   early_stop_route_progress: bool = False,
    early_stop_window_steps: int = 200,
    early_stop_improvement_threshold_m: float = 0.002,
    **comet_overrides,
@@ -305,6 +307,17 @@ def simulate_trial_comet(
    )
    best_final_target_distance = float(np.linalg.norm(particle.pos - target))
    best_distance_history = [best_final_target_distance]
+   # Optional second progress measure: remaining length along the planned
+   # route. With it, a trial only counts as stagnant when neither the
+   # straight-line nor the along-route distance improves.
+   route_remaining = (
+       RouteRemaining([start, *navigator.waypoints])
+       if early_stop_route_progress else None
+   )
+   best_route_remaining = (
+       route_remaining(particle.pos) if route_remaining is not None else np.inf
+   )
+   best_route_history = [best_route_remaining]
    prev_currents = np.zeros(magnets.n_magnets, dtype=float)
    localization_noise_std_m = float(comet_localization_noise_std_m)
    localization_noise_rng = np.random.default_rng(int(rng_seed) + 7919)
@@ -427,6 +440,9 @@ def simulate_trial_comet(
 
        best_final_target_distance = min(best_final_target_distance, float(distance))
        best_distance_history.append(best_final_target_distance)
+       if route_remaining is not None:
+           best_route_remaining = min(best_route_remaining, route_remaining(particle.pos))
+       best_route_history.append(best_route_remaining)
 
 
        if distance < tolerance:
@@ -440,7 +456,14 @@ def simulate_trial_comet(
        ):
            previous_best = best_distance_history[-early_stop_window_steps - 1]
            improvement = previous_best - best_final_target_distance
-           if improvement < early_stop_improvement_threshold_m:
+           route_improvement = (
+               best_route_history[-early_stop_window_steps - 1] - best_route_remaining
+               if route_remaining is not None else -np.inf
+           )
+           if (
+               improvement < early_stop_improvement_threshold_m
+               and route_improvement < early_stop_improvement_threshold_m
+           ):
                early_stopped = True
                early_stop_measured_improvement_m = float(improvement)
                early_stop_reason = (
@@ -564,6 +587,7 @@ def simulate_trial_comet(
            "core_relative_permeability": core_relative_permeability,
            "core_saturation_tesla": core_saturation_tesla,
            "ampere_turn_scale": ampere_turn_scale,
+           "early_stop_route_progress": early_stop_route_progress,
            "profile": profile.name,
            "particle_diameter_m": profile.diameter,
            "particle_diameter_mm": profile.diameter * 1000.0,

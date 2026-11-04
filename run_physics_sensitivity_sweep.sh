@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # Physics sensitivity sweep: far-field core gain x gravity on the frozen
-# 45-case manifest (3 anatomies x 5 routes x 1/3/5 flow).
+# benchmark manifest (3 or 5 anatomies x 5 routes x 1/3/5 flow).
 #
 # Conditions are "name:mu_r:density:gravity_dir". mu_r "preset" keeps the
 # actuator preset's core gain, density "none" disables gravity and
 # gravity_dir "optimized" picks a table orientation per route. The paper
 # used mu_r=70 with no gravity.
 #
-# Overrides: ACTUATOR (paper | navion_calibrated), CONTROLLERS, CONDITIONS,
-# FLOWS, WORKERS, PARALLEL, STEPS, RUN_ID,
+# Overrides: ACTUATOR (paper | navion_calibrated | high_gradient_400), PROTOCOL (paper | shared_route), ANATOMY_SET, CONTROLLERS, CONDITIONS,
+# FLOWS, WORKERS, PARALLEL, STEPS, RUN_ID, SEED, START_JITTER_MM (replicates),
 # OUTPUT_ROOT, PYTHON_BIN, EARLY_STOP_FLAG (set to --disable-early-stop to
-# turn stagnation early stopping off).
+# turn stagnation early stopping off), CFD (set to 1 to run only the anatomies
+# with a steady SimScale field, under that field; needs
+# PYTHON_BIN=.venv-cfd/bin/python).
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -30,6 +32,10 @@ WORKERS="${WORKERS:-5}"
 PARALLEL="${PARALLEL:-2}"
 STEPS="${STEPS:-2000}"
 EARLY_STOP_FLAG="${EARLY_STOP_FLAG:-}"
+PROTOCOL="${PROTOCOL:-paper}"
+SEED="${SEED:-20260611}"
+START_JITTER_MM="${START_JITTER_MM:-0}"
+CFD="${CFD:-0}"
 RUN_ID="${RUN_ID:-physics_sensitivity_$(date +%Y%m%d_%H%M%S)}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-outputs/physics_sensitivity}"
 RUN_DIR="$OUTPUT_ROOT/$RUN_ID"
@@ -41,11 +47,23 @@ fi
 mkdir -p "$RUN_DIR"
 
 ROUTES=canonical_002_random_to_publication_target,canonical_003_publication_start_to_random,random_0001,random_0002
+# ANATOMY_SET=three keeps the frozen 45-case manifest; five adds the VMR
+# 0024 thoracic aorta and 0049 aortofemoral models (75 cases). ONLY_ANATOMY
+# limits a run to one label.
+ANATOMY_SET="${ANATOMY_SET:-three}"
+MANIFESTS=benchmark_manifests/icem_45case_500um
 ANATOMIES=(
-  "abdominal|data/real_vessel_segments_cm_corrected.pkl|benchmark_manifests/icem_45case_500um/cm_corrected.csv|canonical_001_inlet_to_outlet"
-  "aortic_root|data/vessels/aortic_root_cerebral_40Left85Right/real_vessel_segments.pkl|benchmark_manifests/icem_45case_500um/40Left85Right.csv|canonical_001_medium_40Left85Right_endpoint03"
-  "pulmonary|data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments_cm_corrected.pkl|benchmark_manifests/icem_45case_500um/pulmonary_0082_H_PULM_H.csv|canonical_001_inlet_to_outlet"
+  "abdominal|data/real_vessel_segments_cm_corrected.pkl|cm_corrected.csv|canonical_001_inlet_to_outlet"
+  "aortic_root|data/vessels/aortic_root_cerebral_40Left85Right/real_vessel_segments.pkl|40Left85Right.csv|canonical_001_medium_40Left85Right_endpoint03"
+  "pulmonary|data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments_cm_corrected.pkl|pulmonary_0082_H_PULM_H.csv|canonical_001_inlet_to_outlet"
 )
+if [[ "$ANATOMY_SET" == "five" ]]; then
+  MANIFESTS=benchmark_manifests/five_anatomy_500um
+  ANATOMIES+=(
+    "thoracic_aorta|data/vessels/aorta_0024_H_AO_H/real_vessel_segments.pkl|0024_H_AO_H.csv|canonical_001_root_to_rcca_0024"
+    "aortofemoral|data/vessels/aortofemoral_0049_H_ABAO_AIOD/real_vessel_segments.pkl|0049_H_ABAO_AIOD.csv|canonical_001_aorta_to_femoral_0049"
+  )
+fi
 
 JOBS="$RUN_DIR/jobs.txt"
 : > "$JOBS"
@@ -53,13 +71,25 @@ for cond in $CONDITIONS; do
   IFS=: read -r name mu density gdir <<< "$cond"
   for anatomy in "${ANATOMIES[@]}"; do
     IFS='|' read -r label vessel manifest first_route <<< "$anatomy"
-    echo "$name $mu $density $gdir $label $vessel $manifest $first_route,$ROUTES" >> "$JOBS"
+    [[ -n "${ONLY_ANATOMY:-}" && "$label" != "$ONLY_ANATOMY" ]] && continue
+    cfd_file=none
+    if [[ "$CFD" == 1 ]]; then
+      case "$label" in
+        abdominal) cfd_file=data/cfd/abdominal_aorta_steady.npz ;;
+        pulmonary) cfd_file=data/cfd/pulmonary_steady.npz ;;
+        *) continue ;;
+      esac
+    fi
+    echo "$name $mu $density $gdir $label $vessel $MANIFESTS/$manifest $first_route,$ROUTES $cfd_file" >> "$JOBS"
   done
 done
 
 run_job() {
-  local name=$1 mu=$2 density=$3 gdir=$4 label=$5 vessel=$6 manifest=$7 routes=$8
+  local name=$1 mu=$2 density=$3 gdir=$4 label=$5 vessel=$6 manifest=$7 routes=$8 cfd_file=$9
   local physics_args=()
+  if [[ "$cfd_file" != "none" ]]; then
+    physics_args+=(--cfd-file "$cfd_file")
+  fi
   if [[ "$mu" != "preset" ]]; then
     physics_args+=(--core-mu-r "$mu")
   fi
@@ -77,17 +107,17 @@ run_job() {
     --vessel-file "$vessel" \
     --rerun-from-csv "$manifest" --rerun-pair-ids "$routes" \
     --rerun-flow-scales "$FLOWS" --n-random-trials 0 \
-    --controllers "$CONTROLLERS" --seed 20260611 --steps "$STEPS" --dt 0.02 \
+    --controllers "$CONTROLLERS" --seed "$SEED" --start-jitter-mm "$START_JITTER_MM" --steps "$STEPS" --dt 0.02 \
     --tolerance 0.0005 --wall-clearance-threshold-mm 0.7 \
     --profile spion_carrier_500um --device-mode moving_adaptive_enclosing_gantry \
-    --workers "$WORKERS" --actuator "$ACTUATOR" ${physics_args[@]+"${physics_args[@]}"} $EARLY_STOP_FLAG \
+    --workers "$WORKERS" --actuator "$ACTUATOR" --protocol "$PROTOCOL" ${physics_args[@]+"${physics_args[@]}"} $EARLY_STOP_FLAG \
     > "$RUN_DIR/$name/$label.log" 2>&1
   echo "[$(date +%H:%M:%S)] done $name $label"
 }
 export -f run_job
-export RUN_DIR PYTHON_BIN ACTUATOR CONTROLLERS FLOWS WORKERS STEPS EARLY_STOP_FLAG
+export RUN_DIR PYTHON_BIN ACTUATOR PROTOCOL CONTROLLERS FLOWS WORKERS STEPS EARLY_STOP_FLAG SEED START_JITTER_MM
 
 echo "Sweep: $RUN_DIR"
-echo "Actuator: $ACTUATOR | controllers: $CONTROLLERS | flows: $FLOWS | steps: $STEPS | early stop flag: ${EARLY_STOP_FLAG:-<default>}"
+echo "Actuator: $ACTUATOR | protocol: $PROTOCOL | controllers: $CONTROLLERS | flows: $FLOWS | steps: $STEPS | early stop flag: ${EARLY_STOP_FLAG:-<default>}"
 xargs -P "$PARALLEL" -L 1 bash -c 'run_job "$@"' _ < "$JOBS"
 echo "Sweep finished: $RUN_DIR"

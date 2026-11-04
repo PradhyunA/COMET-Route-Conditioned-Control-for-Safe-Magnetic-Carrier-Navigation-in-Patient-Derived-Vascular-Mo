@@ -1,0 +1,9 @@
+{
+  "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/abdominal_aorta_steady.npz",
+  "source_zip_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
+  "velocity_multiplier": 5.0,
+  "flow_mode": "steady",
+  "interpolation": "8-neighbour inverse-distance-squared",
+  "queries": 86616,
+  "max_nearest_sample_distance_m": 0.0005554048797999711
+}

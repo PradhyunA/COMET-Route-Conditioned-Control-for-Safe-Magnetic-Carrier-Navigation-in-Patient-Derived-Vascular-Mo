@@ -1,0 +1,43 @@
+375 rows 75 cases
+ctrl          reached safe contact-free exits | safe 1x/3x/5x | McNemar (b/c,p)
+comet_v2         63    50       62     0 | 19/17/14
+nmpc_tuned       51    34       48     3 | 16/13/5 | 20/4 p=0.0015
+nmpc_default     40    27       35     2 | 17/7/3 | 25/2 p=5.6e-06
+mpc_tuned        57    26       45     4 | 11/8/7 | 29/5 p=3.9e-05
+acbc_tuned       51     6       31    25 | 3/2/1 | 44/0 p=1.1e-13
+
+safe by anatomy: ['comet_v2', 'nmpc_tuned', 'nmpc_default', 'mpc_tuned', 'acbc_tuned']
+abdominal       [9, 7, 5, 2, 0]
+aortic_root     [6, 4, 2, 2, 1]
+pulmonary       [13, 7, 5, 5, 2]
+thoracic_aorta  [12, 12, 10, 11, 3]
+aortofemoral    [10, 4, 5, 6, 0]
+reached by anatomy:
+abdominal       [10, 9, 8, 9, 13]
+aortic_root     [12, 8, 6, 7, 8]
+pulmonary       [15, 12, 9, 13, 8]
+thoracic_aorta  [12, 12, 10, 13, 12]
+aortofemoral    [14, 10, 7, 15, 10]
+0049 safe by flow:
+1.0 [2, 2, 4, 3, 0]
+3.0 [4, 1, 1, 1, 0]
+5.0 [4, 1, 0, 2, 0]
+0049 exits: [0, 0, 0, 2, 13]
+avg control step s: {'comet_v2': 0.132, 'nmpc_tuned': 0.402, 'nmpc_default': 0.434, 'mpc_tuned': 4.654, 'acbc_tuned': 3.667}
+
+0049 detail (comet/nmpc_tuned):
+1.0 canonical_001_aorta_to_femoral_0 C: safe N: safe
+1.0 canonical_002_random_to_publicat C: reach N: reach
+1.0 canonical_003_publication_start_ C: reach N: safe
+1.0 random_0001                      C: safe N: reach
+1.0 random_0002                      C: fail N: reach
+3.0 canonical_001_aorta_to_femoral_0 C: safe N: reach
+3.0 canonical_002_random_to_publicat C: safe N: fail
+3.0 canonical_003_publication_start_ C: safe N: safe
+3.0 random_0001                      C: safe N: reach
+3.0 random_0002                      C: reach N: fail
+5.0 canonical_001_aorta_to_femoral_0 C: safe N: fail
+5.0 canonical_002_random_to_publicat C: safe N: fail
+5.0 canonical_003_publication_start_ C: safe N: reach
+5.0 random_0001                      C: reach N: fail
+5.0 random_0002                      C: safe N: safe

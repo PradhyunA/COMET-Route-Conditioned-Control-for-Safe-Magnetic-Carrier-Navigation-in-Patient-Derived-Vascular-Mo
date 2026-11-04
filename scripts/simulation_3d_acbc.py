@@ -49,6 +49,7 @@ from dynamag_simulation.core.integrator import adaptive_step
 from dynamag_simulation.core.validation import compute_reynolds, check_low_re_validity
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
 from dynamag_simulation.core.plotting import save_all_plots
+from dynamag_simulation.core.route_progress import RouteRemaining
 from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
 from dynamag_simulation.core.workspace import WorkspaceVessel
 from dynamag_simulation.core.acbc_controller import ACBCController
@@ -470,10 +471,13 @@ def simulate_trial_acbc(
     enable_recovery: bool = True,
     enable_stall_escape: bool = True,
     early_stop_enabled: bool = False,
+    early_stop_route_progress: bool = False,
     early_stop_window_steps: int = DEFAULT_EARLY_STOP_WINDOW_STEPS,
     early_stop_improvement_threshold_m: float = (
         DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
     ),
+    # Shared benchmark route constraints; None keeps the default planner.
+    route_planning_options=None,
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -534,6 +538,7 @@ def simulate_trial_acbc(
         waypoint_spacing=0.0015,
         lookahead=5,
         forward_search_points=50,
+        planning_options=route_planning_options,
     )
 
     acbc = ACBCController(
@@ -632,6 +637,17 @@ def simulate_trial_acbc(
     early_stop_improvement_threshold_m = float(early_stop_improvement_threshold_m)
     best_final_target_distance = float(np.linalg.norm(particle.pos - target))
     best_distance_history = [best_final_target_distance]
+    # Optional second progress measure: remaining length along the planned
+    # route. With it, a trial only counts as stagnant when neither the
+    # straight-line nor the along-route distance improves.
+    route_remaining = (
+        RouteRemaining([start, *navigator.waypoints])
+        if early_stop_route_progress else None
+    )
+    best_route_remaining = (
+        route_remaining(particle.pos) if route_remaining is not None else np.inf
+    )
+    best_route_history = [best_route_remaining]
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
     converged_count = 0
@@ -770,6 +786,9 @@ def simulate_trial_acbc(
 
         best_final_target_distance = min(best_final_target_distance, float(distance))
         best_distance_history.append(best_final_target_distance)
+        if route_remaining is not None:
+            best_route_remaining = min(best_route_remaining, route_remaining(particle.pos))
+        best_route_history.append(best_route_remaining)
 
         if distance < tolerance:
             reached = True
@@ -782,7 +801,14 @@ def simulate_trial_acbc(
         ):
             previous_best = best_distance_history[-early_stop_window_steps - 1]
             improvement = previous_best - best_final_target_distance
-            if improvement < early_stop_improvement_threshold_m:
+            route_improvement = (
+                best_route_history[-early_stop_window_steps - 1] - best_route_remaining
+                if route_remaining is not None else -np.inf
+            )
+            if (
+                improvement < early_stop_improvement_threshold_m
+                and route_improvement < early_stop_improvement_threshold_m
+            ):
                 early_stopped = True
                 early_stop_measured_improvement_m = float(improvement)
                 early_stop_reason = (
@@ -939,6 +965,8 @@ def simulate_trial_acbc(
             "core_relative_permeability": core_relative_permeability,
             "core_saturation_tesla": core_saturation_tesla,
             "ampere_turn_scale": ampere_turn_scale,
+            "shared_route_planning": route_planning_options is not None,
+            "early_stop_route_progress": early_stop_route_progress,
             "follow_particle_device": device_mode == "moving_internal_upper_bound",
             "profile": profile.name,
             "particle_diameter_m": profile.diameter,
