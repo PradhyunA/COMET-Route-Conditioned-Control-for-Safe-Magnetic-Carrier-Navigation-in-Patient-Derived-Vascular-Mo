@@ -1,0 +1,77 @@
+{
+  "run_id": "pulmonary",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 1,
+  "n_pairs": 2,
+  "seed_records": [
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0001",
+      "seed": 25260614,
+      "start": [
+        -0.07723714495440974,
+        -0.024180459226023878,
+        0.08025733094823245
+      ],
+      "target": [
+        0.03533189866959082,
+        -0.016774626188791098,
+        0.08501711940404257
+      ],
+      "route_length_m": 0.1636007723589873,
+      "route_min_clearance_m": 0.0017976675760080236,
+      "route_min_authority_reserve_m_s": -0.36054195566564234
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0002",
+      "seed": 25260615,
+      "start": [
+        -0.04598092471498247,
+        -0.014040532162439194,
+        0.054960989281393494
+      ],
+      "target": [
+        -0.0499406345944511,
+        -0.0321782901938478,
+        0.04312938198749193
+      ],
+      "route_length_m": 0.025521656668134992,
+      "route_min_clearance_m": 0.002197538346720068,
+      "route_min_authority_reserve_m_s": 0.18
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 5.0,
+      "controller_key": "mpc_tuned",
+      "n": 1,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.0,
+      "median_final_error_mm": 12.720623418285305,
+      "median_sim_time_s": 4.66,
+      "median_steps_to_target": 233.0,
+      "early_stop_count": 1,
+      "early_stop_rate": 1.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 1.9220859702236692,
+      "median_wall_time_s": 1374.784993374953,
+      "median_avg_control_step_time_s": 5.874692588310105,
+      "median_path_efficiency": 0.14990178456651307,
+      "median_current_rms_A": 6.934791518750876,
+      "median_energy_proxy_A2s": 2016.950523154129,
+      "median_min_wall_clearance_mm": -0.9006184010801033,
+      "median_min_clearance_margin_mm": -1.6006184010801034,
+      "median_safety_violation_fraction": 0.9743589743589743,
+      "wall_exit_rate": 1.0,
+      "median_max_wall_intrusion_mm": 0.9006184010801033,
+      "clearance_target_met_rate": 0.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    }
+  ],
+  "paired_statistics": []
+}

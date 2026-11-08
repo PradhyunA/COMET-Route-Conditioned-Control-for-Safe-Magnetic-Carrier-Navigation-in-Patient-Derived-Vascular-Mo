@@ -1,0 +1,227 @@
+[
+  {
+    "flow_scale": 1.0,
+    "pair_id": "canonical_001_aorta_to_femoral_0049",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.646500017374034e-06,
+    "mean_required_force_n": 1.4185395818493883e-06,
+    "worst_orientation_peak_force_n": 2.3751716016203758e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "canonical_002_random_to_publication_target",
+    "gravity_m_s2": [
+      6.516156318121196,
+      -6.516156318121198,
+      3.354071838544669
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.822136676419399e-06,
+    "mean_required_force_n": 1.452323492417321e-06,
+    "worst_orientation_peak_force_n": 2.450012392632601e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "canonical_003_publication_start_to_random",
+    "gravity_m_s2": [
+      -1.1827228469574233e-15,
+      -9.65766495107717,
+      1.7029069015174023
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 10.0,
+    "peak_required_force_n": 1.6005200240853822e-06,
+    "mean_required_force_n": 1.4982076335876492e-06,
+    "worst_orientation_peak_force_n": 2.3751716016203758e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      9.215236639630128,
+      -1.6928115081162671e-15,
+      3.354071838544669
+    ],
+    "table_roll_deg": 270.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 2.0623878898121017e-06,
+    "mean_required_force_n": 1.5910542404704911e-06,
+    "worst_orientation_peak_force_n": 3.147337695760276e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      -6.516156318121197,
+      -6.516156318121196,
+      3.354071838544669
+    ],
+    "table_roll_deg": 135.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.8193874787893733e-06,
+    "mean_required_force_n": 1.5545858484778088e-06,
+    "worst_orientation_peak_force_n": 3.1847394343098488e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "canonical_001_aorta_to_femoral_0049",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 4.646322574111548e-06,
+    "mean_required_force_n": 2.42730130311758e-06,
+    "worst_orientation_peak_force_n": 6.429934236384354e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "canonical_002_random_to_publication_target",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 4.107639123720626e-06,
+    "mean_required_force_n": 1.995161974280733e-06,
+    "worst_orientation_peak_force_n": 6.186685448082334e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "canonical_003_publication_start_to_random",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 4.646322574111548e-06,
+    "mean_required_force_n": 3.341427439010147e-06,
+    "worst_orientation_peak_force_n": 6.429934236384354e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      9.215236639630128,
+      -1.6928115081162671e-15,
+      3.354071838544669
+    ],
+    "table_roll_deg": 270.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 2.217044551297074e-06,
+    "mean_required_force_n": 1.397949585736488e-06,
+    "worst_orientation_peak_force_n": 3.174784873986499e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 4.107639123720626e-06,
+    "mean_required_force_n": 2.153497809734899e-06,
+    "worst_orientation_peak_force_n": 6.186685448082334e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "canonical_001_aorta_to_femoral_0049",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.0562313912191361e-05,
+    "mean_required_force_n": 4.961416674988316e-06,
+    "worst_orientation_peak_force_n": 1.2407372678215853e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "canonical_002_random_to_publication_target",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 9.641744881057947e-06,
+    "mean_required_force_n": 3.683340535574951e-06,
+    "worst_orientation_peak_force_n": 1.1767933429215382e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "canonical_003_publication_start_to_random",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.0562313912191361e-05,
+    "mean_required_force_n": 6.7054615346927e-06,
+    "worst_orientation_peak_force_n": 1.2407372678215853e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 8.267303261310374e-06,
+    "mean_required_force_n": 2.524539349741568e-06,
+    "worst_orientation_peak_force_n": 1.050901137431622e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      6.516156318121198,
+      6.516156318121195,
+      3.354071838544669
+    ],
+    "table_roll_deg": 315.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 2.0983715856845553e-06,
+    "mean_required_force_n": 1.562114755448441e-06,
+    "worst_orientation_peak_force_n": 3.7738054864821163e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  }
+]
