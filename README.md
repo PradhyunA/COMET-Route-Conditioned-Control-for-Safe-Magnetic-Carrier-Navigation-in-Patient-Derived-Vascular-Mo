@@ -1,185 +1,144 @@
-# DynaMag Simulation Suite
+# DynaMag: COMET magnetic carrier navigation
 
-Physics-based simulation of multi-coil electromagnetic steering for magnetic
-carrier routing research.
+Simulation code, benchmark and results for
 
-## Overview
+> H. Bal, A. Renjith, and P. Akkala, "COMET: Route-Conditioned Control for
+> Safe Magnetic Carrier Navigation in Patient-Derived Vascular Models"
+> (submitted to *Micromachines*).
 
-DynaMag models a programmable electromagnet array steering magnetic
-microspheres or larger SPION-loaded carriers through 3D workspaces and real
-vessel networks. The simulation includes:
+DynaMag simulates a nine-coil electromagnetic array steering a 500 µm
+magnetic carrier through patient-derived vessel networks from the
+[Vascular Model Repository](https://www.vascularmodel.com). The model
+includes saturating dipole fields, gravity and buoyancy, Schiller–Naumann
+drag, analytical pulsatile or imported steady CFD flow, coil current,
+voltage, power and thermal limits, and per-route patient positioning.
+COMET and four baseline controllers are compared on a frozen 75-case
+benchmark.
 
-- **Regularized magnetic dipole field model** (body-scale multi-coil array, softened near sources)
-- **Superparamagnetic particle** with susceptibility + saturation crossover
-- **Schiller-Naumann drag** (nonlinear; reduces to Stokes at Re ≪ 1, valid to Re ≈ 800)
-- **Brownian thermal noise** (Stokes-Einstein diffusion)
-- **Background flow fields** (NoFlow, Uniform, Poiseuille, Pulsatile cardiac)
-- **Flow-aware MPC controller** (1-step SLSQP optimisation with flow compensation)
-- **Published PETS-style CEM-MPC baseline** (multi-step sampling MPC; Chua et al., NeurIPS 2018)
-- **Reynolds number tracking** with Stokes and finite-Re carrier-regime labels
-- **Adaptive substepping** with per-substep flow evaluation
+## Setup
 
-## Quick Start
+Python 3.13 is recommended.
 
 ```bash
-# Create environment
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Run the default 3-trial MPC simulation
-python scripts/simulation_3d_mpc.py
-
-# Run the paired 1 mm publication benchmark infrastructure
-python scripts/run_publication_benchmark.py --smoke-test
-
-# Run tests
-python -m pytest tests/ -v
+python3 -m venv .venv-cfd
+source .venv-cfd/bin/activate
+pip install -r requirements-cfd.txt
+python -m pytest tests/
 ```
 
-## Repository Structure
+`requirements.txt` is the lighter environment for runs without CFD. The CFD
+study also needs `data/cfd/*.npz`, which are regenerated from the SimScale
+exports (see [docs/cfd_validation.md](docs/cfd_validation.md)).
 
-```
-.
-├── dynamag_simulation/               # Core physics and simulation engine
-│   ├── core/                         # Shared physics modules
-│   │   ├── constants.py              # Physical and geometric constants
-│   │   ├── profiles.py               # Named particle/fluid profiles
-│   │   ├── workspace.py              # 2D/3D workspace geometry
-│   │   ├── magnets.py                # Electromagnet array (regularized dipole)
-│   │   ├── particle.py               # Superparamagnetic particle + Schiller-Naumann drag
-│   │   ├── flow.py                   # Background flow models (Uniform, Poiseuille, Pulsatile)
-│   │   ├── integrator.py             # Adaptive substepping with flow evaluation
-│   │   ├── controllers.py            # Flow-aware MPC controller
-│   │   ├── cem_mpc_controller.py     # Published PETS-style CEM-MPC baseline
-│   │   ├── validation.py             # Stokes / finite-Re regime checks
-│   │   ├── reporting.py              # TrialResult, CSV output
-│   │   └── plotting.py               # Consolidated plot generation
-│   ├── simulation_2d.py              # Legacy 2D (deprecated)
-│   ├── simulation_2d_final.py        # Legacy 2D final (deprecated)
-│   ├── simulation_2d_model_b.py      # Legacy 2D model B (deprecated)
-│   └── simulation_3d.py              # Legacy simplified 3D (deprecated)
-├── scripts/                          # Executable runners and analysis tools
-│   ├── simulation_3d_mpc.py          # Primary simulation entry point (MPC)
-│   ├── simulation_3d_acbc.py         # ACBC supervisor over MPC allocator
-│   ├── run_publication_benchmark_1mm.py # Paired 1 mm ACBC/MPC benchmark
-│   ├── generate_publication_figures_1mm.py # 1 mm manuscript figures/tables
-│   ├── simulation_3d_realistic.py    # Backward-compatible wrapper
-│   ├── run_100_trials_flow.py        # 100-trial flow runner (500 µm microspheres)
-│   ├── run_50um_100trials.py         # 100-trial flow runner (50 µm microspheres)
-│   ├── run_baselines.py              # Baseline comparison runner (Random/Static control)
-│   ├── run_batch.py                  # Custom batch simulation runner
-│   ├── run_monte_carlo_timed.py      # Time-limited Monte Carlo data collector
-│   ├── generate_poster_figures.py    # Poster figure generator (500 µm flow dataset)
-│   ├── generate_poster_figures_50um.py # Poster figure generator (50 µm flow dataset)
-│   ├── generate_poster_figures_50um_improved.py # Improved analysis figure generator (50 µm flow dataset)
-│   └── generate_presentation_figures.py # Polished presentation figure generator (11 panels)
-├── data/                             # Input/raw network datasets
-│   └── real_vessel_segments.pkl      # Pickled 3D vessel network structure
-├── logs/                             # Execution log files
-│   ├── flow_50um_run.log
-│   └── mc_run.log
-├── outputs/                          # Simulation outputs, CSV data, and generated plots
-├── tests/                            # Pytest test suite
-│   ├── test_profiles.py
-│   ├── test_velocity_consistency.py
-│   ├── test_reynolds.py
-│   ├── test_mpc_controller.py
-│   └── test_reproducibility.py
-├── docs/
-│   └── modeling_assumptions.md       # Equations, units, validity limits
-├── requirements.txt
-└── .gitignore
-```
+## Reproducing the paper
 
-## Physical Profiles
-
-| Profile              | Diameter | Use Case                                  |
-|----------------------|----------|-------------------------------------------|
-| `microsphere_500um`  | 500 µm   | Default: benchtop phantom system          |
-| `microsphere_50um`   | 50 µm    | Scaled-down runs with background flow     |
-| `nanoparticle_500nm` | 500 nm   | Theoretical comparison only               |
-| `spion_carrier_1mm`  | 1 mm     | Large-vessel magnetic carrier study       |
-
-The 1 mm carrier profiles are **not nanoparticles**. Use “magnetic carrier,”
-“magnetic milliparticle,” or “large-vessel carrier” for those simulations.
-
-## Outputs
-
-Each trial produces:
-
-- **Plots**: 3D trajectory, distance vs time, physics (force/velocity/field),
-  coil currents, z=0 field map
-- **CSV**: trial summary with physics validity stats and compute timing
-
-CSV columns include `wall_time_s`, `avg_control_step_time_s`,
-`max_control_step_time_s`, `mean_reynolds`, `max_reynolds`, `low_re_valid`,
-`stokes_regime`, `finite_re_drag_valid`, `drag_model`, `drag_regime_label`,
-`seed`, and `profile_name`. All plots and summaries are saved under `outputs/`.
-
-For 1 mm carrier studies, `low_re_valid=False` means the carrier is outside
-the creeping-flow/Stokes regime; it is not by itself a publication failure.
-The finite-Re validity field is the relevant drag-model check.
-
-## MacBook M3 Pro (Apple Silicon) Speedup Guide
-
-To run your simulations as fast as possible on a MacBook M3 Pro (or any M-series processor), apply the following performance enhancement strategies:
-
-### 1. Enable Algorithmic Cost Pre-Evaluation (`fast_mode`)
-We have added a `fast_mode` parameter in `continuous_mpc_controller` (enabled by default in [controllers.py](file:///Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/dynamag_simulation/core/controllers.py)). 
-- **What it does**: Instead of running a full numerical SLSQP optimization (`scipy.optimize.minimize`) on all 5 heuristic start vectors at every simulation step, it computes the scalar cost of all candidate starts first (taking < 0.1ms total) and only executes SLSQP optimization on the single best start vector. 
-- **Performance Impact**: This reduces the number of SLSQP optimizations from 5 to 1 per simulation step, yielding an immediate **3x to 5x speedup** per trial with identical or superior steering performance.
-- **Tune optimizer tolerances**: The optimizer `ftol` can be set to `1e-5` and `maxiter` to `50` (compared to legacy `ftol=1e-7`, `maxiter=80`) inside `continuous_mpc_controller`. This stops unnecessary iterations once the cost change is negligible.
-
-### 2. Leverage NumPy Linked to Apple's Accelerate Framework
-Apple Silicon M-series chips feature vecLib/Accelerate, which provides highly-optimized BLAS and LAPACK routines tuned for Apple's CPU architecture.
-- **Ensure linking**: Starting from NumPy 1.25, the standard `pip install numpy` wheels automatically detect and link to macOS Accelerate. You can check if it is active via:
-  ```bash
-  python3 -c "import numpy; numpy.show_config()"
-  ```
-  Look for `accelerate` under the BLAS/LAPACK section. This drastically speeds up dot products, norms, and vector mathematics.
-
-### 3. Run Independent Trials in Parallel
-Since all trials in batch runs (e.g. `run_monte_carlo_timed.py`, `run_batch.py`, `run_50um_100trials.py`) are independent, they are perfect candidates for parallel execution using Python's `multiprocessing` or `concurrent.futures`.
-- **How to execute**: Modify the main trial loop to run in a `ProcessPoolExecutor` with `max_workers` set to your CPU count (MacBook M3 Pro has 11 or 12 CPU cores). On M-series, utilizing 8-10 worker processes will execute trials in parallel with a **6x to 8x throughput speedup**.
-
-## Reproducibility
-
-All stochastic runs are seeded via `rng_seed` (default: 42). The test suite
-verifies bitwise reproducibility for identical seeds.
-
-To reproduce all results:
-```bash
-source .venv/bin/activate
-python scripts/simulation_3d_mpc.py
-```
-
-Results appear in `outputs/simulation_outputs_3d_mpc/`.
-
-## Documentation
-
-See `docs/modeling_assumptions.md` for detailed equations, units, validity
-limits, and a list of what is and is not modelled.
-
-See `docs/cem_mpc_baseline.md` for the published baseline citation, the exact
-reproduced CEM components, the deterministic-physics adaptation, benchmark
-commands, and manuscript-ready method wording.
-
-### Imported CFD flow
-
-The corrected SimScale Run 4 exports can drive COMET, constrained CEM-MPC,
-ACBC, and MPC through the existing
-publication runner. See [the CFD workflow](docs/cfd_validation.md) for the
-importer, separate numerical environment, validation limits, and the frozen
-15-case abdominal command:
+Every run writes to `outputs/physics_sensitivity/<RUN_ID>/` (not tracked).
+The defaults of `run_physics_sensitivity_sweep.sh` reproduce the main
+benchmark (400 mT/m, gravity, optimized positioning, shared-route
+protocol):
 
 ```bash
-./run_comet_cfd_abdominal_15trials.sh
+# COMET (75 cases)
+RUN_ID=main_comet ./run_physics_sensitivity_sweep.sh
+
+# Baselines
+RUN_ID=main_baselines CONTROLLERS=nmpc_tuned,nmpc_default,mpc_tuned,acbc_tuned \
+  ./run_physics_sensitivity_sweep.sh
+
+# Actuator sensitivity (300 mT/m; use 600 likewise)
+RUN_ID=grad300 ACTUATOR=high_gradient_300 CONDITIONS=grad300_gopt:preset:3542:optimized \
+  CONTROLLERS=comet_v4,nmpc_tuned,nmpc_default,mpc_tuned,acbc_tuned ./run_physics_sensitivity_sweep.sh
+
+# Replicates with jittered starts (seeds 101-105)
+RUN_ID=rep101 SEED=101 START_JITTER_MM=0.25 CONTROLLERS=comet_v4,nmpc_tuned,nmpc_default \
+  ./run_physics_sensitivity_sweep.sh
+
+# Mechanism ablations
+RUN_ID=ablations CONTROLLERS=comet_v4_no_polyline,comet_v4_no_terminal_precision,comet_v4_no_branch_shaping,comet_v4_no_flow_compensation,comet_v4_slsqp_allocator \
+  ./run_physics_sensitivity_sweep.sh
+
+# Localization noise
+RUN_ID=noise CONTROLLERS=comet_v4_loc_noise_100um,comet_v4_loc_noise_200um ./run_physics_sensitivity_sweep.sh
+
+# Steady CFD (abdominal and pulmonary only)
+RUN_ID=cfd CFD=1 PYTHON_BIN=.venv-cfd/bin/python \
+  CONTROLLERS=comet_v4,nmpc_tuned,nmpc_default,mpc_tuned,acbc_tuned ./run_physics_sensitivity_sweep.sh
 ```
 
-For both abdominal and pulmonary at the supplied 1× CFD condition, run the
-40-case controller comparison:
+Trials are deterministic: each trial's seed depends only on the case, so a
+rerun reproduces the reported trial exactly. Full runs take hours; the
+SLSQP-based baselines are the slowest.
+
+Confidence intervals and paired tests (this reproduces Table 3 from the
+stored results; the baselines were run separately from COMET, so their run
+directories are combined with `+`):
 
 ```bash
-./run_cfd_abdominal_pulmonary_1x.sh
+M=results/main_benchmark
+python scripts/summarize_replicates.py \
+  --replicate main=$M/five_anatomy_final_comet_v4_20261103+$M/five_anatomy_final_20261103+$M/five_anatomy_final_nmpc_20261103+$M/five_anatomy_final_0049_20261103 \
+  --anatomies abdominal,aortic_root,pulmonary,thoracic_aorta,aortofemoral \
+  --controllers comet_v4,nmpc_tuned,nmpc_default,mpc_tuned,acbc_tuned
 ```
+
+Figures: `python scripts/make_paper_figures.py figures/`.
+
+## Results
+
+`results/` holds the trial-level results reported in the paper (one
+`paired_results.csv` per anatomy and run, plus run configurations and
+summaries). See [results/README.md](results/README.md) for which directory
+backs which table.
+
+## Repository layout
+
+```
+dynamag_simulation/core/   physics, vessel networks, flow, controllers
+  comet_controller.py        COMET
+  tracking_mpc.py            textbook receding-horizon NMPC baseline
+  acbc_controller.py         ACBC baseline
+  patient_positioning.py     table-orientation optimizer
+  cfd_flow_field.py          steady CFD flow sampler
+scripts/
+  run_publication_benchmark.py   benchmark runner (controller variants, actuator presets)
+  simulation_3d_*.py             per-controller trial loops
+  summarize_replicates.py        route-bootstrap CIs and McNemar tests
+  make_paper_figures.py          paper figures from results/
+  import_simscale_flow.py        CFD import
+  estimate_core_gain.py          far-field core gain estimate
+  make_benchmark_manifest.py     benchmark and held-out route manifests
+  data_prep/                     VMR geometry to vessel-segment conversion
+  cfd/                           pulsatile svSolver workflow (work in progress)
+  tools/                         geometry inspection helpers
+run_physics_sensitivity_sweep.sh  benchmark driver
+benchmark_manifests/
+  five_anatomy_500um/        frozen 75-case benchmark
+  tuning_heldout_seed777/    held-out tuning routes
+  tuning_heldout_seed888/    held-out tuning routes
+data/vessels/                vessel networks, by VMR model
+data/cfd/                    CFD field metadata (arrays regenerated locally)
+results/                     results reported in the paper
+docs/                        modeling assumptions, CFD workflow
+tests/
+```
+
+## Vessel models
+
+| Model | VMR ID | Folder |
+|---|---|---|
+| Abdominal aorta (aneurysm) | 0033_H_ABAO_AAA | `data/vessels/abdominal_0033_H_ABAO_AAA` |
+| Aortic root and cerebral arteries | 0248_H_AOCERE_CAS (model 40Left85Right) | `data/vessels/aortic_root_0248_H_AOCERE_CAS_40Left85Right` |
+| Pulmonary arteries | 0082_H_PULM_H | `data/vessels/pulmonary_0082_H_PULM_H` |
+| Thoracic aorta | 0024_H_AO_H | `data/vessels/aorta_0024_H_AO_H` |
+| Aortofemoral bypass | 0049_H_ABAO_AIOD | `data/vessels/aortofemoral_0049_H_ABAO_AIOD` |
+| Cerebral (held-out tuning only) | 0050_H_CERE_H | `data/vessels/cerebral_0050_H_CERE_H` |
+
+The vessel models are derived from the Vascular Model Repository; see the
+`LICENSE` files in their folders and cite N. M. Wilson, A. K. Ortiz and
+A. B. Johnson, *J. Med. Devices* 7(4), 040923 (2013).
+
+## Third-party code
+
+The constrained cross-entropy optimizer in
+`dynamag_simulation/core/constrained_cem_controller.py` adapts MIT-licensed
+code; see `THIRD_PARTY_NOTICES/`.

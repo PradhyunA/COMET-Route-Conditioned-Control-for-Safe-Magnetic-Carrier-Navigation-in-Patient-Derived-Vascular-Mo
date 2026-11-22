@@ -35,7 +35,7 @@ from dynamag_simulation.core.reporting import TrialResult, print_summary, save_r
 from dynamag_simulation.core.validation import check_low_re_validity, compute_reynolds
 from dynamag_simulation.core.workspace import WorkspaceVessel
 
-DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
+DEFAULT_VESSEL_FILE = "vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl"
 
 FIXED_PLACEMENT_RADIUS = 0.300
 FIXED_COIL_RADIUS = 0.070

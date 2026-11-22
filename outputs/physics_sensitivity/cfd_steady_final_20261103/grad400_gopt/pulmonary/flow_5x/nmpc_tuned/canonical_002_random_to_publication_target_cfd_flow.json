@@ -1,9 +1,0 @@
-{
-  "source_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/cfd/pulmonary_steady.npz",
-  "source_zip_sha256": "017f83caf8f783a800236e46d8ad57625e0e2d6a97b05bf2412f6e3926172e40",
-  "velocity_multiplier": 5.0,
-  "flow_mode": "steady",
-  "interpolation": "8-neighbour inverse-distance-squared",
-  "queries": 3506,
-  "max_nearest_sample_distance_m": 0.0005265308648271377
-}

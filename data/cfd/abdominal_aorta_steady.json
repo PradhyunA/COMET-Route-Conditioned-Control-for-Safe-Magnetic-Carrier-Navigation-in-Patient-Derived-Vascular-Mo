@@ -2,7 +2,7 @@
   "schema_version": 1,
   "source_zip": "/Users/amrit/Downloads/AbdominalAortaCFD-Incompressible-Run_4.zip",
   "source_sha256": "00f8c303ee1c0e358fc5cf6a81f4826ea75f90f06426ee9e40be93ba1aae95ab",
-  "vessel_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/real_vessel_segments_cm_corrected.pkl",
+  "vessel_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl",
   "vessel_sha256": "83539652156dc5c332e150ceb1b93025d087291bb832281928b214500f6dd5f7",
   "solver_iteration": "1000",
   "flow_mode": "steady",

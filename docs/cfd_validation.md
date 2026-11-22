@@ -5,7 +5,7 @@ anatomies. No coordinate or velocity rescaling was applied. The abdominal mesh
 spans 165.05 × 124.44 × 405.76 mm; pulmonary spans 147.83 × 118.20 × 186.30 mm.
 Both have finite flow arrays, inward inlet vectors, positive computed cell
 volumes, and excellent final mass balance. Source audits are in
-`outputs/cfd_export_audit_run4_20261005/audit.json`.
+the JSON files in `data/cfd/`.
 
 ## Environment
 
@@ -30,12 +30,12 @@ Both fields are already imported locally. To regenerate them:
 ```bash
 .venv-cfd/bin/python scripts/import_simscale_flow.py \
   --zip "$HOME/Downloads/AbdominalAortaCFD-Incompressible-Run_4.zip" \
-  --vessel-file data/real_vessel_segments_cm_corrected.pkl \
+  --vessel-file data/vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl \
   --output data/cfd/abdominal_aorta_steady.npz
 
 .venv-cfd/bin/python scripts/import_simscale_flow.py \
   --zip "$HOME/Downloads/PulmonaryArteryCFD-Incompressible-Run_4.zip" \
-  --vessel-file data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments_cm_corrected.pkl \
+  --vessel-file data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments.pkl \
   --output data/cfd/pulmonary_steady.npz
 ```
 
@@ -55,73 +55,24 @@ an explicit error. This bounds local extrapolation but does not implement exact
 polyhedral fluid-domain membership. There is no fallback to analytical flow.
 The field is steady and adds no artificial pulsation.
 
-## Run abdominal COMET at 1×: five cases
+## Run the paper's CFD study
+
+The paper's steady-CFD study (abdominal and pulmonary models, five
+controllers, flow multipliers 1, 3 and 5; 30 cases per controller) uses the
+benchmark runner with `CFD=1`, which keeps only the anatomies that have an
+imported field:
 
 ```bash
-./run_comet_cfd_abdominal_1x.sh
+CFD=1 PYTHON_BIN=.venv-cfd/bin/python \
+  CONTROLLERS=comet_v4,nmpc_tuned,nmpc_default,mpc_tuned,acbc_tuned \
+  RUN_ID=cfd_steady ./run_physics_sensitivity_sweep.sh
 ```
 
-This runs the five frozen abdominal routes using the supplied CFD velocities
-at multiplier 1.0. It uses the benchmark settings described below and writes
-results under `outputs/comet_cfd_abdominal_1x/<run_id>`. The script verifies
-five distinct cases, CFD provenance, and a velocity multiplier of exactly 1.0.
-For a short execution check, use
-`STEPS=2 WORKERS=2 ./run_comet_cfd_abdominal_1x.sh`.
-
-## Run both anatomies and four controllers at 1×: 40 cases
-
-```bash
-./run_cfd_abdominal_pulmonary_1x.sh
-```
-
-This runs five frozen abdominal and five frozen pulmonary routes with COMET,
-tuned constrained CEM-MPC (`constrained_cem_mpc_tuned_recovery`), tuned ACBC,
-and tuned MPC. It preserves the existing controller settings and the same
-500 µm carrier, dt, 2,000-step budget, hardware, and target tolerance used below.
-All actual particle motion and predictive flow sampling use each anatomy's
-imported CFD field at multiplier 1.0. CEM's vectorized rollouts sample CFD
-directly, preserving its bounded support check and steady vector directions.
-Stagnation early stopping is disabled.
-
-Results are written to `outputs/cfd_1x_four_controllers/<run_id>/abdominal` and
-`pulmonary`, with a combined 40-row CSV and summary JSON at the parent level.
-The script verifies case counts, frozen coordinates, finite trajectories, and
-CFD provenance. Use `STEPS=2 WORKERS=2` for an execution smoke check. Supported
-overrides are `PYTHON_BIN`, `WORKERS`, `STEPS`, `SEED`, `RUN_ID`, and `OUTPUT_ROOT`.
-
-## Run abdominal COMET: 15 sensitivity cases
-
-```bash
-./run_comet_cfd_abdominal_15trials.sh
-```
-
-This runs five frozen routes from
-`benchmark_manifests/icem_45case_500um/cm_corrected.csv` at velocity multipliers
-1, 3, and 5. It preserves the 500 µm carrier, 0.02 s integration step, 2,000-step
-budget, 0.5 mm target tolerance, 0.7 mm centre-to-wall clearance criterion,
-moving adaptive gantry, seed 20260611, and COMET settings. Stagnation early
-stopping is disabled. Normal termination on success or physical failure remains
-active. Four trial processes are used by default; each numerical worker is
-single-threaded. Source field arrays and spatial indices are reused within a
-worker process.
-
-Overrides:
-
-```bash
-WORKERS=6 ./run_comet_cfd_abdominal_15trials.sh
-STEPS=2 WORKERS=2 ./run_comet_cfd_abdominal_15trials.sh  # plumbing smoke test
-```
-
-Other supported environment variables are `PYTHON_BIN`, `CFD_FILE`, `SEED`,
-`RUN_ID`, and `OUTPUT_ROOT`. Each run gets a fresh timestamped directory under
-`outputs/comet_cfd_abdominal`. Reusing an existing run ID is rejected to preserve
-results. The script checks that all 15 distinct cases were recorded.
+The results reported in the paper are in `results/cfd_steady/`.
 
 The publication runner also accepts `--cfd-file` directly. Its CFD mode supports
 COMET, CEM-MPC, ACBC, and MPC variants. CEM's batched flow model samples the CFD
 field when present, while retaining analytical behavior for ordinary runs.
-`run_publication_benchmark_cfd.py` now calls
-the actual publication runner and requires an explicit CFD file.
 
 CFD midpoint vectors replace analytical segment flow in graph costs. Adverse
 flow can exceed estimated COMET authority on the fixed routes. In CFD mode,
@@ -146,9 +97,6 @@ semantics. Each trial JSON/NPZ records CFD source provenance and query statistic
   iteration, not a physical cardiac time. No residual histories or mesh
   independence evidence were supplied, so final momentum convergence and mesh
   independence are not certified.
-- The previously supplied VTU matches the 0050 cerebral anatomy and has unknown
-  declared units and snapshot time. It cannot substitute for 40Left85Right in
-  the current 45-case protocol. The matching aortic-root export remains needed.
 
 ## Verification performed
 
@@ -161,5 +109,4 @@ semantics. Each trial JSON/NPZ records CFD source provenance and query statistic
   the full validation benchmark.
 - A 100-step 5× inlet-to-outlet pilot completed without import/query errors.
   COMET stalled near a wall and did not reach the target in that short budget.
-  This is a performance finding, not evidence of full-benchmark success. Its
-  output is in `outputs/cfd_smoke_run4/pilot_flow5_100steps`.
+  This is a performance finding, not evidence of full-benchmark success.

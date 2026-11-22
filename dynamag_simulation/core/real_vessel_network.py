@@ -115,7 +115,7 @@ class RealVesselNetwork:
 
     def __init__(
         self,
-        pkl_file="real_vessel_segments.pkl",
+        pkl_file="vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl",
         connection_tol=1e-6,
         flow_scale=1.0,
     ):

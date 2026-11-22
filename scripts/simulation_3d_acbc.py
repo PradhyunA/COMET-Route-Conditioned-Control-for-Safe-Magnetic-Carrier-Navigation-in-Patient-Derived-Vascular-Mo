@@ -55,7 +55,7 @@ from dynamag_simulation.core.workspace import WorkspaceVessel
 from dynamag_simulation.core.acbc_controller import ACBCController
 
 
-DEFAULT_VESSEL_FILE = "real_vessel_segments_cm_corrected.pkl"
+DEFAULT_VESSEL_FILE = "vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl"
 
 # ----------------------------------------------------------------------
 # Hardware-constrained body-scale scanner parameters

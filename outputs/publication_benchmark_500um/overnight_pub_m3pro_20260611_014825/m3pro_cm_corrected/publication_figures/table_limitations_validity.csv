@@ -1,7 +1,0 @@
-item,assumption
-Carrier type,"1 mm magnetic carrier, not nanoparticles"
-Drag,Schiller-Naumann finite-Re drag; valid target Re <= 800
-Hydrodynamics,"No added mass, history force, rolling/sliding, or near-wall correction"
-Blood,Newtonian viscosity approximation
-Magnetics,"Regularized dipole model, not FEM-calibrated hardware"
-Safety,Simulation benchmark only; no human/animal/device validation

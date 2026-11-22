@@ -1,7 +1,0 @@
-controller,n,success_rate,median_final_error_mm,median_sim_time_s,median_min_wall_clearance_mm,finite_re_drag_valid_rate
-COMET,6,1.0,0.17755954642692023,2.25,0.7631439861392448,1.0
-COMET-no-authority-reserve,6,1.0,0.17755954642692023,2.25,0.7631439861392448,1.0
-COMET-no-commitment-memory,6,1.0,0.17755954642692023,2.25,0.7631439861392448,1.0
-COMET-no-downstream-value,6,1.0,0.17755954642692023,2.25,0.7631439861392448,1.0
-COMET-no-flow-scaled-reserve,6,1.0,0.11601599305096721,2.23,0.760894412243051,1.0
-COMET-no-terminal-precision-servo,6,1.0,0.24229668278961064,2.2600000000000002,0.7631439861392448,1.0
