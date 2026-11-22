@@ -105,8 +105,10 @@ ACTUATOR_PRESETS = {
         "core_relative_permeability": 2.0,
         "ampere_turn_scale": 21.8,
     },
-    # Sensitivity levels around the 400 mT/m preset. 300 mT/m is the peak of
-    # published human head-gradient systems; 600 mT/m is hypothetical.
+    # Sensitivity levels around the 400 mT/m preset. For scale: Navion
+    # (electromagnets, human-scale) 250 mT/m, Siemens Cima.X (whole-body MRI)
+    # 200 mT/m, Connectome 2.0 (head-only MRI coil) 500 mT/m. 600 mT/m is
+    # beyond any human-scale system and is hypothetical.
     "high_gradient_300": {
         "core_relative_permeability": 2.0,
         "ampere_turn_scale": 16.35,
@@ -324,6 +326,25 @@ CONTROLLER_VARIANTS = {
         kwargs={"safety_escape_candidates": True, "visible_lookahead": True, "safety_filter_margin": 5e-5,
                 "route_fold_shortcut": True, "visible_axis_high_flow": True},
     ),
+    # Mechanism ablations of comet_v4: each removes one component and keeps
+    # everything else, for the journal ablation table.
+    **{
+        f"comet_v4_{name}": ControllerVariant(
+            label=f"COMET-v4-{name.replace('_', '-')}",
+            kind="comet",
+            kwargs={"safety_escape_candidates": True, "visible_lookahead": True, "safety_filter_margin": 5e-5,
+                    "route_fold_shortcut": True, "visible_axis_high_flow": True, **extra},
+        )
+        for name, extra in {
+            "no_polyline": {"ablate_polyline_tracking": True},
+            "no_terminal_precision": {"ablate_terminal_precision": True},
+            "no_branch_shaping": {"ablate_branch_conditioned_motion_shaping": True},
+            "no_flow_compensation": {"ablate_flow_compensation": True},
+            "slsqp_allocator": {"allocator": "slsqp"},
+            "loc_noise_100um": {"comet_localization_noise_std_m": 100e-6},
+            "loc_noise_200um": {"comet_localization_noise_std_m": 200e-6},
+        }.items()
+    },
     "comet_gravity_buffered": ControllerVariant(
         label="COMET-gravity-aware-safety-0.1mm-buffer",
         kind="comet",

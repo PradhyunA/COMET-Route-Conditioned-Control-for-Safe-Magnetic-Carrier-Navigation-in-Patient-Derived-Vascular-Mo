@@ -1,0 +1,206 @@
+{
+  "run_id": "pulmonary",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 4,
+  "n_pairs": 2,
+  "seed_records": [
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0001",
+      "seed": 25260614,
+      "start": [
+        -0.07723714495440974,
+        -0.024180459226023878,
+        0.08025733094823245
+      ],
+      "target": [
+        0.03533189866959082,
+        -0.016774626188791098,
+        0.08501711940404257
+      ],
+      "route_length_m": 0.1636007723589873,
+      "route_min_clearance_m": 0.0017976675760080236,
+      "route_min_authority_reserve_m_s": -0.36054195566564234
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0002",
+      "seed": 25260615,
+      "start": [
+        -0.04598092471498247,
+        -0.014040532162439194,
+        0.054960989281393494
+      ],
+      "target": [
+        -0.0499406345944511,
+        -0.0321782901938478,
+        0.04312938198749193
+      ],
+      "route_length_m": 0.025521656668134992,
+      "route_min_clearance_m": 0.002197538346720068,
+      "route_min_authority_reserve_m_s": 0.18
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 5.0,
+      "controller_key": "acbc_tuned",
+      "n": 2,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.0,
+      "median_final_error_mm": 69.8917357184257,
+      "median_sim_time_s": 4.04,
+      "median_steps_to_target": 202.0,
+      "early_stop_count": 2,
+      "early_stop_rate": 1.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 0.0,
+      "median_wall_time_s": 62804.418070916,
+      "median_avg_control_step_time_s": 308.0183798508298,
+      "median_path_efficiency": 0.7397712218174821,
+      "median_current_rms_A": 11.956334459517425,
+      "median_energy_proxy_A2s": 5198.911044853308,
+      "median_min_wall_clearance_mm": -0.10025463326733595,
+      "median_min_clearance_margin_mm": -0.8002546332673359,
+      "median_safety_violation_fraction": 0.978000242688994,
+      "wall_exit_rate": 0.5,
+      "median_max_wall_intrusion_mm": 0.11857165706112799,
+      "clearance_target_met_rate": 0.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 2.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "mpc_tuned",
+      "n": 2,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.0,
+      "median_final_error_mm": 63.72677426689428,
+      "median_sim_time_s": 4.33,
+      "median_steps_to_target": 216.5,
+      "early_stop_count": 2,
+      "early_stop_rate": 1.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 0.9610429851118346,
+      "median_wall_time_s": 44967.6064631035,
+      "median_avg_control_step_time_s": 224.3412666069806,
+      "median_path_efficiency": 0.5749508922832566,
+      "median_current_rms_A": 9.233422551536773,
+      "median_energy_proxy_A2s": 3402.263939267473,
+      "median_min_wall_clearance_mm": -0.4319921767462602,
+      "median_min_clearance_margin_mm": -1.1319921767462604,
+      "median_safety_violation_fraction": 0.9846919249904325,
+      "wall_exit_rate": 0.5,
+      "median_max_wall_intrusion_mm": 0.45030920054005164,
+      "clearance_target_met_rate": 0.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    }
+  ],
+  "paired_statistics": [
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "reached_target",
+      "n_pairs": 2,
+      "median_paired_difference": 0.0,
+      "mean_paired_difference": 0.0,
+      "wilcoxon_p_value": null
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "steps_taken",
+      "n_pairs": 2,
+      "median_paired_difference": -14.5,
+      "mean_paired_difference": -14.5,
+      "wilcoxon_p_value": 1.0
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "sim_time_s",
+      "n_pairs": 2,
+      "median_paired_difference": -0.29000000000000004,
+      "mean_paired_difference": -0.29000000000000004,
+      "wilcoxon_p_value": 1.0
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "wall_time_s",
+      "n_pairs": 2,
+      "median_paired_difference": 17836.811607812502,
+      "mean_paired_difference": 17836.811607812502,
+      "wilcoxon_p_value": 1.0
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "avg_control_step_time_s",
+      "n_pairs": 2,
+      "median_paired_difference": 83.67711324384916,
+      "mean_paired_difference": 83.67711324384916,
+      "wilcoxon_p_value": 1.0
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "path_efficiency",
+      "n_pairs": 2,
+      "median_paired_difference": 0.16482032953422565,
+      "mean_paired_difference": 0.16482032953422565,
+      "wilcoxon_p_value": 1.0
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "current_rms_A",
+      "n_pairs": 2,
+      "median_paired_difference": 2.7229119079806514,
+      "mean_paired_difference": 2.7229119079806514,
+      "wilcoxon_p_value": 0.5
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "energy_proxy_A2s",
+      "n_pairs": 2,
+      "median_paired_difference": 1796.647105585836,
+      "mean_paired_difference": 1796.647105585836,
+      "wilcoxon_p_value": 0.5
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "min_wall_clearance_mm",
+      "n_pairs": 2,
+      "median_paired_difference": 0.3317375434789243,
+      "mean_paired_difference": 0.3317375434789243,
+      "wilcoxon_p_value": 0.5
+    },
+    {
+      "flow_scale": 5.0,
+      "baseline": "mpc_tuned",
+      "comparator": "acbc_tuned",
+      "metric": "min_surface_clearance_mm",
+      "n_pairs": 2,
+      "median_paired_difference": 0.3317375434789243,
+      "mean_paired_difference": 0.3317375434789243,
+      "wilcoxon_p_value": 0.5
+    }
+  ]
+}
