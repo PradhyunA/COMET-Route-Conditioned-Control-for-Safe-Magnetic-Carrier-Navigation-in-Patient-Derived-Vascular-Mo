@@ -252,7 +252,7 @@ def import_case(zip_path, vessel_file, output, time_name=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--zip", required=True, dest="zip_path")
-    parser.add_argument("--vessel-file", default="data/real_vessel_segments_cm_corrected.pkl")
+    parser.add_argument("--vessel-file", default="data/vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl")
     parser.add_argument("--output", default="data/cfd/abdominal_aorta_steady.npz")
     parser.add_argument("--time", dest="time_name")
     import_case(**vars(parser.parse_args()))

@@ -1,5 +1,0 @@
-controller,n,success_rate,median_final_error_mm,median_sim_time_s,median_min_wall_clearance_mm,finite_re_drag_valid_rate
-ACBC-same-weights,39,1.0,0.2659298953778606,1.0,0.35302455862788173,1.0
-ACBC-tuned,39,1.0,0.1868156020264501,0.98,0.245372685604376,1.0
-MPC-default,39,1.0,1.7485976515369852,2.18,1.833944155185664,1.0
-MPC-tuned,39,1.0,1.8317843893207282,2.22,1.8340054790479932,1.0

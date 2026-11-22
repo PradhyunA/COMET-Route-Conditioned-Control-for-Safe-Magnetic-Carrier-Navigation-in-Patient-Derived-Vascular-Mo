@@ -1,3 +1,0 @@
-controller,n,success_rate,median_final_error_mm,median_sim_time_s,median_min_wall_clearance_mm,finite_re_drag_valid_rate
-ACBC-tuned,15,0.8666666666666667,0.013476686448240975,2.64,0.6433009176356709,1.0
-MPC-tuned,15,0.9333333333333333,0.06039013278478386,1.28,0.8596051079170025,1.0

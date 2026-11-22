@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
-# Physics sensitivity sweep: far-field core gain x gravity on the frozen
-# benchmark manifest (3 or 5 anatomies x 5 routes x 1/3/5 flow).
+# Benchmark runner for the COMET paper: runs the frozen five-anatomy,
+# 75-case manifest (5 routes x 3 flow scales per anatomy) for each
+# controller and condition, one process per anatomy.
+#
+# The defaults reproduce the main benchmark (400 mT/m array, gravity,
+# optimized patient positioning, shared-route protocol) for COMET:
+#   ./run_physics_sensitivity_sweep.sh
+# Baselines:      CONTROLLERS=nmpc_tuned,nmpc_default,mpc_tuned,acbc_tuned
+# 300/600 mT/m:   ACTUATOR=high_gradient_300 CONDITIONS=grad300_gopt:preset:3542:optimized
+# Replicates:     SEED=101 START_JITTER_MM=0.25
+# Steady CFD:     CFD=1 PYTHON_BIN=.venv-cfd/bin/python (needs data/cfd/*.npz)
 #
 # Conditions are "name:mu_r:density:gravity_dir". mu_r "preset" keeps the
 # actuator preset's core gain, density "none" disables gravity and
-# gravity_dir "optimized" picks a table orientation per route. The paper
-# used mu_r=70 with no gravity.
+# gravity_dir "optimized" picks a table orientation per route.
 #
-# Overrides: ACTUATOR (paper | navion_calibrated | high_gradient_400), PROTOCOL (paper | shared_route), ANATOMY_SET, CONTROLLERS, CONDITIONS,
-# FLOWS, WORKERS, PARALLEL, STEPS, RUN_ID, SEED, START_JITTER_MM (replicates),
-# OUTPUT_ROOT, PYTHON_BIN, EARLY_STOP_FLAG (set to --disable-early-stop to
-# turn stagnation early stopping off), CFD (set to 1 to run only the anatomies
-# with a steady SimScale field, under that field; needs
-# PYTHON_BIN=.venv-cfd/bin/python).
+# Overrides: ACTUATOR, PROTOCOL (paper | shared_route), CONTROLLERS, CONDITIONS,
+# FLOWS, WORKERS, PARALLEL, STEPS, RUN_ID, SEED, START_JITTER_MM, OUTPUT_ROOT,
+# PYTHON_BIN, EARLY_STOP_FLAG (--disable-early-stop), CFD, ONLY_ANATOMY.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,15 +29,15 @@ export MPLCONFIGDIR="${MPLCONFIGDIR:-${TMPDIR:-/tmp}/dynamag_matplotlib}"
 mkdir -p "$MPLCONFIGDIR"
 
 PYTHON_BIN="${PYTHON_BIN:-$ROOT_DIR/.venv/bin/python}"
-ACTUATOR="${ACTUATOR:-paper}"
-CONTROLLERS="${CONTROLLERS:-comet}"
-CONDITIONS="${CONDITIONS:-mu70_nog:70:none:0,-1,0 mu70_gneg_y:70:3542:0,-1,0 mu70_gpos_y:70:3542:0,1,0 mu7_nog:7:none:0,-1,0 mu7_gneg_y:7:3542:0,-1,0 mu2_nog:2:none:0,-1,0 mu2_gneg_y:2:3542:0,-1,0}"
+ACTUATOR="${ACTUATOR:-high_gradient_400}"
+CONTROLLERS="${CONTROLLERS:-comet_v4}"
+CONDITIONS="${CONDITIONS:-grad400_gopt:preset:3542:optimized}"
 FLOWS="${FLOWS:-1,3,5}"
 WORKERS="${WORKERS:-5}"
 PARALLEL="${PARALLEL:-2}"
 STEPS="${STEPS:-2000}"
 EARLY_STOP_FLAG="${EARLY_STOP_FLAG:-}"
-PROTOCOL="${PROTOCOL:-paper}"
+PROTOCOL="${PROTOCOL:-shared_route}"
 SEED="${SEED:-20260611}"
 START_JITTER_MM="${START_JITTER_MM:-0}"
 CFD="${CFD:-0}"
@@ -47,23 +52,18 @@ fi
 mkdir -p "$RUN_DIR"
 
 ROUTES=canonical_002_random_to_publication_target,canonical_003_publication_start_to_random,random_0001,random_0002
-# ANATOMY_SET=three keeps the frozen 45-case manifest; five adds the VMR
-# 0024 thoracic aorta and 0049 aortofemoral models (75 cases). ONLY_ANATOMY
-# limits a run to one label.
-ANATOMY_SET="${ANATOMY_SET:-three}"
-MANIFESTS=benchmark_manifests/icem_45case_500um
+# The five-anatomy, 75-case benchmark manifest used in the paper.
+# ONLY_ANATOMY limits a run to one label.
+MANIFESTS=benchmark_manifests/five_anatomy_500um
 ANATOMIES=(
-  "abdominal|data/real_vessel_segments_cm_corrected.pkl|cm_corrected.csv|canonical_001_inlet_to_outlet"
-  "aortic_root|data/vessels/aortic_root_cerebral_40Left85Right/real_vessel_segments.pkl|40Left85Right.csv|canonical_001_medium_40Left85Right_endpoint03"
-  "pulmonary|data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments_cm_corrected.pkl|pulmonary_0082_H_PULM_H.csv|canonical_001_inlet_to_outlet"
+  "abdominal|data/vessels/abdominal_0033_H_ABAO_AAA/real_vessel_segments.pkl|cm_corrected.csv|canonical_001_inlet_to_outlet"
+  "aortic_root|data/vessels/aortic_root_0248_H_AOCERE_CAS_40Left85Right/real_vessel_segments.pkl|40Left85Right.csv|canonical_001_medium_40Left85Right_endpoint03"
+  "pulmonary|data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments.pkl|pulmonary_0082_H_PULM_H.csv|canonical_001_inlet_to_outlet"
 )
-if [[ "$ANATOMY_SET" == "five" ]]; then
-  MANIFESTS=benchmark_manifests/five_anatomy_500um
-  ANATOMIES+=(
-    "thoracic_aorta|data/vessels/aorta_0024_H_AO_H/real_vessel_segments.pkl|0024_H_AO_H.csv|canonical_001_root_to_rcca_0024"
-    "aortofemoral|data/vessels/aortofemoral_0049_H_ABAO_AIOD/real_vessel_segments.pkl|0049_H_ABAO_AIOD.csv|canonical_001_aorta_to_femoral_0049"
-  )
-fi
+ANATOMIES+=(
+  "thoracic_aorta|data/vessels/aorta_0024_H_AO_H/real_vessel_segments.pkl|0024_H_AO_H.csv|canonical_001_root_to_rcca_0024"
+  "aortofemoral|data/vessels/aortofemoral_0049_H_ABAO_AIOD/real_vessel_segments.pkl|0049_H_ABAO_AIOD.csv|canonical_001_aorta_to_femoral_0049"
+)
 
 JOBS="$RUN_DIR/jobs.txt"
 : > "$JOBS"

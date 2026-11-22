@@ -2,7 +2,7 @@
   "schema_version": 1,
   "source_zip": "/Users/amrit/Downloads/PulmonaryArteryCFD-Incompressible-Run_4.zip",
   "source_sha256": "017f83caf8f783a800236e46d8ad57625e0e2d6a97b05bf2412f6e3926172e40",
-  "vessel_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments_cm_corrected.pkl",
+  "vessel_file": "/Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments.pkl",
   "vessel_sha256": "83461e1019af75eeabc96d5f32e4dcfa215ce6759396b69a93523badf91e585b",
   "solver_iteration": "1000",
   "flow_mode": "steady",
