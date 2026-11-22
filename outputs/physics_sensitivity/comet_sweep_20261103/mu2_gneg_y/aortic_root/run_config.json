@@ -1,0 +1,102 @@
+{
+  "run_id": "aortic_root",
+  "vessel_file": "data/vessels/aortic_root_cerebral_40Left85Right/real_vessel_segments.pkl",
+  "flow_model": "analytical_poiseuille",
+  "cfd_file": null,
+  "cfd_metadata": null,
+  "flow_scale_semantics": "Multiplier of analytical mean velocity",
+  "route_authority_filter_enabled": true,
+  "flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 0,
+  "seed": 20260611,
+  "controller_keys": [
+    "comet"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 5,
+  "rerun_mode_enabled": true,
+  "rerun_from_csv": "benchmark_manifests/icem_45case_500um/40Left85Right.csv",
+  "rerun_pair_ids": [
+    "canonical_001_medium_40Left85Right_endpoint03",
+    "canonical_002_random_to_publication_target",
+    "canonical_003_publication_start_to_random",
+    "random_0001",
+    "random_0002"
+  ],
+  "rerun_flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "rerun_coordinate_source": "paired_results_csv",
+  "early_stopping": {
+    "enabled_controller_kinds": [
+      "mpc",
+      "cem_mpc",
+      "acbc",
+      "comet"
+    ],
+    "excluded_controller_kinds": [
+      "pid",
+      "smc_dob_inspired"
+    ],
+    "enabled": true,
+    "window_steps": 200,
+    "improvement_threshold_m": 0.002,
+    "improvement_threshold_mm": 2.0
+  },
+  "software": {
+    "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 11,
+    "numpy": "1.26.4"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45,
+    "particle_density_kg_m3": 3542.0,
+    "gravity_m_s2": [
+      0.0,
+      -9.80665,
+      0.0
+    ]
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 2000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 2.0,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet": {
+      "label": "COMET",
+      "kind": "comet",
+      "kwargs": {}
+    }
+  },
+  "git": {
+    "commit": "8eace6331c76517b2a2a83d6de37ca1ad6dc0a62",
+    "branch": "cfd-vtu-integration",
+    "status_short": "M dynamag_simulation/core/acbc_controller.py\n M dynamag_simulation/core/cem_mpc_controller.py\n M dynamag_simulation/core/comet_controller.py\n M dynamag_simulation/core/constants.py\n M dynamag_simulation/core/controllers.py\n M dynamag_simulation/core/integrator.py\n M dynamag_simulation/core/particle.py\n M dynamag_simulation/core/profiles.py\n M scripts/run_publication_benchmark.py\n M tests/test_carrier_physics.py\n?? outputs/physics_sensitivity/\n?? run_physics_sensitivity_sweep.sh\n?? scripts/estimate_core_gain.py\n?? scripts/summarize_physics_sweep.py"
+  }
+}

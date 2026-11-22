@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<format version="1.0" />
+<contourgroup path_name="left_renal_br2" path_id="162" reslice_size="5" point_2D_display_size="" point_size="">
+    <timestep id="0">
+        <lofting_parameters method="nurbs" sampling="60" sample_per_seg="12" use_linear_sample="1" linear_multiplier="10" use_fft="0" num_modes="20" u_degree="2" v_degree="2" u_knot_type="derivative" v_knot_type="average" u_parametric_type="centripetal" v_parametric_type="chord" />
+        <contour id="0" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="4">
+                <pos x="-3.797062" y="-0.414788" z="4.21239" />
+                <tangent x="-0.583605" y="-0.690035" z="0.428086" />
+                <rotation x="0" y="0.527175" z="0.849757" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-3.7516940581554" y="-0.412159092285687" z="4.278477178825072" />
+                <point id="1" x="-3.72158758658757" y="-0.382052620717864" z="4.368049849848282" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-3.58904" y="-0.540251" z="4.29374" />
+                <point id="1" x="-3.60595" y="-0.556015" z="4.24529" />
+                <point id="2" x="-3.63415" y="-0.560951" z="4.19889" />
+                <point id="3" x="-3.67138" y="-0.554937" z="4.15783" />
+                <point id="4" x="-3.71462" y="-0.53864" z="4.12514" />
+                <point id="5" x="-3.76039" y="-0.513397" z="4.10344" />
+                <point id="6" x="-3.80507" y="-0.481086" z="4.0946" />
+                <point id="7" x="-3.84528" y="-0.443978" z="4.09961" />
+                <point id="8" x="-3.87808" y="-0.404611" z="4.11834" />
+                <point id="9" x="-3.90126" y="-0.365657" z="4.14954" />
+                <point id="10" x="-3.91336" y="-0.329805" z="4.19083" />
+                <point id="11" x="-3.91376" y="-0.299611" z="4.23896" />
+                <point id="12" x="-3.90261" y="-0.277344" z="4.29005" />
+                <point id="13" x="-3.88079" y="-0.264807" z="4.34" />
+                <point id="14" x="-3.84981" y="-0.263161" z="4.38488" />
+                <point id="15" x="-3.81175" y="-0.272769" z="4.42129" />
+                <point id="16" x="-3.76914" y="-0.293098" z="4.4466" />
+                <point id="17" x="-3.7249" y="-0.322713" z="4.45918" />
+                <point id="18" x="-3.68214" y="-0.359354" z="4.45841" />
+                <point id="19" x="-3.64404" y="-0.400127" z="4.44464" />
+                <point id="20" x="-3.61355" y="-0.441768" z="4.41909" />
+                <point id="21" x="-3.59318" y="-0.480957" z="4.38369" />
+                <point id="22" x="-3.58472" y="-0.51463" z="4.34094" />
+            </contour_points>
+        </contour>
+        <contour id="1" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="9">
+                <pos x="-3.950412" y="-0.440315" z="4.490417" />
+                <tangent x="-0.404225" y="0.137679" z="0.904238" />
+                <rotation x="0" y="0.988606" z="-0.150525" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-4.00539352279803" y="-0.401806142234994" z="4.459975050998436" />
+                <point id="1" x="-3.93323809617552" y="-0.329650715612483" z="4.48124460651869" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-4.11656" y="-0.233341" z="4.38463" />
+                <point id="1" x="-4.16085" y="-0.281483" z="4.37216" />
+                <point id="2" x="-4.18961" y="-0.342354" z="4.36857" />
+                <point id="3" x="-4.20058" y="-0.410015" z="4.37397" />
+                <point id="4" x="-4.19318" y="-0.477492" z="4.38755" />
+                <point id="5" x="-4.16832" y="-0.537593" z="4.40782" />
+                <point id="6" x="-4.12828" y="-0.583834" z="4.43276" />
+                <point id="7" x="-4.07653" y="-0.611307" z="4.46007" />
+                <point id="8" x="-4.01758" y="-0.617301" z="4.48734" />
+                <point id="9" x="-3.95669" y="-0.601581" z="4.51216" />
+                <point id="10" x="-3.89965" y="-0.566274" z="4.53229" />
+                <point id="11" x="-3.85219" y="-0.515435" z="4.54576" />
+                <point id="12" x="-3.81941" y="-0.454424" z="4.55113" />
+                <point id="13" x="-3.80508" y="-0.389234" z="4.54761" />
+                <point id="14" x="-3.81109" y="-0.325894" z="4.53528" />
+                <point id="15" x="-3.83704" y="-0.270017" z="4.51517" />
+                <point id="16" x="-3.88025" y="-0.226472" z="4.48922" />
+                <point id="17" x="-3.93602" y="-0.19914" z="4.46013" />
+                <point id="18" x="-3.99834" y="-0.190675" z="4.43098" />
+                <point id="19" x="-4.06062" y="-0.202257" z="4.4049" />
+            </contour_points>
+        </contour>
+        <contour id="2" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="15">
+                <pos x="-4.321629" y="-0.335546" z="5.043322" />
+                <tangent x="-0.885885" y="0.046584" z="0.461561" />
+                <rotation x="0" y="0.994945" z="-0.100417" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-4.30571476319422" y="-0.316443083701153" z="5.071938571635059" />
+                <point id="1" x="-4.26560503348436" y="-0.276333353991295" z="5.144873971842645" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-4.23537" y="-0.191631" z="5.19436" />
+                <point id="1" x="-4.25772" y="-0.143627" z="5.1466" />
+                <point id="2" x="-4.28634" y="-0.118976" z="5.0892" />
+                <point id="3" x="-4.31742" y="-0.121287" z="5.02977" />
+                <point id="4" x="-4.34694" y="-0.150376" z="4.97606" />
+                <point id="5" x="-4.37104" y="-0.202221" z="4.93503" />
+                <point id="6" x="-4.38655" y="-0.269556" z="4.91206" />
+                <point id="7" x="-4.39131" y="-0.34299" z="4.91033" />
+                <point id="8" x="-4.38455" y="-0.412431" z="4.93032" />
+                <point id="9" x="-4.36701" y="-0.468537" z="4.96965" />
+                <point id="10" x="-4.34097" y="-0.503963" z="5.02319" />
+                <point id="11" x="-4.30998" y="-0.514227" z="5.08371" />
+                <point id="12" x="-4.27834" y="-0.498163" z="5.14282" />
+                <point id="13" x="-4.25048" y="-0.457957" z="5.19223" />
+                <point id="14" x="-4.23029" y="-0.39885" z="5.22501" />
+                <point id="15" x="-4.2205" y="-0.328522" z="5.23671" />
+                <point id="16" x="-4.22233" y="-0.256219" z="5.2259" />
+            </contour_points>
+        </contour>
+        <contour id="3" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="20">
+                <pos x="-4.724431" y="-0.380007" z="5.008171" />
+                <tangent x="-0.865198" y="-0.191185" z="-0.463553" />
+                <rotation x="0" y="0.92446" z="-0.381279" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-4.74695465480537" y="-0.389749624095519" z="5.05422844041774" />
+                <point id="1" x="-4.71774559032904" y="-0.360540559619197" z="4.987664403169161" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-4.82631" y="-0.331334" z="5.17825" />
+                <point id="1" x="-4.81355" y="-0.269097" z="5.12877" />
+                <point id="2" x="-4.78612" y="-0.233985" z="5.0631" />
+                <point id="3" x="-4.75009" y="-0.235095" z="4.99629" />
+                <point id="4" x="-4.71315" y="-0.272759" z="4.94289" />
+                <point id="5" x="-4.68341" y="-0.337965" z="4.91426" />
+                <point id="6" x="-4.66776" y="-0.41475" z="4.91672" />
+                <point id="7" x="-4.67028" y="-0.484745" z="4.9503" />
+                <point id="8" x="-4.69088" y="-0.532055" z="5.00825" />
+                <point id="9" x="-4.72485" y="-0.546777" z="5.07774" />
+                <point id="10" x="-4.764" y="-0.526465" z="5.14242" />
+                <point id="11" x="-4.79882" y="-0.475886" z="5.18656" />
+                <point id="12" x="-4.82119" y="-0.405832" z="5.19942" />
+            </contour_points>
+        </contour>
+        <contour id="4" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="26">
+                <pos x="-5.116405" y="-0.495043" z="4.683354" />
+                <tangent x="-0.612828" y="-0.283597" z="-0.737574" />
+                <rotation x="0" y="0.933382" z="-0.358884" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-5.10323886794321" y="-0.544139078636776" z="4.691292086534171" />
+                <point id="1" x="-5.05179784897991" y="-0.49269805967347" z="4.628772237103224" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-5.23946" y="-0.425019" z="4.75867" />
+                <point id="1" x="-5.25282" y="-0.470148" z="4.78713" />
+                <point id="2" x="-5.25407" y="-0.521282" z="4.80782" />
+                <point id="3" x="-5.24311" y="-0.574274" z="4.81909" />
+                <point id="4" x="-5.22082" y="-0.624822" z="4.82001" />
+                <point id="5" x="-5.18903" y="-0.668825" z="4.81051" />
+                <point id="6" x="-5.15028" y="-0.702712" z="4.79135" />
+                <point id="7" x="-5.10773" y="-0.72374" z="4.76408" />
+                <point id="8" x="-5.0648" y="-0.730209" z="4.7309" />
+                <point id="9" x="-5.02498" y="-0.721602" z="4.69451" />
+                <point id="10" x="-4.99149" y="-0.698624" z="4.65784" />
+                <point id="11" x="-4.96704" y="-0.663142" z="4.62388" />
+                <point id="12" x="-4.95362" y="-0.618033" z="4.59539" />
+                <point id="13" x="-4.95233" y="-0.566949" z="4.57468" />
+                <point id="14" x="-4.96327" y="-0.514023" z="4.56342" />
+                <point id="15" x="-4.98557" y="-0.463535" z="4.56253" />
+                <point id="16" x="-5.01741" y="-0.419567" z="4.57208" />
+                <point id="17" x="-5.0562" y="-0.385678" z="4.59128" />
+                <point id="18" x="-5.09881" y="-0.364613" z="4.61858" />
+                <point id="19" x="-5.14177" y="-0.358084" z="4.65177" />
+                <point id="20" x="-5.18159" y="-0.366626" z="4.68814" />
+                <point id="21" x="-5.21506" y="-0.389555" z="4.72476" />
+            </contour_points>
+        </contour>
+        <contour id="5" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="32">
+                <pos x="-5.304287" y="-0.68022" z="4.357598" />
+                <tangent x="-0.219575" y="-0.615269" z="-0.757121" />
+                <rotation x="0" y="0.77606" z="-0.630659" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-5.06043775858889" y="-0.700987676721544" z="4.303755233130632" />
+                <point id="1" x="-5.00487186753503" y="-0.645421785667685" z="4.242485170946426" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-5.26413" y="-0.684471" z="4.3494" />
+                <point id="1" x="-5.2512" y="-0.73217" z="4.38442" />
+                <point id="2" x="-5.22125" y="-0.777731" z="4.41276" />
+                <point id="3" x="-5.1774" y="-0.816932" z="4.4319" />
+                <point id="4" x="-5.12384" y="-0.845954" z="4.43995" />
+                <point id="5" x="-5.06542" y="-0.861843" z="4.43592" />
+                <point id="6" x="-5.00713" y="-0.862897" z="4.41987" />
+                <point id="7" x="-4.95377" y="-0.848921" z="4.39304" />
+                <point id="8" x="-4.90961" y="-0.82128" z="4.35777" />
+                <point id="9" x="-4.87821" y="-0.782734" z="4.31734" />
+                <point id="10" x="-4.86224" y="-0.737086" z="4.27561" />
+                <point id="11" x="-4.86322" y="-0.688715" z="4.23659" />
+                <point id="12" x="-4.88144" y="-0.642073" z="4.20397" />
+                <point id="13" x="-4.91572" y="-0.601237" z="4.18072" />
+                <point id="14" x="-4.96342" y="-0.569569" z="4.16882" />
+                <point id="15" x="-5.02051" y="-0.549512" z="4.16908" />
+                <point id="16" x="-5.08184" y="-0.542497" z="4.18117" />
+                <point id="17" x="-5.14168" y="-0.548944" z="4.20376" />
+                <point id="18" x="-5.19425" y="-0.568293" z="4.23473" />
+                <point id="19" x="-5.23445" y="-0.599046" z="4.27138" />
+                <point id="20" x="-5.25846" y="-0.638828" z="4.31067" />
+            </contour_points>
+        </contour>
+        <contour id="6" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="44">
+                <pos x="-5.230741" y="-1.144935" z="3.914058" />
+                <tangent x="0.323634" y="-0.670244" z="-0.667858" />
+                <rotation x="0" y="0.705844" z="-0.708367" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-5.17346216965606" y="-1.06878382726915" z="3.865391233058496" />
+                <point id="1" x="-5.10987496216155" y="-1.00519661977464" z="3.832390262807829" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-5.16391" y="-0.928876" z="3.72961" />
+                <point id="1" x="-5.09245" y="-0.928184" z="3.76355" />
+                <point id="2" x="-5.0327" y="-0.948077" z="3.81246" />
+                <point id="3" x="-4.99454" y="-0.985598" z="3.86861" />
+                <point id="4" x="-4.98447" y="-1.03555" z="3.92362" />
+                <point id="5" x="-5.00421" y="-1.09097" z="3.96967" />
+                <point id="6" x="-5.05035" y="-1.14384" z="4.00037" />
+                <point id="7" x="-5.11506" y="-1.18603" z="4.01135" />
+                <point id="8" x="-5.18781" y="-1.2106" z="4.00076" />
+                <point id="9" x="-5.25734" y="-1.21317" z="3.96965" />
+                <point id="10" x="-5.31348" y="-1.19294" z="3.92214" />
+                <point id="11" x="-5.34846" y="-1.15306" z="3.86516" />
+                <point id="12" x="-5.35765" y="-1.10011" z="3.80757" />
+                <point id="13" x="-5.33984" y="-1.04281" z="3.7587" />
+                <point id="14" x="-5.29733" y="-0.990282" z="3.72659" />
+                <point id="15" x="-5.23579" y="-0.950454" z="3.71644" />
+            </contour_points>
+        </contour>
+        <contour id="7" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="61">
+                <pos x="-5.228582" y="-1.593326" z="3.460334" />
+                <tangent x="-0.437942" y="-0.703005" z="-0.560349" />
+                <rotation x="0" y="0.6233" z="-0.781983" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-5.37530869954064" y="-1.54311338610417" z="3.512012624604256" />
+                <point id="1" x="-5.33735731176443" y="-1.50516199832796" z="3.434738422224847" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-5.29011" y="-1.46899" z="3.35243" />
+                <point id="1" x="-5.23808" y="-1.52374" z="3.38045" />
+                <point id="2" x="-5.20904" y="-1.58196" z="3.4308" />
+                <point id="3" x="-5.20845" y="-1.63311" z="3.49451" />
+                <point id="4" x="-5.23705" y="-1.66811" z="3.56077" />
+                <point id="5" x="-5.29032" y="-1.68105" z="3.61864" />
+                <point id="6" x="-5.35894" y="-1.67015" z="3.65861" />
+                <point id="7" x="-5.43054" y="-1.63773" z="3.67389" />
+                <point id="8" x="-5.49211" y="-1.58954" z="3.66155" />
+                <point id="9" x="-5.53269" y="-1.53367" z="3.62317" />
+                <point id="10" x="-5.5455" y="-1.4793" z="3.56497" />
+                <point id="11" x="-5.5289" y="-1.43545" z="3.49698" />
+                <point id="12" x="-5.48635" y="-1.40965" z="3.43135" />
+                <point id="13" x="-5.42537" y="-1.40669" z="3.37998" />
+                <point id="14" x="-5.35618" y="-1.42756" z="3.35209" />
+            </contour_points>
+        </contour>
+        <contour id="8" type="Contour" method="Legacy" closed="true" min_control_number="2" max_control_number="2" subdivision_type="0" subdivision_number="0" subdivision_spacing="0">
+            <path_point id="72">
+                <pos x="-5.624896" y="-1.9037" z="3.114704" />
+                <tangent x="-0.79966" y="-0.170287" z="-0.575801" />
+                <rotation x="0" y="0.958943" z="-0.283598" />
+            </path_point>
+            <control_points>
+                <point id="0" x="-5.63683238166094" y="-1.85233355657391" z="3.11608991181075" />
+                <point id="1" x="-5.60387720293136" y="-1.81937837784434" z="3.060576328570683" />
+            </control_points>
+            <contour_points>
+                <point id="0" x="-5.72472" y="-1.76953" z="3.21366" />
+                <point id="1" x="-5.72651" y="-1.82881" z="3.23368" />
+                <point id="2" x="-5.7125" y="-1.89246" z="3.23305" />
+                <point id="3" x="-5.68534" y="-1.94968" z="3.21224" />
+                <point id="4" x="-5.64998" y="-1.99045" z="3.1752" />
+                <point id="5" x="-5.61269" y="-2.00735" z="3.12841" />
+                <point id="6" x="-5.57983" y="-1.99708" z="3.07973" />
+                <point id="7" x="-5.55682" y="-1.96126" z="3.03719" />
+                <point id="8" x="-5.5474" y="-1.9063" z="3.00785" />
+                <point id="9" x="-5.5531" y="-1.84211" z="2.99678" />
+                <point id="10" x="-5.57308" y="-1.78012" z="3.0062" />
+                <point id="11" x="-5.60416" y="-1.73111" z="3.03486" />
+                <point id="12" x="-5.64117" y="-1.70328" z="3.07804" />
+                <point id="13" x="-5.67776" y="-1.70102" z="3.12818" />
+                <point id="14" x="-5.70741" y="-1.72444" z="3.17629" />
+            </contour_points>
+        </contour>
+    </timestep>
+</contourgroup>

@@ -233,9 +233,36 @@ class COMETConfig:
     # --- safety -----------------------------------------------------------
     #: Required center-to-wall clearance (benchmark criterion).
     wall_clearance_threshold: float = 0.0007
-    #: Deprecated compatibility field. Hard feasibility uses the single
-    #: center-to-wall threshold above; soft wall repulsion has its own margin.
+    #: Extra clearance (m) the predictive safety backoff demands on top of
+    #: the threshold, absorbing local-field-model prediction error. Route
+    #: feasibility still uses the threshold alone.
     safety_filter_margin: float = 0.0
+    #: When no current backoff restores predicted clearance, also try
+    #: single-coil and all-coil patterns (and their blends with the
+    #: allocated currents) that can push the carrier off the wall. Backoff
+    #: alone fails under gravity, where less current means faster settling.
+    safety_escape_candidates: bool = False
+    #: Scale the cruise request by the local vessel radius relative to
+    #: geometry_reference_radius (capped at 1, floored at
+    #: geometry_scale_min) so per-step lateral error shrinks with the
+    #: corridor in narrow vessels. Route feasibility keeps cruise_speed.
+    narrow_vessel_speed_scaling: bool = False
+    #: Shorten the route lookahead (halving, up to 4 times) until the chord
+    #: from the carrier to the aim point stays inside the lumen.
+    visible_lookahead: bool = False
+    #: In high flow, judge that chord by closest-axis clearance, as the
+    #: allocator's wall penalty does, so the aim cannot sit across a corner
+    #: the allocator refuses to cut. Lower flows keep the lumen test.
+    visible_axis_high_flow: bool = False
+    #: Advance route progress past a fold: when progress has stalled for
+    #: route_fold_min_stall steps and a stretch of route further ahead than
+    #: route_fold_min_gain lookaheads lies inside the lookahead circle with
+    #: a clear chord, the route doubled back and the carrier can cut across.
+    #: Searched up to route_fold_search lookaheads ahead.
+    route_fold_shortcut: bool = False
+    route_fold_min_gain: float = 1.5
+    route_fold_search: float = 6.0
+    route_fold_min_stall: int = 10
 
     # --- publication ablation switches ------------------------------------
     # These flags remove architectural mechanisms explicitly instead of only
@@ -436,6 +463,7 @@ def _magnetic_velocity_batch(
         particle.force_prefactor_sat / (2.0 * np.maximum(b_mag, EPS)),
     )
     force = scale[:, None] * grad                            # (s, 3)
+    force = force + getattr(particle, "body_force", 0.0)     # gravity, if any
     f_mag = np.linalg.norm(force, axis=1)
 
     gamma_s = particle.drag_stokes
@@ -895,6 +923,39 @@ class COMETController:
                 return False
         return True
 
+    def _chord_in_lumen(self, pos: np.ndarray, target: np.ndarray, spacing: float = 1e-3,
+                        margin: Optional[float] = None) -> bool:
+        """True if the carrier body stays inside the lumen along pos->target."""
+        n = max(2, int(np.ceil(np.linalg.norm(target - pos) / spacing)) + 1)
+        margin = 0.5 * self._particle_diameter if margin is None else margin
+        return all(
+            self.network.lumen_clearance(pos + f * (target - pos)) >= margin
+            for f in np.linspace(0.0, 1.0, n)[1:]
+        )
+
+    def _aim_in_view(self, pos: np.ndarray, aim: np.ndarray, high_flow: bool) -> bool:
+        """True if the chord to the aim passes the visibility test for this flow."""
+        if self.cfg.visible_axis_high_flow and high_flow:
+            return self._line_of_sight(pos, aim)
+        return self._chord_in_lumen(pos, aim)
+
+    def _fold_skip_index(self, pos: np.ndarray, arc_now: float, lookahead: float) -> Optional[int]:
+        """Route vertex past a fold that is in clear view, or None."""
+        cfg = self.cfg
+        cum = self._route_cum
+        lo = int(np.searchsorted(cum, arc_now + cfg.route_fold_min_gain * lookahead))
+        hi = int(np.searchsorted(cum, arc_now + cfg.route_fold_search * lookahead))
+        if lo >= hi:
+            return None
+        in_circle = np.nonzero(
+            np.linalg.norm(self._route_pts[lo:hi] - pos, axis=1) <= lookahead
+        )[0]
+        for i in in_circle[::-1][::max(1, len(in_circle) // 8)]:
+            if self._chord_in_lumen(pos, self._route_pts[lo + i],
+                                    margin=cfg.wall_clearance_threshold):
+                return lo + int(i)
+        return None
+
     def _local_segments(self, pos: np.ndarray, extra_ids=(), probes=()):
         """Candidate segments around ``pos`` and optional probe points.
 
@@ -948,10 +1009,8 @@ class COMETController:
     # Authority / branch evaluation
     # ------------------------------------------------------------------
 
-    def _authority_speed_along(
-        self, model: _LocalFieldModel, particle, direction: np.ndarray,
-    ) -> float:
-        """Max achievable magnetic drift speed along a unit direction."""
+    def _probe_patterns(self) -> np.ndarray:
+        """Single-coil +/- full current and all-coil +/- full current."""
         n = self.magnet_array.n_magnets
         i_lim = self._i_lim
         patterns = np.zeros((2 * n + 2, n), dtype=float)
@@ -960,7 +1019,13 @@ class COMETController:
             patterns[2 * i + 1, i] = -i_lim[i]
         patterns[-2, :] = i_lim
         patterns[-1, :] = -i_lim
+        return patterns
 
+    def _authority_speed_along(
+        self, model: _LocalFieldModel, particle, direction: np.ndarray,
+    ) -> float:
+        """Max achievable magnetic drift speed along a unit direction."""
+        patterns = self._probe_patterns()
         b, grad = model.field_and_grad(patterns)
         velocity, _ = _magnetic_velocity_batch(particle, b, grad)
         proj = velocity @ direction
@@ -1553,11 +1618,12 @@ class COMETController:
             return np.minimum(c_half, c_full)
 
         safety_active = False
+        safe_clearance = cfg.wall_clearance_threshold + cfg.safety_filter_margin
         b, grad = model.field_and_grad(best_currents[None, :])
         v_mag, _ = _magnetic_velocity_batch(particle, b, grad)
         clearance = float(predicted_clearance(v_mag)[0])
 
-        if clearance < cfg.wall_clearance_threshold:
+        if clearance < safe_clearance:
             safety_active = True
             alphas = np.linspace(0.0, 1.0, 9)
             scaled = alphas[:, None] * best_currents[None, :]
@@ -1565,11 +1631,26 @@ class COMETController:
             v_a, _ = _magnetic_velocity_batch(particle, b, grad)
             c_a = predicted_clearance(v_a)
 
-            safe = c_a >= cfg.wall_clearance_threshold
+            safe = c_a >= safe_clearance
             if np.any(safe):
                 # Largest backoff factor that restores predicted clearance.
                 alpha = float(alphas[np.where(safe)[0].max()])
                 best_currents = alpha * best_currents
+            elif cfg.safety_escape_candidates:
+                # Push off the wall instead: probe patterns and their blends
+                # with the allocated currents. Prefer the safe candidate
+                # closest to the allocation; otherwise maximize clearance.
+                probes = self._probe_patterns()
+                escape = np.vstack([scaled, probes, 0.5 * (probes + best_currents[None, :])])
+                b, grad = model.field_and_grad(escape)
+                v_e, _ = _magnetic_velocity_batch(particle, b, grad)
+                c_e = predicted_clearance(v_e)
+                safe_e = np.where(c_e >= safe_clearance)[0]
+                if len(safe_e):
+                    dist = np.linalg.norm(escape[safe_e] - best_currents[None, :], axis=1)
+                    best_currents = escape[safe_e[int(np.argmin(dist))]].copy()
+                else:
+                    best_currents = escape[int(np.argmax(c_e))].copy()
             else:
                 # Flow-dominated danger: no scaling is safe, so keep the
                 # candidate that maximizes predicted clearance (the cost
@@ -1597,6 +1678,7 @@ class COMETController:
         cfg = self.cfg
         self.step_count += 1
         prev_mode = self.mode
+        self._particle_diameter = float(particle.diameter)
 
         true_pos = np.asarray(particle.pos, dtype=float).copy()
         if measured_position is None:
@@ -1613,6 +1695,14 @@ class COMETController:
         arc_now, route_pt, tangent, perp = self._route_state(pos)
         self._arc_now = arc_now
         geometry_scale = self._geometry_scale(pos)
+        if cfg.route_fold_shortcut and self.stagnant_steps >= cfg.route_fold_min_stall:
+            fold_skip = self._fold_skip_index(
+                pos, arc_now, cfg.lookahead_distance * geometry_scale,
+            )
+            if fold_skip is not None:
+                self._route_vertex_idx = fold_skip
+                arc_now, route_pt, tangent, perp = self._route_state(pos)
+                self._arc_now = arc_now
         bifurcation_window = cfg.bifurcation_window * geometry_scale
         commitment_distance = cfg.commitment_distance_threshold * geometry_scale
         lookahead_distance = cfg.lookahead_distance * geometry_scale
@@ -1932,6 +2022,14 @@ class COMETController:
                 aim_tangent = tangent
                 aim_route = np.asarray(final_target, dtype=float)
         else:
+            if cfg.visible_lookahead and not recovery_active:
+                # Pull the aim point back along the route until the chord
+                # to it stays inside the lumen, so a bend cannot place the
+                # aim across a wall the allocator will refuse to cross.
+                for _ in range(4):
+                    if self._aim_in_view(pos, self._route_point_at_arc(aim_arc), high_flow):
+                        break
+                    aim_arc = arc_now + 0.5 * (aim_arc - arc_now)
             aim_route = self._route_point_at_arc(aim_arc)
             aim_tangent = self._route_tangent_at_arc(aim_arc)
 
@@ -2128,6 +2226,8 @@ class COMETController:
         # full multi-coil optimization can produce, so it is not used to
         # throttle progress). Overshoot is guarded relative to aim distance.
         speed = cfg.cruise_speed * cfg.progress_gain * boost_factor
+        if cfg.narrow_vessel_speed_scaling:
+            speed *= min(geometry_scale, 1.0)
         if direct_terminal and not terminal_precision:
             # Keep the request modest so the allocator spends its authority
             # on flow compensation first (a near-feasible v_des tracks the
@@ -2384,6 +2484,12 @@ class COMETController:
             "comet_terminal_overshoots": self._terminal_overshoot_count,
             "comet_max_control_norm_A": self.max_current,
             "comet_wall_clearance_threshold_m": cfg.wall_clearance_threshold,
+            "comet_safety_filter_margin_m": cfg.safety_filter_margin,
+            "comet_safety_escape_candidates": cfg.safety_escape_candidates,
+            "comet_narrow_vessel_speed_scaling": cfg.narrow_vessel_speed_scaling,
+            "comet_visible_lookahead": cfg.visible_lookahead,
+            "comet_visible_axis_high_flow": cfg.visible_axis_high_flow,
+            "comet_route_fold_shortcut": cfg.route_fold_shortcut,
             "comet_ablate_authority_reserve": cfg.ablate_authority_reserve,
             "comet_ablate_commitment_memory": cfg.ablate_commitment_memory,
             "comet_ablate_downstream_value": cfg.ablate_downstream_value,

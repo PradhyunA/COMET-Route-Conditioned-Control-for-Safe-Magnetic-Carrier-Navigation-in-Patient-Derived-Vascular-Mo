@@ -1,0 +1,227 @@
+[
+  {
+    "flow_scale": 1.0,
+    "pair_id": "canonical_001_hard_0050_endpoint08",
+    "gravity_m_s2": [
+      6.829000377334313,
+      -6.829000377334315,
+      -1.7029069015174023
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": -10.0,
+    "peak_required_force_n": 2.769542356576964e-06,
+    "mean_required_force_n": 1.7833310325593046e-06,
+    "worst_orientation_peak_force_n": 3.235010476130281e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "canonical_002_random_to_publication_target",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 1.7312048958771368e-06,
+    "mean_required_force_n": 1.5173447337246621e-06,
+    "worst_orientation_peak_force_n": 2.407219458926779e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "canonical_003_publication_start_to_random",
+    "gravity_m_s2": [
+      6.829000377334313,
+      -6.829000377334315,
+      -1.7029069015174023
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": -10.0,
+    "peak_required_force_n": 2.769542356576964e-06,
+    "mean_required_force_n": 1.8864414004298242e-06,
+    "worst_orientation_peak_force_n": 3.235010476130281e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      6.516156318121196,
+      -6.516156318121198,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 2.661996993790562e-06,
+    "mean_required_force_n": 1.8507123600254496e-06,
+    "worst_orientation_peak_force_n": 3.475467122572089e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 1.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      6.516156318121198,
+      6.516156318121195,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 315.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 2.2037142210349723e-06,
+    "mean_required_force_n": 1.4100584047606398e-06,
+    "worst_orientation_peak_force_n": 2.921087584958801e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "canonical_001_hard_0050_endpoint08",
+    "gravity_m_s2": [
+      6.516156318121196,
+      -6.516156318121198,
+      3.354071838544669
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 5.877699085545927e-06,
+    "mean_required_force_n": 3.4794349524039054e-06,
+    "worst_orientation_peak_force_n": 7.13009981104826e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "canonical_002_random_to_publication_target",
+    "gravity_m_s2": [
+      -6.516156318121196,
+      6.516156318121197,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 45.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 2.5788860293407614e-06,
+    "mean_required_force_n": 1.5429011765075736e-06,
+    "worst_orientation_peak_force_n": 4.520647681765467e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "canonical_003_publication_start_to_random",
+    "gravity_m_s2": [
+      6.516156318121196,
+      -6.516156318121198,
+      3.354071838544669
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 5.877699085545927e-06,
+    "mean_required_force_n": 4.512766317619987e-06,
+    "worst_orientation_peak_force_n": 7.13009981104826e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      6.516156318121198,
+      6.516156318121195,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 315.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 3.023590527042291e-06,
+    "mean_required_force_n": 1.5907869514412913e-06,
+    "worst_orientation_peak_force_n": 4.644182406155759e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 3.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      6.516156318121198,
+      6.516156318121195,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 315.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 5.551356019788354e-06,
+    "mean_required_force_n": 3.6716869260427004e-06,
+    "worst_orientation_peak_force_n": 6.947447067427698e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "canonical_001_hard_0050_endpoint08",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.0913339335309465e-05,
+    "mean_required_force_n": 6.366682475791605e-06,
+    "worst_orientation_peak_force_n": 1.2764872247891345e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "canonical_002_random_to_publication_target",
+    "gravity_m_s2": [
+      0.0,
+      9.215236639630128,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 0.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 6.484057101399629e-06,
+    "mean_required_force_n": 2.745822201058437e-06,
+    "worst_orientation_peak_force_n": 8.092269146731364e-06,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "canonical_003_publication_start_to_random",
+    "gravity_m_s2": [
+      6.516156318121196,
+      -6.516156318121198,
+      3.354071838544669
+    ],
+    "table_roll_deg": 225.0,
+    "table_tilt_deg": 20.0,
+    "peak_required_force_n": 1.0902197460875387e-05,
+    "mean_required_force_n": 8.669206028889173e-06,
+    "worst_orientation_peak_force_n": 1.2260804125365493e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      -6.516156318121197,
+      -6.516156318121196,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 135.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 1.1537650264122e-05,
+    "mean_required_force_n": 5.813256673785436e-06,
+    "worst_orientation_peak_force_n": 1.4492568963336126e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      -1.1285410054108447e-15,
+      -9.215236639630128,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 180.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 1.0722484486839245e-05,
+    "mean_required_force_n": 6.092528481861035e-06,
+    "worst_orientation_peak_force_n": 1.2764872247891345e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  }
+]

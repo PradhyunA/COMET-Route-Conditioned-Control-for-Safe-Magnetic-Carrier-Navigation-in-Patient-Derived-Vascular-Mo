@@ -1,0 +1,42 @@
+450 rows 75 cases
+comet_v3      reached  60 safe  52 cf  60 exits  0 | 21/18/13
+comet_v2      reached  63 safe  50 cf  62 exits  0 | 19/17/14 | 7/5 p=0.77
+nmpc_tuned    reached  51 safe  34 cf  48 exits  3 | 16/13/5 | 22/4 p=0.00053
+nmpc_default  reached  40 safe  27 cf  35 exits  2 | 17/7/3 | 28/3 p=4.6e-06
+mpc_tuned     reached  57 safe  26 cf  45 exits  4 | 11/8/7 | 32/6 p=2.4e-05
+acbc_tuned    reached  51 safe   6 cf  31 exits 25 | 3/2/1 | 46/0 p=2.8e-14
+safe by anatomy: ['comet_v3', 'comet_v2', 'nmpc_tuned', 'nmpc_default', 'mpc_tuned', 'acbc_tuned']
+abdominal       [9, 9, 7, 5, 2, 0]
+aortic_root     [9, 6, 4, 2, 2, 1]
+pulmonary       [13, 13, 7, 5, 5, 2]
+thoracic_aorta  [11, 12, 12, 10, 11, 3]
+aortofemoral    [10, 10, 4, 5, 6, 0]
+reached by anatomy:
+abdominal       [10, 10, 9, 8, 9, 13]
+aortic_root     [12, 12, 8, 6, 7, 8]
+pulmonary       [15, 15, 12, 9, 13, 8]
+thoracic_aorta  [11, 12, 12, 10, 13, 12]
+aortofemoral    [12, 14, 10, 7, 15, 10]
+exits by anatomy:
+abdominal       [0, 0, 0, 1, 0, 2]
+aortic_root     [0, 0, 3, 0, 2, 4]
+pulmonary       [0, 0, 0, 1, 0, 6]
+thoracic_aorta  [0, 0, 0, 0, 0, 0]
+aortofemoral    [0, 0, 0, 0, 2, 13]
+avg control step s: {'comet_v3': 0.096, 'comet_v2': 0.132, 'nmpc_tuned': 0.402, 'nmpc_default': 0.434, 'mpc_tuned': 4.654, 'acbc_tuned': 3.667}
+
+v3 vs v2 changes:
+  abdominal 3.0 canonical_002_random_to_public v2 reach 0.401 -> v3 safe 0.500
+  abdominal 5.0 random_0001                    v2 safe 0.454 -> v3 reach 0.436
+  aortic_root 1.0 canonical_003_publication_star v2 reach 0.441 -> v3 safe 0.502
+  aortic_root 3.0 canonical_003_publication_star v2 reach 0.445 -> v3 safe 0.466
+  aortic_root 5.0 random_0001                    v2 reach 0.436 -> v3 safe 0.482
+  aortofemoral 1.0 canonical_002_random_to_public v2 reach 0.448 -> v3 safe 0.474
+  aortofemoral 1.0 canonical_003_publication_star v2 reach 0.439 -> v3 fail 0.511
+  aortofemoral 1.0 random_0001                    v2 safe 0.457 -> v3 fail 0.447
+  aortofemoral 1.0 random_0002                    v2 fail 0.458 -> v3 safe 0.497
+  aortofemoral 3.0 canonical_003_publication_star v2 safe 0.486 -> v3 fail 0.505
+  pulmonary 5.0 canonical_003_publication_star v2 safe 0.455 -> v3 reach 0.399
+  pulmonary 5.0 random_0001                    v2 reach 0.443 -> v3 safe 0.503
+  thoracic_aorta 5.0 random_0001                    v2 safe 0.483 -> v3 fail 0.527
+v3 reached-not-safe: [('abdom', '5.0', 'random_0001', 0.436), ('aorti', '3.0', 'canonical_001_', 0.434), ('aorti', '5.0', 'canonical_001_', 0.449), ('aorti', '5.0', 'canonical_003_', 0.442), ('aorto', '3.0', 'random_0002', 0.257), ('aorto', '5.0', 'random_0001', 0.117), ('pulmo', '3.0', 'random_0001', 0.185), ('pulmo', '5.0', 'canonical_003_', 0.399)]

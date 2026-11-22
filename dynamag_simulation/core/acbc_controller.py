@@ -649,6 +649,7 @@ class ACBCController:
             B = self.magnet_array.field_at(pos)
             grad = self.magnet_array.grad_B_squared(pos)
             F = particle.magnetic_force(B, grad)
+            F = F + getattr(particle, "body_force", 0.0)
 
             fmag = np.linalg.norm(F)
 

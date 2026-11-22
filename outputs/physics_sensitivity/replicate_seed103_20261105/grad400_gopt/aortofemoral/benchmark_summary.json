@@ -1,0 +1,535 @@
+{
+  "run_id": "aortofemoral",
+  "config_path": "run_config.json",
+  "paired_results_path": "paired_results.csv",
+  "paired_differences_path": "paired_differences.csv",
+  "n_rows": 45,
+  "n_pairs": 15,
+  "seed_records": [
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_001_aorta_to_femoral_0049",
+      "seed": 1000103,
+      "start": [
+        -0.0028217602104121126,
+        -0.03342547027242263,
+        0.13137685029596702
+      ],
+      "target": [
+        0.092749,
+        0.06725,
+        -0.279276
+      ],
+      "route_length_m": 0.48539609711317644,
+      "route_min_clearance_m": 0.0023961116993818877,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 1000104,
+      "start": [
+        -0.022740044078902334,
+        0.06061686776304777,
+        -0.011915600124281936
+      ],
+      "target": [
+        0.092749,
+        0.06725,
+        -0.279276
+      ],
+      "route_length_m": 0.5614091380222577,
+      "route_min_clearance_m": 0.0018916558259852465,
+      "route_min_authority_reserve_m_s": 0.1758329205803447
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 1000105,
+      "start": [
+        -0.0025751081388832083,
+        -0.033575737051156865,
+        0.13203913160876757
+      ],
+      "target": [
+        0.044990848537631495,
+        -0.010872132683305455,
+        0.06368395680691381
+      ],
+      "route_length_m": 0.13703605556580425,
+      "route_min_clearance_m": 0.0019345254499099596,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0001",
+      "seed": 1000106,
+      "start": [
+        -0.056682136265948556,
+        0.029114756457311382,
+        -0.23005689824176148
+      ],
+      "target": [
+        0.034238703367683546,
+        0.056753381682318735,
+        0.05123270757855734
+      ],
+      "route_length_m": 0.5099564420988102,
+      "route_min_clearance_m": 0.0018499427014099686,
+      "route_min_authority_reserve_m_s": 0.17566219192410565
+    },
+    {
+      "flow_scale": 1.0,
+      "pair_id": "random_0002",
+      "seed": 1000107,
+      "start": [
+        -0.020916996436669607,
+        0.05904571928315309,
+        -0.009188409943713447
+      ],
+      "target": [
+        0.017610876647892567,
+        0.030821651478345494,
+        0.09064050939436546
+      ],
+      "route_length_m": 0.23203068033369242,
+      "route_min_clearance_m": 0.0018916558259852465,
+      "route_min_authority_reserve_m_s": 0.17566228485604254
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_001_aorta_to_femoral_0049",
+      "seed": 3000103,
+      "start": [
+        -0.002637022839170167,
+        -0.03354692372153179,
+        0.13133373502733273
+      ],
+      "target": [
+        0.092749,
+        0.06725,
+        -0.279276
+      ],
+      "route_length_m": 0.48539609711317644,
+      "route_min_clearance_m": 0.0023961116993818877,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 3000104,
+      "start": [
+        0.00865180903250021,
+        0.046664366904754576,
+        0.04361907269484376
+      ],
+      "target": [
+        0.092749,
+        0.06725,
+        -0.279276
+      ],
+      "route_length_m": 0.4793497651106353,
+      "route_min_clearance_m": 0.0023961116993818877,
+      "route_min_authority_reserve_m_s": 0.16749876174103412
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 3000105,
+      "start": [
+        -0.0027470727903245434,
+        -0.033194571406116584,
+        0.13160386297216944
+      ],
+      "target": [
+        0.017989350804095878,
+        0.0034408423247443446,
+        0.06120993703232986
+      ],
+      "route_length_m": 0.1033868179737509,
+      "route_min_clearance_m": 0.003336379263522043,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0001",
+      "seed": 3000106,
+      "start": [
+        -0.014059391961672949,
+        0.058864612366635344,
+        -0.001595105489009678
+      ],
+      "target": [
+        0.014355485603245111,
+        0.05139945015990505,
+        0.0532173615451807
+      ],
+      "route_length_m": 0.08254566391081204,
+      "route_min_clearance_m": 0.0018916558259852465,
+      "route_min_authority_reserve_m_s": 0.16776581871244134
+    },
+    {
+      "flow_scale": 3.0,
+      "pair_id": "random_0002",
+      "seed": 3000107,
+      "start": [
+        0.04992433474014893,
+        -0.012209110008744382,
+        0.0696427281374358
+      ],
+      "target": [
+        -0.07568665119710878,
+        0.05209800593110849,
+        -0.2545667336006439
+      ],
+      "route_length_m": 0.43460056473137476,
+      "route_min_clearance_m": 0.0019345189126109003,
+      "route_min_authority_reserve_m_s": 0.16774540793577714
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_001_aorta_to_femoral_0049",
+      "seed": 5000103,
+      "start": [
+        -0.002385884876481508,
+        -0.03342958547027288,
+        0.13166675826917118
+      ],
+      "target": [
+        0.092749,
+        0.06725,
+        -0.279276
+      ],
+      "route_length_m": 0.48539609711317644,
+      "route_min_clearance_m": 0.0023961116993818877,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_002_random_to_publication_target",
+      "seed": 5000104,
+      "start": [
+        0.041472367408283466,
+        -0.015077743224747687,
+        0.04705621764416716
+      ],
+      "target": [
+        0.092749,
+        0.06725,
+        -0.279276
+      ],
+      "route_length_m": 0.47289178209502125,
+      "route_min_clearance_m": 0.002189629281042098,
+      "route_min_authority_reserve_m_s": 0.1595756798929619
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "canonical_003_publication_start_to_random",
+      "seed": 5000105,
+      "start": [
+        -0.0025132364853792544,
+        -0.0333558865531092,
+        0.13148491618410066
+      ],
+      "target": [
+        0.03715843973827076,
+        0.03164764723075808,
+        -0.11726264137547579
+      ],
+      "route_length_m": 0.3002619264892974,
+      "route_min_clearance_m": 0.005338482092414332,
+      "route_min_authority_reserve_m_s": 0.18
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0001",
+      "seed": 5000106,
+      "start": [
+        -0.006550973664371946,
+        0.054530350473472926,
+        0.0028058053527676564
+      ],
+      "target": [
+        0.040803078500260694,
+        -0.012610716748045496,
+        0.05749134889576914
+      ],
+      "route_length_m": 0.18793401594847176,
+      "route_min_clearance_m": 0.0018916558259852465,
+      "route_min_authority_reserve_m_s": 0.15916460290172355
+    },
+    {
+      "flow_scale": 5.0,
+      "pair_id": "random_0002",
+      "seed": 5000107,
+      "start": [
+        -0.06872336886504896,
+        0.058605395693920294,
+        -0.2322064767869553
+      ],
+      "target": [
+        -0.0672822418384802,
+        0.05176925501703225,
+        -0.22433874447751648
+      ],
+      "route_length_m": 0.030619645158979927,
+      "route_min_clearance_m": 0.0023956249497477673,
+      "route_min_authority_reserve_m_s": 0.1601120864794666
+    }
+  ],
+  "aggregate": [
+    {
+      "flow_scale": 1.0,
+      "controller_key": "comet_v4",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.4,
+      "median_final_error_mm": 39.60326570393346,
+      "median_sim_time_s": 6.62,
+      "median_steps_to_target": 331.0,
+      "early_stop_count": 3,
+      "early_stop_rate": 0.6,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 1.6336745498458787,
+      "median_wall_time_s": 4.952446458977647,
+      "median_avg_control_step_time_s": 0.013509553508780999,
+      "median_path_efficiency": 0.8496827355939778,
+      "median_current_rms_A": 10.101266874693284,
+      "median_energy_proxy_A2s": 7606.092962352083,
+      "median_min_wall_clearance_mm": 0.7556926494371929,
+      "median_min_clearance_margin_mm": 0.05569264943719292,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.8,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 12.8
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "nmpc_default",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.8,
+      "median_final_error_mm": 0.4555210379071108,
+      "median_sim_time_s": 28.36,
+      "median_steps_to_target": 1418.0,
+      "early_stop_count": 1,
+      "early_stop_rate": 0.2,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 1.5916886724974535,
+      "median_wall_time_s": 398.7770550409914,
+      "median_avg_control_step_time_s": 0.2817223867888505,
+      "median_path_efficiency": 0.9970208074339487,
+      "median_current_rms_A": 6.721944588645766,
+      "median_energy_proxy_A2s": 11532.901747842823,
+      "median_min_wall_clearance_mm": 0.8822232196639033,
+      "median_min_clearance_margin_mm": 0.18222321966390329,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.6,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 1.0,
+      "controller_key": "nmpc_tuned",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.4735537583585934,
+      "median_sim_time_s": 10.74,
+      "median_steps_to_target": 537.0,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 140.51238079200266,
+      "median_avg_control_step_time_s": 0.28253617974122286,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.29342272691611,
+      "median_energy_proxy_A2s": 7052.673915751233,
+      "median_min_wall_clearance_mm": 0.6955375899071067,
+      "median_min_clearance_margin_mm": -0.004462410092893345,
+      "median_safety_violation_fraction": 0.0016474464579901153,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.4,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "comet_v4",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.8,
+      "median_final_error_mm": 0.3845027263247206,
+      "median_sim_time_s": 4.62,
+      "median_steps_to_target": 231.0,
+      "early_stop_count": 1,
+      "early_stop_rate": 0.2,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 0.33520625914818664,
+      "median_wall_time_s": 2.7420251250150613,
+      "median_avg_control_step_time_s": 0.010898958529785147,
+      "median_path_efficiency": 0.9924959316066737,
+      "median_current_rms_A": 10.78823708129784,
+      "median_energy_proxy_A2s": 4965.401285711086,
+      "median_min_wall_clearance_mm": 0.7638647663254726,
+      "median_min_clearance_margin_mm": 0.06386476632547265,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 1.0,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 10.8
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "nmpc_default",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.4,
+      "median_final_error_mm": 313.5108134014208,
+      "median_sim_time_s": 7.42,
+      "median_steps_to_target": 371.0,
+      "early_stop_count": 3,
+      "early_stop_rate": 0.6,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 1.553328710213353,
+      "median_wall_time_s": 91.65684962499654,
+      "median_avg_control_step_time_s": 0.2638300817433063,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 7.988200725791455,
+      "median_energy_proxy_A2s": 4468.07078550417,
+      "median_min_wall_clearance_mm": 1.7810143053724123,
+      "median_min_clearance_margin_mm": 1.0810143053724122,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.6,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 3.0,
+      "controller_key": "nmpc_tuned",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.6,
+      "median_final_error_mm": 0.4605093733422384,
+      "median_sim_time_s": 5.62,
+      "median_steps_to_target": 281.0,
+      "early_stop_count": 2,
+      "early_stop_rate": 0.4,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 0.5624230734135871,
+      "median_wall_time_s": 74.3716681250371,
+      "median_avg_control_step_time_s": 0.2678713884054537,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 8.997029390603066,
+      "median_energy_proxy_A2s": 4182.345403647149,
+      "median_min_wall_clearance_mm": 2.0641211414556033,
+      "median_min_clearance_margin_mm": 1.3641211414556031,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.8,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "comet_v4",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 1.0,
+      "median_final_error_mm": 0.11026870250503537,
+      "median_sim_time_s": 3.12,
+      "median_steps_to_target": 156.0,
+      "early_stop_count": 0,
+      "early_stop_rate": 0.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": NaN,
+      "median_wall_time_s": 2.43289958400419,
+      "median_avg_control_step_time_s": 0.011949098983492074,
+      "median_path_efficiency": 0.999758018373916,
+      "median_current_rms_A": 10.282705679631892,
+      "median_energy_proxy_A2s": 3082.276838233168,
+      "median_min_wall_clearance_mm": 0.8493617807539332,
+      "median_min_clearance_margin_mm": 0.14936178075393317,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.8,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 8.2
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "nmpc_default",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.0,
+      "median_final_error_mm": 173.7294436491017,
+      "median_sim_time_s": 5.12,
+      "median_steps_to_target": 256.0,
+      "early_stop_count": 5,
+      "early_stop_rate": 1.0,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 0.0,
+      "median_wall_time_s": 49.328257416025735,
+      "median_avg_control_step_time_s": 0.21020058051579465,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 10.157293526386018,
+      "median_energy_proxy_A2s": 6303.337576216882,
+      "median_min_wall_clearance_mm": 1.058240597540886,
+      "median_min_clearance_margin_mm": 0.35824059754088594,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.2,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.6,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    },
+    {
+      "flow_scale": 5.0,
+      "controller_key": "nmpc_tuned",
+      "n": 5,
+      "comet_localization_noise_std_um": 0.0,
+      "success_rate": 0.4,
+      "median_final_error_mm": 45.621369273851165,
+      "median_sim_time_s": 5.6000000000000005,
+      "median_steps_to_target": 280.0,
+      "early_stop_count": 3,
+      "early_stop_rate": 0.6,
+      "early_stop_window_steps": 200,
+      "early_stop_improvement_threshold_mm": 2.0,
+      "median_early_stop_measured_improvement_mm": 0.6101661548498782,
+      "median_wall_time_s": 66.70109829201829,
+      "median_avg_control_step_time_s": 0.22478921780420932,
+      "median_path_efficiency": 1.0,
+      "median_current_rms_A": 10.449719057468007,
+      "median_energy_proxy_A2s": 5780.840996106549,
+      "median_min_wall_clearance_mm": 1.3209790749714942,
+      "median_min_clearance_margin_mm": 0.6209790749714942,
+      "median_safety_violation_fraction": 0.0,
+      "wall_exit_rate": 0.0,
+      "median_max_wall_intrusion_mm": 0.0,
+      "clearance_target_met_rate": 0.6,
+      "finite_re_drag_valid_rate": 1.0,
+      "mean_transitions": 0.0
+    }
+  ],
+  "paired_statistics": []
+}

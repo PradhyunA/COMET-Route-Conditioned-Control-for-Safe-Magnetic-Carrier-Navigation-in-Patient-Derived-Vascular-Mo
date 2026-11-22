@@ -24,7 +24,9 @@ import tempfile
 import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from functools import lru_cache
+from threading import get_ident
 from typing import Callable
 
 import numpy as np
@@ -41,8 +43,16 @@ from dynamag_simulation.core.real_vessel_network import (
     RealVesselNetwork,
     RoutePlanningOptions,
 )
+from dynamag_simulation.core.particle import MagneticParticle3D
+from dynamag_simulation.core.patient_positioning import (
+    DEFAULT_MAX_TILT_DEG,
+    choose_patient_orientation,
+)
 from dynamag_simulation.core.profiles import SPION_CARRIER_1MM, SPION_CARRIER_500UM
-from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
+from dynamag_simulation.core.constants import (
+    DEFAULT_TARGET_TOLERANCE,
+    STANDARD_GRAVITY_M_S2,
+)
 from dynamag_simulation.core.reporting import save_results_csv
 
 from simulation_3d_pid import (
@@ -66,6 +76,48 @@ from simulation_3d_smc_dob import (
 )
 
 BENCHMARK_EARLY_STOP_WINDOW_STEPS = 200
+
+# Actuator presets. "paper" is the BHI 2026 submission: mu_r = 70 applied to
+# the far field. "navion_calibrated" uses the far-field core gain of ~2 from
+# scripts/estimate_core_gain.py and scales the coils' ampere-turns so the
+# array's peak gradient at the workspace centre (hardware limits on) is
+# 0.25 T/m, the gradient reported for the Navion clinical electromagnetic
+# navigation system (Gervasoni et al., Adv. Mater. 2024). "high_gradient_400"
+# is a next-generation sensitivity case scaled to 0.40 T/m, the gradient
+# reported for MRI imaging-gradient-coil inserts built for magnetic
+# resonance navigation (Martel group, "in excess of 400 mT/m").
+# "paper" reproduces the published protocol. "shared_route" gives every
+# controller COMET's clearance/flow-aware route plan with out-and-back
+# spurs removed, and stops a trial for stagnation only when neither the
+# straight-line nor the along-route distance to the target improves.
+BENCHMARK_PROTOCOLS = ("paper", "shared_route")
+
+ACTUATOR_PRESETS = {
+    "paper": {
+        "core_relative_permeability": FIXED_CORE_MU_R_EFFECTIVE,
+        "ampere_turn_scale": 1.0,
+    },
+    "navion_calibrated": {
+        "core_relative_permeability": 2.0,
+        "ampere_turn_scale": 13.6,
+    },
+    "high_gradient_400": {
+        "core_relative_permeability": 2.0,
+        "ampere_turn_scale": 21.8,
+    },
+    # Sensitivity levels around the 400 mT/m preset. For scale: Navion
+    # (electromagnets, human-scale) 250 mT/m, Siemens Cima.X (whole-body MRI)
+    # 200 mT/m, Connectome 2.0 (head-only MRI coil) 500 mT/m. 600 mT/m is
+    # beyond any human-scale system and is hypothetical.
+    "high_gradient_300": {
+        "core_relative_permeability": 2.0,
+        "ampere_turn_scale": 16.35,
+    },
+    "high_gradient_600": {
+        "core_relative_permeability": 2.0,
+        "ampere_turn_scale": 32.7,
+    },
+}
 BENCHMARK_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
 
 
@@ -230,6 +282,73 @@ CONTROLLER_VARIANTS = {
         label="COMET",
         kind="comet",
         kwargs={},
+    ),
+    # Settings for realistic (gravity, Navion-class) actuation, chosen on
+    # held-out random routes (seed 777), not on the benchmark manifest.
+    # Textbook receding-horizon path-tracking NMPC (tracking_mpc.py) with
+    # its literature-default weights; no task-specific heuristics.
+    "nmpc_default": ControllerVariant(
+        label="NMPC-tracking-default",
+        kind="mpc",
+        kwargs={"optimizer": "tracking_nmpc"},
+    ),
+    # Same NMPC with its reference speed tuned on the five-anatomy held-out
+    # seed-777 routes (shared_route protocol), the budget COMET got.
+    "nmpc_tuned": ControllerVariant(
+        label="NMPC-tracking-tuned",
+        kind="mpc",
+        kwargs={"optimizer": "tracking_nmpc", "tracking_mpc_config": {"reference_speed_m_s": 0.05}},
+    ),
+    "comet_gravity": ControllerVariant(
+        label="COMET-gravity-aware-safety",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True},
+    ),
+    # Chosen on the five-anatomy held-out seed-777 routes (shared_route
+    # protocol): adds the lumen-visible lookahead to comet_gravity.
+    "comet_v2": ControllerVariant(
+        label="COMET-visible-lookahead",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True, "visible_lookahead": True},
+    ),
+    # comet_v2 plus the clearance margin chosen on held-out seed-777 routes
+    # from the abdominal, aortic root, pulmonary and thoracic anatomies.
+    "comet_v3": ControllerVariant(
+        label="COMET-visible-lookahead-0.05mm-margin",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True, "visible_lookahead": True, "safety_filter_margin": 5e-5},
+    ),
+    # comet_v3 plus route progress that can cross a fold once it has stalled,
+    # and closest-axis aim visibility in high flow.
+    "comet_v4": ControllerVariant(
+        label="COMET-fold-shortcut",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True, "visible_lookahead": True, "safety_filter_margin": 5e-5,
+                "route_fold_shortcut": True, "visible_axis_high_flow": True},
+    ),
+    # Mechanism ablations of comet_v4: each removes one component and keeps
+    # everything else, for the journal ablation table.
+    **{
+        f"comet_v4_{name}": ControllerVariant(
+            label=f"COMET-v4-{name.replace('_', '-')}",
+            kind="comet",
+            kwargs={"safety_escape_candidates": True, "visible_lookahead": True, "safety_filter_margin": 5e-5,
+                    "route_fold_shortcut": True, "visible_axis_high_flow": True, **extra},
+        )
+        for name, extra in {
+            "no_polyline": {"ablate_polyline_tracking": True},
+            "no_terminal_precision": {"ablate_terminal_precision": True},
+            "no_branch_shaping": {"ablate_branch_conditioned_motion_shaping": True},
+            "no_flow_compensation": {"ablate_flow_compensation": True},
+            "slsqp_allocator": {"allocator": "slsqp"},
+            "loc_noise_100um": {"comet_localization_noise_std_m": 100e-6},
+            "loc_noise_200um": {"comet_localization_noise_std_m": 200e-6},
+        }.items()
+    },
+    "comet_gravity_buffered": ControllerVariant(
+        label="COMET-gravity-aware-safety-0.1mm-buffer",
+        kind="comet",
+        kwargs={"safety_escape_candidates": True, "safety_filter_margin": 1e-4},
     ),
     "comet_loc_noise_50um": ControllerVariant(
         label="COMET-localization-noise-50um",
@@ -464,6 +583,50 @@ def _software_metadata():
     }
 
 
+def _route_planning_options(
+    profile,
+    wall_clearance_threshold_m,
+    magnetic_authority_m_s=0.180,
+    minimum_authority_reserve_m_s=0.0,
+):
+    particle_radius = 0.5 * profile.diameter
+    return RoutePlanningOptions(
+        wall_clearance_m=wall_clearance_threshold_m,
+        particle_radius_m=particle_radius,
+        minimum_surface_clearance_m=max(
+            wall_clearance_threshold_m - particle_radius, 0.0,
+        ),
+        magnetic_authority_m_s=magnetic_authority_m_s,
+        minimum_authority_reserve_m_s=minimum_authority_reserve_m_s,
+    )
+
+
+def _jitter_start(network, pair, std_m, wall_clearance_m, rng):
+    """Offset a pair's release point by isotropic noise, kept clear of the wall."""
+    start = np.asarray(pair["start"], dtype=float)
+    for _ in range(100):
+        candidate = start + rng.normal(0.0, std_m, 3)
+        if network.lumen_clearance(candidate) >= wall_clearance_m:
+            return {**pair, "start": candidate}
+    return pair
+
+
+def _patient_positioning(network, pair, profile, planning_options, max_table_tilt_deg):
+    """Per-route table orientation; returns (profile with that gravity, record)."""
+    plan = network.plan_route(pair["start"], pair["target"], planning_options)
+    if not plan.feasible:
+        raise RuntimeError(f"Cannot position patient for infeasible route {pair['pair_id']}")
+    particle = MagneticParticle3D(np.asarray(pair["start"], dtype=float), profile=profile)
+    choice = choose_patient_orientation(
+        network,
+        plan.waypoints,
+        particle,
+        net_weight_n=float(np.linalg.norm(particle.body_force)),
+        max_tilt_deg=max_table_tilt_deg,
+    )
+    return replace(profile, gravity_m_s2=choice.gravity_m_s2), choice.as_dict()
+
+
 def _trial_pairs(
     network,
     rng,
@@ -472,6 +635,7 @@ def _trial_pairs(
     profile=SPION_CARRIER_500UM,
     wall_clearance_threshold_m=0.0007,
     magnetic_authority_m_s=0.180,
+    minimum_authority_reserve_m_s=0.0,
 ):
     """
     Generate paired start/target trials.
@@ -498,6 +662,16 @@ def _trial_pairs(
         canonical_start = mm_to_m([-30.80946207, 2.76482804, -47.19573259])
         canonical_target = mm_to_m([-21.23204619, -38.94729167, 48.83672297])
         canonical_id = "canonical_001_hard_0050_endpoint08"
+    elif "0024_H_AO_H" in vessel_file_str:
+        # Aortic root (ascending aorta) to the right common carotid outlet.
+        canonical_start = mm_to_m([-12.7417, 42.7918, 11.9397])
+        canonical_target = mm_to_m([2.1985, 45.8809, 117.1764])
+        canonical_id = "canonical_001_root_to_rcca_0024"
+    elif "0049_H_ABAO_AIOD" in vessel_file_str:
+        # Suprarenal aorta through the aortofemoral graft to the right femoral.
+        canonical_start = mm_to_m([-2.642, -33.45, 131.505])
+        canonical_target = mm_to_m([92.749, 67.25, -279.276])
+        canonical_id = "canonical_001_aorta_to_femoral_0049"
     else:
         canonical_start = inlet
         canonical_target = outlet
@@ -541,15 +715,11 @@ def _trial_pairs(
             }
         )
 
-    particle_radius = 0.5 * profile.diameter
-    planning_options = RoutePlanningOptions(
-        wall_clearance_m=wall_clearance_threshold_m,
-        particle_radius_m=particle_radius,
-        minimum_surface_clearance_m=max(
-            wall_clearance_threshold_m - particle_radius, 0.0,
-        ),
-        magnetic_authority_m_s=magnetic_authority_m_s,
-        minimum_authority_reserve_m_s=0.0,
+    planning_options = _route_planning_options(
+        profile,
+        wall_clearance_threshold_m,
+        magnetic_authority_m_s,
+        minimum_authority_reserve_m_s,
     )
 
     feasible_pairs = []
@@ -646,6 +816,7 @@ def _trial_pairs_from_csv(
     profile=SPION_CARRIER_500UM,
     wall_clearance_threshold_m=0.0007,
     magnetic_authority_m_s=0.180,
+    minimum_authority_reserve_m_s=0.0,
 ):
     """
     Load exact saved start/target pairs from a previous paired_results.csv.
@@ -856,15 +1027,11 @@ def _trial_pairs_from_csv(
             **route_metadata,
         }
 
-    particle_radius = 0.5 * profile.diameter
-    planning_options = RoutePlanningOptions(
-        wall_clearance_m=wall_clearance_threshold_m,
-        particle_radius_m=particle_radius,
-        minimum_surface_clearance_m=max(
-            wall_clearance_threshold_m - particle_radius, 0.0,
-        ),
-        magnetic_authority_m_s=magnetic_authority_m_s,
-        minimum_authority_reserve_m_s=0.0,
+    planning_options = _route_planning_options(
+        profile,
+        wall_clearance_threshold_m,
+        magnetic_authority_m_s,
+        minimum_authority_reserve_m_s,
     )
 
     pairs_by_flow = defaultdict(list)
@@ -1179,6 +1346,10 @@ def _result_metrics(run_id, flow_scale, pair, controller_key, variant, result, n
 
 def _save_trial_npz(result, metrics, output_dir):
     os.makedirs(output_dir, exist_ok=True)
+    cfd_flow = result.params.get("cfd_flow")
+    if cfd_flow is not None:
+        with open(os.path.join(output_dir, f"{result.trial_name}_cfd_flow.json"), "w") as f:
+            json.dump(cfd_flow, f, indent=2)
     if result.params.get("optimizer") == "constrained_cem":
         with open(os.path.join(output_dir, f"{result.trial_name}_constrained_cem.json"), "w") as f:
             json.dump({
@@ -1219,6 +1390,7 @@ def _save_trial_npz(result, metrics, output_dir):
         ),
         dt=result.dt,
         metrics=json.dumps(metrics),
+        **({"cfd_flow": json.dumps(cfd_flow)} if cfd_flow is not None else {}),
     )
 
 
@@ -1480,6 +1652,15 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     benchmark_early_stop_enabled = bool(
         common_kwargs.pop("_benchmark_early_stop_enabled", True)
     )
+    if common_kwargs.pop("_benchmark_protocol", "paper") == "shared_route":
+        # Every controller follows the same clearance- and flow-aware route
+        # (COMET always plans this way) and stagnation is judged along it.
+        if variant.kind in {"mpc", "cem_mpc", "acbc"}:
+            common_kwargs["route_planning_options"] = _route_planning_options(
+                common_kwargs["profile"], common_kwargs["wall_clearance_threshold_m"],
+            )
+        if variant.kind in {"mpc", "cem_mpc", "acbc", "comet"}:
+            common_kwargs["early_stop_route_progress"] = True
 
     if variant.kind in {"mpc", "cem_mpc"}:
         from simulation_3d_mpc import simulate_trial_mpc
@@ -1580,11 +1761,58 @@ def _run_variant(variant, pair, network, trial_seed, common_kwargs):
     raise ValueError(f"Unknown controller kind: {variant.kind}")
 
 
+def _make_benchmark_network(vessel_file, flow_scale, cfd_file=None, remove_backtracks=False):
+    if cfd_file is None:
+        network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
+        network.remove_backtracks = bool(remove_backtracks)
+        return network
+    from dynamag_simulation.core.cfd_flow_field import SteadyCFDFlowField
+    from dynamag_simulation.core.patched_vessel_network import RealVesselNetworkCFD
+
+    network = RealVesselNetworkCFD(
+        vessel_file, SteadyCFDFlowField(cfd_file, flow_scale), flow_scale=flow_scale,
+    )
+    network.remove_backtracks = bool(remove_backtracks)
+    return network
+
+
+@lru_cache(maxsize=8)
+def _worker_cfd_network(vessel_file, flow_scale, cfd_file, thread_id, remove_backtracks=False):
+    # Separate per-trial query counters if the process executor falls back
+    # to threads. Immutable CFD source arrays still share the same index.
+    return _make_benchmark_network(vessel_file, flow_scale, cfd_file, remove_backtracks)
+
+
+def _run_with_flow_metadata(variant, pair, network, trial_seed, common_kwargs):
+    field = getattr(network, "cfd_flow", None)
+    if field is not None:
+        field.query_count = 0
+        field.max_nearest_distance_m = 0.0
+    result = _run_variant(variant, pair, network, trial_seed, common_kwargs)
+    if field is not None:
+        result.params["cfd_flow"] = {
+            "source_file": field.source_file,
+            "source_zip_sha256": field.metadata["source_sha256"],
+            "velocity_multiplier": field.flow_scale,
+            "flow_mode": "steady",
+            "interpolation": field.metadata["interpolation"],
+            "queries": field.query_count,
+            "max_nearest_sample_distance_m": field.max_nearest_distance_m,
+        }
+    return result
+
+
 def _run_variant_task(task):
     variant = task["variant"]
     pair = task["pair"]
-    network = RealVesselNetwork(task["vessel_file"], flow_scale=task["flow_scale"])
-    result = _run_variant(
+    cfd_file = task.get("cfd_file")
+    network = (_worker_cfd_network(task["vessel_file"], task["flow_scale"], cfd_file, get_ident(),
+                                   task.get("remove_backtracks", False))
+               if cfd_file else _make_benchmark_network(
+                   task["vessel_file"], task["flow_scale"],
+                   remove_backtracks=task.get("remove_backtracks", False),
+               ))
+    result = _run_with_flow_metadata(
         variant=variant,
         pair=pair,
         network=network,
@@ -1622,6 +1850,15 @@ def run_benchmark(
     rerun_flow_scales=None,
     rerun_trial_kind="rerun",
     early_stop_enabled=True,
+    cfd_file=None,
+    actuator="paper",
+    core_mu_r=None,
+    carrier_density_kg_m3=None,
+    gravity_direction=(0.0, -1.0, 0.0),
+    patient_positioning="fixed",
+    max_table_tilt_deg=DEFAULT_MAX_TILT_DEG,
+    protocol="paper",
+    start_jitter_m=0.0,
 ):
     if include_ablations:
         variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1629,7 +1866,35 @@ def run_benchmark(
         variants = dict(CONTROLLER_VARIANTS)
 
     selected = {key: variants[key] for key in controller_keys}
+    if cfd_file is not None:
+        if any(variant.kind not in {"comet", "cem_mpc", "acbc", "mpc"}
+               for variant in selected.values()):
+            raise ValueError("CFD benchmark mode supports COMET, CEM-MPC, ACBC, and MPC variants")
+        cfd_file = os.path.abspath(cfd_file)
+        from dynamag_simulation.core.cfd_flow_field import SteadyCFDFlowField
+        cfd_metadata = SteadyCFDFlowField(cfd_file).metadata
+    else:
+        cfd_metadata = None
+    if protocol not in BENCHMARK_PROTOCOLS:
+        raise ValueError(f"Unknown protocol: {protocol}")
+    remove_backtracks = protocol == "shared_route"
+    if patient_positioning not in {"fixed", "optimized"}:
+        raise ValueError(f"Unknown patient_positioning: {patient_positioning}")
+    if patient_positioning == "optimized" and carrier_density_kg_m3 is None:
+        raise ValueError("Optimized patient positioning needs a carrier density (gravity)")
+    actuator_kwargs = dict(ACTUATOR_PRESETS[actuator])
+    if core_mu_r is not None:
+        actuator_kwargs["core_relative_permeability"] = float(core_mu_r)
+
     profile = PROFILE_CHOICES[profile_key]
+    if carrier_density_kg_m3 is not None:
+        g_dir = np.asarray(gravity_direction, dtype=float)
+        g_dir = g_dir / np.linalg.norm(g_dir)
+        profile = replace(
+            profile,
+            particle_density=float(carrier_density_kg_m3),
+            gravity_m_s2=tuple(float(v) for v in STANDARD_GRAVITY_M_S2 * g_dir),
+        )
 
     root = os.path.abspath(os.path.join(output_dir, run_id))
     os.makedirs(root, exist_ok=True)
@@ -1644,12 +1909,13 @@ def run_benchmark(
         "turns": FIXED_TURNS,
         "max_current": FIXED_MAX_CURRENT,
         "placement_radius": FIXED_PLACEMENT_RADIUS,
-        "core_relative_permeability": FIXED_CORE_MU_R_EFFECTIVE,
+        **actuator_kwargs,
         "core_saturation_tesla": FIXED_CORE_SATURATION_T,
         "device_mode": device_mode,
         "profile": profile,
         "wall_clearance_threshold_m": wall_clearance_threshold_m,
         "_benchmark_early_stop_enabled": bool(early_stop_enabled),
+        "_benchmark_protocol": protocol,
     }
 
     rerun_mode_enabled = rerun_from_csv is not None
@@ -1664,17 +1930,33 @@ def run_benchmark(
             requested_pair_ids=rerun_pair_ids,
             requested_flow_scales=rerun_flow_scales,
             default_trial_kind=rerun_trial_kind,
-            network_factory=lambda flow: RealVesselNetwork(
-                vessel_file, flow_scale=flow,
-            ),
+            network_factory=lru_cache(maxsize=3)(lambda flow: _make_benchmark_network(
+                vessel_file, flow, cfd_file, remove_backtracks,
+            )),
             profile=profile,
             wall_clearance_threshold_m=wall_clearance_threshold_m,
+            minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
         )
         active_flow_scales = sorted(rerun_pairs_by_flow)
 
     config = {
         "run_id": run_id,
         "vessel_file": vessel_file,
+        "flow_model": "steady_cfd" if cfd_file else "analytical_poiseuille",
+        "cfd_file": cfd_file,
+        "cfd_metadata": cfd_metadata,
+        "flow_scale_semantics": (
+            "Multiplier of one steady CFD velocity field; 3x/5x are sensitivity cases"
+            if cfd_file else "Multiplier of analytical mean velocity"
+        ),
+        "route_authority_filter_enabled": not bool(cfd_file),
+        "actuator": actuator,
+        "protocol": protocol,
+        "start_jitter_m": start_jitter_m,
+        "patient_positioning": patient_positioning,
+        "max_table_tilt_deg": (
+            max_table_tilt_deg if patient_positioning == "optimized" else None
+        ),
         "flow_scales": active_flow_scales,
         "n_random_trials": n_random_trials,
         "seed": seed,
@@ -1707,10 +1989,12 @@ def run_benchmark(
             "diameter_um": profile.diameter * 1e6,
             "magnetic_loading_fraction": profile.magnetic_loading_fraction,
             "hydrodynamic_drag_multiplier": profile.hydrodynamic_drag_multiplier,
+            "particle_density_kg_m3": profile.particle_density,
+            "gravity_m_s2": list(profile.gravity_m_s2),
         },
         "common_kwargs": {
             key: value for key, value in common_kwargs.items()
-            if key not in {"profile", "_benchmark_early_stop_enabled"}
+            if key not in {"profile", "_benchmark_early_stop_enabled", "_benchmark_protocol"}
         },
         "variants": {
             key: {
@@ -1727,10 +2011,11 @@ def run_benchmark(
 
     paired_rows = []
     all_seed_records = []
+    positioning_rows = []
     workers = int(max(1, workers))
 
     for flow_scale in active_flow_scales:
-        network = RealVesselNetwork(vessel_file, flow_scale=flow_scale)
+        network = _make_benchmark_network(vessel_file, flow_scale, cfd_file, remove_backtracks)
         if rerun_mode_enabled:
             pairs = rerun_pairs_by_flow[flow_scale]
         else:
@@ -1742,12 +2027,35 @@ def run_benchmark(
                 vessel_file=vessel_file,
                 profile=profile,
                 wall_clearance_threshold_m=wall_clearance_threshold_m,
+                minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
             )
         results_by_controller = defaultdict(list)
+        planning_options = _route_planning_options(
+            profile,
+            wall_clearance_threshold_m,
+            minimum_authority_reserve_m_s=float("-inf") if cfd_file else 0.0,
+        )
 
         tasks = []
         for pair_idx, pair in enumerate(pairs):
             trial_seed = seed + 100000 * int(round(flow_scale * 10)) + pair_idx
+            if start_jitter_m > 0.0:
+                # Replicates: every controller gets the same perturbed release point.
+                pair = _jitter_start(
+                    network, pair, start_jitter_m, wall_clearance_threshold_m,
+                    np.random.default_rng(trial_seed),
+                )
+            trial_kwargs = common_kwargs
+            if patient_positioning == "optimized":
+                pair_profile, positioning = _patient_positioning(
+                    network, pair, profile, planning_options, max_table_tilt_deg,
+                )
+                trial_kwargs = {**common_kwargs, "profile": pair_profile}
+                positioning_rows.append({
+                    "flow_scale": flow_scale,
+                    "pair_id": pair["pair_id"],
+                    **positioning,
+                })
             all_seed_records.append({
                 "flow_scale": flow_scale,
                 "pair_id": pair["pair_id"],
@@ -1769,8 +2077,10 @@ def run_benchmark(
                     "controller_key": controller_key,
                     "variant": variant,
                     "trial_seed": trial_seed,
-                    "common_kwargs": common_kwargs,
+                    "common_kwargs": trial_kwargs,
                     "vessel_file": vessel_file,
+                    "cfd_file": cfd_file,
+                    "remove_backtracks": remove_backtracks,
                 })
 
         def handle_completed(item):
@@ -1811,12 +2121,12 @@ def run_benchmark(
                     f"controller={task['controller_key']}",
                     flush=True,
                 )
-                result = _run_variant(
+                result = _run_with_flow_metadata(
                     variant=task["variant"],
                     pair=task["pair"],
                     network=network,
                     trial_seed=task["trial_seed"],
-                    common_kwargs=common_kwargs,
+                    common_kwargs=task["common_kwargs"],
                 )
                 handle_completed({**task, "result": result})
         else:
@@ -1876,6 +2186,9 @@ def run_benchmark(
     )
 
     _write_benchmark_summary(root, run_id, all_seed_records, paired_rows)
+    if positioning_rows:
+        with open(os.path.join(root, "patient_positioning.json"), "w") as f:
+            json.dump(positioning_rows, f, indent=2)
 
     print(f"\nBenchmark outputs saved to: {root}")
     print(f"Paired CSV: {paired_csv}")
@@ -1892,6 +2205,7 @@ def main():
     parser.add_argument("--output-dir", default="outputs/publication_benchmark_1mm")
     parser.add_argument("--run-id", default=time.strftime("%Y%m%d_%H%M%S"))
     parser.add_argument("--vessel-file", default=DEFAULT_VESSEL_FILE)
+    parser.add_argument("--cfd-file", default=None, help="Steady SI CFD NPZ imported by scripts/import_simscale_flow.py; no analytical fallback.")
     parser.add_argument("--flow-scales", default="1,3,5")
     parser.add_argument("--n-random-trials", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20260609)
@@ -1963,6 +2277,53 @@ def main():
         action="store_true",
         help="Run one random pair at flow=1 with the selected controllers.",
     )
+    parser.add_argument(
+        "--actuator",
+        choices=sorted(ACTUATOR_PRESETS),
+        default="paper",
+        help="Coil array preset (core gain and ampere-turn calibration).",
+    )
+    parser.add_argument(
+        "--core-mu-r",
+        type=float,
+        default=None,
+        help="Override the preset's effective core gain applied to the far field.",
+    )
+    parser.add_argument(
+        "--carrier-density-kg-m3",
+        type=float,
+        default=None,
+        help="Carrier density; enables gravity and buoyancy when set.",
+    )
+    parser.add_argument(
+        "--gravity-direction",
+        default="0,-1,0",
+        help="Gravity direction in vessel coordinates (normalized), e.g. 0,-1,0.",
+    )
+    parser.add_argument(
+        "--patient-positioning",
+        choices=["fixed", "optimized"],
+        default="fixed",
+        help="optimized picks a table roll/tilt per route; overrides --gravity-direction.",
+    )
+    parser.add_argument(
+        "--start-jitter-mm", type=float, default=0.0,
+        help="Std of a per-replicate release point offset, shared by all controllers; "
+             "vary --seed to draw replicates.",
+    )
+    parser.add_argument(
+        "--protocol",
+        choices=list(BENCHMARK_PROTOCOLS),
+        default="paper",
+        help="shared_route: same de-spurred route plan for every controller, "
+             "along-route stagnation test (see BENCHMARK_PROTOCOLS).",
+    )
+    parser.add_argument(
+        "--max-table-tilt-deg",
+        type=float,
+        default=DEFAULT_MAX_TILT_DEG,
+        help="Largest head-up/head-down table tilt allowed when optimizing positioning.",
+    )
     args = parser.parse_args()
 
     variants = {**CONTROLLER_VARIANTS, **ACBC_ABLATION_VARIANTS}
@@ -1999,6 +2360,7 @@ def main():
         raise ValueError(f"Unknown controller keys: {unknown}")
 
     run_benchmark(
+        start_jitter_m=args.start_jitter_mm / 1000.0,
         output_dir=args.output_dir,
         run_id=args.run_id,
         vessel_file=args.vessel_file,
@@ -2019,6 +2381,16 @@ def main():
         rerun_flow_scales=rerun_flow_scales,
         rerun_trial_kind=args.rerun_trial_kind,
         early_stop_enabled=not args.disable_early_stop,
+        cfd_file=args.cfd_file,
+        actuator=args.actuator,
+        core_mu_r=args.core_mu_r,
+        carrier_density_kg_m3=args.carrier_density_kg_m3,
+        gravity_direction=tuple(
+            float(v) for v in args.gravity_direction.split(",")
+        ),
+        patient_positioning=args.patient_positioning,
+        protocol=args.protocol,
+        max_table_tilt_deg=args.max_table_tilt_deg,
     )
 
 

@@ -95,6 +95,13 @@ class ElectromagnetArray3D:
         core_relative_permeability = 70 effective
         core_saturation_tesla      = 1.8 T
 
+    Calibration:
+        ampere_turn_scale multiplies every coil's dipole moment at a given
+        command current. It stands in for a stronger (e.g. water-cooled)
+        coil whose electrical and thermal limits are expressed per unit of
+        command current, so the hardware model is unchanged. 1.0 is the
+        coil described above.
+
     Notes:
         - This is far more realistic than the old 20,000-turn / 60 A model.
         - It is stronger than the first conservative 900-turn / 8 A model.
@@ -125,7 +132,10 @@ class ElectromagnetArray3D:
         winding_length_factor: float = 1.20,
         insulation_fill_factor: float = 0.70,
         enforce_hardware_limits: bool = True,
+        ampere_turn_scale: float = 1.0,
     ):
+        if ampere_turn_scale <= 0:
+            raise ValueError(f"ampere_turn_scale must be > 0, got {ampere_turn_scale}")
         self.placement_radius = float(placement_radius)
         self.center = (
             np.zeros(3, dtype=float)
@@ -137,6 +147,7 @@ class ElectromagnetArray3D:
         self.coil_length = float(coil_length)
         self.turns = float(turns)
         self.max_current = float(max_current)
+        self.ampere_turn_scale = float(ampere_turn_scale)
 
         self.core_radius = float(core_radius)
         self.core_relative_permeability = float(core_relative_permeability)
@@ -181,8 +192,10 @@ class ElectromagnetArray3D:
         )
 
         # Magnetic moment per ampere.
-        # m = N I A, where A = pi R^2.
-        self.moment_per_amp = self.turns * PI * self.coil_radius ** 2
+        # m = N I A, where A = pi R^2, times the calibration multiplier.
+        self.moment_per_amp = (
+            self.ampere_turn_scale * self.turns * PI * self.coil_radius ** 2
+        )
 
         self.wire_diameter_m = self._awg_diameter_m(self.wire_awg)
         self.wire_area_m2 = PI * (0.5 * self.wire_diameter_m) ** 2
@@ -586,6 +599,7 @@ class ElectromagnetArray3D:
                 self.core_relative_permeability
             ),
             "core_saturation_tesla": self.core_saturation_tesla,
+            "ampere_turn_scale": self.ampere_turn_scale,
             "moment_per_amp_A_m2": self.moment_per_amp,
             "wire_awg": self.wire_awg,
             "wire_diameter_m": self.wire_diameter_m,

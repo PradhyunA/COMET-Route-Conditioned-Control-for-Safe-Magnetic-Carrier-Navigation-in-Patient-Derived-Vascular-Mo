@@ -1,0 +1,111 @@
+{
+  "run_id": "pulmonary",
+  "vessel_file": "data/vessels/pulmonary_0082_H_PULM_H/real_vessel_segments_cm_corrected.pkl",
+  "flow_model": "analytical_poiseuille",
+  "cfd_file": null,
+  "cfd_metadata": null,
+  "flow_scale_semantics": "Multiplier of analytical mean velocity",
+  "route_authority_filter_enabled": true,
+  "actuator": "high_gradient_400",
+  "protocol": "shared_route",
+  "patient_positioning": "optimized",
+  "max_table_tilt_deg": 20.0,
+  "flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 0,
+  "seed": 20260611,
+  "controller_keys": [
+    "comet_v3"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 2,
+  "rerun_mode_enabled": true,
+  "rerun_from_csv": "benchmark_manifests/five_anatomy_500um/pulmonary_0082_H_PULM_H.csv",
+  "rerun_pair_ids": [
+    "canonical_001_inlet_to_outlet",
+    "canonical_002_random_to_publication_target",
+    "canonical_003_publication_start_to_random",
+    "random_0001",
+    "random_0002"
+  ],
+  "rerun_flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "rerun_coordinate_source": "paired_results_csv",
+  "early_stopping": {
+    "enabled_controller_kinds": [
+      "mpc",
+      "cem_mpc",
+      "acbc",
+      "comet"
+    ],
+    "excluded_controller_kinds": [
+      "pid",
+      "smc_dob_inspired"
+    ],
+    "enabled": true,
+    "window_steps": 200,
+    "improvement_threshold_m": 0.002,
+    "improvement_threshold_mm": 2.0
+  },
+  "software": {
+    "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 11,
+    "numpy": "1.26.4"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45,
+    "particle_density_kg_m3": 3542.0,
+    "gravity_m_s2": [
+      0.0,
+      -9.80665,
+      0.0
+    ]
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 2000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 2.0,
+    "ampere_turn_scale": 21.8,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "comet_v3": {
+      "label": "COMET-visible-lookahead-0.05mm-margin",
+      "kind": "comet",
+      "kwargs": {
+        "safety_escape_candidates": true,
+        "visible_lookahead": true,
+        "safety_filter_margin": 5e-05
+      }
+    }
+  },
+  "git": {
+    "commit": "55bd31b438788425ccf3c38986c68d3c42f186e2",
+    "branch": "cfd-vtu-integration",
+    "status_short": "M dynamag_simulation/core/comet_controller.py\n M dynamag_simulation/core/real_vessel_network.py\n M run_physics_sensitivity_sweep.sh\n M scripts/run_publication_benchmark.py\n M scripts/simulation_3d_acbc.py\n M scripts/simulation_3d_comet.py\n M scripts/simulation_3d_mpc.py\n?? benchmark_manifests/five_anatomy_500um/\n?? benchmark_manifests/tuning_heldout_seed777/\n?? data/vessels/aorta_0024_H_AO_H/\n?? data/vessels/aortofemoral_0049_H_ABAO_AIOD/\n?? dynamag_simulation/core/route_progress.py\n?? dynamag_simulation/core/tracking_mpc.py\n?? outputs/physics_sensitivity/five_anatomy_final_0049_20261103/\n?? outputs/physics_sensitivity/five_anatomy_final_20261103/\n?? outputs/physics_sensitivity/five_anatomy_final_comet_v3_20261103/\n?? outputs/physics_sensitivity/five_anatomy_final_nmpc_20261103/\n?? scripts/convert_0024_paths_to_segments.py\n?? scripts/convert_0049_paths_to_segments.py\n?? scripts/make_benchmark_manifest.py\n?? tests/test_shared_route_protocol.py"
+  }
+}

@@ -1,0 +1,19 @@
+== 300 mT/m ==
+ctrl           n  safe reach exit 1x 3x 5x  rmsA  maxT
+comet_v4       75   38    51    2 19 11  8  10.7  28.8
+mpc_tuned      75   20    52    6  8  7  5  11.7  27.0
+nmpc_tuned     75   19    46    5 13  3  3  10.6  26.7
+nmpc_default   75   17    32    5 11  3  3   9.4  30.8
+acbc_tuned     75    4    36   24  1  2  1  10.4  26.2
+== 400 mT/m ==
+ctrl           n  safe reach exit 1x 3x 5x  rmsA  maxT
+comet_v4       75   55    63    2 19 18 18  10.3  24.6
+nmpc_tuned     75   34    50    4 18 10  6   9.3  24.9
+nmpc_default   75   31    41    1 17  9  5   8.6  26.2
+== 600 mT/m ==
+ctrl           n  safe reach exit 1x 3x 5x  rmsA  maxT
+comet_v4       75   69    71    0 21 23 25   9.3  24.4
+mpc_tuned      75   46    68    0 18 16 12  11.1  25.5
+nmpc_tuned     75   45    64    1 18 13 14   7.4  25.5
+nmpc_default   75   43    50    0 24 12  7   6.8  28.4
+acbc_tuned     75   16    58   18  8  4  4   9.2  24.9

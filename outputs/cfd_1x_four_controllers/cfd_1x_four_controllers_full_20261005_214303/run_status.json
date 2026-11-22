@@ -1,0 +1,13 @@
+{
+  "status": "terminated",
+  "user_requested": true,
+  "terminated_at_utc": "2026-10-06T07:33:08.695296+00:00",
+  "completed_cases": 38,
+  "expected_cases": 40,
+  "completed_by_anatomy": {
+    "abdominal": 20,
+    "pulmonary": 18
+  },
+  "existing_results_preserved": true,
+  "final_verification_completed": false
+}

@@ -20,8 +20,16 @@ dynamag_simulation/simulation_outputs*/
 
 # Virtual environments
 .venv/
+.venv-cfd/
 venv/
 env/
 
 # Plan files
 .cursor/
+
+# Generated CFD interpolation arrays and web research
+data/cfd/*.npz
+.firecrawl/
+
+# Local Runpod/VM connection state, checkpoints and CFD reports
+/outputs/cfd_runpod/

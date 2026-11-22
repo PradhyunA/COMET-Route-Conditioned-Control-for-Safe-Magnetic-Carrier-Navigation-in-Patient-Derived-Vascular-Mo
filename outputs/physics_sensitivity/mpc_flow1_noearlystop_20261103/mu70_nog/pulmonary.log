@@ -1,0 +1,141 @@
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=199.390
+  flow=1 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-34.80554249318761, -5.214451743047484, 63.82019127545925] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=81.000
+  flow=1 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[-39.081327874445215, -32.10224290242017, -3.805481015381912] straight_mm=62.430
+  flow=1 pair=random_0001 kind=random start_mm=[-46.79286157232643, -14.338578895882934, 53.23582207737731] target_mm=[47.409292069345085, -3.7503075295580466, 41.14651772702275] straight_mm=95.563
+  flow=1 pair=random_0002 kind=random start_mm=[-65.59903808584082, -25.858017290987934, 85.21180611106627] target_mm=[46.000905749906174, -11.099821662278543, 39.26657206016647] straight_mm=121.587
+[pulmonary] submit flow=1 pair=canonical_001_inlet_to_outlet controller=mpc_tuned
+[pulmonary] submit flow=1 pair=canonical_002_random_to_publication_target controller=mpc_tuned
+[pulmonary] submit flow=1 pair=canonical_003_publication_start_to_random controller=mpc_tuned
+[pulmonary] submit flow=1 pair=random_0001 controller=mpc_tuned
+[pulmonary] submit flow=1 pair=random_0002 controller=mpc_tuned
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 457, sparse waypoints: 33
+      wp1: [-51.1 -44.7 -61.4] mm
+      wp2: [-50.2 -44.3 -59.5] mm
+      wp3: [-49.4 -44.  -57.7] mm
+      wp4: [-48.7 -43.7 -55.8] mm
+      wp5: [-48.1 -43.4 -53.8] mm
+      wp6: [-47.9 -43.1 -51.6] mm
+      wp7: [-47.9 -42.8 -49.6] mm
+      wp8: [-47.6 -42.5 -47.4] mm
+      wp9: [-47.2 -42.2 -45.4] mm
+      wp10: [-46.5 -41.8 -43.4] mm
+      ...
+      wp33: [-39.1 -32.1  -3.8] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-52.  -45.1 -63.5] mm
+  step   10/2000  final_dist=33.9mm  wp=13/33  best_wp=12/33  lookahead=14/33  wp_dist=1.52mm  wall=1.52mm  |F|=8.27e-06N  |B|=5.42e-02T  |I|=16.0A  v=145.01mm/s  flow=6.28mm/s  Re=2.29e+01  lat=1.9mm
+  step   20/2000  final_dist=9.7mm  wp=26/33  best_wp=25/33  lookahead=27/33  wp_dist=2.80mm  wall=2.34mm  |F|=6.87e-06N  |B|=5.65e-02T  |I|=16.0A  v=123.75mm/s  flow=9.06mm/s  Re=2.00e+01  lat=3.2mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 429, sparse waypoints: 59
+      wp1: [-45.9 -14.   55.1] mm
+      wp2: [-44.9 -13.4  56.8] mm
+      wp3: [-43.7 -12.6  58.4] mm
+      wp4: [-42.1 -11.5  60.1] mm
+      wp5: [-40.7 -10.2  61.5] mm
+      wp6: [-39.3  -8.9  62.5] mm
+      wp7: [-37.5  -7.7  63.1] mm
+      wp8: [-35.3  -5.9  63.7] mm
+      wp9: [-33.5  -4.   64.3] mm
+      wp10: [-31.9  -2.4  64.9] mm
+      ...
+      wp59: [47.4 -3.8 41.1] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-46.8 -14.3  53.2] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 794, sparse waypoints: 74
+      wp1: [-64.5 -24.6  84. ] mm
+      wp2: [-63.7 -23.4  82.5] mm
+      wp3: [-63.6 -22.1  81. ] mm
+      wp4: [-63.5 -21.1  79.3] mm
+      wp5: [-63.  -20.3  77.5] mm
+      wp6: [-62.3 -19.5  75.7] mm
+      wp7: [-61.3 -18.7  74.1] mm
+      wp8: [-60.2 -17.9  72.7] mm
+      wp9: [-58.8 -17.2  71.3] mm
+      wp10: [-57.3 -16.6  70. ] mm
+      ...
+      wp74: [ 46.  -11.1  39.3] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-65.6 -25.9  85.2] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1012, sparse waypoints: 67
+      wp1: [-33.2  -3.7  64.4] mm
+      wp2: [-31.4  -1.9  65. ] mm
+      wp3: [-30.1  -0.3  65.3] mm
+      wp4: [-28.9   1.5  65.3] mm
+      wp5: [-27.8   3.3  65.1] mm
+      wp6: [-26.8   5.5  64.8] mm
+      wp7: [-25.9   7.6  64.2] mm
+      wp8: [-25.1  10.4  63.8] mm
+      wp9: [-24.7  12.7  63.5] mm
+      wp10: [-24.7  14.8  63.1] mm
+      ...
+      wp67: [ 24.6 -14.7 118.1] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-34.8  -5.2  63.8] mm
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    Raw waypoints: 1951, sparse waypoints: 134
+      wp1: [-51.1 -44.7 -61.4] mm
+      wp2: [-50.2 -44.3 -59.5] mm
+      wp3: [-49.4 -44.  -57.7] mm
+      wp4: [-48.7 -43.7 -55.8] mm
+      wp5: [-48.1 -43.4 -53.8] mm
+      wp6: [-47.9 -43.1 -51.6] mm
+      wp7: [-47.9 -42.8 -49.6] mm
+      wp8: [-47.6 -42.5 -47.4] mm
+      wp9: [-47.2 -42.2 -45.4] mm
+      wp10: [-46.5 -41.8 -43.4] mm
+      ...
+      wp134: [ 24.6 -14.7 118.1] mm
+    Baseline MPC navigator: arrival_tol=1.50 mm, spacing=2.00 mm, lookahead=1, forward_search_points=25
+    Optimizer: project SLSQP one-step allocator
+    Device motion: mode=moving_adaptive_enclosing_gantry, placement_radius=300.0 mm, initial_center=[-52.  -45.1 -63.5] mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.1C
+  Gantry: mean_particle_dist=0.3mm, max_lateral=3.3mm
+[pulmonary] done flow=1 pair=canonical_003_publication_start_to_random controller=mpc_tuned
+  step   10/2000  final_dist=170.4mm  wp=14/134  best_wp=12/134  lookahead=15/134  wp_dist=3.19mm  wall=1.21mm  |F|=9.05e-06N  |B|=5.65e-02T  |I|=16.0A  v=155.27mm/s  flow=5.68mm/s  Re=2.44e+01  lat=2.7mm
+  step   20/2000  final_dist=145.3mm  wp=26/134  best_wp=25/134  lookahead=27/134  wp_dist=2.21mm  wall=1.63mm  |F|=9.09e-06N  |B|=5.69e-02T  |I|=16.0A  v=154.23mm/s  flow=7.73mm/s  Re=2.45e+01  lat=7.1mm
+  step   10/2000  final_dist=100.3mm  wp=13/74  best_wp=12/74  lookahead=14/74  wp_dist=2.14mm  wall=3.28mm  |F|=1.01e-05N  |B|=9.17e-02T  |I|=16.0A  v=165.12mm/s  flow=12.19mm/s  Re=2.64e+01  lat=11.2mm
+  step   30/2000  final_dist=123.5mm  wp=40/134  best_wp=39/134  lookahead=41/134  wp_dist=2.27mm  wall=2.52mm  |F|=9.10e-06N  |B|=5.93e-02T  |I|=16.0A  v=154.76mm/s  flow=7.60mm/s  Re=2.45e+01  lat=19.6mm
+  step   40/2000  final_dist=109.4mm  wp=52/134  best_wp=50/134  lookahead=53/134  wp_dist=3.46mm  wall=3.75mm  |F|=9.05e-06N  |B|=5.68e-02T  |I|=16.0A  v=151.17mm/s  flow=10.69mm/s  Re=2.44e+01  lat=33.3mm
+  step   20/2000  final_dist=79.8mm  wp=25/74  best_wp=23/74  lookahead=26/74  wp_dist=3.29mm  wall=9.70mm  |F|=1.08e-05N  |B|=1.18e-01T  |I|=16.0A  v=150.97mm/s  flow=32.96mm/s  Re=2.77e+01  lat=18.6mm
+  step   50/2000  final_dist=85.3mm  wp=65/134  best_wp=64/134  lookahead=66/134  wp_dist=3.29mm  wall=7.96mm  |F|=9.35e-06N  |B|=6.88e-02T  |I|=16.0A  v=140.96mm/s  flow=25.26mm/s  Re=2.50e+01  lat=35.1mm
+  step   10/2000  final_dist=82.4mm  wp=13/67  best_wp=12/67  lookahead=14/67  wp_dist=3.18mm  wall=12.14mm  |F|=5.47e-06N  |B|=5.63e-02T  |I|=16.0A  v=86.73mm/s  flow=41.98mm/s  Re=1.69e+01  lat=21.1mm
+  step   10/2000  final_dist=80.5mm  wp=12/59  best_wp=11/59  lookahead=13/59  wp_dist=3.11mm  wall=9.14mm  |F|=1.09e-05N  |B|=1.18e-01T  |I|=16.0A  v=152.29mm/s  flow=32.43mm/s  Re=2.78e+01  lat=15.1mm
+  step   20/2000  final_dist=65.1mm  wp=32/67  best_wp=31/67  lookahead=33/67  wp_dist=2.78mm  wall=7.80mm  |F|=9.90e-06N  |B|=9.15e-02T  |I|=16.0A  v=198.53mm/s  flow=26.08mm/s  Re=2.60e+01  lat=33.3mm
+  step   30/2000  final_dist=67.7mm  wp=39/74  best_wp=38/74  lookahead=40/74  wp_dist=3.11mm  wall=10.24mm  |F|=1.03e-05N  |B|=1.10e-01T  |I|=16.0A  v=206.36mm/s  flow=29.65mm/s  Re=2.68e+01  lat=27.5mm
+  step   60/2000  final_dist=79.8mm  wp=78/134  best_wp=76/134  lookahead=79/134  wp_dist=3.46mm  wall=12.28mm  |F|=1.07e-05N  |B|=1.18e-01T  |I|=16.0A  v=139.89mm/s  flow=44.02mm/s  Re=2.75e+01  lat=37.5mm
+  step   20/2000  final_dist=64.3mm  wp=27/59  best_wp=26/59  lookahead=28/59  wp_dist=2.18mm  wall=10.43mm  |F|=1.04e-05N  |B|=1.14e-01T  |I|=15.9A  v=212.71mm/s  flow=34.75mm/s  Re=2.69e+01  lat=21.2mm
+  step   30/2000  final_dist=40.3mm  wp=47/67  best_wp=46/67  lookahead=48/67  wp_dist=2.57mm  wall=2.39mm  |F|=7.74e-06N  |B|=5.16e-02T  |I|=16.0A  v=152.75mm/s  flow=8.45mm/s  Re=2.18e+01  lat=30.7mm
+  step   40/2000  final_dist=12.4mm  wp=61/67  best_wp=59/67  lookahead=62/67  wp_dist=3.52mm  wall=1.15mm  |F|=7.49e-06N  |B|=5.65e-02T  |I|=16.0A  v=144.31mm/s  flow=3.69mm/s  Re=2.13e+01  lat=12.2mm
+  step   40/2000  final_dist=32.9mm  wp=56/74  best_wp=55/74  lookahead=57/74  wp_dist=3.19mm  wall=5.56mm  |F|=1.12e-05N  |B|=1.20e-01T  |I|=16.0A  v=204.17mm/s  flow=15.56mm/s  Re=2.84e+01  lat=20.4mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.2C
+  Gantry: mean_particle_dist=3.7mm, max_lateral=36.9mm
+[pulmonary] done flow=1 pair=canonical_002_random_to_publication_target controller=mpc_tuned
+  step   30/2000  final_dist=27.0mm  wp=45/59  best_wp=44/59  lookahead=46/59  wp_dist=3.13mm  wall=5.93mm  |F|=1.08e-05N  |B|=1.15e-01T  |I|=16.0A  v=200.03mm/s  flow=17.26mm/s  Re=2.77e+01  lat=16.2mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.3C
+  Gantry: mean_particle_dist=3.0mm, max_lateral=33.9mm
+[pulmonary] done flow=1 pair=random_0002 controller=mpc_tuned
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.10A, max_V=19.1V, max_P=250.0W, max_temp=22.2C
+  Gantry: mean_particle_dist=2.4mm, max_lateral=26.8mm
+[pulmonary] done flow=1 pair=random_0001 controller=mpc_tuned
+  step   70/2000  final_dist=67.2mm  wp=96/134  best_wp=95/134  lookahead=97/134  wp_dist=2.80mm  wall=8.24mm  |F|=1.12e-05N  |B|=1.20e-01T  |I|=16.0A  v=216.74mm/s  flow=28.28mm/s  Re=2.84e+01  lat=26.7mm
+  step   80/2000  final_dist=46.6mm  wp=111/134  best_wp=110/134  lookahead=112/134  wp_dist=2.49mm  wall=2.77mm  |F|=6.78e-06N  |B|=5.65e-02T  |I|=16.0A  v=139.70mm/s  flow=8.83mm/s  Re=1.98e+01  lat=29.7mm
+  step   90/2000  final_dist=19.4mm  wp=124/134  best_wp=123/134  lookahead=125/134  wp_dist=2.71mm  wall=1.69mm  |F|=7.10e-06N  |B|=5.65e-02T  |I|=16.0A  v=140.03mm/s  flow=4.98mm/s  Re=2.05e+01  lat=14.8mm
+  Baseline MPC summary: low-level convergence=100.00%
+  Hardware: max_actual_I=13.09A, max_V=19.1V, max_P=250.0W, max_temp=22.5C
+  Gantry: mean_particle_dist=3.8mm, max_lateral=41.4mm
+[pulmonary] done flow=1 pair=canonical_001_inlet_to_outlet controller=mpc_tuned
+
+Benchmark outputs saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/mpc_flow1_noearlystop_20261103/mu70_nog/pulmonary
+Paired CSV: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/mpc_flow1_noearlystop_20261103/mu70_nog/pulmonary/paired_results.csv

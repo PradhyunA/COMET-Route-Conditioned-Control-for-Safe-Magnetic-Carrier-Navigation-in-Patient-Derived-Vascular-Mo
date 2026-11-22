@@ -46,6 +46,8 @@ import argparse
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import dataclasses
+
 import numpy as np
 
 from dynamag_simulation.core.constants import DEFAULT_TARGET_TOLERANCE
@@ -66,6 +68,8 @@ from dynamag_simulation.core.constrained_cem_controller import (
     ConstrainedCEMConfig, ConstrainedCEMMPCController, REFERENCE_COMMIT,
 )
 from dynamag_simulation.core.reporting import TrialResult, print_summary, save_results_csv
+from dynamag_simulation.core.route_progress import RouteRemaining
+from dynamag_simulation.core.tracking_mpc import TrackingMPC, TrackingMPCConfig
 from dynamag_simulation.core.real_vessel_network import RealVesselNetwork
 from dynamag_simulation.core.workspace import WorkspaceVessel
 
@@ -103,7 +107,7 @@ DEFAULT_MPC_WAYPOINT_LOOKAHEAD = 1
 DEFAULT_FORWARD_SEARCH_POINTS = 25
 DEFAULT_EARLY_STOP_WINDOW_STEPS = 200
 DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M = 0.002
-VALID_MPC_OPTIMIZERS = {"slsqp", "pets_cem", "icem", "constrained_cem"}
+VALID_MPC_OPTIMIZERS = {"slsqp", "pets_cem", "icem", "constrained_cem", "tracking_nmpc"}
 
 VALID_DEVICE_MODES = {
     "moving_internal_upper_bound",
@@ -412,6 +416,7 @@ def simulate_trial_mpc(
     magnet_center=None,
     core_relative_permeability: float = FIXED_CORE_MU_R_EFFECTIVE,
     core_saturation_tesla: float = FIXED_CORE_SATURATION_T,
+    ampere_turn_scale: float = 1.0,
     device_mode: str = DEVICE_MODE,
     gantry_standoff: float = GANTRY_STANDOFF,
     max_lateral_shift: float = MAX_LATERAL_SHIFT,
@@ -435,6 +440,7 @@ def simulate_trial_mpc(
     waypoint_lookahead: int = DEFAULT_MPC_WAYPOINT_LOOKAHEAD,
     forward_search_points: int = DEFAULT_FORWARD_SEARCH_POINTS,
     early_stop_enabled: bool = False,
+    early_stop_route_progress: bool = False,
     early_stop_window_steps: int = DEFAULT_EARLY_STOP_WINDOW_STEPS,
     early_stop_improvement_threshold_m: float = (
         DEFAULT_EARLY_STOP_IMPROVEMENT_THRESHOLD_M
@@ -459,6 +465,10 @@ def simulate_trial_mpc(
     constrained_cem_best_effort_on_infeasible: bool = False,
     constrained_cem_hard_clearance_m: float | None = None,
     constrained_cem_action_blocks: int | None = None,
+    # Receding-horizon tracking NMPC settings (optimizer="tracking_nmpc").
+    tracking_mpc_config: dict | None = None,
+    # Shared benchmark route constraints; None keeps the default planner.
+    route_planning_options=None,
 ) -> TrialResult:
     if device_mode not in VALID_DEVICE_MODES:
         raise ValueError(
@@ -497,6 +507,7 @@ def simulate_trial_mpc(
         core_radius=core_radius,
         core_relative_permeability=core_relative_permeability,
         core_saturation_tesla=core_saturation_tesla,
+        ampere_turn_scale=ampere_turn_scale,
     )
 
     particle = MagneticParticle3D(
@@ -592,7 +603,18 @@ def simulate_trial_mpc(
         waypoint_spacing=waypoint_spacing,
         lookahead=waypoint_lookahead,
         forward_search_points=forward_search_points,
+        planning_options=route_planning_options,
     )
+    if optimizer == "tracking_nmpc":
+        tracking_config = TrackingMPCConfig(**(tracking_mpc_config or {}))
+        cem_controller = TrackingMPC(
+            network=network,
+            route_points=[start, *navigator.waypoints],
+            wall_clearance_m=wall_clearance_threshold_m,
+            current_limit=max_current,
+            config=tracking_config,
+            rng_seed=rng_seed,
+        )
 
     print(
         f"    Profile: {profile.name}, "
@@ -667,6 +689,8 @@ def simulate_trial_mpc(
             f"beta={cem_config.noise_beta}, reuse={cem_config.fraction_elites_reused}",
             flush=True,
         )
+    elif optimizer == "tracking_nmpc":
+        print(f"    Receding-horizon tracking NMPC: {tracking_config}", flush=True)
     else:
         print("    Optimizer: project SLSQP one-step allocator", flush=True)
 
@@ -700,6 +724,17 @@ def simulate_trial_mpc(
     early_stop_improvement_threshold_m = float(early_stop_improvement_threshold_m)
     best_final_target_distance = float(np.linalg.norm(particle.pos - target))
     best_distance_history = [best_final_target_distance]
+    # Optional second progress measure: remaining length along the planned
+    # route. With it, a trial only counts as stagnant when neither the
+    # straight-line nor the along-route distance improves.
+    route_remaining = (
+        RouteRemaining([start, *navigator.waypoints])
+        if early_stop_route_progress else None
+    )
+    best_route_remaining = (
+        route_remaining(particle.pos) if route_remaining is not None else np.inf
+    )
+    best_route_history = [best_route_remaining]
     prev_currents = np.zeros(magnets.n_magnets, dtype=float)
     wall_start = time.perf_counter()
     converged_count = 0
@@ -757,7 +792,7 @@ def simulate_trial_mpc(
             "flow": flow,
             "sim_time": sim_time,
         }
-        if optimizer in {"pets_cem", "icem", "constrained_cem"}:
+        if optimizer in {"pets_cem", "icem", "constrained_cem", "tracking_nmpc"}:
             best_currents, best_force, best_cost, converged = cem_controller.command(
                 previous_currents=prev_currents,
                 **controller_kwargs,
@@ -830,6 +865,9 @@ def simulate_trial_mpc(
 
         best_final_target_distance = min(best_final_target_distance, float(distance))
         best_distance_history.append(best_final_target_distance)
+        if route_remaining is not None:
+            best_route_remaining = min(best_route_remaining, route_remaining(particle.pos))
+        best_route_history.append(best_route_remaining)
 
         if distance < tolerance:
             reached = True
@@ -842,7 +880,14 @@ def simulate_trial_mpc(
         ):
             previous_best = best_distance_history[-early_stop_window_steps - 1]
             improvement = previous_best - best_final_target_distance
-            if improvement < early_stop_improvement_threshold_m:
+            route_improvement = (
+                best_route_history[-early_stop_window_steps - 1] - best_route_remaining
+                if route_remaining is not None else -np.inf
+            )
+            if (
+                improvement < early_stop_improvement_threshold_m
+                and route_improvement < early_stop_improvement_threshold_m
+            ):
                 early_stopped = True
                 early_stop_measured_improvement_m = float(improvement)
                 early_stop_reason = (
@@ -978,6 +1023,12 @@ def simulate_trial_mpc(
                 else "continuous_mpc_controller_v2"
             ),
             "optimizer": optimizer,
+            "tracking_mpc_config": (
+                dataclasses.asdict(tracking_config)
+                if optimizer == "tracking_nmpc" else None
+            ),
+            "shared_route_planning": route_planning_options is not None,
+            "early_stop_route_progress": early_stop_route_progress,
             "published_baseline": bool(optimizer in {"pets_cem", "icem", "constrained_cem"}),
             "published_method": (
                 "Wen and Topcu, Constrained Cross-Entropy Method for Safe Reinforcement "
@@ -1122,6 +1173,7 @@ def simulate_trial_mpc(
             ) if len(gantry_lateral_shift_log) > 0 else np.nan,
             "core_relative_permeability": core_relative_permeability,
             "core_saturation_tesla": core_saturation_tesla,
+            "ampere_turn_scale": ampere_turn_scale,
             "profile": profile.name,
             "particle_diameter_m": profile.diameter,
             "particle_diameter_mm": profile.diameter * 1000.0,

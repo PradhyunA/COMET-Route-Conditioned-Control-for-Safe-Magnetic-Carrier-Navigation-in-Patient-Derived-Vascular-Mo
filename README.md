@@ -164,3 +164,22 @@ limits, and a list of what is and is not modelled.
 See `docs/cem_mpc_baseline.md` for the published baseline citation, the exact
 reproduced CEM components, the deterministic-physics adaptation, benchmark
 commands, and manuscript-ready method wording.
+
+### Imported CFD flow
+
+The corrected SimScale Run 4 exports can drive COMET, constrained CEM-MPC,
+ACBC, and MPC through the existing
+publication runner. See [the CFD workflow](docs/cfd_validation.md) for the
+importer, separate numerical environment, validation limits, and the frozen
+15-case abdominal command:
+
+```bash
+./run_comet_cfd_abdominal_15trials.sh
+```
+
+For both abdominal and pulmonary at the supplied 1× CFD condition, run the
+40-case controller comparison:
+
+```bash
+./run_cfd_abdominal_pulmonary_1x.sh
+```

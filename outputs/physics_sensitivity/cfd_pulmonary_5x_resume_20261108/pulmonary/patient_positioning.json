@@ -1,0 +1,32 @@
+[
+  {
+    "flow_scale": 5.0,
+    "pair_id": "random_0001",
+    "gravity_m_s2": [
+      6.516156318121198,
+      6.516156318121195,
+      -3.354071838544669
+    ],
+    "table_roll_deg": 315.0,
+    "table_tilt_deg": -20.0,
+    "peak_required_force_n": 5.3012006911302903e-05,
+    "mean_required_force_n": 3.144741773988137e-05,
+    "worst_orientation_peak_force_n": 5.586857645729359e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  },
+  {
+    "flow_scale": 5.0,
+    "pair_id": "random_0002",
+    "gravity_m_s2": [
+      0.0,
+      9.65766495107717,
+      1.7029069015174023
+    ],
+    "table_roll_deg": 0.0,
+    "table_tilt_deg": 10.0,
+    "peak_required_force_n": 4.49318201810546e-05,
+    "mean_required_force_n": 3.619308838149103e-05,
+    "worst_orientation_peak_force_n": 4.810730131473092e-05,
+    "net_weight_n": 1.5930561666267079e-06
+  }
+]

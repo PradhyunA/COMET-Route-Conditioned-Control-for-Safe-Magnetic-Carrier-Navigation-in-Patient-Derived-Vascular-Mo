@@ -1,0 +1,169 @@
+Loaded route-feasible rerun pairs from paired_results_csv:
+  flow=1 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=199.390
+  flow=1 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-34.80554249318761, -5.214451743047484, 63.82019127545925] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=81.000
+  flow=1 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[-39.081327874445215, -32.10224290242017, -3.805481015381912] straight_mm=62.430
+  flow=1 pair=random_0001 kind=random start_mm=[-46.79286157232643, -14.338578895882934, 53.23582207737731] target_mm=[47.409292069345085, -3.7503075295580466, 41.14651772702275] straight_mm=95.563
+  flow=1 pair=random_0002 kind=random start_mm=[-65.59903808584082, -25.858017290987934, 85.21180611106627] target_mm=[46.000905749906174, -11.099821662278543, 39.26657206016647] straight_mm=121.587
+  flow=3 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=199.390
+  flow=3 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[-2.7757031681033366, 7.325699375292001, 56.68599917887545] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=70.731
+  flow=3 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[19.063855939802387, 9.320597855118702, 61.48972609326442] straight_mm=153.732
+  flow=3 pair=random_0001 kind=random start_mm=[-65.28120668901649, -10.529680687044921, 84.93045496684348] target_mm=[56.38503279337068, -39.527670913832566, 63.82038281932381] straight_mm=126.843
+  flow=3 pair=random_0002 kind=random start_mm=[-48.198855506586995, -15.841464448541089, 47.2002340489236] target_mm=[-45.681329853035166, -13.841427150590672, 55.526377573822955] straight_mm=8.925
+  flow=5 pair=canonical_001_inlet_to_outlet kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=199.390
+  flow=5 pair=canonical_002_random_to_publication_target kind=canonical start_mm=[45.81449350495482, -27.61754491232805, 17.320508387398803] target_mm=[24.58595037460327, -14.713741540908813, 118.07354927062988] straight_mm=103.771
+  flow=5 pair=canonical_003_publication_start_to_random kind=canonical start_mm=[-52.04981803894043, -45.07847309112549, -63.479118347167976] target_mm=[32.850264938560656, -38.91833620825276, 63.440742886808245] straight_mm=152.822
+  flow=5 pair=random_0001 kind=random start_mm=[-77.23714495440974, -24.180459226023878, 80.25733094823245] target_mm=[35.33189866959082, -16.7746261887911, 85.01711940404256] straight_mm=112.913
+  flow=5 pair=random_0002 kind=random start_mm=[-45.98092471498247, -14.040532162439193, 54.960989281393495] target_mm=[-49.9406345944511, -32.1782901938478, 43.12938198749193] straight_mm=22.015
+[pulmonary] submit flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+[pulmonary] submit flow=1 pair=canonical_002_random_to_publication_target controller=comet
+[pulmonary] submit flow=1 pair=canonical_003_publication_start_to_random controller=comet
+[pulmonary] submit flow=1 pair=random_0001 controller=comet
+[pulmonary] submit flow=1 pair=random_0002 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=41, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=32.3mm  bif=0.0mm  H=-0.00  res=2.5mm  wall=1.51mm  |I|=9.2A  v=34.67mm/s
+  COMET summary: hard_commits=8, transitions=9, emergency_switches=0, avg_ctrl=16.5ms
+[pulmonary] done flow=1 pair=canonical_003_publication_start_to_random controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=78, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=97, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=88, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=177, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=172.2mm  bif=2.6mm  H=-0.00  res=17.3mm  wall=1.64mm  |I|=10.8A  v=32.47mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=86.2mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=5.39mm  |I|=13.1A  v=150.65mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=78.2mm  bif=0.0mm  H=-0.00  res=2.5mm  wall=11.30mm  |I|=13.1A  v=7.54mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=78.5mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=11.42mm  |I|=8.3A  v=3.27mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=126.6mm  bif=0.0mm  H=-0.00  res=1.2mm  wall=2.04mm  |I|=13.1A  v=148.72mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=78.9mm  bif=0.0mm  H=-0.00  res=2.6mm  wall=11.51mm  |I|=12.2A  v=5.05mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=39.2mm  bif=0.0mm  H=-0.00  res=2.0mm  wall=2.83mm  |I|=13.0A  v=107.87mm/s
+  step   50/2000  mode=COMET_TERMINAL_CAPTURE  dist=19.9mm  bif=0.0mm  H=-0.00  res=-1.3mm  wall=1.73mm  |I|=13.1A  v=122.81mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=84.9mm  bif=0.0mm  H=-0.00  res=-4.7mm  wall=2.97mm  |I|=12.7A  v=133.84mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=6.2mm  bif=0.4mm  H=-0.00  res=3.4mm  wall=1.20mm  |I|=11.6A  v=51.20mm/s
+  COMET summary: hard_commits=41, transitions=5, emergency_switches=0, avg_ctrl=226.2ms
+[pulmonary] done flow=1 pair=random_0001 controller=comet
+  COMET summary: hard_commits=55, transitions=5, emergency_switches=0, avg_ctrl=161.4ms
+  step   75/2000  mode=COMET_TERMINAL_CAPTURE  dist=8.2mm  bif=0.0mm  H=-0.00  res=-1.4mm  wall=1.65mm  |I|=12.3A  v=88.12mm/s
+  COMET summary: hard_commits=54, transitions=5, emergency_switches=0, avg_ctrl=204.1ms
+  step  100/2000  mode=COMET_BOOST     dist=76.7mm  bif=0.0mm  H=-0.00  res=2.4mm  wall=11.47mm  |I|=12.8A  v=138.68mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=35.4mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=2.79mm  |I|=13.1A  v=69.31mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=6.3mm  bif=0.5mm  H=-0.00  res=3.1mm  wall=1.21mm  |I|=13.1A  v=47.88mm/s
+  COMET summary: hard_commits=92, transitions=11, emergency_switches=0, avg_ctrl=170.4ms
+[pulmonary] done flow=1 pair=canonical_002_random_to_publication_target controller=comet
+[pulmonary] done flow=1 pair=random_0002 controller=comet
+[pulmonary] done flow=1 pair=canonical_001_inlet_to_outlet controller=comet
+COMET diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/comet_sweep_20261103/mu70_nog/pulmonary/flow_1x/comet/comet_diagnostics.csv
+[pulmonary] submit flow=3 pair=canonical_001_inlet_to_outlet controller=comet
+[pulmonary] submit flow=3 pair=canonical_002_random_to_publication_target controller=comet
+[pulmonary] submit flow=3 pair=canonical_003_publication_start_to_random controller=comet
+[pulmonary] submit flow=3 pair=random_0001 controller=comet
+[pulmonary] submit flow=3 pair=random_0002 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=6, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=6, transitions=2, emergency_switches=0, avg_ctrl=331.8ms
+[pulmonary] done flow=3 pair=random_0002 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=134, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=118.6mm  bif=5.9mm  H=-0.00  res=3.7mm  wall=1.73mm  |I|=13.1A  v=115.12mm/s
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=55, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=122, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=177, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=120.2mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=0.59mm  |I|=0.0A  v=9.42mm/s
+  step   25/2000  mode=COMET_APPROACH  dist=165.9mm  bif=7.4mm  H=-0.00  res=76.6mm  wall=1.46mm  |I|=9.7A  v=31.41mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=22.2mm  bif=0.0mm  H=-0.00  res=2.7mm  wall=1.46mm  |I|=13.1A  v=121.43mm/s
+  COMET summary: hard_commits=35, transitions=3, emergency_switches=0, avg_ctrl=92.1ms
+[pulmonary] done flow=3 pair=canonical_002_random_to_publication_target controller=comet
+  step   50/2000  mode=COMET_COMMIT    dist=84.1mm  bif=0.0mm  H=-0.00  res=1.8mm  wall=1.42mm  |I|=13.1A  v=105.14mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=103.4mm  bif=0.0mm  H=-0.00  res=-4.8mm  wall=1.20mm  |I|=13.1A  v=142.89mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=128.4mm  bif=0.0mm  H=-0.00  res=3.0mm  wall=1.77mm  |I|=13.1A  v=138.13mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=57.4mm  bif=0.0mm  H=-0.00  res=-5.2mm  wall=1.40mm  |I|=13.1A  v=121.45mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=95.1mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=3.48mm  |I|=13.1A  v=100.09mm/s
+  step   75/2000  mode=COMET_BOOST     dist=92.0mm  bif=0.0mm  H=-0.00  res=1.5mm  wall=11.07mm  |I|=13.1A  v=165.69mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=53.0mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.34mm  |I|=6.3A  v=12.12mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=28.8mm  bif=0.0mm  H=-0.00  res=0.1mm  wall=1.66mm  |I|=7.5A  v=78.53mm/s
+  COMET summary: hard_commits=61, transitions=7, emergency_switches=0, avg_ctrl=161.4ms
+[pulmonary] done flow=3 pair=random_0001 controller=comet
+  step  100/2000  mode=COMET_COMMIT    dist=84.8mm  bif=0.0mm  H=-0.00  res=-5.6mm  wall=3.37mm  |I|=10.3A  v=14.31mm/s
+  step  125/2000  mode=COMET_BOOST     dist=77.0mm  bif=0.0mm  H=-0.00  res=-1.8mm  wall=7.61mm  |I|=12.4A  v=17.75mm/s
+  step  125/2000  mode=COMET_BOOST     dist=44.4mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=7.47mm  |I|=9.0A  v=11.17mm/s
+  step  150/2000  mode=COMET_BOOST     dist=77.1mm  bif=0.0mm  H=-0.00  res=-1.6mm  wall=7.70mm  |I|=12.8A  v=8.11mm/s
+  step  150/2000  mode=COMET_RESCUE    dist=51.8mm  bif=0.0mm  H=-0.00  res=-3.9mm  wall=5.02mm  |I|=13.1A  v=168.05mm/s
+  step  175/2000  mode=COMET_RESCUE    dist=102.9mm  bif=0.0mm  H=-0.00  res=-14.3mm  wall=3.96mm  |I|=13.1A  v=26.46mm/s
+  step  175/2000  mode=COMET_RESCUE    dist=73.5mm  bif=0.0mm  H=-0.00  res=-14.1mm  wall=3.59mm  |I|=10.6A  v=44.46mm/s
+  step  200/2000  mode=COMET_RESCUE    dist=102.3mm  bif=0.0mm  H=-0.00  res=-14.1mm  wall=3.36mm  |I|=11.5A  v=29.96mm/s
+  step  200/2000  mode=COMET_RESCUE    dist=73.8mm  bif=0.0mm  H=-0.00  res=-13.7mm  wall=2.03mm  |I|=7.8A  v=44.21mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=91.8mm  bif=0.0mm  H=-0.00  res=-2.2mm  wall=1.08mm  |I|=13.1A  v=120.90mm/s
+  step  225/2000  mode=COMET_COMMIT    dist=53.1mm  bif=0.0mm  H=-0.00  res=-7.0mm  wall=1.67mm  |I|=13.1A  v=145.00mm/s
+  step  250/2000  mode=COMET_COMMIT    dist=84.4mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.48mm  |I|=7.5A  v=5.60mm/s
+  step  250/2000  mode=COMET_BOOST     dist=39.2mm  bif=0.0mm  H=-0.00  res=-2.6mm  wall=7.03mm  |I|=13.1A  v=166.57mm/s
+  step  275/2000  mode=COMET_COMMIT    dist=50.7mm  bif=0.0mm  H=-0.00  res=1.7mm  wall=2.12mm  |I|=12.5A  v=103.98mm/s
+  step  300/2000  mode=COMET_COMMIT    dist=8.5mm  bif=2.9mm  H=-0.00  res=14.4mm  wall=1.11mm  |I|=13.1A  v=53.97mm/s
+  COMET summary: hard_commits=127, transitions=14, emergency_switches=0, avg_ctrl=261.7ms
+[pulmonary] done flow=3 pair=canonical_001_inlet_to_outlet controller=comet
+  COMET summary: hard_commits=120, transitions=12, emergency_switches=0, avg_ctrl=321.2ms
+[pulmonary] done flow=3 pair=canonical_003_publication_start_to_random controller=comet
+COMET diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/comet_sweep_20261103/mu70_nog/pulmonary/flow_3x/comet/comet_diagnostics.csv
+[pulmonary] submit flow=5 pair=canonical_001_inlet_to_outlet controller=comet
+[pulmonary] submit flow=5 pair=canonical_002_random_to_publication_target controller=comet
+[pulmonary] submit flow=5 pair=canonical_003_publication_start_to_random controller=comet
+[pulmonary] submit flow=5 pair=random_0001 controller=comet
+[pulmonary] submit flow=5 pair=random_0002 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=15, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  COMET summary: hard_commits=11, transitions=3, emergency_switches=0, avg_ctrl=131.0ms
+[pulmonary] done flow=5 pair=random_0002 controller=comet
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=104, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=105, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=174, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+    Profile: spion_carrier_500um_blood, diameter=0.500 mm
+    COMET: route waypoints=177, window=45mm, commit_dist=10mm, T_far=2.50, T_near=0.30
+  step   25/2000  mode=COMET_COMMIT    dist=85.9mm  bif=0.0mm  H=-0.00  res=0.7mm  wall=2.46mm  |I|=13.1A  v=123.80mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=77.0mm  bif=0.0mm  H=-0.00  res=-0.4mm  wall=1.50mm  |I|=13.1A  v=109.22mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=181.5mm  bif=4.9mm  H=-0.00  res=93.4mm  wall=1.36mm  |I|=13.0A  v=29.89mm/s
+  step   25/2000  mode=COMET_COMMIT    dist=127.4mm  bif=2.5mm  H=-0.00  res=5.6mm  wall=1.69mm  |I|=13.1A  v=20.37mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=155.2mm  bif=0.0mm  H=-0.00  res=1.9mm  wall=1.07mm  |I|=13.1A  v=119.02mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=97.9mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=1.64mm  |I|=13.1A  v=118.83mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=80.2mm  bif=0.0mm  H=-0.00  res=-8.0mm  wall=0.04mm  |I|=0.0A  v=1.23mm/s
+  step   50/2000  mode=COMET_COMMIT    dist=71.2mm  bif=0.0mm  H=-0.00  res=-3.8mm  wall=3.75mm  |I|=11.5A  v=9.91mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=120.4mm  bif=0.0mm  H=-0.00  res=1.4mm  wall=1.80mm  |I|=13.1A  v=108.03mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=85.0mm  bif=0.0mm  H=-0.00  res=-0.7mm  wall=2.07mm  |I|=13.1A  v=106.95mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=98.6mm  bif=0.0mm  H=-0.00  res=-0.5mm  wall=1.68mm  |I|=13.1A  v=33.46mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=77.5mm  bif=0.0mm  H=-0.00  res=-5.4mm  wall=3.42mm  |I|=10.1A  v=8.73mm/s
+  step   75/2000  mode=COMET_COMMIT    dist=70.6mm  bif=0.0mm  H=-0.00  res=-2.9mm  wall=3.71mm  |I|=11.5A  v=9.00mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=83.9mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.76mm  |I|=10.3A  v=17.06mm/s
+  step  100/2000  mode=COMET_COMMIT    dist=77.7mm  bif=0.0mm  H=-0.00  res=-5.9mm  wall=3.24mm  |I|=11.6A  v=26.43mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=84.8mm  bif=0.0mm  H=-0.00  res=-5.6mm  wall=3.36mm  |I|=13.1A  v=12.05mm/s
+  step  100/2000  mode=COMET_BOOST     dist=69.4mm  bif=0.0mm  H=-0.00  res=-2.7mm  wall=3.37mm  |I|=13.1A  v=69.39mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=84.2mm  bif=0.0mm  H=-0.00  res=-5.6mm  wall=3.53mm  |I|=12.7A  v=12.31mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=83.7mm  bif=0.0mm  H=-0.00  res=-5.5mm  wall=3.42mm  |I|=12.1A  v=10.34mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=64.0mm  bif=0.0mm  H=-0.00  res=-6.7mm  wall=4.33mm  |I|=11.9A  v=50.37mm/s
+  step  125/2000  mode=COMET_COMMIT    dist=60.6mm  bif=0.0mm  H=-0.00  res=-2.3mm  wall=4.84mm  |I|=13.1A  v=154.66mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=84.3mm  bif=0.0mm  H=-0.00  res=-5.8mm  wall=3.42mm  |I|=11.6A  v=8.20mm/s
+  step  150/2000  mode=COMET_COMMIT    dist=17.5mm  bif=0.0mm  H=-0.00  res=2.1mm  wall=1.11mm  |I|=12.7A  v=69.42mm/s
+  COMET summary: hard_commits=110, transitions=11, emergency_switches=0, avg_ctrl=223.9ms
+[pulmonary] done flow=5 pair=canonical_002_random_to_publication_target controller=comet
+  step  150/2000  mode=COMET_COMMIT    dist=62.8mm  bif=0.0mm  H=-0.00  res=-7.6mm  wall=3.07mm  |I|=13.1A  v=113.04mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=68.0mm  bif=0.0mm  H=-0.00  res=-4.5mm  wall=3.54mm  |I|=11.5A  v=189.44mm/s
+  step  175/2000  mode=COMET_COMMIT    dist=61.0mm  bif=0.0mm  H=-0.00  res=-1.9mm  wall=5.60mm  |I|=10.7A  v=172.51mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=25.6mm  bif=0.0mm  H=-0.00  res=1.7mm  wall=1.48mm  |I|=9.2A  v=54.13mm/s
+  COMET summary: hard_commits=125, transitions=7, emergency_switches=0, avg_ctrl=196.0ms
+  step  175/2000  mode=COMET_BOOST     dist=66.1mm  bif=0.0mm  H=-0.00  res=-5.9mm  wall=4.90mm  |I|=13.1A  v=81.84mm/s
+  step  200/2000  mode=COMET_COMMIT    dist=19.1mm  bif=0.0mm  H=-0.00  res=2.2mm  wall=1.41mm  |I|=9.0A  v=113.07mm/s
+  COMET summary: hard_commits=107, transitions=9, emergency_switches=0, avg_ctrl=210.9ms
+  step  200/2000  mode=COMET_COMMIT    dist=12.8mm  bif=0.0mm  H=-0.00  res=0.3mm  wall=1.32mm  |I|=13.1A  v=181.87mm/s
+  COMET summary: hard_commits=98, transitions=15, emergency_switches=0, avg_ctrl=213.8ms
+[pulmonary] done flow=5 pair=canonical_001_inlet_to_outlet controller=comet
+[pulmonary] done flow=5 pair=canonical_003_publication_start_to_random controller=comet
+[pulmonary] done flow=5 pair=random_0001 controller=comet
+COMET diagnostics saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/comet_sweep_20261103/mu70_nog/pulmonary/flow_5x/comet/comet_diagnostics.csv
+
+Benchmark outputs saved to: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/comet_sweep_20261103/mu70_nog/pulmonary
+Paired CSV: /Users/amrit/Projects/DynaMag-Magnetic-Nanoparticle-Steering-Simulation/outputs/physics_sensitivity/comet_sweep_20261103/mu70_nog/pulmonary/paired_results.csv

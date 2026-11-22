@@ -1,0 +1,132 @@
+{
+  "run_id": "thoracic_aorta",
+  "vessel_file": "data/vessels/aorta_0024_H_AO_H/real_vessel_segments.pkl",
+  "flow_model": "analytical_poiseuille",
+  "cfd_file": null,
+  "cfd_metadata": null,
+  "flow_scale_semantics": "Multiplier of analytical mean velocity",
+  "route_authority_filter_enabled": true,
+  "actuator": "high_gradient_300",
+  "protocol": "shared_route",
+  "start_jitter_m": 0.0,
+  "patient_positioning": "optimized",
+  "max_table_tilt_deg": 20.0,
+  "flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "n_random_trials": 0,
+  "seed": 20260611,
+  "controller_keys": [
+    "mpc_tuned",
+    "acbc_tuned"
+  ],
+  "include_ablations": false,
+  "profile_key": "spion_carrier_500um",
+  "wall_clearance_threshold_m": 0.0007,
+  "workers": 2,
+  "rerun_mode_enabled": true,
+  "rerun_from_csv": "benchmark_manifests/five_anatomy_500um/0024_H_AO_H.csv",
+  "rerun_pair_ids": [
+    "canonical_001_root_to_rcca_0024",
+    "canonical_002_random_to_publication_target",
+    "canonical_003_publication_start_to_random",
+    "random_0001",
+    "random_0002"
+  ],
+  "rerun_flow_scales": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "rerun_coordinate_source": "paired_results_csv",
+  "early_stopping": {
+    "enabled_controller_kinds": [
+      "mpc",
+      "cem_mpc",
+      "acbc",
+      "comet"
+    ],
+    "excluded_controller_kinds": [
+      "pid",
+      "smc_dob_inspired"
+    ],
+    "enabled": true,
+    "window_steps": 200,
+    "improvement_threshold_m": 0.002,
+    "improvement_threshold_mm": 2.0
+  },
+  "software": {
+    "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "logical_cpu_count": 11,
+    "numpy": "1.26.4"
+  },
+  "profile": {
+    "name": "spion_carrier_500um_blood",
+    "diameter_m": 0.0005,
+    "diameter_um": 500.0,
+    "magnetic_loading_fraction": 0.6,
+    "hydrodynamic_drag_multiplier": 1.45,
+    "particle_density_kg_m3": 3542.0,
+    "gravity_m_s2": [
+      0.0,
+      -9.80665,
+      0.0
+    ]
+  },
+  "common_kwargs": {
+    "dt": 0.02,
+    "steps": 2000,
+    "tolerance": 0.0005,
+    "coil_radius": 0.07,
+    "coil_length": 0.16,
+    "core_radius": 0.03,
+    "turns": 600.0,
+    "max_current": 16.0,
+    "placement_radius": 0.3,
+    "core_relative_permeability": 2.0,
+    "ampere_turn_scale": 16.35,
+    "core_saturation_tesla": 1.8,
+    "device_mode": "moving_adaptive_enclosing_gantry",
+    "wall_clearance_threshold_m": 0.0007
+  },
+  "variants": {
+    "mpc_tuned": {
+      "label": "MPC-tuned",
+      "kind": "mpc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    },
+    "acbc_tuned": {
+      "label": "ACBC-tuned",
+      "kind": "acbc",
+      "kwargs": {
+        "w_progress": 450.0,
+        "w_align": 35.0,
+        "w_dist": 2.0,
+        "w_curr": 1e-07,
+        "w_smooth": 1e-06,
+        "w_edge": 250.0,
+        "w_overshoot": 8.0,
+        "w_route": 15.0
+      }
+    }
+  },
+  "git": {
+    "commit": "de513dfef58a2f0cc4ed50de3d106623d3eef084",
+    "branch": "cfd-vtu-integration",
+    "status_short": "?? outputs/physics_sensitivity/actuator_300_slow_20261108/\n?? outputs/physics_sensitivity/cfd_pulmonary_5x_resume_20261108/"
+  }
+}

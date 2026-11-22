@@ -1,0 +1,43 @@
+{
+  "reference_repository": "https://github.com/oscarkey/constrained-cem-mpc",
+  "reference_commit": "aa162f9e242269ab66c42598e77c28a8d69f00a2",
+  "adaptation": "NumPy port; shared DynaMag objective/dynamics; unprojected vessel clearance constraint; hard_clearance_m=0.00025; include_initial_state=False; hardware current box; normalized actions in [-2,2]; bounded_sampling=True; best_effort_fallback=True; no safety guarantee or terminal safe set",
+  "steps": [
+    {
+      "feasible": true,
+      "feasible_count": 45,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        30,
+        41,
+        40,
+        52,
+        72,
+        47,
+        58,
+        45
+      ]
+    },
+    {
+      "feasible": true,
+      "feasible_count": 49,
+      "min_constraint_cost": 0.0,
+      "zero_current_fallback": false,
+      "best_effort_fallback": false,
+      "selected_constraint_cost": 0.0,
+      "feasible_counts_by_iteration": [
+        25,
+        32,
+        47,
+        44,
+        50,
+        51,
+        46,
+        49
+      ]
+    }
+  ]
+}

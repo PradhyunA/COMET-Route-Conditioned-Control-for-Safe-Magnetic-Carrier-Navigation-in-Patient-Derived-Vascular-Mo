@@ -72,6 +72,13 @@ class PhysicalProfile:
 
     enable_brownian:
         Whether Brownian motion is included.
+
+    particle_density:
+        Carrier density [kg/m^3]. None disables gravity and buoyancy.
+
+    gravity_m_s2:
+        Gravitational acceleration vector [m/s^2] in vessel coordinates.
+        Only used when particle_density is set.
     """
 
     name: str
@@ -94,6 +101,10 @@ class PhysicalProfile:
     # Thermal / stochastic
     temperature: float               # K
     enable_brownian: bool
+
+    # Gravity / buoyancy (off by default to preserve existing benchmarks)
+    particle_density: float | None = None    # kg/m^3
+    gravity_m_s2: tuple = (0.0, 0.0, 0.0)    # m/s^2
 
     def __post_init__(self):
         if self.diameter <= 0:
@@ -120,6 +131,14 @@ class PhysicalProfile:
             raise ValueError(
                 "hydrodynamic_drag_multiplier must be > 0"
             )
+
+        if self.particle_density is not None and self.particle_density <= 0:
+            raise ValueError(
+                f"particle_density must be > 0, got {self.particle_density}"
+            )
+
+        if len(self.gravity_m_s2) != 3:
+            raise ValueError("gravity_m_s2 must have 3 components")
 
 
 # -------------------------------------------------------------------

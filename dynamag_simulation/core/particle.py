@@ -17,6 +17,12 @@ near field singularities (e.g., close to dipole sources).
 
 At each step, the effective drag is solved iteratively since Re depends
 on velocity which depends on drag.
+
+Body force
+----------
+When the profile sets particle_density, the net weight
+    F_g = (rho_p - rho_f) * V * g
+is added to the magnetic force before the drag balance.
 """
 
 import numpy as np
@@ -55,6 +61,16 @@ class MagneticParticle3D:
         self.eta = profile.fluid_viscosity
         self.rho = profile.fluid_density
         self.diameter = profile.diameter
+
+        # Net weight minus buoyancy; zero unless the profile sets a density.
+        if profile.particle_density is None:
+            self.body_force = np.zeros(3, dtype=float)
+        else:
+            self.body_force = (
+                (profile.particle_density - self.rho)
+                * self.volume
+                * np.asarray(profile.gravity_m_s2, dtype=float)
+            )
         self.drag_stokes = (
             6.0
             * PI
@@ -120,8 +136,11 @@ class MagneticParticle3D:
         the particle is entrained by the flow with no relative slip at
         the flow velocity.
 
+        The body force (gravity minus buoyancy) is added to *force*
+        before the drag balance, so self.vel includes settling drift.
+
         After this call:
-          - self.vel          = magnetic component F / gamma_eff
+          - self.vel          = (F + F_body) / gamma_eff
           - self.realized_vel = (pos_new - pos_old) / dt (total)
           - self.drag         = effective drag used this step
         """
@@ -132,6 +151,7 @@ class MagneticParticle3D:
         else:
             v_flow = np.asarray(flow_velocity, dtype=float)
 
+        force = np.asarray(force, dtype=float) + self.body_force
         force_mag = np.linalg.norm(force)
         if force_mag < EPS:
             self.vel = np.zeros(3)
