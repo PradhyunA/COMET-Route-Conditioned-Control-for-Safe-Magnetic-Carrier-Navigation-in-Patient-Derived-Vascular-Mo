@@ -137,6 +137,13 @@ The vessel models are derived from the Vascular Model Repository; see the
 `LICENSE` files in their folders and cite N. M. Wilson, A. K. Ortiz and
 A. B. Johnson, *J. Med. Devices* 7(4), 040923 (2013).
 
+## License and citation
+
+The code is released under the [MIT License](LICENSE). If you use it,
+please cite the article above; GitHub's "Cite this repository" button reads
+[CITATION.cff](CITATION.cff). Each tagged release is archived on Zenodo with
+a DOI.
+
 ## Third-party code
 
 The constrained cross-entropy optimizer in

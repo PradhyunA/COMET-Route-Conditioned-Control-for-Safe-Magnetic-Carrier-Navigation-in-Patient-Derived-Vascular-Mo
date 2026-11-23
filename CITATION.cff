@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the article below."
+title: "DynaMag: COMET route-conditioned control for magnetic carrier navigation"
+type: software
+license: MIT
+repository-code: "https://github.com/PradhyunA/DynaMag-Magnetic-Nanoparticle-Steering-Simulation"
+authors:
+  - given-names: Haramrit
+    family-names: Bal
+    orcid: "https://orcid.org/0009-0009-7369-0974"
+    affiliation: "Mountain House High School, Mountain House, CA, USA"
+  - given-names: Abishek
+    family-names: Renjith
+    orcid: "https://orcid.org/0009-0006-3625-6384"
+    affiliation: "Mountain House High School, Mountain House, CA, USA"
+  - given-names: Pradhyun
+    family-names: Akkala
+    orcid: "https://orcid.org/0009-0002-2988-8261"
+    affiliation: "Mountain House High School, Mountain House, CA, USA"
+keywords:
+  - magnetic drug targeting
+  - magnetic carrier navigation
+  - electromagnetic actuation
+  - model predictive control
+  - patient-derived vascular models
+preferred-citation:
+  type: article
+  title: "COMET: Route-Conditioned Control for Safe Magnetic Carrier Navigation in Patient-Derived Vascular Models"
+  authors:
+    - given-names: Haramrit
+      family-names: Bal
+    - given-names: Abishek
+      family-names: Renjith
+    - given-names: Pradhyun
+      family-names: Akkala
+  journal: "Micromachines"
+  status: submitted
+  year: 2026
