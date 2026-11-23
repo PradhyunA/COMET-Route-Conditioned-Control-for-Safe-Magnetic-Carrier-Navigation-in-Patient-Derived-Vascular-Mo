@@ -1,0 +1,15 @@
+{
+  "title": "DynaMag: COMET route-conditioned control for magnetic carrier navigation",
+  "upload_type": "software",
+  "description": "Simulation code, frozen benchmark manifests and trial-level results for the article \"COMET: Route-Conditioned Control for Safe Magnetic Carrier Navigation in Patient-Derived Vascular Models\" (submitted to Micromachines). DynaMag simulates a nine-coil electromagnetic array steering a 500 um magnetic carrier through patient-derived vessel networks from the Vascular Model Repository, with gravity, finite-Reynolds drag, analytical and steady CFD flow, actuator limits and patient positioning, and compares the COMET controller with nonlinear MPC and other baselines on a 75-case benchmark.",
+  "creators": [
+    {"name": "Bal, Haramrit", "affiliation": "Mountain House High School", "orcid": "0009-0009-7369-0974"},
+    {"name": "Renjith, Abishek", "affiliation": "Mountain House High School", "orcid": "0009-0006-3625-6384"},
+    {"name": "Akkala, Pradhyun", "affiliation": "Mountain House High School", "orcid": "0009-0002-2988-8261"}
+  ],
+  "license": "MIT",
+  "keywords": ["magnetic drug targeting", "magnetic carrier navigation", "electromagnetic actuation", "model predictive control", "patient-derived vascular models"],
+  "related_identifiers": [
+    {"identifier": "10.1115/1.4025983", "relation": "references", "scheme": "doi"}
+  ]
+}
