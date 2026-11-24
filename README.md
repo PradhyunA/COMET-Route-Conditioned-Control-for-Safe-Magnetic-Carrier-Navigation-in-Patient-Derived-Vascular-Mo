@@ -1,4 +1,4 @@
-# DynaMag: COMET magnetic carrier navigation
+# COMET magnetic carrier navigation
 
 Simulation code, benchmark and results for
 
